@@ -26,7 +26,7 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
       <Stack spacing={10}>
         <Text fontWeight="medium">{communityData.description}</Text>
         <SimpleGrid templateColumns="3fr 2fr" gap="10">
-          <Platforms data={communityData.platforms} />
+          <Platforms data={communityData.platforms} community={communityData.id} />
           <Staked />
         </SimpleGrid>
         <Levels
