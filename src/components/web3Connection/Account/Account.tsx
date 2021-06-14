@@ -28,7 +28,7 @@ const Account = (): JSX.Element => {
   useEffect(() => {
     if (communityData) {
       const t = communityData.chainData[Chains[chainId]]?.token
-      if (token) {
+      if (t) {
         setToken(t)
       }
     }

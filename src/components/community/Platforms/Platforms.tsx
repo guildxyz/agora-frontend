@@ -12,7 +12,7 @@ const isMember = (platform: string) => {
 }
 
 const Platforms = (): JSX.Element => {
-  const { platforms, id: community } = useContext(CommunityContext)
+  const { platforms } = useContext(CommunityContext)
 
   return (
     <ActionCard
@@ -22,7 +22,6 @@ const Platforms = (): JSX.Element => {
       {Object.keys(platforms).map((platform) => (
         <PlatformButton
           key={platform}
-          communityId={community}
           isMember={isMember(platform)}
           platform={platform}
         />

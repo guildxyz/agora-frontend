@@ -5,18 +5,13 @@ import { CommunityContext } from "../Context"
 import Level from "./components/Level"
 
 const Levels = (): JSX.Element => {
-  const {
-    levels,
-    chainData: {
-      ropsten: { token },
-    },
-  } = useContext(CommunityContext)
+  const { levels } = useContext(CommunityContext)
 
   return (
     <Card py="10" px="6">
       <Stack spacing="10" divider={<StackDivider />}>
         {levels.map((level) => (
-          <Level key={level.name} data={level} token={token} />
+          <Level key={level.name} data={level} />
         ))}
       </Stack>
     </Card>
