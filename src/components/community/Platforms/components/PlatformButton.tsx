@@ -1,9 +1,12 @@
 import { Button, useDisclosure, Tooltip, Box } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import type { PlatformButtonProps as Props } from "../types"
 import LeaveModal from "./LeaveModal"
 import JoinModal from "./JoinModal"
 import platformsData from "../platformsData"
+
+type Props = {
+  platform: string
+}
 
 // ! This is a dummy function for the demo !
 const isMember = (platform: string) => {

@@ -13,13 +13,20 @@ import {
   Image,
 } from "@chakra-ui/react"
 import { CommunityContext } from "components/community/Context"
-import usePersonalSign from "hooks/usePersonalSign"
 import { Link } from "components/common/Link"
 import { ArrowSquareOut } from "phosphor-react"
 import { useContext, useState } from "react"
-import type { State, JoinOrLeavePlatformProps as Props } from "../types"
+import type { SignErrorType } from "../hooks/usePersonalSign"
+import { usePersonalSign } from "../hooks/usePersonalSign"
 import SignError from "./SignError"
 import platformsData from "../platformsData"
+
+type State = "initial" | "loading" | "success" | SignErrorType
+type Props = {
+  platform: string
+  isOpen: boolean
+  onClose: () => void
+}
 
 const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const { id: communityId } = useContext(CommunityContext)

@@ -12,8 +12,13 @@ import {
 import { useContext } from "react"
 import { CommunityContext } from "components/community/Context"
 import { useWeb3React } from "@web3-react/core"
-import type { JoinOrLeavePlatformProps as Props } from "../types"
 import platformsData from "../platformsData"
+
+type Props = {
+  platform: string
+  isOpen: boolean
+  onClose: () => void
+}
 
 const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const { id: communityId } = useContext(CommunityContext)
