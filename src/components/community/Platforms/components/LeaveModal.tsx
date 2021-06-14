@@ -36,7 +36,7 @@ const LeaveModal = ({
         <ModalFooter>
           <Button
             w="100%"
-            colorScheme="blue"
+            colorScheme="primary"
             size="lg"
             // eslint-disable-next-line no-console
             onClick={() => console.log({ address: account, platform, communityId })}

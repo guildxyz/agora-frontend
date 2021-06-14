@@ -4,7 +4,7 @@ const platformsData = {
   telegram: {
     logo: TelegramLogo,
     join: {
-      title: "Join Telegram group",
+      title: "Join Telegram",
       description:
         "To generate your invite link, first you have to sign a message with your wallet.",
     },

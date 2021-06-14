@@ -2,13 +2,6 @@ import type { Platforms as PlatformsType } from "temporaryData/types"
 
 type Error = { code: number; message: string } | null
 type State = "initial" | "loading" | "success" | Error
-type ModalProps = {
-  isOpen: boolean
-  onClose: () => void
-  communityId: number
-  platform: string
-  isMember: boolean
-}
 type SignErrorProps = { error: Error }
 type JoinOrLeavePlatformProps = {
   platform: string
@@ -18,18 +11,16 @@ type JoinOrLeavePlatformProps = {
 }
 type PlatformButtonProps = {
   communityId: number
-  isMember: boolean
   platform: string
 }
 type PlatformsProps = {
   data: PlatformsType
-  community: number
+  communityId: number
 }
 
 export type {
   Error,
   State,
-  ModalProps,
   SignErrorProps,
   JoinOrLeavePlatformProps,
   PlatformButtonProps,

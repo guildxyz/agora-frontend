@@ -63,7 +63,7 @@ const JoinModal = ({
               isLoading={modalState === "loading"}
               loadingText="Waiting confirmation"
               w="100%"
-              colorScheme="blue"
+              colorScheme="primary"
               size="lg"
               onClick={() => {
                 setModalState("loading")
