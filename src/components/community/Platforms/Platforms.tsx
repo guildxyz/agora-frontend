@@ -1,18 +1,23 @@
 import ActionCard from "components/common/ActionCard"
+import { useContext } from "react"
+import { CommunityContext } from "../Context"
 import PlatformButton from "./components/PlatformButton"
-import type { PlatformsProps as Props } from "./types"
 
-const Platforms = ({ data, communityId }: Props): JSX.Element => (
-  <ActionCard
-    title="Platforms"
-    description="All platforms are bridged together so you’ll see the same messages everywhere."
-  >
-    {Object.keys(data)
-      .filter((platform) => data[platform].active)
-      .map((platform) => (
-        <PlatformButton key={platform} {...{ platform, communityId }} />
-      ))}
-  </ActionCard>
-)
+const Platforms = (): JSX.Element => {
+  const { platforms, id: communityId } = useContext(CommunityContext)
+
+  return (
+    <ActionCard
+      title="Platforms"
+      description="All platforms are bridged together so you’ll see the same messages everywhere."
+    >
+      {Object.keys(platforms)
+        .filter((platform) => platforms[platform].active)
+        .map((platform) => (
+          <PlatformButton key={platform} {...{ platform, communityId }} />
+        ))}
+    </ActionCard>
+  )
+}
 
 export default Platforms

@@ -9,16 +9,14 @@ import {
   ModalFooter,
   Text,
 } from "@chakra-ui/react"
+import { useContext } from "react"
+import { CommunityContext } from "components/community/Context"
 import { useWeb3React } from "@web3-react/core"
 import type { JoinOrLeavePlatformProps as Props } from "../types"
 import platformsData from "../platformsData"
 
-const LeaveModal = ({
-  platform,
-  communityId,
-  isOpen,
-  onClose,
-}: Props): JSX.Element => {
+const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
+  const { id: communityId } = useContext(CommunityContext)
   const { account } = useWeb3React()
   const {
     leave: { title, description, buttonText },
