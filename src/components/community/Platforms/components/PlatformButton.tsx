@@ -1,15 +1,16 @@
 import { Button, useDisclosure } from "@chakra-ui/react"
+import { DiscordLogo, TelegramLogo } from "phosphor-react"
 import PlatformModal from "./PlatformModal"
 import type { PlatformButtonProps as Props } from "../types"
 
-const PlatformButton = ({
-  logo: Logo,
-  communityId,
-  isMember,
-  platform,
-  communityType,
-}: Props): JSX.Element => {
+const platformLogos = {
+  telegram: TelegramLogo,
+  discord: DiscordLogo,
+}
+
+const PlatformButton = ({ communityId, isMember, platform }: Props): JSX.Element => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const Logo = platformLogos[platform]
 
   return (
     <>
@@ -29,7 +30,6 @@ const PlatformButton = ({
         onClose={onClose}
         communityId={communityId}
         platform={platform}
-        communityType={communityType}
         isMember={isMember}
       />
     </>

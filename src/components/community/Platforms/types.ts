@@ -1,5 +1,3 @@
-import { IconProps } from "phosphor-react"
-
 type Error = { code: number; message: string } | null
 type State = "initial" | "loading" | "success" | Error
 type ModalProps = {
@@ -7,23 +5,20 @@ type ModalProps = {
   onClose: () => void
   communityId: number
   platform: string
-  communityType: string
   isMember: boolean
 }
 type SignErrorProps = { error: Error }
 type JoinOrLeavePlatformProps = {
   platform: string
-  communityType: string
   communityId: number
+  title: string
+  description: string
+  buttonText?: string
 }
 type PlatformButtonProps = {
-  logo: React.ForwardRefExoticComponent<
-    IconProps & React.RefAttributes<SVGSVGElement>
-  >
   communityId: number
   isMember: boolean
   platform: string
-  communityType: string
 }
 
 export type {

@@ -18,25 +18,19 @@ import SignError from "./SignError"
 
 const JoinPlatform = ({
   platform,
-  communityType,
   communityId,
+  title,
+  description,
 }: Props): JSX.Element => {
   const [modalState, setModalState] = useState<State>("initial")
   const sign = usePersonalSign()
   return (
     <>
-      <ModalHeader>{`Join ${
-        platform.charAt(0).toUpperCase() + platform.slice(1)
-      } ${communityType}`}</ModalHeader>
+      <ModalHeader>{title}</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
         <SignError error={typeof modalState === "string" ? null : modalState} />
-        {modalState !== "success" && (
-          <Text>
-            To generate your invite link, first you have to sign a message with your
-            wallet.
-          </Text>
-        )}
+        {modalState !== "success" && <Text>{description}</Text>}
         {modalState === "success" && (
           <VStack spacing="6">
             <Text>

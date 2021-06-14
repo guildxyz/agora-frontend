@@ -1,5 +1,4 @@
 import ActionCard from "components/common/ActionCard"
-import { DiscordLogo, TelegramLogo } from "phosphor-react"
 import type { Platforms as PlatformsType } from "temporaryData/types"
 import PlatformButton from "./components/PlatformButton"
 
@@ -16,16 +15,6 @@ const isMember = (platform: string) => {
   return false
 }
 
-// ? These could be stored in temporaryData/communities.ts ?
-const communityTypes = {
-  telegram: "group",
-  discord: "server",
-}
-const platformIcons = {
-  telegram: TelegramLogo,
-  discord: DiscordLogo,
-}
-
 const Platforms = ({ data, community }: Props): JSX.Element => (
   <ActionCard
     title="Platforms"
@@ -37,8 +26,6 @@ const Platforms = ({ data, community }: Props): JSX.Element => (
         communityId={community}
         isMember={isMember(platform)}
         platform={platform}
-        communityType={communityTypes[platform]}
-        logo={platformIcons[platform]}
       />
     ))}
   </ActionCard>

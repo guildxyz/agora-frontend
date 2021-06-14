@@ -11,24 +11,19 @@ import type { JoinOrLeavePlatformProps as Props } from "../types"
 
 const LeavePlatform = ({
   platform,
-  communityType,
   communityId,
+  title,
+  description,
+  buttonText,
 }: Props): JSX.Element => {
   const { account } = useWeb3React()
 
   return (
     <>
-      <ModalHeader>{`Leave ${
-        platform.charAt(0).toUpperCase() + platform.slice(1)
-      } ${communityType}`}</ModalHeader>
+      <ModalHeader>{title}</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <Text>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-          veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-          commodo consequat.
-        </Text>
+        <Text>{description}</Text>
       </ModalBody>
       <ModalFooter>
         <Button
@@ -38,7 +33,7 @@ const LeavePlatform = ({
           // eslint-disable-next-line no-console
           onClick={() => console.log({ address: account, platform, communityId })}
         >
-          Leave group
+          {buttonText}
         </Button>
       </ModalFooter>
     </>
