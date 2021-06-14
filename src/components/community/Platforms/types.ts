@@ -21,10 +21,6 @@ type PlatformButtonProps = {
   isMember: boolean
   platform: string
 }
-type PlatformsProps = {
-  data: PlatformsType
-  community: number
-}
 
 export type {
   Error,
@@ -33,5 +29,4 @@ export type {
   SignErrorProps,
   JoinOrLeavePlatformProps,
   PlatformButtonProps,
-  PlatformsProps,
 }
