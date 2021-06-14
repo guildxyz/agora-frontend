@@ -1,15 +1,19 @@
 import { Center, Flex, Image, Heading, Stack, Button, Text } from "@chakra-ui/react"
-import { useState } from "react"
-import type { Level as LevelType, Token } from "temporaryData/types"
+import { CommunityContext } from "components/community/Context"
+import { useContext } from "react"
+import type { Level as LevelType } from "temporaryData/types"
 import InfoTags from "./InfoTags"
 
 type Props = {
   data: LevelType
-  token: Token
 }
 
-const Level = ({ data, token }: Props): JSX.Element => {
-  const [state, setState] = useState("todo")
+const Level = ({ data }: Props): JSX.Element => {
+  const {
+    chainData: {
+      ropsten: { token },
+    },
+  } = useContext(CommunityContext)
 
   return (
     <Flex justifyContent="space-between">

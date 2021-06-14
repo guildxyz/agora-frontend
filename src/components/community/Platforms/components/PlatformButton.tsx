@@ -4,7 +4,7 @@ import LeaveModal from "./LeaveModal"
 import JoinModal from "./JoinModal"
 import platformsData from "../platformsData"
 
-const PlatformButton = ({ communityId, isMember, platform }: Props): JSX.Element => {
+const PlatformButton = ({ isMember, platform }: Props): JSX.Element => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { logo: Logo } = platformsData[platform]
 
@@ -22,19 +22,9 @@ const PlatformButton = ({ communityId, isMember, platform }: Props): JSX.Element
         }`}
       </Button>
       {isMember ? (
-        <LeaveModal
-          platform={platform}
-          communityId={communityId}
-          isOpen={isOpen}
-          onClose={onClose}
-        />
+        <LeaveModal platform={platform} isOpen={isOpen} onClose={onClose} />
       ) : (
-        <JoinModal
-          platform={platform}
-          communityId={communityId}
-          isOpen={isOpen}
-          onClose={onClose}
-        />
+        <JoinModal platform={platform} isOpen={isOpen} onClose={onClose} />
       )}
     </>
   )

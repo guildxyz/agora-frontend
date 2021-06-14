@@ -1,6 +1,7 @@
 import ActionCard from "components/common/ActionCard"
+import { useContext } from "react"
+import { CommunityContext } from "../Context"
 import PlatformButton from "./components/PlatformButton"
-import type { PlatformsProps as Props } from "./types"
 
 // ! This is a dummy function for the demo !
 const isMember = (platform: string) => {
@@ -10,20 +11,23 @@ const isMember = (platform: string) => {
   return false
 }
 
-const Platforms = ({ data, community }: Props): JSX.Element => (
-  <ActionCard
-    title="Platforms"
-    description="All platforms are bridged together so you’ll see the same messages everywhere."
-  >
-    {Object.keys(data).map((platform) => (
-      <PlatformButton
-        key={platform}
-        communityId={community}
-        isMember={isMember(platform)}
-        platform={platform}
-      />
-    ))}
-  </ActionCard>
-)
+const Platforms = (): JSX.Element => {
+  const { platforms } = useContext(CommunityContext)
+
+  return (
+    <ActionCard
+      title="Platforms"
+      description="All platforms are bridged together so you’ll see the same messages everywhere."
+    >
+      {Object.keys(platforms).map((platform) => (
+        <PlatformButton
+          key={platform}
+          isMember={isMember(platform)}
+          platform={platform}
+        />
+      ))}
+    </ActionCard>
+  )
+}
 
 export default Platforms
