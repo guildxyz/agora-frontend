@@ -1,19 +1,11 @@
-import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
+import { UnsupportedChainIdError } from "@web3-react/core"
 import {
   NoEthereumProviderError,
   UserRejectedRequestError,
 } from "@web3-react/injected-connector"
-import Error from "components/common/Error"
+import { ErrorState } from "components/common/Error"
 
-const ConnectionError = (): JSX.Element => {
-  const { error } = useWeb3React()
-
-  return <Error error={error} processError={processError} />
-}
-
-export default ConnectionError
-
-function processError(error: Error) {
+const processConnectionError = (error: Error): ErrorState => {
   switch (error.constructor) {
     case NoEthereumProviderError:
       return {
@@ -41,3 +33,5 @@ function processError(error: Error) {
       }
   }
 }
+
+export default processConnectionError

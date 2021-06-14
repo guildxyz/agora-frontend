@@ -8,14 +8,14 @@ import {
 } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 
-type State = {
+type ErrorState = {
   title: string
   description: string
 }
 
 type Props = {
   error: Error
-  processError: (error: Error) => State
+  processError: (error: Error) => ErrorState
 }
 
 const Error = ({ error, processError }: Props): JSX.Element => {
@@ -50,4 +50,5 @@ const Error = ({ error, processError }: Props): JSX.Element => {
   )
 }
 
-export default Error
+export { Error }
+export type { ErrorState }
