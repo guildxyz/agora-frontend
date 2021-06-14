@@ -15,8 +15,6 @@ const Level = ({ data }: Props): JSX.Element => {
     },
   } = useContext(CommunityContext)
 
-  // const [state, setState] = useState("todo")
-
   return (
     <Flex justifyContent="space-between">
       <Stack direction="row" spacing="6">

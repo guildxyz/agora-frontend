@@ -15,7 +15,10 @@ type Props = {
 
 const CommunityPage = ({ communityData }: Props): JSX.Element => (
   <CommunityProvider value={communityData}>
-    <Layout bg="linear-gradient(white 0px, var(--chakra-colors-primary-50) 700px)">
+    <Layout
+      title={`${communityData.name} community`}
+      bg="linear-gradient(white 0px, var(--chakra-colors-primary-50) 700px)"
+    >
       <Stack spacing={10}>
         <Text fontWeight="medium">{communityData.description}</Text>
         <SimpleGrid templateColumns="3fr 2fr" gap="10">
