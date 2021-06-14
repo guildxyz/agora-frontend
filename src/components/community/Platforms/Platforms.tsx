@@ -4,7 +4,7 @@ import { CommunityContext } from "../Context"
 import PlatformButton from "./components/PlatformButton"
 
 const Platforms = (): JSX.Element => {
-  const { platforms, id: communityId } = useContext(CommunityContext)
+  const { platforms } = useContext(CommunityContext)
 
   return (
     <ActionCard
@@ -14,7 +14,7 @@ const Platforms = (): JSX.Element => {
       {Object.keys(platforms)
         .filter((platform) => platforms[platform].active)
         .map((platform) => (
-          <PlatformButton key={platform} {...{ platform, communityId }} />
+          <PlatformButton key={platform} platform={platform} />
         ))}
     </ActionCard>
   )

@@ -8,7 +8,6 @@ type JoinOrLeavePlatformProps = {
 }
 type PlatformButtonProps = {
   platform: string
-  communityId: number
 }
 
 export type {

@@ -21,7 +21,7 @@ const tooltipLabel = (account: string) => {
   return ""
 }
 
-const PlatformButton = ({ communityId, platform }: Props): JSX.Element => {
+const PlatformButton = ({ platform }: Props): JSX.Element => {
   const { account } = useWeb3React()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { logo: Logo } = platformsData[platform]
@@ -48,9 +48,9 @@ const PlatformButton = ({ communityId, platform }: Props): JSX.Element => {
         </Box>
       </Tooltip>
       {isMember(platform) ? (
-        <LeaveModal {...{ platform, communityId, isOpen, onClose }} />
+        <LeaveModal {...{ platform, isOpen, onClose }} />
       ) : (
-        <JoinModal {...{ platform, communityId, isOpen, onClose }} />
+        <JoinModal {...{ platform, isOpen, onClose }} />
       )}
     </>
   )
