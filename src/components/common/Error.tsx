@@ -18,7 +18,7 @@ type Props = {
   processError: (error: Error) => State
 }
 
-const ConnectionError = ({ error, processError }: Props): JSX.Element => {
+const Error = ({ error, processError }: Props): JSX.Element => {
   const [state, setState] = useState({ title: "", description: "" })
 
   // delay the open of the Collapse from when the error has changed,
@@ -50,4 +50,4 @@ const ConnectionError = ({ error, processError }: Props): JSX.Element => {
   )
 }
 
-export default ConnectionError
+export default Error
