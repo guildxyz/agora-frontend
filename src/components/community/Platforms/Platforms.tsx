@@ -1,11 +1,6 @@
 import ActionCard from "components/common/ActionCard"
-import type { Platforms as PlatformsType } from "temporaryData/types"
 import PlatformButton from "./components/PlatformButton"
-
-type Props = {
-  data: PlatformsType
-  community: number
-}
+import type { PlatformsProps as Props } from "./types"
 
 // ! This is a dummy function for the demo !
 const isMember = (platform: string) => {
