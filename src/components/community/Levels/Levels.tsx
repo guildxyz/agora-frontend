@@ -1,6 +1,6 @@
 import { Stack, StackDivider } from "@chakra-ui/react"
 import Card from "components/common/Card"
-import { useCommunity } from "../Context"
+import useCommunity from "hooks/useCommunity"
 import Level from "./components/Level"
 
 const Levels = (): JSX.Element => {

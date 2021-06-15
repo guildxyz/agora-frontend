@@ -12,10 +12,10 @@ import {
   HStack,
   Image,
 } from "@chakra-ui/react"
-import { useCommunity } from "components/community/Context"
 import { Link } from "components/common/Link"
 import { ArrowSquareOut } from "phosphor-react"
 import { useState } from "react"
+import useCommunity from "hooks/useCommunity"
 import type { SignErrorType } from "../hooks/usePersonalSign"
 import { usePersonalSign } from "../hooks/usePersonalSign"
 import SignError from "./SignError"

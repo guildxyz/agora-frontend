@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useEffect, useState } from "react"
 import { Chains } from "connectors"
 import { useWeb3React } from "@web3-react/core"
 import type { Community } from "temporaryData/communities"
@@ -37,6 +37,4 @@ const CommunityProvider = ({ data, children }: Props): JSX.Element => {
   )
 }
 
-const useCommunity = (): ProvidedCommunity => useContext(CommunityContext)
-
-export { useCommunity, CommunityProvider }
+export { CommunityContext, CommunityProvider }

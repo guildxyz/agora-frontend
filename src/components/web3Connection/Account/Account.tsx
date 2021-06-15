@@ -1,4 +1,4 @@
-import { useCommunity } from "components/community/Context"
+import useCommunity from "hooks/useCommunity"
 import { useContext } from "react"
 import { Button, ButtonGroup, Divider, useDisclosure } from "@chakra-ui/react"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
