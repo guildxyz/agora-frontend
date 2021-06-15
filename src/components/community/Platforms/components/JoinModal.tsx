@@ -10,11 +10,11 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react"
-import { CommunityContext } from "components/community/Context"
 import { Link } from "components/common/Link"
 import { ArrowSquareOut } from "phosphor-react"
-import { useContext, useState } from "react"
+import { useState } from "react"
 import QRCode from "qrcode.react"
+import { useCommunity } from "components/community/Context"
 import type { SignErrorType } from "../hooks/usePersonalSign"
 import { usePersonalSign } from "../hooks/usePersonalSign"
 import SignError from "./SignError"
@@ -46,7 +46,7 @@ const getInviteLink = (
 }
 
 const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
-  const { id: communityId } = useContext(CommunityContext)
+  const { id: communityId } = useCommunity()
   const [modalState, setModalState] = useState<State>("initial")
   const [inviteData, setInviteData] = useState<InviteData | null>(null)
   const sign = usePersonalSign()
