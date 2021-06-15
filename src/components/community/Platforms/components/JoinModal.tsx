@@ -9,13 +9,12 @@ import {
   ModalFooter,
   Text,
   VStack,
-  HStack,
-  Image,
 } from "@chakra-ui/react"
 import { CommunityContext } from "components/community/Context"
 import { Link } from "components/common/Link"
 import { ArrowSquareOut } from "phosphor-react"
 import { useContext, useState } from "react"
+import QRCode from "qrcode.react"
 import type { SignErrorType } from "../hooks/usePersonalSign"
 import { usePersonalSign } from "../hooks/usePersonalSign"
 import SignError from "./SignError"
@@ -27,45 +26,86 @@ type Props = {
   isOpen: boolean
   onClose: () => void
 }
+type InviteData = {
+  link: string
+  code?: number
+}
+
+// ! This is a dummy function for the demo !
+const getInviteLink = (
+  platform: string,
+  communityId: number,
+  message: string
+): InviteData => {
+  // eslint-disable-next-line no-console
+  console.log({ platform, communityId, message })
+  return {
+    link: "https://discord.gg/tfg3GYgu",
+    code: 1235,
+  }
+}
 
 const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const { id: communityId } = useContext(CommunityContext)
   const [modalState, setModalState] = useState<State>("initial")
+  const [inviteData, setInviteData] = useState<InviteData | null>(null)
   const sign = usePersonalSign()
   const {
     join: { title, description },
   } = platformsContent[platform]
 
+  const handleSign = () => {
+    setModalState("loading")
+    sign("Please sign this message to generate your invite link")
+      .then((message) => {
+        setInviteData(getInviteLink(platform, communityId, message))
+        setModalState("success")
+      })
+      .catch((e) => {
+        setModalState(e)
+      })
+  }
+
+  const closeModal = () => {
+    if (modalState !== "success") {
+      setModalState("initial")
+    }
+    onClose()
+  }
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <SignError error={typeof modalState === "string" ? null : modalState} />
-          {modalState !== "success" && <Text>{description}</Text>}
-          {modalState === "success" && (
+          {modalState !== "success" ? (
+            <Text>{description}</Text>
+          ) : (
             <VStack spacing="6">
               <Text>
                 Here’s your link. It’s only active for 10 minutes and is only usable
                 once:
               </Text>
-              <Link href="https://discord.gg/tfg3GYgu" color="#006BFF">
-                <HStack>
-                  <Text>https://discord.gg/tfg3GYgu</Text>
-                  <ArrowSquareOut size="1.3em" weight="light" color="#006BFF" />
-                </HStack>
+              <Link href={inviteData.link} color="#006BFF" display="flex" isExternal>
+                {inviteData.link}
+                <ArrowSquareOut size="1.3em" weight="light" color="#006BFF" />
               </Link>
-              <Image src="./temp/qr.svg" alt="Discord invite QR" />
-              <Text>
-                If there’s lot of traffic right now, the bot might ask you for a join
-                code immediately after you land in the server. It’s usually not the
-                case, but if it is, here’s what you need:
-              </Text>
-              <Text fontWeight="700" fontSize="2xl" letterSpacing="5px">
-                1235
-              </Text>
+              <QRCode size={150} value={inviteData.link} />
+              {!!inviteData.code && (
+                <>
+                  <Text>
+                    If there’s lot of traffic right now, the bot might ask you for a
+                    join code immediately after you land in the server. It’s usually
+                    not the case, but if it is, here’s what you need:
+                  </Text>
+                  <Text fontWeight="700" fontSize="2xl" letterSpacing="5px">
+                    {inviteData.code}
+                  </Text>
+                </>
+              )}
             </VStack>
           )}
         </ModalBody>
@@ -77,18 +117,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
               w="100%"
               colorScheme="primary"
               size="lg"
-              onClick={() => {
-                setModalState("loading")
-                sign("Please sign this message to generate your invite link")
-                  .then((message) => {
-                    // eslint-disable-next-line no-console
-                    console.log({ message, platform, communityId })
-                    setModalState("success")
-                  })
-                  .catch((e) => {
-                    setModalState(e)
-                  })
-              }}
+              onClick={handleSign}
             >
               Sign
             </Button>
