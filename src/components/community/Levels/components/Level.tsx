@@ -1,6 +1,5 @@
 import { Center, Flex, Image, Heading, Stack, Button, Text } from "@chakra-ui/react"
-import { CommunityContext } from "components/community/Context"
-import { useContext } from "react"
+import { useCommunity } from "components/community/Context"
 import type { Level as LevelType } from "temporaryData/types"
 import InfoTags from "./InfoTags"
 
@@ -9,11 +8,7 @@ type Props = {
 }
 
 const Level = ({ data }: Props): JSX.Element => {
-  const {
-    chainData: {
-      ropsten: { token },
-    },
-  } = useContext(CommunityContext)
+  const communityData = useCommunity()
 
   return (
     <Flex justifyContent="space-between">
@@ -24,7 +19,9 @@ const Level = ({ data }: Props): JSX.Element => {
           <InfoTags
             data={data.accessRequirement}
             membersCount={data.membersCount}
-            tokenSymbol={token.symbol}
+            tokenSymbol={
+              !communityData.chainData ? "..." : communityData.chainData.token.symbol
+            }
           />
           {data.desc && <Text pt="4">{data.desc}</Text>}
         </Stack>

@@ -1,9 +1,8 @@
-import { CommunityContext } from "components/community/Context"
-import { useContext, useState, useEffect } from "react"
+import { useCommunity } from "components/community/Context"
+import { useContext } from "react"
 import { Button, ButtonGroup, Divider, useDisclosure } from "@chakra-ui/react"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 import { LinkBreak, SignIn, Wallet } from "phosphor-react"
-import { Chains } from "connectors"
 import shortenHex from "utils/shortenHex"
 import { Web3Connection } from "components/web3Connection/Web3ConnectionManager"
 import { Token } from "temporaryData/types"
@@ -17,22 +16,11 @@ type Props = {
 }
 
 const Account = (): JSX.Element => {
-  const [token, setToken] = useState<Token>(undefined)
-  const { chainId } = useWeb3React()
-  const communityData = useContext(CommunityContext)
+  const communityData = useCommunity()
   const { error, account } = useWeb3React()
   const { openModal, triedEager } = useContext(Web3Connection)
   const ENSName = useENSName(account)
   const { isOpen, onOpen, onClose } = useDisclosure()
-
-  useEffect(() => {
-    if (communityData) {
-      const t = communityData.chainData[Chains[chainId]]?.token
-      if (t) {
-        setToken(t)
-      }
-    }
-  }, [token, chainId, communityData])
 
   if (typeof window === "undefined") {
     return <Button isLoading>Connect to a wallet</Button>
@@ -55,9 +43,9 @@ const Account = (): JSX.Element => {
     <>
       <Card>
         <ButtonGroup isAttached variant="ghost">
-          {token && (
+          {communityData?.chainData && (
             <>
-              <Balance token={token} />
+              <Balance token={communityData?.chainData.token} />
               <Divider orientation="vertical" h="var(--chakra-space-11)" />
             </>
           )}

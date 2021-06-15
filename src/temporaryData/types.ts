@@ -62,4 +62,31 @@ interface Community {
   levels: Level[]
 }
 
-export type { Community, Token, Level, Platforms, AccessRequirements }
+interface ProvidedCommunity {
+  id: number
+  urlName: string
+  name: string
+  description: string
+  imageUrl: string
+  theme: {
+    color: string
+  }
+  ownerId: number
+  chainData: {
+    token: Token
+    contract: {
+      address: string
+    }
+  }
+  platforms: Platforms
+  levels: Level[]
+}
+
+export type {
+  Community,
+  Token,
+  Level,
+  Platforms,
+  AccessRequirements,
+  ProvidedCommunity,
+}
