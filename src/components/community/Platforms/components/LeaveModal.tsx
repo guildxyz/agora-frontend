@@ -10,8 +10,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react"
-import { useContext } from "react"
-import { CommunityContext } from "components/community/Context"
+import { useCommunity } from "components/community/Context"
 import { useWeb3React } from "@web3-react/core"
 import platformsContent from "../platformsContent"
 
@@ -22,7 +21,7 @@ type Props = {
 }
 
 const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
-  const { id: communityId } = useContext(CommunityContext)
+  const { id: communityId } = useCommunity()
   const { account } = useWeb3React()
   const {
     leave: { title, membershipDescription, leaveDescription, buttonText },

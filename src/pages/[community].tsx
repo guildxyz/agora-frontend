@@ -14,7 +14,7 @@ type Props = {
 }
 
 const CommunityPage = ({ communityData }: Props): JSX.Element => (
-  <CommunityProvider value={communityData}>
+  <CommunityProvider data={communityData}>
     <Layout
       title={`${communityData.name} community`}
       bg="linear-gradient(white 0px, var(--chakra-colors-primary-50) 700px)"

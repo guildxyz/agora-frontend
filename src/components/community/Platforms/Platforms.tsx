@@ -1,8 +1,7 @@
 import ActionCard from "components/common/ActionCard"
 import { Tooltip, Box } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import { useContext } from "react"
-import { CommunityContext } from "../Context"
+import { useCommunity } from "components/community/Context"
 import PlatformButton from "./components/PlatformButton"
 
 // ! This is a dummy function for the demo !
@@ -16,7 +15,7 @@ const tooltipLabel = (account: string) => {
 
 const Platforms = (): JSX.Element => {
   const { account } = useWeb3React()
-  const { platforms } = useContext(CommunityContext)
+  const { platforms } = useCommunity()
 
   return (
     <ActionCard

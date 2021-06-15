@@ -1,11 +1,10 @@
 import { Stack, StackDivider } from "@chakra-ui/react"
 import Card from "components/common/Card"
-import { useContext } from "react"
-import { CommunityContext } from "../Context"
+import { useCommunity } from "components/community/Context"
 import Level from "./components/Level"
 
 const Levels = (): JSX.Element => {
-  const { levels } = useContext(CommunityContext)
+  const { levels } = useCommunity()
 
   return (
     <Card py="10" px="6">
