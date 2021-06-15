@@ -15,7 +15,7 @@ import {
 import { Link } from "components/common/Link"
 import { ArrowSquareOut } from "phosphor-react"
 import { useState } from "react"
-import useCommunity from "hooks/useCommunity"
+import { useCommunity } from "components/community/Context"
 import type { SignErrorType } from "../hooks/usePersonalSign"
 import { usePersonalSign } from "../hooks/usePersonalSign"
 import SignError from "./SignError"

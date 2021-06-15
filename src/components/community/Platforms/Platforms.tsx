@@ -1,7 +1,7 @@
 import ActionCard from "components/common/ActionCard"
 import { Tooltip, Box } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import useCommunity from "hooks/useCommunity"
+import { useCommunity } from "components/community/Context"
 import PlatformButton from "./components/PlatformButton"
 
 // ! This is a dummy function for the demo !

@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import { Center, Flex, Image, Heading, Stack, Button, Text } from "@chakra-ui/react"
-import useCommunity from "hooks/useCommunity"
+import { useCommunity } from "components/community/Context"
 import type { Level as LevelType } from "temporaryData/types"
 import InfoTags from "./InfoTags"
 
@@ -19,9 +20,7 @@ const Level = ({ data }: Props): JSX.Element => {
           <InfoTags
             data={data.accessRequirement}
             membersCount={data.membersCount}
-            tokenSymbol={
-              !communityData.chainData ? "..." : communityData.chainData.token.symbol
-            }
+            tokenSymbol={communityData.chainData["token"].symbol}
           />
           {data.desc && <Text pt="4">{data.desc}</Text>}
         </Stack>

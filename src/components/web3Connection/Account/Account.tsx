@@ -1,4 +1,5 @@
-import useCommunity from "hooks/useCommunity"
+/* eslint-disable @typescript-eslint/dot-notation */
+import { useCommunity } from "components/community/Context"
 import { useContext } from "react"
 import { Button, ButtonGroup, Divider, useDisclosure } from "@chakra-ui/react"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
@@ -43,9 +44,9 @@ const Account = (): JSX.Element => {
     <>
       <Card>
         <ButtonGroup isAttached variant="ghost">
-          {communityData?.chainData && (
+          {!!communityData && (
             <>
-              <Balance token={communityData?.chainData.token} />
+              <Balance token={communityData.chainData["token"]} />
               <Divider orientation="vertical" h="var(--chakra-space-11)" />
             </>
           )}

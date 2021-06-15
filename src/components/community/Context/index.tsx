@@ -1,40 +1,38 @@
-import { createContext, useEffect, useState } from "react"
+import { createContext, useEffect, useState, useContext } from "react"
 import { Chains } from "connectors"
 import { useWeb3React } from "@web3-react/core"
-import type { Community } from "temporaryData/communities"
-import type { ProvidedCommunity } from "temporaryData/types"
+import type { Community } from "temporaryData/types"
 
 type Props = {
   data: Community
   children: JSX.Element
 }
 
-const CommunityContext = createContext<ProvidedCommunity | null>(null)
+const CommunityContext = createContext<Community | null>(null)
 
 const CommunityProvider = ({ data, children }: Props): JSX.Element => {
   const { chainId } = useWeb3React()
-  const [communityData, setCommunityData] = useState<Community | null>(data)
-  const [dataToProvide, setDataToProvide] = useState<ProvidedCommunity | null>({
+  const [communityData, setCommunityData] = useState<Community>({
     ...data,
-    chainData: data.chainData[Chains[chainId]],
+    chainData: data.chainData[Object.keys(data.chainData)[0]],
   })
 
-  useEffect(() => setCommunityData(data), [data])
-
   useEffect(() => {
-    if (communityData) {
-      setDataToProvide({
-        ...communityData,
-        chainData: communityData.chainData[Chains[chainId]],
+    if (chainId) {
+      setCommunityData({
+        ...data,
+        chainData: data.chainData[Chains[chainId]],
       })
     }
-  }, [chainId, communityData])
+  }, [chainId, data])
 
   return (
-    <CommunityContext.Provider value={dataToProvide}>
+    <CommunityContext.Provider value={communityData}>
       {children}
     </CommunityContext.Provider>
   )
 }
 
-export { CommunityContext, CommunityProvider }
+const useCommunity = (): Community => useContext(CommunityContext)
+
+export { useCommunity, CommunityProvider }

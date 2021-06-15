@@ -10,7 +10,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react"
-import useCommunity from "hooks/useCommunity"
+import { useCommunity } from "components/community/Context"
 import { useWeb3React } from "@web3-react/core"
 import platformsContent from "../platformsContent"
 

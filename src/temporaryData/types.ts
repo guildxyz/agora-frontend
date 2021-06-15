@@ -40,6 +40,13 @@ type Platforms = {
   }
 }
 
+type ChainData = {
+  token: Token
+  contract: {
+    address: string
+  }
+}
+
 interface Community {
   id: number
   urlName: string
@@ -50,43 +57,13 @@ interface Community {
     color: string
   }
   ownerId: number
-  chainData: {
-    ropsten: {
-      token: Token
-      contract: {
-        address: string
+  chainData:
+    | ChainData
+    | {
+        ropsten: ChainData
       }
-    }
-  }
   platforms: Platforms
   levels: Level[]
 }
 
-interface ProvidedCommunity {
-  id: number
-  urlName: string
-  name: string
-  description: string
-  imageUrl: string
-  theme: {
-    color: string
-  }
-  ownerId: number
-  chainData: {
-    token: Token
-    contract: {
-      address: string
-    }
-  }
-  platforms: Platforms
-  levels: Level[]
-}
-
-export type {
-  Community,
-  Token,
-  Level,
-  Platforms,
-  AccessRequirements,
-  ProvidedCommunity,
-}
+export type { Community, Token, Level, Platforms, AccessRequirements }
