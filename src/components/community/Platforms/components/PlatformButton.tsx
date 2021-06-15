@@ -9,7 +9,8 @@ type Props = {
 }
 
 // ! This is a dummy function for the demo !
-const isMember = (platform: string) => {
+const isMember = (account: string, platform: string) => {
+  if (!account) return false
   if (platform === "telegram") {
     return true
   }
@@ -28,14 +29,14 @@ const PlatformButton = ({ platform }: Props): JSX.Element => {
         colorScheme={platform}
         fontWeight="medium"
         leftIcon={<Logo />}
-        variant={isMember(platform) ? "outline" : "solid"}
+        variant={isMember(account, platform) ? "outline" : "solid"}
         disabled={!account}
       >
-        {`${isMember(platform) ? "Leave" : "Join"} ${
+        {`${isMember(account, platform) ? "Leave" : "Join"} ${
           platform.charAt(0).toUpperCase() + platform.slice(1)
         }`}
       </Button>
-      {isMember(platform) ? (
+      {isMember(account, platform) ? (
         <LeaveModal {...{ platform, isOpen, onClose }} />
       ) : (
         <JoinModal {...{ platform, isOpen, onClose }} />
