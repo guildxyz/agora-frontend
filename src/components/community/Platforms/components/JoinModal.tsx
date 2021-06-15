@@ -19,7 +19,7 @@ import { useContext, useState } from "react"
 import type { SignErrorType } from "../hooks/usePersonalSign"
 import { usePersonalSign } from "../hooks/usePersonalSign"
 import SignError from "./SignError"
-import platformsData from "../platformsData"
+import platformsContent from "../platformsContent"
 
 type State = "initial" | "loading" | "success" | SignErrorType
 type Props = {
@@ -34,7 +34,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const sign = usePersonalSign()
   const {
     join: { title, description },
-  } = platformsData[platform]
+  } = platformsContent[platform]
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -58,11 +58,19 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
                 </HStack>
               </Link>
               <Image src="./temp/qr.svg" alt="Discord invite QR" />
+              <Text>
+                If there’s lot of traffic right now, the bot might ask you for a join
+                code immediately after you land in the server. It’s usually not the
+                case, but if it is, here’s what you need:
+              </Text>
+              <Text fontWeight="700" fontSize="2xl" letterSpacing="5px">
+                1235
+              </Text>
             </VStack>
           )}
         </ModalBody>
-        {modalState !== "success" && (
-          <ModalFooter>
+        <ModalFooter>
+          {modalState !== "success" ? (
             <Button
               isLoading={modalState === "loading"}
               loadingText="Waiting confirmation"
@@ -84,8 +92,12 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
             >
               Sign
             </Button>
-          </ModalFooter>
-        )}
+          ) : (
+            <Button w="100%" colorScheme="primary" size="lg" onClick={onClose}>
+              Done
+            </Button>
+          )}
+        </ModalFooter>
       </ModalContent>
     </Modal>
   )

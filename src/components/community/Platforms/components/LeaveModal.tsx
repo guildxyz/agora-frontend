@@ -8,11 +8,12 @@ import {
   ModalBody,
   ModalFooter,
   Text,
+  VStack,
 } from "@chakra-ui/react"
 import { useContext } from "react"
 import { CommunityContext } from "components/community/Context"
 import { useWeb3React } from "@web3-react/core"
-import platformsData from "../platformsData"
+import platformsContent from "../platformsContent"
 
 type Props = {
   platform: string
@@ -24,8 +25,8 @@ const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const { id: communityId } = useContext(CommunityContext)
   const { account } = useWeb3React()
   const {
-    leave: { title, description, buttonText },
-  } = platformsData[platform]
+    leave: { title, membershipDescription, leaveDescription, buttonText },
+  } = platformsContent[platform]
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -34,7 +35,10 @@ const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Text>{description}</Text>
+          <VStack spacing={5}>
+            <Text>{membershipDescription}</Text>
+            <Text>{leaveDescription}</Text>
+          </VStack>
         </ModalBody>
         <ModalFooter>
           <Button
