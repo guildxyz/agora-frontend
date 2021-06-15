@@ -7,15 +7,18 @@ import {
   Stack,
 } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
+import type { SignErrorType } from "components/community/Platforms/hooks/usePersonalSign"
 
 type ErrorState = {
   title: string
   description: string
 }
 
+type ErrorType = Error | SignErrorType
+
 type Props = {
-  error: Error
-  processError: (error: Error) => ErrorState
+  error: ErrorType
+  processError: (error: ErrorType) => ErrorState
 }
 
 const Error = ({ error, processError }: Props): JSX.Element => {
