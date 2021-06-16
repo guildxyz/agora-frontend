@@ -16,7 +16,7 @@ import { Error } from "components/common/Error"
 import type { SignErrorType } from "components/community/Platforms/hooks/usePersonalSign"
 import { useCommunity } from "components/community/Context"
 import { useWeb3React } from "@web3-react/core"
-import useLeaveModalMachine from "../utils/leaveModalMachineConfig"
+import useLeaveModalMachine from "../hooks/useLeaveModalMachine"
 import platformsContent from "../platformsContent"
 import processLeavePlatformMessage from "../utils/processLeavePlatformError"
 

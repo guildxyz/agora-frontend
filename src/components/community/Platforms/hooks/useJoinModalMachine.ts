@@ -1,5 +1,5 @@
 import useStateMachine from "@cassiozen/usestatemachine"
-import type { SignErrorType } from "../hooks/usePersonalSign"
+import type { SignErrorType } from "./usePersonalSign"
 import type { InviteData } from "../components/JoinModal"
 
 type MachineContextType = {
