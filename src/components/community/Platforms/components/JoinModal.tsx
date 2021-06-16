@@ -12,16 +12,14 @@ import {
 } from "@chakra-ui/react"
 import { Link } from "components/common/Link"
 import { ArrowSquareOut } from "phosphor-react"
-import { useState } from "react"
 import QRCode from "qrcode.react"
 import { Error } from "components/common/Error"
 import { useCommunity } from "components/community/Context"
-import type { SignErrorType } from "../hooks/usePersonalSign"
+import useJoinModalMachine from "../utils/joinModalMachineConfig"
 import { usePersonalSign } from "../hooks/usePersonalSign"
 import platformsContent from "../platformsContent"
 import processSignError from "../utils/processSignError"
 
-type State = "initial" | "loading" | "success" | SignErrorType
 type Props = {
   platform: string
   isOpen: boolean
@@ -48,29 +46,31 @@ const getInviteLink = (
 
 const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const { id: communityId } = useCommunity()
-  const [modalState, setModalState] = useState<State>("initial")
-  const [inviteData, setInviteData] = useState<InviteData | null>(null)
   const sign = usePersonalSign()
   const {
     join: { title, description },
   } = platformsContent[platform]
+  const [machine, send] = useJoinModalMachine()
 
   const handleSign = () => {
-    setModalState("loading")
+    send("signInProgress")
     sign("Please sign this message to generate your invite link")
       .then((message) => {
-        setInviteData(getInviteLink(platform, communityId, message))
-        setModalState("success")
+        send({
+          type: "signSuccessful",
+          success: getInviteLink(platform, communityId, message),
+        })
       })
-      .catch((e) => {
-        setModalState(e)
+      .catch((error) => {
+        send({
+          type: "signFailed",
+          error,
+        })
       })
   }
 
   const closeModal = () => {
-    if (modalState !== "success") {
-      setModalState("initial")
-    }
+    send("modalClosed")
     onClose()
   }
 
@@ -81,11 +81,8 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Error
-            error={typeof modalState === "string" ? null : modalState}
-            processError={processSignError}
-          />
-          {modalState !== "success" ? (
+          <Error error={machine.context.error} processError={processSignError} />
+          {machine.value !== "success" ? (
             <Text>{description}</Text>
           ) : (
             <VStack spacing="6">
@@ -93,12 +90,17 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
                 Here’s your link. It’s only active for 10 minutes and is only usable
                 once:
               </Text>
-              <Link href={inviteData.link} color="#006BFF" display="flex" isExternal>
-                {inviteData.link}
+              <Link
+                href={machine.context.success.link}
+                color="#006BFF"
+                display="flex"
+                isExternal
+              >
+                {machine.context.success.link}
                 <ArrowSquareOut size="1.3em" weight="light" color="#006BFF" />
               </Link>
-              <QRCode size={150} value={inviteData.link} />
-              {!!inviteData.code && (
+              <QRCode size={150} value={machine.context.success.link} />
+              {!!machine.context.success.code && (
                 <>
                   <Text>
                     If there’s lot of traffic right now, the bot might ask you for a
@@ -106,7 +108,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
                     not the case, but if it is, here’s what you need:
                   </Text>
                   <Text fontWeight="700" fontSize="2xl" letterSpacing="5px">
-                    {inviteData.code}
+                    {machine.context.success.code}
                   </Text>
                 </>
               )}
@@ -114,9 +116,9 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
           )}
         </ModalBody>
         <ModalFooter>
-          {modalState !== "success" ? (
+          {machine.value !== "success" ? (
             <Button
-              isLoading={modalState === "loading"}
+              isLoading={machine.value === "loading"}
               loadingText="Waiting confirmation"
               w="100%"
               colorScheme="primary"
@@ -136,4 +138,5 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   )
 }
 
-export default JoinModal
+export { JoinModal }
+export type { InviteData }

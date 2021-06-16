@@ -12,6 +12,7 @@
     "lint-fix": "eslint --fix . --ext .ts,.tsx,.js,.jsx"
   },
   "dependencies": {
+    "@cassiozen/usestatemachine": "^1.0.0-beta.1",
     "@chakra-ui/react": "^1.6.2",
     "@chakra-ui/theme-tools": "^1.1.7",
     "@emotion/react": "^11.4.0",
