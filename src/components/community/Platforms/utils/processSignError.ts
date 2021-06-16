@@ -1,7 +1,7 @@
-import { ErrorState } from "components/common/Error"
+import { ErrorInfo } from "components/common/Error"
 import type { SignErrorType } from "../hooks/usePersonalSign"
 
-const processConnectionError = (error: SignErrorType): ErrorState => {
+const processConnectionError = (error: SignErrorType): ErrorInfo => {
   const { code, message } = error
 
   switch (code) {
