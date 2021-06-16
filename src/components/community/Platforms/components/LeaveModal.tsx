@@ -14,9 +14,9 @@ import { Error } from "components/common/Error"
 // If we end up using: a different type, we won't need this import, instead we will create another type
 //                     this type, we might want to renaname it and add to ErrorType in Error.tsx
 import type { SignErrorType } from "components/community/Platforms/hooks/usePersonalSign"
-import { useState } from "react"
 import { useCommunity } from "components/community/Context"
 import { useWeb3React } from "@web3-react/core"
+import useLeaveModalMachine from "../utils/leaveModalMachineConfig"
 import platformsContent from "../platformsContent"
 import processLeavePlatformMessage from "../utils/processLeavePlatformError"
 
@@ -28,21 +28,28 @@ type Props = {
 
 // ! This is a dummy function for the demo !
 // Depending on what the returned error will look like, we might need to add a new type to ErrorType in Error.tsx
-const leavePlatform = (
+const leavePlatform = async (
   address: string,
   platform: string,
   communityId: number
-): SignErrorType | null => {
+): Promise<SignErrorType | null> => {
   // eslint-disable-next-line no-console
   console.log({ address, platform, communityId })
-  return {
-    code: 1,
-    message: "Not implemented",
-  }
+  return new Promise((resolve, reject) => {
+    setTimeout(
+      () =>
+        // eslint-disable-next-line prefer-promise-reject-errors
+        reject({
+          code: 1,
+          message: "Not implemented",
+        }),
+      1000
+    )
+  })
 }
 
 const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
-  const [error, setError] = useState<SignErrorType | null>(null)
+  const [machine, send] = useLeaveModalMachine()
   const { id: communityId } = useCommunity()
   const { account } = useWeb3React()
   const {
@@ -50,17 +57,17 @@ const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   } = platformsContent[platform]
 
   const handleLeavePlatform = () => {
-    const result = leavePlatform(account, platform, communityId)
-    if (result) {
-      setError(result)
-    }
+    send("leaveInProgress")
+    leavePlatform(account, platform, communityId)
+      // eslint-disable-next-line no-console
+      .then(() => send("modalClosed"))
+      .catch((error) => send({ type: "leaveFailed", error }))
   }
 
   const closeModal = () => {
-    setError(null)
+    send("modalClosed")
     onClose()
   }
-
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
@@ -68,7 +75,10 @@ const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Error error={error} processError={processLeavePlatformMessage} />
+          <Error
+            error={machine.context.error}
+            processError={processLeavePlatformMessage}
+          />
           <VStack spacing={5}>
             <Text>{membershipDescription}</Text>
             <Text>{leaveDescription}</Text>
