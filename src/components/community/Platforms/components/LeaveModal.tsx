@@ -86,6 +86,8 @@ const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
         </ModalBody>
         <ModalFooter>
           <Button
+            isLoading={machine.value === "loading"}
+            loadingText="In progress"
             w="100%"
             colorScheme="primary"
             size="lg"
