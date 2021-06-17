@@ -1,8 +1,18 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import { Center, Flex, Image, Heading, Stack, Button, Text } from "@chakra-ui/react"
+import {
+  Center,
+  Flex,
+  Image,
+  Heading,
+  Stack,
+  Button,
+  Text,
+  useDisclosure,
+} from "@chakra-ui/react"
 import { useCommunity } from "components/community/Context"
 import type { Level as LevelType } from "temporaryData/types"
 import InfoTags from "./InfoTags"
+import StakingModal from "./StakingModal"
 
 type Props = {
   data: LevelType
@@ -10,6 +20,7 @@ type Props = {
 
 const Level = ({ data }: Props): JSX.Element => {
   const communityData = useCommunity()
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
     <Flex justifyContent="space-between">
@@ -26,9 +37,15 @@ const Level = ({ data }: Props): JSX.Element => {
         </Stack>
       </Stack>
       <Center>
-        <Button colorScheme="primary" fontWeight="medium">
+        <Button colorScheme="primary" fontWeight="medium" onClick={onOpen}>
           Stake to join
         </Button>
+        <StakingModal
+          name={data.name}
+          tokenSymbol={communityData.chainData["token"].symbol}
+          accessRequirement={data.accessRequirement}
+          {...{ isOpen, onClose }}
+        />
       </Center>
     </Flex>
   )
