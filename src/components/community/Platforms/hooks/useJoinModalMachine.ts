@@ -1,69 +1,103 @@
-import { useMachine } from "@xstate/react/lib/fsm"
-import { createMachine, assign } from "@xstate/fsm"
+import { useMachine } from "@xstate/react"
+import { createMachine, assign, DoneInvokeEvent } from "xstate"
+import { useCommunity } from "components/community/Context"
+import { usePersonalSign } from "./usePersonalSign"
 import type { InviteData } from "../components/JoinModal"
 import type { SignErrorType } from "./usePersonalSign"
 
-const initialInviteData = { link: "", code: null }
+const initialInviteData: InviteData = { link: "", code: null }
 
 type ContextType = {
   error: SignErrorType | null
   inviteData: InviteData
+  sign: (message: string) => Promise<any>
+  platform: string
+  communityId: number
 }
 
-type EventType = {
-  type: string
-  error?: SignErrorType
-  inviteData?: InviteData
+// ! This is a dummy function for the demo !
+const getInviteLink = (
+  platform: string,
+  communityId: number,
+  message: string
+): InviteData => {
+  // eslint-disable-next-line no-console
+  console.log({ platform, communityId, message })
+  return {
+    link: "https://discord.gg/tfg3GYgu",
+    code: 1235,
+  }
 }
 
-const joinModalMachine = createMachine<ContextType, EventType>(
-  {
-    id: "join_modal",
-    initial: "initial",
-    states: {
-      initial: {
-        on: { signInProgress: "loading" },
-      },
-      loading: {
-        on: {
-          signSuccessful: "success",
-          signFailed: "error",
-          modalClosed: "initial",
+const joinModalMachine = (initialContext: ContextType) =>
+  createMachine<ContextType, DoneInvokeEvent<any>>(
+    {
+      id: "joinModal",
+      initial: "initial",
+      states: {
+        initial: {
+          on: { SIGN_IN_PROGRESS: "loading" },
+        },
+        loading: {
+          on: {
+            MODAL_CLOSED: "initial",
+          },
+          invoke: {
+            id: "personalSign",
+            src: (context) =>
+              context.sign("Please sign this message to generate your invite link"),
+            onDone: {
+              target: "success",
+            },
+            onError: {
+              target: "error",
+            },
+          },
+        },
+        error: {
+          on: { SIGN_IN_PROGRESS: "loading", MODAL_CLOSED: "initial" },
+          entry: "setError",
+          exit: "removeError",
+        },
+        success: {
+          entry: "setInviteData",
+          exit: "removeInviteData",
         },
       },
-      error: {
-        on: { signInProgress: "loading", modalClosed: "initial" },
-        entry: "setError",
-        exit: "removeError",
-      },
-      success: {
-        entry: "setInviteData",
-        exit: "revoveInviteData",
-      },
+      context: initialContext,
     },
-    context: {
+    {
+      actions: {
+        setError: assign({
+          error: (_, event) => event.data,
+        }),
+        removeError: assign({
+          error: () => null,
+        }),
+        setInviteData: assign({
+          inviteData: (context, event) =>
+            getInviteLink(context.platform, context.communityId, event.data),
+        }),
+        removeInviteData: assign({
+          inviteData: () => initialInviteData,
+        }),
+      },
+    }
+  )
+
+const useJoinModalMachine = (platform: string): any => {
+  const { id: communityId } = useCommunity()
+  const sign = usePersonalSign()
+
+  return useMachine(
+    joinModalMachine({
       error: null,
       inviteData: initialInviteData,
-    },
-  },
-  {
-    actions: {
-      setError: assign<ContextType, EventType>({
-        error: (_, event) => event.error,
-      }),
-      removeError: assign<ContextType, EventType>({
-        error: () => null,
-      }),
-      setInviteData: assign<ContextType, EventType>({
-        inviteData: (_, event) => event.inviteData,
-      }),
-      revoveInviteData: assign<ContextType, EventType>({
-        inviteData: () => initialInviteData,
-      }),
-    },
-  }
-)
-
-const useJoinModalMachine = (): any => useMachine(joinModalMachine)
+      sign,
+      platform,
+      communityId,
+    })
+  )
+}
 
 export default useJoinModalMachine

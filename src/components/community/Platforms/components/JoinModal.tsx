@@ -14,9 +14,7 @@ import { Link } from "components/common/Link"
 import { ArrowSquareOut } from "phosphor-react"
 import QRCode from "qrcode.react"
 import { Error } from "components/common/Error"
-import { useCommunity } from "components/community/Context"
 import useJoinModalMachine from "../hooks/useJoinModalMachine"
-import { usePersonalSign } from "../hooks/usePersonalSign"
 import platformsContent from "../platformsContent"
 import processSignError from "../utils/processSignError"
 
@@ -30,47 +28,14 @@ type InviteData = {
   code?: number
 }
 
-// ! This is a dummy function for the demo !
-const getInviteLink = (
-  platform: string,
-  communityId: number,
-  message: string
-): InviteData => {
-  // eslint-disable-next-line no-console
-  console.log({ platform, communityId, message })
-  return {
-    link: "https://discord.gg/tfg3GYgu",
-    code: 1235,
-  }
-}
-
 const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
-  const { id: communityId } = useCommunity()
-  const sign = usePersonalSign()
   const {
     join: { title, description },
   } = platformsContent[platform]
-  const [state, send] = useJoinModalMachine()
-
-  const handleSign = () => {
-    send("signInProgress")
-    sign("Please sign this message to generate your invite link")
-      .then((message) => {
-        send({
-          type: "signSuccessful",
-          inviteData: getInviteLink(platform, communityId, message),
-        })
-      })
-      .catch((error) => {
-        send({
-          type: "signFailed",
-          error,
-        })
-      })
-  }
+  const [state, send] = useJoinModalMachine(platform)
 
   const closeModal = () => {
-    send("modalClosed")
+    send("MODAL_CLOSED")
     onClose()
   }
 
@@ -123,7 +88,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
               w="100%"
               colorScheme="primary"
               size="lg"
-              onClick={handleSign}
+              onClick={() => send("SIGN_IN_PROGRESS")}
             >
               Sign
             </Button>
