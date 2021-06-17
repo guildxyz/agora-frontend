@@ -49,7 +49,7 @@ const leavePlatform = async (
 }
 
 const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
-  const [machine, send] = useLeaveModalMachine()
+  const [state, send] = useLeaveModalMachine()
   const { id: communityId } = useCommunity()
   const { account } = useWeb3React()
   const {
@@ -76,7 +76,7 @@ const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
         <ModalCloseButton />
         <ModalBody>
           <Error
-            error={machine.context.error}
+            error={state.context.error}
             processError={processLeavePlatformMessage}
           />
           <VStack spacing={5}>
@@ -86,7 +86,7 @@ const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
         </ModalBody>
         <ModalFooter>
           <Button
-            isLoading={machine.value === "loading"}
+            isLoading={state.value === "loading"}
             loadingText="In progress"
             w="100%"
             colorScheme="primary"

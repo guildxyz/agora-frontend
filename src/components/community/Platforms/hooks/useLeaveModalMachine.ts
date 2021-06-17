@@ -1,40 +1,51 @@
-import useStateMachine from "@cassiozen/usestatemachine"
+import { useMachine } from "@xstate/react/lib/fsm"
+import { createMachine, assign } from "@xstate/fsm"
 import type { SignErrorType } from "./usePersonalSign"
 
-type MachineContextType = {
+type ContextType = {
   error: SignErrorType | null
 }
 
-const machineInitialContext = {
-  error: null,
+type EventType = {
+  type: string
+  error: SignErrorType
 }
 
-const machineConfig: any = {
-  initial: "initial",
-  // verbose: true,
-  states: {
-    initial: {
-      on: { leaveInProgress: "loading" },
-    },
-    loading: {
-      on: {
-        leaveFailed: "error",
-        modalClosed: "initial",
+const joinModalMachine = createMachine<ContextType, EventType>(
+  {
+    initial: "initial",
+    states: {
+      initial: {
+        on: { leaveInProgress: "loading" },
+      },
+      loading: {
+        on: {
+          leaveFailed: "error",
+          modalClosed: "initial",
+        },
+      },
+      error: {
+        on: { leaveInProgress: "loading", modalClosed: "initial" },
+        entry: "setError",
+        exit: "removeError",
       },
     },
-    error: {
-      on: { leaveInProgress: "loading", modalClosed: "initial" },
-      effect({ setContext, event: { error } }) {
-        setContext(() => ({
-          error,
-        }))
-        return () => setContext(() => machineInitialContext)
-      },
+    context: {
+      error: null,
     },
   },
-}
+  {
+    actions: {
+      setError: assign<ContextType, EventType>({
+        error: (_, event) => event.error,
+      }),
+      removeError: assign<ContextType, EventType>({
+        error: () => null,
+      }),
+    },
+  }
+)
 
-const useLeaveModalMachine = (): [any, any] =>
-  useStateMachine<MachineContextType>(machineInitialContext)(machineConfig)
+const useJoinModalMachine = (): any => useMachine(joinModalMachine)
 
-export default useLeaveModalMachine
+export default useJoinModalMachine
