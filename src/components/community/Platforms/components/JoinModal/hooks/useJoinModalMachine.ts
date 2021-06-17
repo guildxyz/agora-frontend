@@ -2,8 +2,12 @@ import { useMachine } from "@xstate/react"
 import { createMachine, assign, DoneInvokeEvent } from "xstate"
 import { useCommunity } from "components/community/Context"
 import { usePersonalSign } from "./usePersonalSign"
-import type { InviteData } from "../components/JoinModal"
 import type { SignErrorType } from "./usePersonalSign"
+
+type InviteData = {
+  link: string
+  code?: number
+}
 
 const initialInviteData: InviteData = { link: "", code: null }
 

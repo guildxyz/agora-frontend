@@ -2,7 +2,7 @@ import { useWeb3React } from "@web3-react/core"
 import { useMachine } from "@xstate/react"
 import { useCommunity } from "components/community/Context"
 import { createMachine, assign, DoneInvokeEvent } from "xstate"
-import { SignErrorType } from "./usePersonalSign"
+import { SignErrorType } from "../../JoinModal/hooks/usePersonalSign"
 
 type ContextType = {
   error: SignErrorType | null
