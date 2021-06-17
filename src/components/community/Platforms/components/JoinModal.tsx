@@ -1,5 +1,4 @@
 import {
-  Button,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -17,6 +16,7 @@ import { Error } from "components/common/Error"
 import useJoinModalMachine from "../hooks/useJoinModalMachine"
 import platformsContent from "../platformsContent"
 import processSignError from "../utils/processSignError"
+import ModalButton from "./ModalButton"
 
 type Props = {
   platform: string
@@ -35,7 +35,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const [state, send] = useJoinModalMachine(platform)
 
   const closeModal = () => {
-    send("MODAL_CLOSED")
+    send("CLOSE_MODAL")
     onClose()
   }
 
@@ -81,22 +81,20 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
           )}
         </ModalBody>
         <ModalFooter>
-          {state.value !== "success" ? (
-            <Button
-              isLoading={state.value === "loading"}
-              loadingText="Waiting confirmation"
-              w="100%"
-              colorScheme="primary"
-              size="lg"
-              onClick={() => send("SIGN_IN_PROGRESS")}
-            >
-              Sign
-            </Button>
-          ) : (
-            <Button w="100%" colorScheme="primary" size="lg" onClick={onClose}>
-              Done
-            </Button>
-          )}
+          {(() => {
+            switch (state.value) {
+              default:
+                return <ModalButton onClick={() => send("SIGN")}>Sign</ModalButton>
+              case "signing":
+                return <ModalButton isLoading loadingText="Waiting confirmation" />
+              case "fetching":
+                return (
+                  <ModalButton isLoading loadingText="Generating your invite link" />
+                )
+              case "success":
+                return <ModalButton onClick={onClose}>Done</ModalButton>
+            }
+          })()}
         </ModalFooter>
       </ModalContent>
     </Modal>

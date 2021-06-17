@@ -14,6 +14,7 @@ import { Error } from "components/common/Error"
 import useLeaveModalMachine from "../hooks/useLeaveModalMachine"
 import platformsContent from "../platformsContent"
 import processLeavePlatformMessage from "../utils/processLeavePlatformError"
+import ModalButton from "./ModalButton"
 
 type Props = {
   platform: string
@@ -28,7 +29,7 @@ const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   } = platformsContent[platform]
 
   const closeModal = () => {
-    send("MODAL_CLOSED")
+    send("CLOSE_MODAL")
     onClose()
   }
   return (
@@ -48,16 +49,13 @@ const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
           </VStack>
         </ModalBody>
         <ModalFooter>
-          <Button
-            isLoading={state.value === "loading"}
+          <ModalButton
+            isLoading={state.value === "fetching"}
             loadingText="In progress"
-            w="100%"
-            colorScheme="primary"
-            size="lg"
-            onClick={() => send("LEAVE_IN_PROGRESS")}
+            onClick={() => send("LEAVE")}
           >
             {buttonText}
-          </Button>
+          </ModalButton>
         </ModalFooter>
       </ModalContent>
     </Modal>
