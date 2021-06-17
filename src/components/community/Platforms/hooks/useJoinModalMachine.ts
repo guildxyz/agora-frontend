@@ -13,18 +13,18 @@ type ContextType = {
 }
 
 const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>({
-  initial: "initial",
+  initial: "idle",
   context: {
     error: null,
     inviteData: initialInviteData,
   },
   states: {
-    initial: {
+    idle: {
       on: { SIGN: "signing" },
     },
     signing: {
       on: {
-        CLOSE_MODAL: "initial",
+        CLOSE_MODAL: "idle",
       },
       invoke: {
         src: "sign",
@@ -48,7 +48,7 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>({
       },
     },
     error: {
-      on: { SIGN: "signing", CLOSE_MODAL: "initial" },
+      on: { SIGN: "signing", CLOSE_MODAL: "idle" },
       entry: assign({
         error: (_, event) => event.data,
       }),
@@ -72,13 +72,12 @@ const useJoinModalMachine = (platform: string): any => {
   const sign = usePersonalSign()
 
   return useMachine(joinModalMachine, {
-    actions: {},
     services: {
-      sign: (_, e) => sign("Please sign this message to generate your invite link"),
+      sign: () => sign("Please sign this message to generate your invite link"),
 
       // ! This is a dummy function for the demo !
-      getInviteLink: (_, e): Promise<InviteData> => {
-        console.log(platform, communityId, e.data)
+      getInviteLink: (_, event): Promise<InviteData> => {
+        console.log(platform, communityId, event.data)
         return new Promise((resolve, reject) => {
           setTimeout(
             () =>

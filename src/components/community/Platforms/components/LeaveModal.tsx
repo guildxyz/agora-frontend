@@ -1,5 +1,4 @@
 import {
-  Button,
   Modal,
   ModalOverlay,
   ModalContent,
