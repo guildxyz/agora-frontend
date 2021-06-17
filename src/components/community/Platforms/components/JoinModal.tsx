@@ -50,7 +50,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const {
     join: { title, description },
   } = platformsContent[platform]
-  const [machine, send] = useJoinModalMachine()
+  const [state, send] = useJoinModalMachine()
 
   const handleSign = () => {
     send("signInProgress")
@@ -58,7 +58,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
       .then((message) => {
         send({
           type: "signSuccessful",
-          success: getInviteLink(platform, communityId, message),
+          inviteData: getInviteLink(platform, communityId, message),
         })
       })
       .catch((error) => {
@@ -81,8 +81,8 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Error error={machine.context.error} processError={processSignError} />
-          {machine.value !== "success" ? (
+          <Error error={state.context.error} processError={processSignError} />
+          {state.value !== "success" ? (
             <Text>{description}</Text>
           ) : (
             <VStack spacing="6">
@@ -91,16 +91,16 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
                 once:
               </Text>
               <Link
-                href={machine.context.success.link}
+                href={state.context.inviteData.link}
                 color="#006BFF"
                 display="flex"
                 isExternal
               >
-                {machine.context.success.link}
+                {state.context.inviteData.link}
                 <ArrowSquareOut size="1.3em" weight="light" color="#006BFF" />
               </Link>
-              <QRCode size={150} value={machine.context.success.link} />
-              {!!machine.context.success.code && (
+              <QRCode size={150} value={state.context.inviteData.link} />
+              {!!state.context.inviteData.code && (
                 <>
                   <Text>
                     If there’s lot of traffic right now, the bot might ask you for a
@@ -108,7 +108,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
                     not the case, but if it is, here’s what you need:
                   </Text>
                   <Text fontWeight="700" fontSize="2xl" letterSpacing="5px">
-                    {machine.context.success.code}
+                    {state.context.inviteData.code}
                   </Text>
                 </>
               )}
@@ -116,9 +116,9 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
           )}
         </ModalBody>
         <ModalFooter>
-          {machine.value !== "success" ? (
+          {state.value !== "success" ? (
             <Button
-              isLoading={machine.value === "loading"}
+              isLoading={state.value === "loading"}
               loadingText="Waiting confirmation"
               w="100%"
               colorScheme="primary"
