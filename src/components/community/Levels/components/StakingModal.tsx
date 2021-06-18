@@ -70,6 +70,7 @@ const StakingModal = ({
                     <ModalButton isLoading loadingText="Checking transactions" />
                   )
                 case "noPermission":
+                case "approveTransactionError":
                   return (
                     <ModalButton rightIcon={<Info />} onClick={() => send("ALLOW")}>
                       {`Allow Agora to use ${tokenSymbol}`}

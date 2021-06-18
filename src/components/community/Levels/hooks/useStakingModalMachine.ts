@@ -1,40 +1,15 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import { createMachine, assign, DoneInvokeEvent } from "xstate"
 import { useMachine } from "@xstate/react"
+import useTokenAllowance from "./useTokenAllowance"
 
-type TransactionsCheckResult = "pending" | "approved" | "notfound"
+type TransactionsCheckResult = "pending" | "approved" | "noPermission"
 
 type ContextType = {
   address: string
   error: any
   confirmationDismissed: boolean
 }
-
-// ! DUMMY!
-const checkAllowance = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  address: string
-): Promise<TransactionsCheckResult | Error> =>
-  new Promise((resolve, _) => {
-    setTimeout(() => resolve("notfound"), 5000)
-  })
-
-// ! DUMMY!
-const confirmPermission = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  address: string
-): Promise<void> =>
-  new Promise((resolve, _) => {
-    setTimeout(() => resolve(), 2000)
-  })
-
-// ! DUMMY!
-const confirmTransaction = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  address: string
-): Promise<void> =>
-  new Promise((resolve, _) => {
-    setTimeout(() => resolve(), 2000)
-  })
 
 // ! DUMMY!
 const stake = (
@@ -154,8 +129,8 @@ const machine = createMachine<ContextType, DoneInvokeEvent<any>>(
   {
     guards: {
       noPermission: (_, event: DoneInvokeEvent<any>) => {
-        console.log(`noPermission guard: ${event.data === "notfound"}`)
-        return event.data === "notfound"
+        console.log(`noPermission guard: ${event.data === "noPermission"}`)
+        return event.data === "noPermission"
       },
       transactionPending: (_, event: DoneInvokeEvent<any>) => {
         console.log(`transactionPending guard: ${event.data === "pending"}`)
@@ -169,11 +144,6 @@ const machine = createMachine<ContextType, DoneInvokeEvent<any>>(
         condMeta.state.value !== "success",
     },
     services: {
-      confirmPermission: (context: ContextType) =>
-        confirmPermission(context.address),
-      checkAllowance: (context: ContextType) => checkAllowance(context.address),
-      confirmTransaction: (context: ContextType) =>
-        confirmTransaction(context.address),
       stake: (context: ContextType) => stake(context.address),
     },
     actions: {
@@ -190,6 +160,19 @@ const machine = createMachine<ContextType, DoneInvokeEvent<any>>(
   }
 )
 
-const useStakingModalMachine = (): any => useMachine(machine)
+const useStakingModalMachine = (): any => {
+  const [tokenAllowance, approve] = useTokenAllowance()
+
+  return useMachine(machine, {
+    services: {
+      checkAllowance: async () => {
+        if (!tokenAllowance) return "noPermission"
+        return "approved"
+      },
+      confirmPermission: approve,
+      confirmTransaction: async (_, event) => event.data.wait(),
+    },
+  })
+}
 
 export default useStakingModalMachine
