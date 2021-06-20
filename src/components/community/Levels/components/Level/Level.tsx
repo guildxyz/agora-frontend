@@ -11,8 +11,8 @@ import {
 } from "@chakra-ui/react"
 import { useCommunity } from "components/community/Context"
 import type { Level as LevelType } from "temporaryData/types"
-import InfoTags from "./InfoTags"
-import StakingModal from "./StakingModal"
+import InfoTags from "../InfoTags"
+import StakingModal from "../StakingModal"
 
 type Props = {
   data: LevelType

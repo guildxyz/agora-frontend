@@ -17,7 +17,7 @@ import type { AccessRequirements } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
 import ModalButton from "components/common/ModalButton"
 import { Error } from "components/common/Error"
-import useStakingModalMachine from "../hooks/useStakingModalMachine"
+import useStakingModalMachine from "./hooks/useStakingModalMachine"
 
 type Props = {
   name: string
