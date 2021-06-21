@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/dot-notation */
 import { createMachine, assign, DoneInvokeEvent, Sender } from "xstate"
 import { useMachine } from "@xstate/react"
 import { useEffect } from "react"
@@ -162,11 +161,9 @@ const useStakingModalMachine = (amount: number): any => {
   const contract = useContract(address, AGORA_SPACE_ABI, true)
   const [state, send] = useMachine(stakingModalMachine, {
     services: {
-      checkAllowance: () => (s: Sender<AllowanceCheckEvent>) => {
-        // eslint-disable-next-line no-console
-        console.log(tokenAllowance)
-        if (!tokenAllowance) s("PERMISSION_NOT_GRANTED")
-        s("PERMISSION_IS_GRANTED")
+      checkAllowance: () => (_send: Sender<AllowanceCheckEvent>) => {
+        if (!tokenAllowance) _send("PERMISSION_NOT_GRANTED")
+        _send("PERMISSION_IS_GRANTED")
       },
       confirmPermission: approve,
       confirmTransaction: async (_, event: DoneInvokeEvent<any>) =>

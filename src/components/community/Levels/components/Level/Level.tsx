@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/dot-notation */
 import {
-  Center,
   Flex,
   Image,
   Heading,
@@ -35,7 +33,7 @@ const Level = ({ data }: Props): JSX.Element => {
           <InfoTags
             data={data.accessRequirement}
             membersCount={data.membersCount}
-            tokenSymbol={communityData.chainData["token"].symbol}
+            tokenSymbol={communityData.chainData.token.symbol}
           />
           {data.desc && <Text pt="4">{data.desc}</Text>}
         </Stack>

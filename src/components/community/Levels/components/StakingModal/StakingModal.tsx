@@ -43,7 +43,6 @@ const StakingModal = ({
   const [state, send] = useStakingModalMachine(amount)
 
   useEffect(() => {
-    // eslint-disable-next-line no-console
     console.log({
       state: state.value,
       context: state.context,
