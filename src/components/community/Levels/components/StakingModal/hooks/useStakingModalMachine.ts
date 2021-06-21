@@ -121,7 +121,7 @@ const stakingModalMachine = createMachine<
       success: {},
     },
     on: {
-      CLOSE_MODAL: {
+      RESET: {
         target: "initial",
         actions: "defaultContext",
         cond: "notSucceeded",
@@ -181,7 +181,7 @@ const useStakingModalMachine = (amount: number): any => {
   })
 
   useEffect(() => {
-    send("CLOSE_MODAL")
+    send("RESET")
   }, [tokenAllowance, send])
 
   return [state, send]

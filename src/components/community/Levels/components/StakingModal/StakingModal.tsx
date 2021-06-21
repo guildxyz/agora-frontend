@@ -51,7 +51,7 @@ const StakingModal = ({
   }, [state])
 
   const closeModal = () => {
-    send("CLOSE_MODAL")
+    send("RESET")
     onClose()
   }
 
