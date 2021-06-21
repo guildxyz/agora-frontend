@@ -42,6 +42,7 @@ type Platforms = {
 
 type ChainData = {
   token: Token
+  stakeToken: Token
   contract: {
     address: string
   }

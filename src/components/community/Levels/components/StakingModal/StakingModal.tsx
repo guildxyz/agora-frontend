@@ -7,34 +7,40 @@ import {
   ModalBody,
   ModalFooter,
   VStack,
+  Text,
   Collapse,
   CloseButton,
   Box,
+  Center,
 } from "@chakra-ui/react"
-import { Info, Check } from "phosphor-react"
+import { Info, Check, ArrowCircleUp } from "phosphor-react"
 import { useEffect } from "react"
 import type { AccessRequirements } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
 import ModalButton from "components/common/ModalButton"
 import { Error } from "components/common/Error"
+import { useCommunity } from "components/community/Context"
 import useStakingModalMachine from "./hooks/useStakingModalMachine"
 
 type Props = {
   name: string
-  tokenSymbol: string
+  accessRequirement: AccessRequirements
   isOpen: boolean
   onClose: () => void
-  accessRequirement: AccessRequirements
 }
 
 const StakingModal = ({
   name,
-  tokenSymbol,
+  accessRequirement: { amount, timelockMs },
   isOpen,
   onClose,
-  accessRequirement: { amount, timelockMs },
 }: Props): JSX.Element => {
-  const [state, send] = useStakingModalMachine()
+  const {
+    chainData: {
+      token: { symbol: tokenSymbol },
+    },
+  } = useCommunity()
+  const [state, send] = useStakingModalMachine(amount)
 
   useEffect(() => {
     console.log({
@@ -47,19 +53,49 @@ const StakingModal = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Stake to join {name}</ModalHeader>
+        <ModalHeader>
+          {state.value === "success"
+            ? `Transaction submitted`
+            : `Stake to join ${name}`}
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Error
-            error={state.context.error}
-            processError={() => ({
-              title: "Error",
-              description: "Error description",
-            })}
-          />
-          Stake {amount} {tokenSymbol} to gain access to {name}. Your tokens will be
-          locked for {msToReadableFormat(timelockMs)}, after that you can unstake
-          them anytime. You can always stake more to upgrade to higher levels.
+          {state.value === "success" ? (
+            <>
+              <Center>
+                <ArrowCircleUp
+                  size="50%"
+                  color="var(--chakra-colors-primary-500)"
+                  weight="thin"
+                />
+              </Center>
+              <Text fontWeight="medium" mt="8" mb="4">
+                Avarage transaction time is 2 minutes. You’ll be notified when it
+                succeeds.
+              </Text>
+              <Text textColor="gray">
+                You’ll recieve 0,5 yCakeAgoraToken in return. Those mark your
+                position, so don’t sell or send them because you will lose access to
+                the community level and won’t be able to get your yCake tokens back.
+              </Text>
+            </>
+          ) : (
+            <>
+              <Error
+                error={state.context.error}
+                processError={() => ({
+                  title: "Error",
+                  description: "Error description",
+                })}
+              />
+              <Text fontWeight="medium">
+                Stake {amount} {tokenSymbol} to gain access to {name}. Your tokens
+                will be locked for {msToReadableFormat(timelockMs)}, after that you
+                can unstake them anytime. You can always stake more to upgrade to
+                higher levels.
+              </Text>
+            </>
+          )}
         </ModalBody>
         <ModalFooter>
           <VStack spacing={3}>
@@ -117,18 +153,15 @@ const StakingModal = ({
                     </ModalButton>
                   )
                 case "staking":
-                  return (
-                    <ModalButton
-                      isLoading
-                      loadingText="Staking process in progress"
-                    />
-                  )
+                  return <ModalButton isLoading loadingText="Waiting confirmation" />
                 case "stakingError":
                   return (
                     <ModalButton onClick={() => send("STAKE")}>
                       Confirm stake
                     </ModalButton>
                   )
+                case "success":
+                  return <ModalButton onClick={onClose}>Close</ModalButton>
                 default:
                   return (
                     <ModalButton disabled colorScheme="gray">

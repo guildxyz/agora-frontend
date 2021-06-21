@@ -1,30 +1,23 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import { createMachine, assign, DoneInvokeEvent } from "xstate"
 import { useMachine } from "@xstate/react"
+import { parseEther } from "@ethersproject/units"
+import { useCommunity } from "components/community/Context"
+import useContract from "hooks/useContract"
+import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
 import useTokenAllowance from "./useTokenAllowance"
 
 type TransactionsCheckResult = "pending" | "approved" | "noPermission"
 
 type ContextType = {
-  address: string
   error: any
   confirmationDismissed: boolean
 }
-
-// ! DUMMY!
-const stake = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  address: string
-): Promise<void> =>
-  new Promise((resolve, _) => {
-    setTimeout(() => resolve(), 2000)
-  })
 
 const machine = createMachine<ContextType, DoneInvokeEvent<any>>(
   {
     initial: "initial",
     context: {
-      address: null,
       error: null,
       confirmationDismissed: false,
     },
@@ -143,9 +136,6 @@ const machine = createMachine<ContextType, DoneInvokeEvent<any>>(
       notSucceeded: (_context, _event, condMeta) =>
         condMeta.state.value !== "success",
     },
-    services: {
-      stake: (context: ContextType) => stake(context.address),
-    },
     actions: {
       removeError: assign({ error: null }),
       setError: assign({ error: (_, event) => event.data }),
@@ -160,8 +150,14 @@ const machine = createMachine<ContextType, DoneInvokeEvent<any>>(
   }
 )
 
-const useStakingModalMachine = (): any => {
+const useStakingModalMachine = (amount: number): any => {
   const [tokenAllowance, approve] = useTokenAllowance()
+  const {
+    chainData: {
+      contract: { address },
+    },
+  } = useCommunity()
+  const contract = useContract(address, AGORA_SPACE_ABI, true)
 
   return useMachine(machine, {
     services: {
@@ -171,6 +167,12 @@ const useStakingModalMachine = (): any => {
       },
       confirmPermission: approve,
       confirmTransaction: async (_, event) => event.data.wait(),
+
+      stake: async () => {
+        const weiAmount = parseEther(amount.toString())
+        const tx = await contract.deposit(weiAmount)
+        return tx
+      },
     },
   })
 }
