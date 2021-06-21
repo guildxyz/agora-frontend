@@ -10,8 +10,9 @@ import {
   Text,
   Collapse,
   CloseButton,
-  Box,
+  Tooltip,
   Center,
+  Icon,
 } from "@chakra-ui/react"
 import { Info, Check, ArrowCircleUp } from "phosphor-react"
 import { useEffect } from "react"
@@ -103,25 +104,44 @@ const StakingModal = ({
           )}
         </ModalBody>
         <ModalFooter>
-          <VStack spacing={3}>
+          {/* margin is applied on the approve button,
+              so there's no unwanted space when it's not shown */}
+          <VStack spacing="0" alignItems="strech">
             {(() => {
               switch (state.value) {
-                case "initial":
-                  return (
-                    <ModalButton isLoading loadingText="Checking transactions" />
-                  )
                 case "noPermission":
                 case "approveTransactionError":
                   return (
-                    <ModalButton rightIcon={<Info />} onClick={() => send("ALLOW")}>
+                    <ModalButton
+                      mb="3"
+                      rightIcon={
+                        <Tooltip
+                          label="You have to give the Agora smart contracts permission to use your [token name]. You only have to do this once per token."
+                          placement="top"
+                        >
+                          <Icon as={Info} tabIndex={0} />
+                        </Tooltip>
+                      }
+                      // so the button label will be positioned to the center
+                      leftIcon={<span />}
+                      justifyContent="space-between"
+                      onClick={() => send("ALLOW")}
+                    >
                       {`Allow Agora to use ${tokenSymbol}`}
                     </ModalButton>
                   )
                 case "approving":
-                  return <ModalButton isLoading loadingText="Waiting confirmation" />
+                  return (
+                    <ModalButton
+                      mb="3"
+                      isLoading
+                      loadingText="Waiting confirmation"
+                    />
+                  )
                 case "approveTransactionPending":
                   return (
                     <ModalButton
+                      mb="3"
                       isLoading
                       loadingText="Waiting for transaction to succeed"
                     />
@@ -130,20 +150,23 @@ const StakingModal = ({
                 case "staking":
                 case "stakingError":
                   return (
-                    <Box w="100%">
-                      <Collapse in={state.context.showApproveSuccess}>
-                        <ModalButton
-                          colorScheme="gray"
-                          onClick={() => send("HIDE_APPROVE_SUCCESS")}
-                          rightIcon={<CloseButton />}
-                          leftIcon={<Check />}
-                          justifyContent="space-between"
-                          fontSize="1em"
-                        >
-                          {`You can now stake ${tokenSymbol}`}
-                        </ModalButton>
-                      </Collapse>
-                    </Box>
+                    <Collapse in={state.context.showApproveSuccess}>
+                      <ModalButton
+                        as="div"
+                        colorScheme="gray"
+                        variant="solidStatic"
+                        rightIcon={
+                          <CloseButton
+                            onClick={() => send("HIDE_APPROVE_SUCCESS")}
+                          />
+                        }
+                        leftIcon={<Check />}
+                        justifyContent="space-between"
+                        mb="3"
+                      >
+                        {`You can now stake ${tokenSymbol}`}
+                      </ModalButton>
+                    </Collapse>
                   )
                 default:
                   return null
@@ -169,7 +192,12 @@ const StakingModal = ({
                   return <ModalButton onClick={closeModal}>Close</ModalButton>
                 default:
                   return (
-                    <ModalButton disabled colorScheme="gray">
+                    <ModalButton
+                      disabled
+                      colorScheme="gray"
+                      bg="gray.200"
+                      _hover={{ bg: "gray.200" }}
+                    >
                       Confirm stake
                     </ModalButton>
                   )
