@@ -43,6 +43,7 @@ const StakingModal = ({
   const [state, send] = useStakingModalMachine(amount)
 
   useEffect(() => {
+    // eslint-disable-next-line no-console
     console.log({
       state: state.value,
       context: state.context,
@@ -131,10 +132,10 @@ const StakingModal = ({
                 case "stakingError":
                   return (
                     <Box w="100%">
-                      <Collapse in={!state.context.confirmationDismissed}>
+                      <Collapse in={state.context.showApproveSuccess}>
                         <ModalButton
                           colorScheme="gray"
-                          onClick={() => send("DISMISS_CONFIRMATION")}
+                          onClick={() => send("HIDE_APPROVE_SUCCESS")}
                           rightIcon={<CloseButton />}
                           leftIcon={<Check />}
                           justifyContent="space-between"

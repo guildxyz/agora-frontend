@@ -23,7 +23,7 @@ type AllowanceCheckEvent =
 
 type ContextType = {
   error: any
-  confirmationDismissed: boolean
+  showApproveSuccess: boolean
 }
 
 const machine = createMachine<
@@ -34,7 +34,7 @@ const machine = createMachine<
     initial: "initial",
     context: {
       error: null,
-      confirmationDismissed: false,
+      showApproveSuccess: false,
     },
     states: {
       initial: {
@@ -54,7 +54,6 @@ const machine = createMachine<
           },
           PERMISSION_IS_GRANTED: {
             target: "idle",
-            actions: "dismissConfirmation",
           },
         },
       },
@@ -80,6 +79,7 @@ const machine = createMachine<
           src: "confirmTransaction",
           onDone: {
             target: "idle",
+            actions: "showApproveSuccess",
           },
           onError: {
             target: "approveTransactionError",
@@ -96,12 +96,11 @@ const machine = createMachine<
       idle: {
         on: {
           STAKE: "staking",
-          DISMISS_CONFIRMATION: {
+          HIDE_APPROVE_SUCCESS: {
             target: "idle",
-            actions: "dismissConfirmation",
+            actions: "hideApproveSuccess",
           },
         },
-        exit: "dismissConfirmation",
       },
       staking: {
         invoke: {
@@ -116,10 +115,10 @@ const machine = createMachine<
         },
       },
       stakingError: {
-        entry: "dismissConfirmation",
         on: {
           STAKE: "staking",
         },
+        exit: "removeError",
       },
       success: {},
     },
@@ -141,12 +140,15 @@ const machine = createMachine<
       setError: assign<ContextType, DoneInvokeEvent<any>>({
         error: (_: ContextType, event: DoneInvokeEvent<any>) => event.data,
       }),
-      dismissConfirmation: assign<ContextType, DoneInvokeEvent<any>>({
-        confirmationDismissed: true,
+      showApproveSuccess: assign<ContextType, DoneInvokeEvent<any>>({
+        showApproveSuccess: true,
+      }),
+      hideApproveSuccess: assign<ContextType, DoneInvokeEvent<any>>({
+        showApproveSuccess: false,
       }),
       defaultContext: assign<ContextType, DoneInvokeEvent<any>>({
         error: null,
-        confirmationDismissed: false,
+        showApproveSuccess: false,
       }),
     },
   }
