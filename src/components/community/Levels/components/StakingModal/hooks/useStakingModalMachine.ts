@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import { createMachine, assign, DoneInvokeEvent } from "xstate"
+import { createMachine, assign, DoneInvokeEvent, Sender } from "xstate"
 import { useMachine } from "@xstate/react"
 import { parseEther } from "@ethersproject/units"
 import { useCommunity } from "components/community/Context"
@@ -7,14 +7,29 @@ import useContract from "hooks/useContract"
 import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
 import useTokenAllowance from "./useTokenAllowance"
 
-type TransactionsCheckResult = "pending" | "approved" | "noPermission"
+type AllowanceCheckEvent =
+  | {
+      type: "PERMISSION_NOT_GRANTED"
+    }
+  | {
+      type: "PERMISSION_IS_PENDING"
+    }
+  | {
+      type: "PERMISSION_IS_GRANTED"
+    }
+  | {
+      type: "RESET"
+    }
 
 type ContextType = {
   error: any
   confirmationDismissed: boolean
 }
 
-const machine = createMachine<ContextType, DoneInvokeEvent<any>>(
+const machine = createMachine<
+  ContextType,
+  DoneInvokeEvent<any> | AllowanceCheckEvent
+>(
   {
     initial: "initial",
     context: {
@@ -25,24 +40,21 @@ const machine = createMachine<ContextType, DoneInvokeEvent<any>>(
       initial: {
         invoke: {
           src: "checkAllowance",
-          onDone: [
-            {
-              target: "noPermission",
-              cond: "noPermission",
-            },
-            {
-              target: "approveTransactionPending",
-              cond: "transactionPending",
-            },
-            {
-              target: "idle",
-              cond: "approved",
-              actions: "dismissConfirmation",
-            },
-          ],
           onError: {
             target: "approveTransactionError",
             actions: "setError",
+          },
+        },
+        on: {
+          PERMISSION_NOT_GRANTED: {
+            target: "noPermission",
+          },
+          PERMISSION_IS_PENDING: {
+            target: "approveTransactionPending",
+          },
+          PERMISSION_IS_GRANTED: {
+            target: "idle",
+            actions: "dismissConfirmation",
           },
         },
       },
@@ -121,24 +133,14 @@ const machine = createMachine<ContextType, DoneInvokeEvent<any>>(
   },
   {
     guards: {
-      noPermission: (_, event: DoneInvokeEvent<any>) => {
-        console.log(`noPermission guard: ${event.data === "noPermission"}`)
-        return event.data === "noPermission"
-      },
-      transactionPending: (_, event: DoneInvokeEvent<any>) => {
-        console.log(`transactionPending guard: ${event.data === "pending"}`)
-        return event.data === "pending"
-      },
-      approved: (_, event: DoneInvokeEvent<any>) => {
-        console.log(`approved guard: ${event.data === "approved"}`)
-        return event.data === "approved"
-      },
       notSucceeded: (_context, _event, condMeta) =>
         condMeta.state.value !== "success",
     },
     actions: {
       removeError: assign({ error: null }),
-      setError: assign({ error: (_, event) => event.data }),
+      setError: assign<ContextType, DoneInvokeEvent<any>>({
+        error: (_: ContextType, event: DoneInvokeEvent<any>) => event.data,
+      }),
       dismissConfirmation: assign<ContextType, DoneInvokeEvent<any>>({
         confirmationDismissed: true,
       }),
@@ -161,12 +163,15 @@ const useStakingModalMachine = (amount: number): any => {
 
   return useMachine(machine, {
     services: {
-      checkAllowance: async () => {
-        if (!tokenAllowance) return "noPermission"
-        return "approved"
+      checkAllowance: () => async (send: Sender<AllowanceCheckEvent>) => {
+        // eslint-disable-next-line no-console
+        console.log(typeof tokenAllowance)
+        if (!tokenAllowance) send("PERMISSION_NOT_GRANTED")
+        send("PERMISSION_IS_GRANTED")
       },
       confirmPermission: approve,
-      confirmTransaction: async (_, event) => event.data.wait(),
+      confirmTransaction: async (_, event: DoneInvokeEvent<any>) =>
+        event.data.wait(),
 
       stake: async () => {
         const weiAmount = parseEther(amount.toString())

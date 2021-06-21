@@ -49,8 +49,13 @@ const StakingModal = ({
     })
   }, [state])
 
+  const closeModal = () => {
+    send("CLOSE_MODAL")
+    onClose()
+  }
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -161,7 +166,7 @@ const StakingModal = ({
                     </ModalButton>
                   )
                 case "success":
-                  return <ModalButton onClick={onClose}>Close</ModalButton>
+                  return <ModalButton onClick={closeModal}>Close</ModalButton>
                 default:
                   return (
                     <ModalButton disabled colorScheme="gray">
