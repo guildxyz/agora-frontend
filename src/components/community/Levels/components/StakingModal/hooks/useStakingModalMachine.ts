@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import { createMachine, assign, DoneInvokeEvent, Sender } from "xstate"
 import { useMachine } from "@xstate/react"
+import { useEffect } from "react"
 import { parseEther } from "@ethersproject/units"
 import { useCommunity } from "components/community/Context"
 import useContract from "hooks/useContract"
@@ -17,16 +18,13 @@ type AllowanceCheckEvent =
   | {
       type: "PERMISSION_IS_GRANTED"
     }
-  | {
-      type: "RESET"
-    }
 
 type ContextType = {
   error: any
   showApproveSuccess: boolean
 }
 
-const machine = createMachine<
+const stakingModalMachine = createMachine<
   ContextType,
   DoneInvokeEvent<any> | AllowanceCheckEvent
 >(
@@ -162,14 +160,13 @@ const useStakingModalMachine = (amount: number): any => {
     },
   } = useCommunity()
   const contract = useContract(address, AGORA_SPACE_ABI, true)
-
-  return useMachine(machine, {
+  const [state, send] = useMachine(stakingModalMachine, {
     services: {
-      checkAllowance: () => async (send: Sender<AllowanceCheckEvent>) => {
+      checkAllowance: () => (s: Sender<AllowanceCheckEvent>) => {
         // eslint-disable-next-line no-console
-        console.log(typeof tokenAllowance)
-        if (!tokenAllowance) send("PERMISSION_NOT_GRANTED")
-        send("PERMISSION_IS_GRANTED")
+        console.log(tokenAllowance)
+        if (!tokenAllowance) s("PERMISSION_NOT_GRANTED")
+        s("PERMISSION_IS_GRANTED")
       },
       confirmPermission: approve,
       confirmTransaction: async (_, event: DoneInvokeEvent<any>) =>
@@ -182,6 +179,12 @@ const useStakingModalMachine = (amount: number): any => {
       },
     },
   })
+
+  useEffect(() => {
+    send("CLOSE_MODAL")
+  }, [tokenAllowance, send])
+
+  return [state, send]
 }
 
 export default useStakingModalMachine
