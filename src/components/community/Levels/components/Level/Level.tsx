@@ -6,13 +6,16 @@ import {
   Heading,
   Stack,
   Button,
+  HStack,
   Text,
   useDisclosure,
 } from "@chakra-ui/react"
 import { useCommunity } from "components/community/Context"
+import { CheckCircle } from "phosphor-react"
 import type { Level as LevelType } from "temporaryData/types"
 import InfoTags from "../InfoTags"
 import StakingModal from "../StakingModal"
+import useLevelAccess from "./hooks/useLevelAccess"
 
 type Props = {
   data: LevelType
@@ -21,6 +24,7 @@ type Props = {
 const Level = ({ data }: Props): JSX.Element => {
   const communityData = useCommunity()
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [hasAccess, noAccessMessage] = useLevelAccess(data.accessRequirement)
 
   return (
     <Flex justifyContent="space-between">
@@ -36,17 +40,38 @@ const Level = ({ data }: Props): JSX.Element => {
           {data.desc && <Text pt="4">{data.desc}</Text>}
         </Stack>
       </Stack>
-      <Center>
-        <Button colorScheme="primary" fontWeight="medium" onClick={onOpen}>
-          Stake to join
-        </Button>
-        <StakingModal
-          name={data.name}
-          tokenSymbol={communityData.chainData["token"].symbol}
-          accessRequirement={data.accessRequirement}
-          {...{ isOpen, onClose }}
-        />
-      </Center>
+      <Stack alignItems="flex-end" justifyContent="center">
+        {hasAccess && (
+          <HStack spacing="3">
+            <Text fontWeight="medium">You have access</Text>
+            <CheckCircle
+              color="var(--chakra-colors-green-500)"
+              weight="fill"
+              size="26"
+            />
+          </HStack>
+        )}
+        {!hasAccess && data.accessRequirement.type === "stake" && (
+          <Button
+            colorScheme="primary"
+            fontWeight="medium"
+            onClick={onOpen}
+            disabled={!!noAccessMessage}
+          >
+            Stake to join
+          </Button>
+        )}
+        {!hasAccess &&
+          data.accessRequirement.type === "stake" &&
+          !noAccessMessage && (
+            <StakingModal
+              name={data.name}
+              accessRequirement={data.accessRequirement}
+              {...{ isOpen, onClose }}
+            />
+          )}
+        {noAccessMessage && <Text fontWeight="medium">{noAccessMessage}</Text>}
+      </Stack>
     </Flex>
   )
 }
