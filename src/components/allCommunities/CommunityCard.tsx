@@ -33,39 +33,18 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
           transition: "background-position 0.4s ease",
         }}
       >
-        <Stack direction="row" spacing="10">
+        <Stack position="relative" direction="row" spacing="10">
           <Image src={`${community.imageUrl}`} boxSize="45px" alt="Level logo" />
           <Stack spacing="3">
             <Heading size="sm">{community.name}</Heading>
             <Stack direction="row" spacing="3">
-              <Tag
-                textColor="gray.500"
-                background="gray.100"
-                transition="background 0.4s ease"
-                _groupHover={{
-                  background: "transparent",
-                }}
-              >
-                {community.levels.length} levels
+              <Tag textColor="gray.500" bgColor="blackAlpha.100">
+                {`${membersCount} members`}
               </Tag>
-              <Tag
-                textColor="gray.500"
-                background="gray.100"
-                transition="background 0.4s ease"
-                _groupHover={{
-                  background: "transparent",
-                }}
-              >
-                {membersCount} members
+              <Tag textColor="gray.500" bgColor="blackAlpha.100">
+                {`${community.levels.length} levels`}
               </Tag>
-              <Tag
-                textColor="gray.500"
-                background="gray.100"
-                transition="background 0.4s ease"
-                _groupHover={{
-                  background: "transparent",
-                }}
-              >
+              <Tag textColor="gray.500" bgColor="blackAlpha.100">
                 {`min: ${community.levels[0].accessRequirement.amount} ${community.chainData.ropsten.token.symbol}`}
               </Tag>
             </Stack>

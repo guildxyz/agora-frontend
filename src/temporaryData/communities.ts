@@ -88,6 +88,7 @@ const communities: Community[] = [
       },
     ],
   },
+  /*
   {
     id: 1,
     urlName: "swipers",
@@ -160,6 +161,7 @@ const communities: Community[] = [
       },
     ],
   },
+  */
 ]
 
 export type { Community }
