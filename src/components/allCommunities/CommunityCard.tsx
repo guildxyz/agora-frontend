@@ -1,57 +1,78 @@
-import { useState } from "react"
 import { Link } from "components/common/Link"
 import type { Community } from "temporaryData/communities"
-import { Box, LinkBox, LinkOverlay, Image, Heading, Stack } from "@chakra-ui/react"
-import Card from "../common/Card"
-import InfoTags from "../common/InfoTags"
+import { Image, Heading, Stack, Tag } from "@chakra-ui/react"
+import Card from "components/common/Card"
 
 type Props = {
   community: Community
 }
 
 const CommunityCard = ({ community }: Props): JSX.Element => {
-  const [hover, setHover] = useState(false)
-
   const membersCount = community.levels
     .map((level) => level.membersCount)
     .reduce((accumulator, currentValue) => accumulator + currentValue)
 
   return (
-    <LinkBox
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+    <Link
+      href={`/${community.urlName}`}
+      _hover={{ textDecor: "none" }}
+      borderRadius="2xl"
     >
-      <Link href={`/${community.urlName}`} _hover={{ textDecor: "none" }}>
-        <LinkOverlay>
-          <Card pos="relative" p="8" overflow="hidden">
-            <Box
-              pos="absolute"
-              top="0"
-              left={hover ? "0%" : "100%"}
-              width="100%"
-              height="100%"
-              bgGradient={`linear(to-l, ${community.theme.color}, white)`}
-              opacity="0.2"
-              transition="all 0.2s ease"
-            />
-            <Stack position="relative" direction="row" spacing="10">
-              <Image src={`${community.imageUrl}`} boxSize="45px" alt="Level logo" />
-              <Stack>
-                <Heading size="sm">{community.name}</Heading>
-
-                <InfoTags
-                  type="community"
-                  membersCount={membersCount}
-                  // TODO: get message count from the DB
-                  messagesCount={0}
-                  tokenSymbol={community.chainData.ropsten.token.symbol}
-                />
-              </Stack>
+      <Card
+        role="group"
+        p="7"
+        borderRadius="2xl"
+        overflow="hidden"
+        bgGradient={`linear(to-l, ${community.theme.color}, white)`}
+        bgRepeat="no-repeat"
+        bgSize="400% 100%"
+        bgPosition="-40% 0"
+        transition="background-position 0.6s ease"
+        _hover={{
+          bgPosition: "-5% 0",
+          transition: "background-position 0.4s ease",
+        }}
+      >
+        <Stack direction="row" spacing="10">
+          <Image src={`${community.imageUrl}`} boxSize="45px" alt="Level logo" />
+          <Stack spacing="3">
+            <Heading size="sm">{community.name}</Heading>
+            <Stack direction="row" spacing="3">
+              <Tag
+                textColor="gray.500"
+                background="gray.100"
+                transition="background 0.4s ease"
+                _groupHover={{
+                  background: "transparent",
+                }}
+              >
+                {community.levels.length} levels
+              </Tag>
+              <Tag
+                textColor="gray.500"
+                background="gray.100"
+                transition="background 0.4s ease"
+                _groupHover={{
+                  background: "transparent",
+                }}
+              >
+                {membersCount} members
+              </Tag>
+              <Tag
+                textColor="gray.500"
+                background="gray.100"
+                transition="background 0.4s ease"
+                _groupHover={{
+                  background: "transparent",
+                }}
+              >
+                {`min: ${community.levels[0].accessRequirement.amount} ${community.chainData.ropsten.token.symbol}`}
+              </Tag>
             </Stack>
-          </Card>
-        </LinkOverlay>
-      </Link>
-    </LinkBox>
+          </Stack>
+        </Stack>
+      </Card>
+    </Link>
   )
 }
 
