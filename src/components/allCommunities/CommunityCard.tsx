@@ -23,13 +23,13 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
         p="7"
         borderRadius="2xl"
         overflow="hidden"
-        bgGradient={`linear(to-l, ${community.theme.color}, white)`}
+        bgGradient={`linear(to-l, ${community.theme.color}40, white)`}
         bgRepeat="no-repeat"
-        bgSize="400% 100%"
-        bgPosition="-40% 0"
+        bgSize="200% 200%"
+        bgPosition="-100% 0"
         transition="background-position 0.6s ease"
         _hover={{
-          bgPosition: "-5% 0",
+          bgPosition: "0 0",
           transition: "background-position 0.4s ease",
         }}
       >
