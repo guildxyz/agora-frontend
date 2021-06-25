@@ -21,30 +21,29 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
       <Card
         role="group"
         p="7"
-        borderRadius="2xl"
-        overflow="hidden"
         bgGradient={`linear(to-l, ${community.theme.color}40, white)`}
         bgRepeat="no-repeat"
-        bgSize="200% 200%"
-        bgPosition="-100% 0"
+        bgSize="200%"
+        bgPosition="-100%"
         transition="background-position 0.6s ease"
         _hover={{
-          bgPosition: "0 0",
+          bgPosition: "0",
           transition: "background-position 0.4s ease",
         }}
       >
-        <Stack position="relative" direction="row" spacing="10">
+        <Stack position="relative" direction="row" spacing="10" alignItems="center">
           <Image src={`${community.imageUrl}`} boxSize="45px" alt="Level logo" />
           <Stack spacing="3">
             <Heading size="sm">{community.name}</Heading>
             <Stack direction="row" spacing="3">
-              <Tag textColor="gray.500" bgColor="blackAlpha.100">
-                {`${membersCount} members`}
-              </Tag>
-              <Tag textColor="gray.500" bgColor="blackAlpha.100">
+              <Tag
+                colorScheme="blackAlpha"
+                textColor="blackAlpha.700"
+              >{`${membersCount} members`}</Tag>
+              <Tag colorScheme="blackAlpha" textColor="blackAlpha.700">
                 {`${community.levels.length} levels`}
               </Tag>
-              <Tag textColor="gray.500" bgColor="blackAlpha.100">
+              <Tag colorScheme="blackAlpha" textColor="blackAlpha.700">
                 {`min: ${community.levels[0].accessRequirement.amount} ${community.chainData.ropsten.token.symbol}`}
               </Tag>
             </Stack>
