@@ -23,7 +23,7 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
         <Card
           role="group"
           p="7"
-          bgGradient="linear(to-l, var(--chakra-colors-primary-100), white)"
+          bgGradient="linear(to-l, var(--chakra-colors-primary-50), white)"
           bgRepeat="no-repeat"
           bgSize="200%"
           bgPosition="-100%"
