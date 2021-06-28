@@ -25,7 +25,7 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
           p="7"
           bgGradient="linear(to-l, var(--chakra-colors-primary-50), white)"
           bgRepeat="no-repeat"
-          bgSize="200%"
+          bgSize="150%"
           bgPosition="-100%"
           transition="background-position 0.6s ease"
           _hover={{
