@@ -23,111 +23,123 @@ type ContextType = {
   showApproveSuccess?: boolean
 }
 
-const allowanceStates = {
-  initial: {
-    invoke: {
-      src: "checkAllowance",
-      onError: {
-        target: "approveTransactionError",
-        actions: "setError",
-      },
-    },
-    on: {
-      PERMISSION_NOT_GRANTED: {
-        target: "noPermission",
-      },
-      PERMISSION_IS_PENDING: {
-        target: "approveTransactionPending",
-      },
-      PERMISSION_IS_GRANTED: {
-        target: "#main.stake",
-      },
-    },
+const allowanceMachine = {
+  initial: "initial",
+  context: {
+    showApproveSuccess: false,
   },
-  noPermission: {
-    tags: "idle",
-    on: {
-      ALLOW: "approving",
-    },
+  on: {
+    PERMISSION_GRANTED: "stake",
   },
-  approving: {
-    tags: "loading",
-    meta: {
-      loadingText: "Waiting confirmation",
-    },
-    invoke: {
-      src: "confirmPermission",
-      onDone: {
-        target: "approveTransactionPending",
+  states: {
+    initial: {
+      invoke: {
+        src: "checkAllowance",
+        onError: {
+          target: "approveTransactionError",
+          actions: "setError",
+        },
       },
-      onError: {
-        target: "approveTransactionError",
-        actions: "setError",
-      },
-    },
-  },
-  approveTransactionPending: {
-    tags: "loading",
-    meta: {
-      loadingText: "Waiting for transaction to succeed",
-    },
-    invoke: {
-      src: "confirmTransaction",
-      onDone: {
-        target: "#main.stake",
-        actions: "showApproveSuccess",
-      },
-      onError: {
-        target: "approveTransactionError",
-        actions: "setError",
+      on: {
+        PERMISSION_NOT_GRANTED: {
+          target: "noPermission",
+        },
+        PERMISSION_IS_PENDING: {
+          target: "approveTransactionPending",
+        },
+        PERMISSION_IS_GRANTED: {
+          target: "#main.stake",
+        },
       },
     },
-  },
-  approveTransactionError: {
-    tags: "idle",
-    on: {
-      ALLOW: "approving",
+    noPermission: {
+      tags: "idle",
+      on: {
+        ALLOW: "approving",
+      },
     },
-    exit: "removeError",
+    approving: {
+      tags: "loading",
+      meta: {
+        loadingText: "Waiting confirmation",
+      },
+      invoke: {
+        src: "confirmPermission",
+        onDone: {
+          target: "approveTransactionPending",
+        },
+        onError: {
+          target: "approveTransactionError",
+          actions: "setError",
+        },
+      },
+    },
+    approveTransactionPending: {
+      tags: "loading",
+      meta: {
+        loadingText: "Waiting for transaction to succeed",
+      },
+      invoke: {
+        src: "confirmTransaction",
+        onDone: {
+          target: "#main.stake",
+          actions: "showApproveSuccess",
+        },
+        onError: {
+          target: "approveTransactionError",
+          actions: "setError",
+        },
+      },
+    },
+    approveTransactionError: {
+      tags: "idle",
+      on: {
+        ALLOW: "approving",
+      },
+      exit: "removeError",
+    },
   },
 }
 
-const stakeStates = {
-  initial: {
-    tags: "idle",
-    on: {
-      STAKE: "staking",
-      HIDE_APPROVE_SUCCESS: {
-        target: "initial",
-        actions: "hideApproveSuccess",
+const stakeMachine = {
+  initial: "initial",
+  states: {
+    initial: {
+      tags: "idle",
+      on: {
+        STAKE: "staking",
+        HIDE_APPROVE_SUCCESS: {
+          target: "initial",
+          actions: "hideApproveSuccess",
+        },
       },
     },
-  },
-  staking: {
-    tags: "loading",
-    meta: {
-      loadingText: "Waiting confirmation",
-    },
-    invoke: {
-      src: "stake",
-      onDone: {
-        target: "success",
+    staking: {
+      tags: "loading",
+      meta: {
+        loadingText: "Waiting confirmation",
       },
-      onError: {
-        target: "stakingError",
-        actions: "setError",
+      invoke: {
+        src: "stake",
+        onDone: {
+          target: "success",
+        },
+        onError: {
+          target: "stakingError",
+          actions: "setError",
+        },
       },
     },
-  },
-  stakingError: {
-    tags: "idle",
-    on: {
-      STAKE: "staking",
+    stakingError: {
+      tags: "idle",
+      on: {
+        STAKE: "staking",
+      },
+      exit: "removeError",
     },
-    exit: "removeError",
-  },
-  success: {
-    tags: "done",
+    success: {
+      tags: "done",
+    },
   },
 }
 
@@ -142,20 +154,8 @@ const stakingModalMachine = createMachine<
       error: null,
     },
     states: {
-      allowance: {
-        initial: "initial",
-        context: {
-          showApproveSuccess: false,
-        },
-        on: {
-          PERMISSION_GRANTED: "stake",
-        },
-        states: allowanceStates,
-      },
-      stake: {
-        initial: "initial",
-        states: stakeStates,
-      },
+      allowance: allowanceMachine,
+      stake: stakeMachine,
     },
     on: {
       RESET: {
