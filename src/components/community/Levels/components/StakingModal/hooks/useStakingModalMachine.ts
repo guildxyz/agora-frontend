@@ -23,105 +23,135 @@ type ContextType = {
   showApproveSuccess: boolean
 }
 
+const allowanceStates = {
+  initial: {
+    invoke: {
+      src: "checkAllowance",
+      onError: {
+        target: "approveTransactionError",
+        actions: "setError",
+      },
+    },
+    on: {
+      PERMISSION_NOT_GRANTED: {
+        target: "noPermission",
+      },
+      PERMISSION_IS_PENDING: {
+        target: "approveTransactionPending",
+      },
+      PERMISSION_IS_GRANTED: {
+        target: "#main.stake",
+      },
+    },
+  },
+  noPermission: {
+    on: {
+      ALLOW: "approving",
+    },
+  },
+  approving: {
+    tags: "loading",
+    meta: {
+      loadingText: "Waiting confirmation",
+    },
+    invoke: {
+      src: "confirmPermission",
+      onDone: {
+        target: "approveTransactionPending",
+      },
+      onError: {
+        target: "approveTransactionError",
+        actions: "setError",
+      },
+    },
+  },
+  approveTransactionPending: {
+    tags: "loading",
+    meta: {
+      loadingText: "Waiting for transaction to succeed",
+    },
+    invoke: {
+      src: "confirmTransaction",
+      onDone: {
+        target: "#main.stake",
+        actions: "showApproveSuccess",
+      },
+      onError: {
+        target: "approveTransactionError",
+        actions: "setError",
+      },
+    },
+  },
+  approveTransactionError: {
+    on: {
+      ALLOW: "approving",
+    },
+    exit: "removeError",
+  },
+}
+
+const stakeStates = {
+  initial: {
+    on: {
+      STAKE: "staking",
+      HIDE_APPROVE_SUCCESS: {
+        target: "initial",
+        actions: "hideApproveSuccess",
+      },
+    },
+  },
+  staking: {
+    tags: "loading",
+    meta: {
+      loadingText: "Waiting confirmation",
+    },
+    invoke: {
+      src: "stake",
+      onDone: {
+        target: "success",
+      },
+      onError: {
+        target: "stakingError",
+        actions: "setError",
+      },
+    },
+  },
+  stakingError: {
+    on: {
+      STAKE: "staking",
+    },
+    exit: "removeError",
+  },
+  success: {},
+}
+
 const stakingModalMachine = createMachine<
   ContextType,
   DoneInvokeEvent<any> | AllowanceCheckEvent
 >(
   {
-    initial: "initial",
+    id: "main",
+    initial: "allowance",
     context: {
       error: null,
       showApproveSuccess: false,
     },
     states: {
-      initial: {
-        invoke: {
-          src: "checkAllowance",
-          onError: {
-            target: "approveTransactionError",
-            actions: "setError",
-          },
-        },
+      allowance: {
+        initial: "initial",
         on: {
-          PERMISSION_NOT_GRANTED: {
-            target: "noPermission",
-          },
-          PERMISSION_IS_PENDING: {
-            target: "approveTransactionPending",
-          },
-          PERMISSION_IS_GRANTED: {
-            target: "idle",
-          },
+          PERMISSION_GRANTED: "stake",
         },
+        states: allowanceStates,
       },
-      noPermission: {
-        on: {
-          ALLOW: "approving",
-        },
+      stake: {
+        initial: "initial",
+        states: stakeStates,
       },
-      approving: {
-        invoke: {
-          src: "confirmPermission",
-          onDone: {
-            target: "approveTransactionPending",
-          },
-          onError: {
-            target: "approveTransactionError",
-            actions: "setError",
-          },
-        },
-      },
-      approveTransactionPending: {
-        invoke: {
-          src: "confirmTransaction",
-          onDone: {
-            target: "idle",
-            actions: "showApproveSuccess",
-          },
-          onError: {
-            target: "approveTransactionError",
-            actions: "setError",
-          },
-        },
-      },
-      approveTransactionError: {
-        on: {
-          ALLOW: "approving",
-        },
-        exit: "removeError",
-      },
-      idle: {
-        on: {
-          STAKE: "staking",
-          HIDE_APPROVE_SUCCESS: {
-            target: "idle",
-            actions: "hideApproveSuccess",
-          },
-        },
-      },
-      staking: {
-        invoke: {
-          src: "stake",
-          onDone: {
-            target: "success",
-          },
-          onError: {
-            target: "stakingError",
-            actions: "setError",
-          },
-        },
-      },
-      stakingError: {
-        on: {
-          STAKE: "staking",
-        },
-        exit: "removeError",
-      },
-      success: {},
     },
     on: {
       RESET: {
-        target: "initial",
+        target: "allowance",
         actions: "defaultContext",
         cond: "notSucceeded",
       },
@@ -163,7 +193,7 @@ const useStakingModalMachine = (amount: number): any => {
     services: {
       checkAllowance: () => (_send: Sender<AllowanceCheckEvent>) => {
         if (!tokenAllowance) _send("PERMISSION_NOT_GRANTED")
-        _send("PERMISSION_IS_GRANTED")
+        else _send("PERMISSION_IS_GRANTED")
       },
       confirmPermission: approve,
       confirmTransaction: async (_, event: DoneInvokeEvent<any>) =>

@@ -44,6 +44,7 @@ const StakingModal = ({
   const [state, send] = useStakingModalMachine(amount)
 
   useEffect(() => {
+    // eslint-disable-next-line no-console
     console.log({
       state: state.value,
       context: state.context,
@@ -108,9 +109,8 @@ const StakingModal = ({
               so there's no unwanted space when it's not shown */}
           <VStack spacing="0" alignItems="strech">
             {(() => {
-              switch (state.value) {
-                case "noPermission":
-                case "approveTransactionError":
+              if (Object.keys(state.value)[0] === "allowance") {
+                if (state.nextEvents.includes("ALLOW")) {
                   return (
                     <ModalButton
                       mb="3"
@@ -130,25 +130,17 @@ const StakingModal = ({
                       {`Allow Agora to use ${tokenSymbol}`}
                     </ModalButton>
                   )
-                case "approving":
+                }
+                if (state.hasTag("loading")) {
                   return (
                     <ModalButton
                       mb="3"
                       isLoading
-                      loadingText="Waiting confirmation"
+                      loadingText={state.meta.loadingText}
                     />
                   )
-                case "approveTransactionPending":
-                  return (
-                    <ModalButton
-                      mb="3"
-                      isLoading
-                      loadingText="Waiting for transaction to succeed"
-                    />
-                  )
-                case "idle":
-                case "staking":
-                case "stakingError":
+                }
+                if (state.value.allowance !== "success") {
                   return (
                     <Collapse in={state.context.showApproveSuccess}>
                       <ModalButton
@@ -168,39 +160,37 @@ const StakingModal = ({
                       </ModalButton>
                     </Collapse>
                   )
-                default:
-                  return null
+                }
+                return null
               }
             })()}
             {(() => {
-              switch (state.value) {
-                case "idle":
+              if (Object.keys(state.value)[0] === "stake") {
+                if (state.nextEvents.includes("STAKE")) {
                   return (
                     <ModalButton onClick={() => send("STAKE")}>
                       Confirm stake
                     </ModalButton>
                   )
-                case "staking":
-                  return <ModalButton isLoading loadingText="Waiting confirmation" />
-                case "stakingError":
+                }
+                if (state.hasTag("loading")) {
                   return (
-                    <ModalButton onClick={() => send("STAKE")}>
-                      Confirm stake
-                    </ModalButton>
+                    <ModalButton isLoading loadingText={state.meta.loadingText} />
                   )
-                case "success":
+                }
+                if (state.value.stake === "success") {
                   return <ModalButton onClick={closeModal}>Close</ModalButton>
-                default:
-                  return (
-                    <ModalButton
-                      disabled
-                      colorScheme="gray"
-                      bg="gray.200"
-                      _hover={{ bg: "gray.200" }}
-                    >
-                      Confirm stake
-                    </ModalButton>
-                  )
+                }
+                return (
+                  <ModalButton
+                    disabled
+                    colorScheme="gray"
+                    bg="gray.200"
+                    _hover={{ bg: "gray.200" }}
+                  >
+                    Confirm stake
+                  </ModalButton>
+                )
               }
             })()}
           </VStack>
