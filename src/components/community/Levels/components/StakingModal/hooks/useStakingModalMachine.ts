@@ -19,8 +19,8 @@ type AllowanceCheckEvent =
     }
 
 type ContextType = {
-  error: any
-  showApproveSuccess: boolean
+  error?: any
+  showApproveSuccess?: boolean
 }
 
 const allowanceStates = {
@@ -45,6 +45,7 @@ const allowanceStates = {
     },
   },
   noPermission: {
+    tags: "idle",
     on: {
       ALLOW: "approving",
     },
@@ -83,6 +84,7 @@ const allowanceStates = {
     },
   },
   approveTransactionError: {
+    tags: "idle",
     on: {
       ALLOW: "approving",
     },
@@ -92,6 +94,7 @@ const allowanceStates = {
 
 const stakeStates = {
   initial: {
+    tags: "idle",
     on: {
       STAKE: "staking",
       HIDE_APPROVE_SUCCESS: {
@@ -117,12 +120,15 @@ const stakeStates = {
     },
   },
   stakingError: {
+    tags: "idle",
     on: {
       STAKE: "staking",
     },
     exit: "removeError",
   },
-  success: {},
+  success: {
+    tags: "done",
+  },
 }
 
 const stakingModalMachine = createMachine<
@@ -134,11 +140,13 @@ const stakingModalMachine = createMachine<
     initial: "allowance",
     context: {
       error: null,
-      showApproveSuccess: false,
     },
     states: {
       allowance: {
         initial: "initial",
+        context: {
+          showApproveSuccess: false,
+        },
         on: {
           PERMISSION_GRANTED: "stake",
         },
