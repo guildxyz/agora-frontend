@@ -19,15 +19,12 @@ type AllowanceCheckEvent =
     }
 
 type ContextType = {
-  error?: any
-  showApproveSuccess?: boolean
+  error: any
+  showApproveSuccess: boolean
 }
 
 const allowanceMachine = {
   initial: "initial",
-  context: {
-    showApproveSuccess: false,
-  },
   on: {
     PERMISSION_GRANTED: "stake",
   },
@@ -48,7 +45,7 @@ const allowanceMachine = {
           target: "approveTransactionPending",
         },
         PERMISSION_IS_GRANTED: {
-          target: "#main.stake",
+          target: "#root.stake",
         },
       },
     },
@@ -82,7 +79,7 @@ const allowanceMachine = {
       invoke: {
         src: "confirmTransaction",
         onDone: {
-          target: "#main.stake",
+          target: "#root.stake",
           actions: "showApproveSuccess",
         },
         onError: {
@@ -138,7 +135,7 @@ const stakeMachine = {
       exit: "removeError",
     },
     success: {
-      tags: "done",
+      tags: "success",
     },
   },
 }
@@ -148,10 +145,11 @@ const stakingModalMachine = createMachine<
   DoneInvokeEvent<any> | AllowanceCheckEvent
 >(
   {
-    id: "main",
+    id: "root",
     initial: "allowance",
     context: {
       error: null,
+      showApproveSuccess: false,
     },
     states: {
       allowance: allowanceMachine,
@@ -168,7 +166,7 @@ const stakingModalMachine = createMachine<
   {
     guards: {
       notSucceeded: (_context, _event, condMeta) =>
-        condMeta.state.value !== "success",
+        !condMeta.state.hasTag("success"),
     },
     actions: {
       removeError: assign({ error: null }),

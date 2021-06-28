@@ -15,7 +15,6 @@ import {
   Icon,
 } from "@chakra-ui/react"
 import { Info, Check, ArrowCircleUp } from "phosphor-react"
-import { useEffect } from "react"
 import type { AccessRequirements } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
 import ModalButton from "components/common/ModalButton"
@@ -43,11 +42,6 @@ const StakingModal = ({
   } = useCommunity()
   const [state, send] = useStakingModalMachine(amount)
 
-  useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log(state)
-  }, [state])
-
   const closeModal = () => {
     send("RESET")
     onClose()
@@ -58,13 +52,13 @@ const StakingModal = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {state.value === "success"
+          {state.hasTag("success")
             ? `Transaction submitted`
             : `Stake to join ${name}`}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {state.value === "success" ? (
+          {state.hasTag("success") ? (
             <>
               <Center>
                 <ArrowCircleUp
@@ -108,7 +102,7 @@ const StakingModal = ({
             {Object.keys(state.value)[0] === "allowance" &&
               (() => {
                 // We only have one tag per state, I don't see a reason why we would have more in the future
-                switch (state.tags[0]) {
+                switch ([...state.tags][0]) {
                   case "idle":
                     return (
                       <ModalButton
@@ -134,54 +128,38 @@ const StakingModal = ({
                       <ModalButton
                         mb="3"
                         isLoading
-                        loadingText={state.meta.loadingText}
+                        loadingText={
+                          state.meta[
+                            `root.${state.toStrings()[state.toStrings().length - 1]}`
+                          ].loadingText
+                        }
                       />
-                    )
-                  case "done":
-                    return (
-                      <Collapse in={state.context.showApproveSuccess}>
-                        <ModalButton
-                          as="div"
-                          colorScheme="gray"
-                          variant="solidStatic"
-                          rightIcon={
-                            <CloseButton
-                              onClick={() => send("HIDE_APPROVE_SUCCESS")}
-                            />
-                          }
-                          leftIcon={<Check />}
-                          justifyContent="space-between"
-                          mb="3"
-                        >
-                          {`You can now stake ${tokenSymbol}`}
-                        </ModalButton>
-                      </Collapse>
                     )
                   default:
                     return null
                 }
               })()}
+
+            <Collapse in={state.context.showApproveSuccess}>
+              <ModalButton
+                as="div"
+                colorScheme="gray"
+                variant="solidStatic"
+                rightIcon={
+                  <CloseButton onClick={() => send("HIDE_APPROVE_SUCCESS")} />
+                }
+                leftIcon={<Check />}
+                justifyContent="space-between"
+                mb="3"
+              >
+                {`You can now stake ${tokenSymbol}`}
+              </ModalButton>
+            </Collapse>
+
             {Object.keys(state.value)[0] === "stake" &&
-              state.context.showApproveSuccess !== undefined && (
-                <Collapse in={state.context.showApproveSuccess}>
-                  <ModalButton
-                    as="div"
-                    colorScheme="gray"
-                    variant="solidStatic"
-                    rightIcon={
-                      <CloseButton onClick={() => send("HIDE_APPROVE_SUCCESS")} />
-                    }
-                    leftIcon={<Check />}
-                    justifyContent="space-between"
-                    mb="3"
-                  >
-                    {`You can now stake ${tokenSymbol}`}
-                  </ModalButton>
-                </Collapse>
-              ) &&
               (() => {
                 // We only have one tag per state, I don't see a reason why we would have more in the future
-                switch (state.tags[0]) {
+                switch ([...state.tags][0]) {
                   case "idle":
                     return (
                       <ModalButton onClick={() => send("STAKE")}>
@@ -190,9 +168,16 @@ const StakingModal = ({
                     )
                   case "loading":
                     return (
-                      <ModalButton isLoading loadingText={state.meta.loadingText} />
+                      <ModalButton
+                        isLoading
+                        loadingText={
+                          state.meta[
+                            `root.${state.toStrings()[state.toStrings().length - 1]}`
+                          ].loadingText
+                        }
+                      />
                     )
-                  case "done":
+                  case "success":
                     return <ModalButton onClick={closeModal}>Close</ModalButton>
                   default:
                     return (
