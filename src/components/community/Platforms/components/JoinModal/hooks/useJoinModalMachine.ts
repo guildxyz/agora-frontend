@@ -6,7 +6,6 @@ import type { SignErrorType } from "./usePersonalSign"
 import { usePersonalSign } from "./usePersonalSign"
 
 type InviteData = {
-  // I renamed these to match the backend. inviteCode should be renamed to inviteLink
   inviteLink: string
   joinCode?: number
 }
@@ -82,7 +81,6 @@ const useJoinModalMachine = (platform: string): any => {
     services: {
       sign: () => sign("Please sign this message to generate your invite link"),
 
-      // ! This is a dummy function for the demo !
       getInviteLink: async (_, event): Promise<InviteData> => {
         const response = await fetch(
           "http://94.16.109.106:8989/api/user/joinPlatform",
@@ -94,7 +92,7 @@ const useJoinModalMachine = (platform: string): any => {
             body: JSON.stringify({
               platform,
               communityId,
-              address: /* event.data */ account,
+              addressSignedMessage: event.data,
             }),
           }
         )
