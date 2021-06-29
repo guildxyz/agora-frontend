@@ -24,6 +24,7 @@ type ContextType = {
 }
 
 const allowanceMachine = {
+  id: "allowance",
   initial: "initial",
   on: {
     PERMISSION_GRANTED: "stake",
@@ -32,67 +33,56 @@ const allowanceMachine = {
     initial: {
       invoke: {
         src: "checkAllowance",
-        onError: {
-          target: "error",
-          actions: "setError",
-        },
+        onError: "error",
       },
       on: {
-        PERMISSION_NOT_GRANTED: {
-          target: "idle",
-        },
-        PERMISSION_IS_PENDING: {
-          target: "transactionLoading",
-        },
-        PERMISSION_IS_GRANTED: {
-          target: "#root.stake",
-        },
+        PERMISSION_NOT_GRANTED: "idle",
+        PERMISSION_IS_PENDING: "loading.transaction",
+        PERMISSION_IS_GRANTED: "#root.stake",
       },
     },
     idle: {
       tags: "idle",
       on: {
-        ALLOW: "permissionLoading",
+        ALLOW: "loading",
       },
     },
-    permissionLoading: {
-      tags: "loading",
-      meta: {
-        loadingText: "Waiting confirmation",
-      },
-      invoke: {
-        src: "confirmPermission",
-        onDone: {
-          target: "transactionLoading",
+    loading: {
+      initial: "permission",
+      states: {
+        permission: {
+          tags: "loading",
+          meta: {
+            loadingText: "Waiting confirmation",
+          },
+          invoke: {
+            src: "confirmPermission",
+            onDone: "transaction",
+            onError: "#allowance.error",
+          },
         },
-        onError: {
-          target: "error",
-          actions: "setError",
-        },
-      },
-    },
-    transactionLoading: {
-      tags: "loading",
-      meta: {
-        loadingText: "Waiting for transaction to succeed",
-      },
-      invoke: {
-        src: "confirmTransaction",
-        onDone: {
-          target: "#root.stake",
-          actions: "showApproveSuccess",
-        },
-        onError: {
-          target: "error",
-          actions: "setError",
+        transaction: {
+          tags: "loading",
+          meta: {
+            loadingText: "Waiting for transaction to succeed",
+          },
+          invoke: {
+            src: "confirmTransaction",
+            onDone: {
+              target: "#root.stake",
+              actions: "showApproveSuccess",
+            },
+            onError: "#allowance.error",
+          },
         },
       },
     },
     error: {
       tags: "idle",
       on: {
-        ALLOW: "permissionLoading",
+        ALLOW: "loading",
       },
+      entry: "setError",
       exit: "removeError",
     },
   },
@@ -118,13 +108,8 @@ const stakeMachine = {
       },
       invoke: {
         src: "stake",
-        onDone: {
-          target: "success",
-        },
-        onError: {
-          target: "error",
-          actions: "setError",
-        },
+        onDone: "success",
+        onError: "error",
       },
     },
     error: {
@@ -132,6 +117,7 @@ const stakeMachine = {
       on: {
         STAKE: "loading",
       },
+      entry: "setError",
       exit: "removeError",
     },
     success: {
