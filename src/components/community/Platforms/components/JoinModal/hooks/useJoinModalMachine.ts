@@ -7,11 +7,11 @@ import { usePersonalSign } from "./usePersonalSign"
 
 type InviteData = {
   // I renamed these to match the backend. inviteCode should be renamed to inviteLink
-  inviteCode: string
+  inviteLink: string
   joinCode?: number
 }
 
-const initialInviteData: InviteData = { inviteCode: "", joinCode: null }
+const initialInviteData: InviteData = { inviteLink: "", joinCode: null }
 
 type ContextType = {
   error: SignErrorType | null
@@ -99,8 +99,8 @@ const useJoinModalMachine = (platform: string): any => {
           }
         )
         if (response.ok) {
-          const { inviteCode, joinCode }: InviteData = await response.json()
-          return { inviteCode, joinCode }
+          const { inviteLink, joinCode }: InviteData = await response.json()
+          return { inviteLink, joinCode }
         }
         return Promise.reject(new Error("Error during fetch"))
       },
