@@ -6,12 +6,11 @@ import type { SignErrorType } from "./usePersonalSign"
 import { usePersonalSign } from "./usePersonalSign"
 
 type InviteData = {
-  // I renamed these to match the backend. inviteCode should be renamed to inviteLink
-  inviteCode: string
+  inviteLink: string
   joinCode?: number
 }
 
-const initialInviteData: InviteData = { inviteCode: "", joinCode: null }
+const initialInviteData: InviteData = { inviteLink: "", joinCode: null }
 
 type ContextType = {
   error: SignErrorType | null
@@ -82,7 +81,6 @@ const useJoinModalMachine = (platform: string): any => {
     services: {
       sign: () => sign("Please sign this message to generate your invite link"),
 
-      // ! This is a dummy function for the demo !
       getInviteLink: async (_, event): Promise<InviteData> => {
         const response = await fetch(
           "http://94.16.109.106:8989/api/user/joinPlatform",
@@ -94,13 +92,13 @@ const useJoinModalMachine = (platform: string): any => {
             body: JSON.stringify({
               platform,
               communityId,
-              address: /* event.data */ account,
+              addressSignedMessage: event.data,
             }),
           }
         )
         if (response.ok) {
-          const { inviteCode, joinCode }: InviteData = await response.json()
-          return { inviteCode, joinCode }
+          const { inviteLink, joinCode }: InviteData = await response.json()
+          return { inviteLink, joinCode }
         }
         return Promise.reject(new Error("Error during fetch"))
       },

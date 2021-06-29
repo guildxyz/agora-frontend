@@ -52,15 +52,15 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
                 once:
               </Text>
               <Link
-                href={state.context.inviteData.inviteCode}
+                href={state.context.inviteData.inviteLink}
                 color="#006BFF"
                 display="flex"
                 isExternal
               >
-                {state.context.inviteData.link}
+                {state.context.inviteData.inviteLink}
                 <ArrowSquareOut size="1.3em" weight="light" color="#006BFF" />
               </Link>
-              <QRCode size={150} value={state.context.inviteData.inviteCode} />
+              <QRCode size={150} value={state.context.inviteData.inviteLink} />
               {!!state.context.inviteData.joinCode && (
                 <>
                   <Text>
