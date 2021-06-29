@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 const useColorPalette = (
   prefix: string,
   colorCode: string
-): { [x: string]: any } => {
+): { [x: string]: string } => {
   const [generatedColors, setGeneratedColors] = useState({})
 
   useEffect(() => {
@@ -72,8 +72,7 @@ const useColorPalette = (
     }
 
     setGeneratedColors(swatches)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [prefix, colorCode])
 
   return generatedColors
 }
