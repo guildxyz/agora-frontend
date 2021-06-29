@@ -33,29 +33,29 @@ const allowanceMachine = {
       invoke: {
         src: "checkAllowance",
         onError: {
-          target: "approveTransactionError",
+          target: "error",
           actions: "setError",
         },
       },
       on: {
         PERMISSION_NOT_GRANTED: {
-          target: "noPermission",
+          target: "idle",
         },
         PERMISSION_IS_PENDING: {
-          target: "approveTransactionPending",
+          target: "transactionLoading",
         },
         PERMISSION_IS_GRANTED: {
           target: "#root.stake",
         },
       },
     },
-    noPermission: {
+    idle: {
       tags: "idle",
       on: {
-        ALLOW: "approving",
+        ALLOW: "permissionLoading",
       },
     },
-    approving: {
+    permissionLoading: {
       tags: "loading",
       meta: {
         loadingText: "Waiting confirmation",
@@ -63,15 +63,15 @@ const allowanceMachine = {
       invoke: {
         src: "confirmPermission",
         onDone: {
-          target: "approveTransactionPending",
+          target: "transactionLoading",
         },
         onError: {
-          target: "approveTransactionError",
+          target: "error",
           actions: "setError",
         },
       },
     },
-    approveTransactionPending: {
+    transactionLoading: {
       tags: "loading",
       meta: {
         loadingText: "Waiting for transaction to succeed",
@@ -83,15 +83,15 @@ const allowanceMachine = {
           actions: "showApproveSuccess",
         },
         onError: {
-          target: "approveTransactionError",
+          target: "error",
           actions: "setError",
         },
       },
     },
-    approveTransactionError: {
+    error: {
       tags: "idle",
       on: {
-        ALLOW: "approving",
+        ALLOW: "permissionLoading",
       },
       exit: "removeError",
     },
@@ -99,19 +99,19 @@ const allowanceMachine = {
 }
 
 const stakeMachine = {
-  initial: "initial",
+  initial: "idle",
   states: {
-    initial: {
+    idle: {
       tags: "idle",
       on: {
-        STAKE: "staking",
+        STAKE: "loading",
         HIDE_APPROVE_SUCCESS: {
-          target: "initial",
+          target: "idle",
           actions: "hideApproveSuccess",
         },
       },
     },
-    staking: {
+    loading: {
       tags: "loading",
       meta: {
         loadingText: "Waiting confirmation",
@@ -122,15 +122,15 @@ const stakeMachine = {
           target: "success",
         },
         onError: {
-          target: "stakingError",
+          target: "error",
           actions: "setError",
         },
       },
     },
-    stakingError: {
+    error: {
       tags: "idle",
       on: {
-        STAKE: "staking",
+        STAKE: "loading",
       },
       exit: "removeError",
     },
