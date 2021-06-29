@@ -52,7 +52,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
                 once:
               </Text>
               <Link
-                href={state.context.inviteData.link}
+                href={state.context.inviteData.inviteCode}
                 color="#006BFF"
                 display="flex"
                 isExternal
@@ -60,8 +60,8 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
                 {state.context.inviteData.link}
                 <ArrowSquareOut size="1.3em" weight="light" color="#006BFF" />
               </Link>
-              <QRCode size={150} value={state.context.inviteData.link} />
-              {!!state.context.inviteData.code && (
+              <QRCode size={150} value={state.context.inviteData.inviteCode} />
+              {!!state.context.inviteData.joinCode && (
                 <>
                   <Text>
                     If there’s lot of traffic right now, the bot might ask you for a
@@ -69,7 +69,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
                     not the case, but if it is, here’s what you need:
                   </Text>
                   <Text fontWeight="700" fontSize="2xl" letterSpacing="5px">
-                    {state.context.inviteData.code}
+                    {state.context.inviteData.joinCode}
                   </Text>
                 </>
               )}

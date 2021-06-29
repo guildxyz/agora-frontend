@@ -1,15 +1,17 @@
+import { useWeb3React } from "@web3-react/core"
 import { useMachine } from "@xstate/react"
-import { createMachine, assign, DoneInvokeEvent } from "xstate"
 import { useCommunity } from "components/community/Context"
-import { usePersonalSign } from "./usePersonalSign"
+import { assign, createMachine, DoneInvokeEvent } from "xstate"
 import type { SignErrorType } from "./usePersonalSign"
+import { usePersonalSign } from "./usePersonalSign"
 
 type InviteData = {
-  link: string
-  code?: number
+  // I renamed these to match the backend. inviteCode should be renamed to inviteLink
+  inviteCode: string
+  joinCode?: number
 }
 
-const initialInviteData: InviteData = { link: "", code: null }
+const initialInviteData: InviteData = { inviteCode: "", joinCode: null }
 
 type ContextType = {
   error: SignErrorType | null
@@ -74,24 +76,33 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>({
 const useJoinModalMachine = (platform: string): any => {
   const { id: communityId } = useCommunity()
   const sign = usePersonalSign()
+  const { account } = useWeb3React()
 
   return useMachine(joinModalMachine, {
     services: {
       sign: () => sign("Please sign this message to generate your invite link"),
 
       // ! This is a dummy function for the demo !
-      getInviteLink: (_, event): Promise<InviteData> => {
-        console.log(platform, communityId, event.data)
-        return new Promise((resolve, reject) => {
-          setTimeout(
-            () =>
-              resolve({
-                link: "https://discord.gg/tfg3GYgu",
-                code: 1235,
-              }),
-            3000
-          )
-        })
+      getInviteLink: async (_, event): Promise<InviteData> => {
+        const response = await fetch(
+          "http://94.16.109.106:8989/api/user/joinPlatform",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              platform,
+              communityId,
+              address: /* event.data */ account,
+            }),
+          }
+        )
+        if (response.ok) {
+          const { inviteCode, joinCode }: InviteData = await response.json()
+          return { inviteCode, joinCode }
+        }
+        return Promise.reject(new Error("Error during fetch"))
       },
     },
   })
