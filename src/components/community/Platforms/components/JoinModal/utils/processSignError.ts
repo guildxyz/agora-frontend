@@ -1,21 +1,26 @@
 import { ErrorInfo } from "components/common/Error"
-import type { SignErrorType } from "../hooks/usePersonalSign"
 
-const processConnectionError = (error: SignErrorType): ErrorInfo => {
-  const { code, message } = error
-
-  switch (code) {
-    case 4001:
+const processConnectionError = (error: Error): ErrorInfo => {
+  switch (error.name) {
+    case "4001":
       return {
         title: "Cancelled",
         description: "The signature process got cancelled.",
       }
     default:
-      console.error(message)
-      return {
-        title: "An unknown error occurred",
-        description: "Check the console for more details.",
-      }
+      break
+  }
+  if (error.message.includes("NetworkError")) {
+    return {
+      title: "Network error",
+      description: "Unable to connect to server.",
+    }
+  }
+
+  console.error(error)
+  return {
+    title: "An unknown error occurred",
+    description: "Check the console for more details.",
   }
 }
 

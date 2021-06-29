@@ -11,9 +11,9 @@ type Props = {
 // ! This is a dummy function for the demo !
 const isMember = (account: string, platform: string) => {
   if (!account) return false
-  if (platform === "telegram") {
+  /* if (platform === "telegram") {
     return true
-  }
+  } */
   return false
 }
 

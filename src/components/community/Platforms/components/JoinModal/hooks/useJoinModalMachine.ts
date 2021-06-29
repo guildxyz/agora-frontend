@@ -1,4 +1,3 @@
-import { useWeb3React } from "@web3-react/core"
 import { useMachine } from "@xstate/react"
 import { useCommunity } from "components/community/Context"
 import { assign, createMachine, DoneInvokeEvent } from "xstate"
@@ -75,33 +74,23 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>({
 const useJoinModalMachine = (platform: string): any => {
   const { id: communityId } = useCommunity()
   const sign = usePersonalSign()
-  const { account } = useWeb3React()
 
   return useMachine(joinModalMachine, {
     services: {
       sign: () => sign("Please sign this message to generate your invite link"),
 
-      getInviteLink: async (_, event): Promise<InviteData> => {
-        const response = await fetch(
-          "http://94.16.109.106:8989/api/user/joinPlatform",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              platform,
-              communityId,
-              addressSignedMessage: event.data,
-            }),
-          }
-        )
-        if (response.ok) {
-          const { inviteLink, joinCode }: InviteData = await response.json()
-          return { inviteLink, joinCode }
-        }
-        return Promise.reject(new Error("Error during fetch"))
-      },
+      getInviteLink: (_, event): Promise<InviteData> =>
+        fetch("http://94.16.109.106:8989/api/user/joinPlatform", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            platform,
+            communityId,
+            addressSignedMessage: event.data,
+          }),
+        }).then((response) => response.json()),
     },
   })
 }
