@@ -12,7 +12,7 @@ type InviteData = {
 const initialInviteData: InviteData = { inviteLink: "", joinCode: null }
 
 type ContextType = {
-  error: SignErrorType | null
+  error: SignErrorType | Response | Error | null
   inviteData: InviteData
 }
 
@@ -90,7 +90,9 @@ const useJoinModalMachine = (platform: string): any => {
             communityId,
             addressSignedMessage: event.data,
           }),
-        }).then((response) => response.json()),
+        }).then((response) =>
+          response.ok ? response.json() : Promise.reject(response)
+        ),
     },
   })
 }

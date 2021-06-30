@@ -1,22 +1,23 @@
 import {
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
   ModalBody,
+  ModalCloseButton,
+  ModalContent,
   ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Text,
   VStack,
 } from "@chakra-ui/react"
+import { Error } from "components/common/Error"
 import { Link } from "components/common/Link"
+import ModalButton from "components/common/ModalButton"
 import { ArrowSquareOut } from "phosphor-react"
 import QRCode from "qrcode.react"
-import { Error } from "components/common/Error"
-import ModalButton from "components/common/ModalButton"
-import useJoinModalMachine from "./hooks/useJoinModalMachine"
+import { useEffect } from "react"
 import platformsContent from "../../platformsContent"
-import processSignError from "./utils/processSignError"
+import useJoinModalMachine from "./hooks/useJoinModalMachine"
+import processSignError from "./utils/processJoinPlatformError"
 
 type Props = {
   platform: string

@@ -6,15 +6,8 @@ type SignErrorType = { code: number; message: string }
 const usePersonalSign = (): ((message: string) => Promise<any>) => {
   const { library, account } = useWeb3React<Web3Provider>()
 
-  return async (message: string): Promise<any> => {
-    try {
-      return await library.getSigner(account).signMessage(message)
-    } catch (signError) {
-      const error = Error(signError.message)
-      error.name = signError.code.toString()
-      throw error
-    }
-  }
+  return async (message: string): Promise<any> =>
+    library.getSigner(account).signMessage(message)
 }
 
 export type { SignErrorType }
