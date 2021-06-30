@@ -97,6 +97,7 @@ const unstakeMachine = {
           actions: "hideApproveSuccess",
         },
       },
+      exit: "hideApproveSuccess",
     },
     loading: {
       tags: "loading",
