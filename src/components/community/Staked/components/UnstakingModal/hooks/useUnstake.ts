@@ -16,7 +16,8 @@ const useUnstake = () => {
 
   const unstake = async () => {
     const weiAmount = parseEther(staked.toString())
-    await contract.withdraw(weiAmount)
+    const tx = await contract.withdraw(weiAmount)
+    return tx
   }
 
   return unstake

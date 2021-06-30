@@ -5,7 +5,7 @@ import { parseEther } from "@ethersproject/units"
 import { useCommunity } from "components/community/Context"
 import useContract from "hooks/useContract"
 import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
-import useTokenAllowance from "./useTokenAllowance"
+import useTokenAllowance from "hooks/useTokenAllowance"
 
 type AllowanceCheckEvent =
   | {
@@ -152,12 +152,13 @@ const stakingModalMachine = createMachine<
 )
 
 const useStakingModalMachine = (amount: number): any => {
-  const [tokenAllowance, approve] = useTokenAllowance()
   const {
     chainData: {
       contract: { address },
+      token: { address: tokenAddress, name },
     },
   } = useCommunity()
+  const [tokenAllowance, approve] = useTokenAllowance(tokenAddress, name)
   const contract = useContract(address, AGORA_SPACE_ABI, true)
   const [state, send] = useMachine(stakingModalMachine, {
     services: {

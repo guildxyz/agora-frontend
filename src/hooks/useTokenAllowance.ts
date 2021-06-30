@@ -14,11 +14,10 @@ const getAllowance = async (_, tokenContract, account, contractAddress) => {
   return allowance >= MAX_VALUE / BigInt(4)
 }
 
-const useTokenAllowance = (): any => {
+const useTokenAllowance = (tokenAddress, tokenName): any => {
   const { account } = useWeb3React()
   const {
     chainData: {
-      stakeToken: { address: tokenAddress, name },
       contract: { address: contractAddress },
     },
   } = useCommunity()
@@ -28,7 +27,7 @@ const useTokenAllowance = (): any => {
 
   const { data } = useSWR(
     shouldFetch
-      ? [`${name}_allowance`, tokenContract, account, contractAddress]
+      ? [`${tokenName}_allowance`, tokenContract, account, contractAddress]
       : null,
     getAllowance
   )

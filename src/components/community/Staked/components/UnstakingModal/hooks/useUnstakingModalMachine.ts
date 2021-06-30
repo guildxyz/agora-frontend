@@ -1,5 +1,6 @@
 import { useMachine } from "@xstate/react"
-import useTokenAllowance from "components/community/Levels/components/StakingModal/hooks/useTokenAllowance"
+import { useCommunity } from "components/community/Context"
+import useTokenAllowance from "hooks/useTokenAllowance"
 import { useEffect } from "react"
 import { assign, createMachine, DoneInvokeEvent, Sender } from "xstate"
 import useUnstake from "./useUnstake"
@@ -173,7 +174,12 @@ const unstakingModalMachine = createMachine<
 
 const useUnstakingModalMachine = (): any => {
   const unstake = useUnstake()
-  const [tokenAllowance, approve] = useTokenAllowance()
+  const {
+    chainData: {
+      stakeToken: { address, name },
+    },
+  } = useCommunity()
+  const [tokenAllowance, approve] = useTokenAllowance(address, name)
 
   const [state, send] = useMachine(unstakingModalMachine, {
     services: {
