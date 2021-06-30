@@ -8,6 +8,7 @@ import {
   ModalOverlay,
   Text,
   VStack,
+  Icon,
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
 import { Link } from "components/common/Link"
@@ -53,12 +54,13 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
               </Text>
               <Link
                 href={state.context.inviteData.inviteLink}
-                color="#006BFF"
+                color="blue.600"
                 display="flex"
+                alignItems="center"
                 isExternal
               >
                 {state.context.inviteData.inviteLink}
-                <ArrowSquareOut size="1.3em" weight="light" color="#006BFF" />
+                <Icon as={ArrowSquareOut} mx="2" />
               </Link>
               <QRCode size={150} value={state.context.inviteData.inviteLink} />
               {!!state.context.inviteData.joinCode && (
