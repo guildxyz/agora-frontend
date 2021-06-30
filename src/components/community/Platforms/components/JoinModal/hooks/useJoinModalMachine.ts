@@ -1,5 +1,7 @@
+import { useWeb3React } from "@web3-react/core"
 import { useMachine } from "@xstate/react"
 import { useCommunity } from "components/community/Context"
+import { useEffect } from "react"
 import { assign, createMachine, DoneInvokeEvent } from "xstate"
 import type { SignErrorType } from "./usePersonalSign"
 import { usePersonalSign } from "./usePersonalSign"
@@ -69,13 +71,19 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>({
       }),
     },
   },
+  on: {
+    RESET: {
+      target: "idle",
+    },
+  },
 })
 
 const useJoinModalMachine = (platform: string): any => {
   const { id: communityId } = useCommunity()
   const sign = usePersonalSign()
+  const { account } = useWeb3React()
 
-  return useMachine(joinModalMachine, {
+  const [state, send] = useMachine(joinModalMachine, {
     services: {
       sign: () => sign("Please sign this message to generate your invite link"),
 
@@ -95,6 +103,12 @@ const useJoinModalMachine = (platform: string): any => {
         ),
     },
   })
+
+  useEffect(() => {
+    send("RESET")
+  }, [account, send])
+
+  return [state, send]
 }
 
 export default useJoinModalMachine
