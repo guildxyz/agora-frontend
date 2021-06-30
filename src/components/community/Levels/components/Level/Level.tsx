@@ -47,6 +47,7 @@ const Level = ({ data, onAccessChange, onHoverChange }: Props): JSX.Element => {
   return (
     <Flex
       justifyContent="space-between"
+      alignItems="center"
       boxSizing="border-box"
       py="10"
       borderBottom="1px"

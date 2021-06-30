@@ -10,9 +10,9 @@ const AccessIndicator = ({ hoverLevelPos, highestLevelPos }: Props): JSX.Element
     pos="absolute"
     top="0"
     left="0"
-    w="2"
+    w="6px"
     h={`${hoverLevelPos || highestLevelPos}px`}
-    bgGradient={`linear-gradient(to bottom, var(--chakra-colors-primary-500) ${highestLevelPos}px, var(--chakra-colors-primary-300) ${highestLevelPos}px, var(--chakra-colors-primary-300) 100%)`}
+    bgGradient={`linear-gradient(to bottom, var(--chakra-colors-primary-500) ${highestLevelPos}px, var(--chakra-colors-primary-100) ${highestLevelPos}px, var(--chakra-colors-primary-100) 100%)`}
     transition="height 0.2s linear"
   />
 )
