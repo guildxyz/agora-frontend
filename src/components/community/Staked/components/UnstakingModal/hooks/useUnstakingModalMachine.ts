@@ -1,23 +1,108 @@
-import { useWeb3React } from "@web3-react/core"
 import { useMachine } from "@xstate/react"
-import { assign, createMachine, DoneInvokeEvent } from "xstate"
+import useTokenAllowance from "components/community/Levels/components/StakingModal/hooks/useTokenAllowance"
+import { useEffect } from "react"
+import { assign, createMachine, DoneInvokeEvent, Sender } from "xstate"
+import useUnstake from "./useUnstake"
+
+type AllowanceCheckEvent =
+  | {
+      type: "PERMISSION_NOT_GRANTED"
+    }
+  | {
+      type: "PERMISSION_IS_PENDING"
+    }
+  | {
+      type: "PERMISSION_IS_GRANTED"
+    }
 
 type ContextType = {
   error: Error | null
+  showApproveSuccess: boolean
 }
 
-const unstakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>({
-  initial: "idle",
-  context: {
-    error: null,
+const allowanceMachine = {
+  id: "allowance",
+  initial: "initial",
+  on: {
+    PERMISSION_GRANTED: "unstake",
   },
   states: {
-    idle: {
+    initial: {
+      invoke: {
+        src: "checkAllowance",
+        onError: "error",
+      },
       on: {
-        UNSTAKE: "loading",
+        PERMISSION_NOT_GRANTED: "idle",
+        PERMISSION_IS_PENDING: "loading.transaction",
+        PERMISSION_IS_GRANTED: "#root.unstake",
+      },
+    },
+    idle: {
+      tags: "idle",
+      on: {
+        ALLOW: "loading",
       },
     },
     loading: {
+      initial: "permission",
+      states: {
+        permission: {
+          tags: "loading",
+          meta: {
+            loadingText: "Waiting confirmation",
+          },
+          invoke: {
+            src: "confirmPermission",
+            onDone: "transaction",
+            onError: "#allowance.error",
+          },
+        },
+        transaction: {
+          tags: "loading",
+          meta: {
+            loadingText: "Waiting for transaction to succeed",
+          },
+          invoke: {
+            src: "confirmTransaction",
+            onDone: {
+              target: "#root.unstake",
+              actions: "showApproveSuccess",
+            },
+            onError: "#allowance.error",
+          },
+        },
+      },
+    },
+    error: {
+      tags: "idle",
+      on: {
+        ALLOW: "loading",
+      },
+      entry: "setError",
+      exit: "removeError",
+    },
+  },
+}
+
+const unstakeMachine = {
+  initial: "idle",
+  states: {
+    idle: {
+      tags: "idle",
+      on: {
+        UNSTAKE: "loading",
+        HIDE_APPROVE_SUCCESS: {
+          target: "idle",
+          actions: "hideApproveSuccess",
+        },
+      },
+    },
+    loading: {
+      tags: "loading",
+      meta: {
+        loadingText: "Waiting confirmation",
+      },
       invoke: {
         src: "unstake",
         onDone: "success",
@@ -25,38 +110,88 @@ const unstakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>({
       },
     },
     error: {
-      entry: assign({
-        error: (_, event) => event.data,
-      }),
-      exit: assign({
-        error: () => null,
-      }),
+      tags: "idle",
       on: {
         UNSTAKE: "loading",
       },
+      entry: "setError",
+      exit: "removeError",
     },
-    success: {},
-  },
-  on: {
-    RESET: {
-      target: "idle",
-      cond: (_context, _event, condMeta) => condMeta.state.value !== "success",
+    success: {
+      tags: "success",
     },
   },
-})
+}
+
+const unstakingModalMachine = createMachine<
+  ContextType,
+  DoneInvokeEvent<any> | AllowanceCheckEvent
+>(
+  {
+    id: "root",
+    initial: "allowance",
+    context: {
+      error: null,
+      showApproveSuccess: false,
+    },
+    states: {
+      allowance: allowanceMachine,
+      unstake: unstakeMachine,
+    },
+    on: {
+      RESET: {
+        target: "allowance",
+        actions: "defaultContext",
+        cond: "notSucceeded",
+      },
+    },
+  },
+  {
+    guards: {
+      notSucceeded: (_context, _event, condMeta) =>
+        !condMeta.state.hasTag("success"),
+    },
+    actions: {
+      removeError: assign<ContextType, DoneInvokeEvent<any>>({ error: null }),
+      setError: assign<ContextType, DoneInvokeEvent<any>>({
+        error: (_: ContextType, event: DoneInvokeEvent<any>) => event.data,
+      }),
+      showApproveSuccess: assign<ContextType, DoneInvokeEvent<any>>({
+        showApproveSuccess: true,
+      }),
+      hideApproveSuccess: assign<ContextType, DoneInvokeEvent<any>>({
+        showApproveSuccess: false,
+      }),
+      defaultContext: assign<ContextType, DoneInvokeEvent<any>>({
+        error: null,
+        showApproveSuccess: false,
+      }),
+    },
+  }
+)
 
 const useUnstakingModalMachine = (): any => {
-  const { account } = useWeb3React()
+  const unstake = useUnstake()
+  const [tokenAllowance, approve] = useTokenAllowance()
 
-  return useMachine(unstakingModalMachine, {
+  const [state, send] = useMachine(unstakingModalMachine, {
     services: {
-      // TODO: implement unstaking
-      unstake: (_, event): Promise<null> =>
-        new Promise((resolve, reject) => {
-          setTimeout(() => /* reject(Error()) */ resolve(null), 3000)
-        }),
+      checkAllowance: () => (_send: Sender<AllowanceCheckEvent>) => {
+        if (!tokenAllowance) _send("PERMISSION_NOT_GRANTED")
+        else _send("PERMISSION_IS_GRANTED")
+      },
+      confirmPermission: approve,
+      confirmTransaction: async (_, event: DoneInvokeEvent<any>) =>
+        event.data.wait(),
+      unstake,
     },
   })
+
+  useEffect(() => {
+    send("RESET")
+  }, [tokenAllowance, send])
+
+  return [state, send]
 }
 
 export default useUnstakingModalMachine

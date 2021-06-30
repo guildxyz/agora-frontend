@@ -18,7 +18,7 @@ const useTokenAllowance = (): any => {
   const { account } = useWeb3React()
   const {
     chainData: {
-      token: { address: tokenAddress, name },
+      stakeToken: { address: tokenAddress, name },
       contract: { address: contractAddress },
     },
   } = useCommunity()
