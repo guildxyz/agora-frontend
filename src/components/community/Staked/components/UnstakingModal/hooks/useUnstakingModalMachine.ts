@@ -173,7 +173,7 @@ const unstakingModalMachine = createMachine<
 )
 
 const useUnstakingModalMachine = (): any => {
-  const unstake = useUnstake()
+  const { unstake } = useUnstake()
   const {
     chainData: {
       stakeToken: { address, name },
