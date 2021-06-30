@@ -2,6 +2,7 @@ import { createMachine, assign, DoneInvokeEvent, Sender } from "xstate"
 import { useMachine } from "@xstate/react"
 import { useEffect } from "react"
 import { parseEther } from "@ethersproject/units"
+import { useWeb3React } from "@web3-react/core"
 import { useCommunity } from "components/community/Context"
 import useContract from "hooks/useContract"
 import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
@@ -134,10 +135,14 @@ const stakingModalMachine = createMachine<
       stake: stakeMachine,
     },
     on: {
-      RESET: {
+      SOFT_RESET: {
         target: "allowance",
         actions: "defaultContext",
         cond: "notSucceeded",
+      },
+      HARD_RESET: {
+        target: "allowance",
+        actions: "defaultContext",
       },
     },
   },
@@ -172,6 +177,7 @@ const useStakingModalMachine = (amount: number): any => {
       contract: { address },
     },
   } = useCommunity()
+  const { account } = useWeb3React()
   const contract = useContract(address, AGORA_SPACE_ABI, true)
   const [state, send] = useMachine(stakingModalMachine, {
     services: {
@@ -192,8 +198,12 @@ const useStakingModalMachine = (amount: number): any => {
   })
 
   useEffect(() => {
-    send("RESET")
+    send("SOFT_RESET")
   }, [tokenAllowance, send])
+
+  useEffect(() => {
+    send("HARD_RESET")
+  }, [account, send])
 
   return [state, send]
 }

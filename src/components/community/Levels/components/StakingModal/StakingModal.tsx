@@ -43,7 +43,7 @@ const StakingModal = ({
   const [state, send] = useStakingModalMachine(amount)
 
   const closeModal = () => {
-    send("RESET")
+    send("SOFT_RESET")
     onClose()
   }
 
