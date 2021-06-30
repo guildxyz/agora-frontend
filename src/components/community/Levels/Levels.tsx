@@ -1,18 +1,38 @@
-import { Stack, StackDivider } from "@chakra-ui/react"
+import { useState } from "react"
+import { Stack } from "@chakra-ui/react"
 import Card from "components/common/Card"
 import { useCommunity } from "components/community/Context"
 import Level from "./components/Level"
+import AccessIndicator from "./components/AccessIndicator"
 
 const Levels = (): JSX.Element => {
   const { levels } = useCommunity()
+  const [highestLevelPos, setHighestLevelPos] = useState(0)
+  const [hoverLevelPos, setHoverLevelPos] = useState(0)
+
+  const onAccessChangeHandler = (positionY: number) => {
+    // 'highestLevelPos' is basically the cumulated height of the Level components where the 'hasAccess' state is set to true.
+    if (highestLevelPos < positionY) {
+      setHighestLevelPos(
+        (latestHighestLevelPos) => latestHighestLevelPos + positionY
+      )
+    }
+  }
 
   return (
-    <Card py="10" px="6">
-      <Stack spacing="10" divider={<StackDivider />}>
+    <Card pos="relative" overflow="hidden" px="6">
+      <Stack spacing="0">
         {levels.map((level) => (
-          <Level key={level.name} data={level} />
+          <Level
+            key={level.name}
+            data={level}
+            onAccessChange={onAccessChangeHandler}
+            onHoverChange={setHoverLevelPos}
+          />
         ))}
       </Stack>
+
+      <AccessIndicator {...{ hoverLevelPos, highestLevelPos }} />
     </Card>
   )
 }
