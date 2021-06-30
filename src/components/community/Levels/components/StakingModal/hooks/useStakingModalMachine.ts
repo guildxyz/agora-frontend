@@ -52,9 +52,6 @@ const allowanceMachine = {
       states: {
         permission: {
           tags: "loading",
-          meta: {
-            loadingText: "Waiting confirmation",
-          },
           invoke: {
             src: "confirmPermission",
             onDone: "transaction",
@@ -63,9 +60,6 @@ const allowanceMachine = {
         },
         transaction: {
           tags: "loading",
-          meta: {
-            loadingText: "Waiting for transaction to succeed",
-          },
           invoke: {
             src: "confirmTransaction",
             onDone: {
@@ -100,12 +94,10 @@ const stakeMachine = {
           actions: "hideApproveSuccess",
         },
       },
+      exit: "hideApproveSuccess",
     },
     loading: {
       tags: "loading",
-      meta: {
-        loadingText: "Waiting confirmation",
-      },
       invoke: {
         src: "stake",
         onDone: "success",

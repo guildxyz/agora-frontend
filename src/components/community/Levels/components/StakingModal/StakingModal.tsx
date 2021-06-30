@@ -99,99 +99,107 @@ const StakingModal = ({
           {/* margin is applied on the approve button,
               so there's no unwanted space when it's not shown */}
           <VStack spacing="0" alignItems="strech">
-            {Object.keys(state.value)[0] === "allowance" &&
-              (() => {
-                // We only have one tag per state, I don't see a reason why we would have more in the future
-                switch ([...state.tags][0]) {
-                  case "idle":
-                    return (
-                      <ModalButton
-                        mb="3"
-                        rightIcon={
-                          <Tooltip
-                            label="You have to give the Agora smart contracts permission to use your [token name]. You only have to do this once per token."
-                            placement="top"
-                          >
-                            <Icon as={Info} tabIndex={0} />
-                          </Tooltip>
-                        }
-                        // so the button label will be positioned to the center
-                        leftIcon={<span />}
-                        justifyContent="space-between"
-                        onClick={() => send("ALLOW")}
-                      >
-                        {`Allow Agora to use ${tokenSymbol}`}
-                      </ModalButton>
-                    )
-                  case "loading":
-                    return (
-                      <ModalButton
-                        mb="3"
-                        isLoading
-                        loadingText={
-                          state.meta[
-                            `root.${state.toStrings()[state.toStrings().length - 1]}`
-                          ].loadingText
-                        }
-                      />
-                    )
-                  default:
-                    return null
-                }
-              })()}
+            {Object.keys(state.value)[0] === "allowance" && (
+              <>
+                {(() => {
+                  // We only have one tag per state, I don't see a reason why we would have more in the future
+                  switch ([...state.tags][0]) {
+                    case "idle":
+                      return (
+                        <ModalButton
+                          mb="3"
+                          rightIcon={
+                            <Tooltip
+                              label="You have to give the Agora smart contracts permission to use your [token name]. You only have to do this once per token."
+                              placement="top"
+                            >
+                              <Icon as={Info} tabIndex={0} />
+                            </Tooltip>
+                          }
+                          // so the button label will be positioned to the center
+                          leftIcon={<span />}
+                          justifyContent="space-between"
+                          onClick={() => send("ALLOW")}
+                        >
+                          {`Allow Agora to use ${tokenSymbol}`}
+                        </ModalButton>
+                      )
+                    case "loading":
+                      return (
+                        <ModalButton
+                          mb="3"
+                          isLoading
+                          loadingText={
+                            state.configuration[0].key === "permission"
+                              ? "Waiting confirmation"
+                              : "Waiting for transaction to succeed"
+                          }
+                        />
+                      )
+                    default:
+                      return null
+                  }
+                })()}
 
-            <Collapse in={state.context.showApproveSuccess}>
-              <ModalButton
-                as="div"
-                colorScheme="gray"
-                variant="solidStatic"
-                rightIcon={
-                  <CloseButton onClick={() => send("HIDE_APPROVE_SUCCESS")} />
-                }
-                leftIcon={<Check />}
-                justifyContent="space-between"
-                mb="3"
-              >
-                {`You can now stake ${tokenSymbol}`}
-              </ModalButton>
-            </Collapse>
+                <ModalButton
+                  disabled
+                  colorScheme="gray"
+                  bg="gray.200"
+                  _hover={{ bg: "gray.200" }}
+                >
+                  Confirm stake
+                </ModalButton>
+              </>
+            )}
 
-            {Object.keys(state.value)[0] === "stake" &&
-              (() => {
-                // We only have one tag per state, I don't see a reason why we would have more in the future
-                switch ([...state.tags][0]) {
-                  case "idle":
-                    return (
-                      <ModalButton onClick={() => send("STAKE")}>
-                        Confirm stake
-                      </ModalButton>
-                    )
-                  case "loading":
-                    return (
-                      <ModalButton
-                        isLoading
-                        loadingText={
-                          state.meta[
-                            `root.${state.toStrings()[state.toStrings().length - 1]}`
-                          ].loadingText
-                        }
-                      />
-                    )
-                  case "success":
-                    return <ModalButton onClick={closeModal}>Close</ModalButton>
-                  default:
-                    return (
-                      <ModalButton
-                        disabled
-                        colorScheme="gray"
-                        bg="gray.200"
-                        _hover={{ bg: "gray.200" }}
-                      >
-                        Confirm stake
-                      </ModalButton>
-                    )
-                }
-              })()}
+            {Object.keys(state.value)[0] === "stake" && (
+              <>
+                <Collapse in={state.context.showApproveSuccess}>
+                  <ModalButton
+                    as="div"
+                    colorScheme="gray"
+                    variant="solidStatic"
+                    rightIcon={
+                      <CloseButton onClick={() => send("HIDE_APPROVE_SUCCESS")} />
+                    }
+                    leftIcon={<Check />}
+                    justifyContent="space-between"
+                    mb="3"
+                  >
+                    {`You can now stake ${tokenSymbol}`}
+                  </ModalButton>
+                </Collapse>
+
+                {(() => {
+                  // We only have one tag per state, I don't see a reason why we would have more in the future
+                  switch ([...state.tags][0]) {
+                    case "idle":
+                      return (
+                        <ModalButton onClick={() => send("STAKE")}>
+                          Confirm stake
+                        </ModalButton>
+                      )
+                    case "loading":
+                      return (
+                        <ModalButton isLoading loadingText="Waiting confirmation" />
+                      )
+                    case "success":
+                      return <ModalButton onClick={closeModal}>Close</ModalButton>
+                    default:
+                      return (
+                        <ModalButton
+                          disabled
+                          colorScheme="gray"
+                          bg="gray.200"
+                          _hover={{ bg: "gray.200" }}
+                        >
+                          Confirm stake
+                        </ModalButton>
+                      )
+                  }
+                })()}
+              </>
+            )}
           </VStack>
         </ModalFooter>
       </ModalContent>
