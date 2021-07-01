@@ -1,4 +1,6 @@
+import { useRef } from "react"
 import {
+  Box,
   Flex,
   Image,
   Heading,
@@ -23,6 +25,7 @@ const Level = ({ data }: Props): JSX.Element => {
   const communityData = useCommunity()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [hasAccess, noAccessMessage] = useLevelAccess(data.accessRequirement)
+  const modalRoot = useRef(null)
 
   return (
     <Flex justifyContent="space-between">
@@ -39,6 +42,7 @@ const Level = ({ data }: Props): JSX.Element => {
         </Stack>
       </Stack>
       <Stack alignItems="flex-end" justifyContent="center">
+        <Box w="0" h="0" ref={modalRoot} />
         {hasAccess && (
           <HStack spacing="3">
             <Text fontWeight="medium">You have access</Text>
@@ -59,15 +63,17 @@ const Level = ({ data }: Props): JSX.Element => {
             Stake to join
           </Button>
         )}
-        {!hasAccess &&
-          data.accessRequirement.type === "stake" &&
-          !noAccessMessage && (
-            <StakingModal
-              name={data.name}
-              accessRequirement={data.accessRequirement}
-              {...{ isOpen, onClose }}
-            />
-          )}
+        {!hasAccess && data.accessRequirement.type === "stake" && !noAccessMessage && (
+          <StakingModal
+            portalProps={{
+              containerRef: modalRoot,
+              children: false,
+            }}
+            name={data.name}
+            accessRequirement={data.accessRequirement}
+            {...{ isOpen, onClose }}
+          />
+        )}
         {noAccessMessage && <Text fontWeight="medium">{noAccessMessage}</Text>}
       </Stack>
     </Flex>
