@@ -4,7 +4,6 @@ import LeaveModal from "../LeaveModal"
 import JoinModal from "../JoinModal"
 import platformsContent from "../../platformsContent"
 import useIsMember from "./hooks/useIsMember"
-import useContainerRef from "components/community/hooks/useContainerRef"
 
 type Props = {
   platform: string
@@ -15,7 +14,6 @@ const PlatformButton = ({ platform }: Props): JSX.Element => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { logo: Logo } = platformsContent[platform]
   const isMember = useIsMember(platform)
-  const containerRef = useContainerRef()
 
   return (
     <>
@@ -32,23 +30,9 @@ const PlatformButton = ({ platform }: Props): JSX.Element => {
         }`}
       </Button>
       {isMember ? (
-        <LeaveModal
-          {...{
-            portalProps: { containerRef, children: false },
-            platform,
-            isOpen,
-            onClose,
-          }}
-        />
+        <LeaveModal {...{ platform, isOpen, onClose }} />
       ) : (
-        <JoinModal
-          {...{
-            portalProps: { containerRef, children: false },
-            platform,
-            isOpen,
-            onClose,
-          }}
-        />
+        <JoinModal {...{ platform, isOpen, onClose }} />
       )}
     </>
   )

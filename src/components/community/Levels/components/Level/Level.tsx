@@ -16,7 +16,6 @@ import type { Level as LevelType } from "temporaryData/types"
 import InfoTags from "components/community/Levels/components/InfoTags"
 import StakingModal from "../StakingModal"
 import useLevelAccess from "./hooks/useLevelAccess"
-import useContainerRef from "components/community/hooks/useContainerRef"
 
 type Props = {
   data: LevelType
@@ -26,7 +25,6 @@ const Level = ({ data }: Props): JSX.Element => {
   const communityData = useCommunity()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [hasAccess, noAccessMessage] = useLevelAccess(data.accessRequirement)
-  const containerRef = useContainerRef()
 
   return (
     <Flex justifyContent="space-between">
@@ -63,17 +61,15 @@ const Level = ({ data }: Props): JSX.Element => {
             Stake to join
           </Button>
         )}
-        {!hasAccess && data.accessRequirement.type === "stake" && !noAccessMessage && (
-          <StakingModal
-            portalProps={{
-              containerRef,
-              children: false,
-            }}
-            name={data.name}
-            accessRequirement={data.accessRequirement}
-            {...{ isOpen, onClose }}
-          />
-        )}
+        {!hasAccess &&
+          data.accessRequirement.type === "stake" &&
+          !noAccessMessage && (
+            <StakingModal
+              name={data.name}
+              accessRequirement={data.accessRequirement}
+              {...{ isOpen, onClose }}
+            />
+          )}
         {noAccessMessage && <Text fontWeight="medium">{noAccessMessage}</Text>}
       </Stack>
     </Flex>

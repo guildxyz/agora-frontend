@@ -13,7 +13,6 @@ import {
   Tooltip,
   Center,
   Icon,
-  PortalProps,
 } from "@chakra-ui/react"
 import { Info, Check, ArrowCircleUp } from "phosphor-react"
 import { useEffect } from "react"
@@ -23,9 +22,9 @@ import ModalButton from "components/common/ModalButton"
 import { Error } from "components/common/Error"
 import { useCommunity } from "components/community/Context"
 import useStakingModalMachine from "./hooks/useStakingModalMachine"
+import useContainerRef from "../../../hooks/useContainerRef"
 
 type Props = {
-  portalProps?: PortalProps
   name: string
   accessRequirement: AccessRequirements
   isOpen: boolean
@@ -33,7 +32,6 @@ type Props = {
 }
 
 const StakingModal = ({
-  portalProps,
   name,
   accessRequirement: { amount, timelockMs },
   isOpen,
@@ -46,6 +44,7 @@ const StakingModal = ({
     },
   } = useCommunity()
   const [state, send] = useStakingModalMachine(amount)
+  const containerRef = useContainerRef()
 
   useEffect(() => {
     console.log({
@@ -60,7 +59,7 @@ const StakingModal = ({
   }
 
   return (
-    <Modal portalProps={portalProps} isOpen={isOpen} onClose={closeModal}>
+    <Modal portalProps={{ containerRef }} isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>

@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react"
+import { useLayoutEffect, useRef } from "react"
 
 const useContainerRef = () => {
   const containerRef = useRef(null)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     containerRef.current = document.querySelector(".colorPaletteProvider")
   }, [])
 

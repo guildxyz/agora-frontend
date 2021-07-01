@@ -1,4 +1,5 @@
 import {
+  Icon,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -8,12 +9,11 @@ import {
   ModalOverlay,
   Text,
   VStack,
-  Icon,
-  PortalProps,
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
 import { Link } from "components/common/Link"
 import ModalButton from "components/common/ModalButton"
+import useContainerRef from "components/community/hooks/useContainerRef"
 import { ArrowSquareOut } from "phosphor-react"
 import QRCode from "qrcode.react"
 import platformsContent from "../../platformsContent"
@@ -21,22 +21,17 @@ import useJoinModalMachine from "./hooks/useJoinModalMachine"
 import processSignError from "./utils/processJoinPlatformError"
 
 type Props = {
-  portalProps: PortalProps
   platform: string
   isOpen: boolean
   onClose: () => void
 }
 
-const JoinModal = ({
-  portalProps,
-  platform,
-  isOpen,
-  onClose,
-}: Props): JSX.Element => {
+const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const {
     join: { title, description },
   } = platformsContent[platform]
   const [state, send] = useJoinModalMachine(platform)
+  const containerRef = useContainerRef()
 
   const closeModal = () => {
     send("CLOSE_MODAL")
@@ -44,7 +39,7 @@ const JoinModal = ({
   }
 
   return (
-    <Modal portalProps={portalProps} isOpen={isOpen} onClose={closeModal}>
+    <Modal portalProps={{ containerRef }} isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{title}</ModalHeader>
