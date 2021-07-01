@@ -14,6 +14,7 @@ const Levels = (): JSX.Element => {
   const [levelsPos, setLevelsPos] = useState<LevelPosObj>({})
   const [highestLevelPos, setHighestLevelPos] = useState(0)
   const [hoverLevelPos, setHoverLevelPos] = useState(0)
+  const [isNextLevelOk, setIsNextLevelOk] = useState(false)
 
   useEffect(() => {
     setHighestLevelPos(
@@ -27,6 +28,11 @@ const Levels = (): JSX.Element => {
     }
   }
 
+  const onHoverChangeHandler = (positionY: number, nextLevelOk?: boolean) => {
+    setIsNextLevelOk(nextLevelOk)
+    setHoverLevelPos(positionY)
+  }
+
   return (
     <Card pos="relative" overflow="hidden" pl="8" pr="7">
       <Stack spacing="0">
@@ -35,7 +41,7 @@ const Levels = (): JSX.Element => {
             key={level.name}
             data={level}
             onAccessChange={onAccessChangeHandler}
-            onHoverChange={setHoverLevelPos}
+            onHoverChange={onHoverChangeHandler}
           />
         ))}
       </Stack>
@@ -44,6 +50,7 @@ const Levels = (): JSX.Element => {
         {...{
           hoverLevelPos,
           highestLevelPos,
+          isNextLevelOk,
         }}
       />
     </Card>

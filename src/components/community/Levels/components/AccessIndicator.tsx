@@ -4,26 +4,46 @@ import { motion } from "framer-motion"
 type Props = {
   hoverLevelPos: number
   highestLevelPos: number
+  isNextLevelOk: boolean
 }
 
-const AccessIndicator = ({ hoverLevelPos, highestLevelPos }: Props): JSX.Element => (
-  <motion.div
-    style={{
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "6px",
-      height: 0,
-      background: `linear-gradient(to bottom, var(--chakra-colors-primary-500) ${highestLevelPos}px, var(--chakra-colors-primary-100) ${highestLevelPos}px, var(--chakra-colors-primary-100) 100%)`,
-    }}
-    transition={{
-      type: "spring",
-      duration: 0.5,
-    }}
-    animate={{
-      height: `${hoverLevelPos || highestLevelPos}px`,
-    }}
-  />
+const AccessIndicator = ({
+  hoverLevelPos,
+  highestLevelPos,
+  isNextLevelOk,
+}: Props): JSX.Element => (
+  <>
+    <motion.div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        height: 0,
+        width: "6px",
+        background: isNextLevelOk
+          ? "var(--chakra-colors-primary-100)"
+          : "var(--chakra-colors-gray-100)",
+      }}
+      transition={{ type: "just" }}
+      animate={{
+        height: hoverLevelPos,
+      }}
+    />
+    <motion.div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        height: 0,
+        width: "6px",
+        background: "var(--chakra-colors-primary-500)",
+      }}
+      transition={{ type: "just" }}
+      animate={{
+        height: highestLevelPos,
+      }}
+    />
+  </>
 )
 
 export default AccessIndicator

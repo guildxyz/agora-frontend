@@ -19,7 +19,7 @@ import useLevelAccess from "./hooks/useLevelAccess"
 type Props = {
   data: LevelType
   onAccessChange?: (levelName: string, positionY: number) => void
-  onHoverChange?: (positionY: number) => void
+  onHoverChange?: (positionY: number, nextLevelOk?: boolean) => void
 }
 
 const Level = ({ data, onAccessChange, onHoverChange }: Props): JSX.Element => {
@@ -42,13 +42,17 @@ const Level = ({ data, onAccessChange, onHoverChange }: Props): JSX.Element => {
 
   const hoverChangeHandler = useCallback(
     (isHover: boolean) => {
+      const isNextLevelOk = noAccessMessage.length === 0
       if (onHoverChange && isHover && !hasAccess) {
-        onHoverChange(levelEl.current.offsetTop + levelEl.current.offsetHeight)
+        onHoverChange(
+          levelEl.current.offsetTop + levelEl.current.offsetHeight,
+          isNextLevelOk
+        )
       } else {
-        onHoverChange(0)
+        onHoverChange(0, isNextLevelOk)
       }
     },
-    [hasAccess, onHoverChange]
+    [hasAccess, onHoverChange, noAccessMessage]
   )
 
   // Need to register native mouse events, because the React mouse events aren't working as expected when we use a disabled input in a div. (https://github.com/facebook/react/issues/10396)
