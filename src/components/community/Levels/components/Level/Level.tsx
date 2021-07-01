@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useCallback } from "react"
 import {
   Flex,
   Image,
@@ -18,7 +18,7 @@ import useLevelAccess from "./hooks/useLevelAccess"
 
 type Props = {
   data: LevelType
-  onAccessChange?: (positionY: number) => void
+  onAccessChange?: (levelName: string, positionY: number) => void
   onHoverChange?: (positionY: number) => void
 }
 
@@ -29,20 +29,50 @@ const Level = ({ data, onAccessChange, onHoverChange }: Props): JSX.Element => {
   const levelEl = useRef(null)
 
   useEffect(() => {
-    // If the user has access to this level, the component emits its height to the parent, so it can calculate the height of the active level access indicator
-    if (hasAccess && onAccessChange) {
-      onAccessChange(levelEl.current.offsetHeight)
+    if (!onAccessChange) {
+      return
     }
-  }, [hasAccess, onAccessChange])
 
-  const hoverChangeHandler = (isHover: boolean) => {
-    // On hover, the component emits its position (bottom) to the parent, and this value will be the level access indicator's height until the end of the hover state
-    if (onHoverChange && isHover && !hasAccess) {
-      onHoverChange(levelEl.current.offsetTop + levelEl.current.offsetHeight)
+    if (hasAccess) {
+      onAccessChange(data.name, levelEl.current.offsetHeight)
     } else {
-      onHoverChange(0)
+      onAccessChange(data.name, 0)
     }
-  }
+  }, [hasAccess, onAccessChange, data.name])
+
+  const hoverChangeHandler = useCallback(
+    (isHover: boolean) => {
+      if (onHoverChange && isHover && !hasAccess) {
+        onHoverChange(levelEl.current.offsetTop + levelEl.current.offsetHeight)
+      } else {
+        onHoverChange(0)
+      }
+    },
+    [hasAccess, onHoverChange]
+  )
+
+  // Need to register native mouse events, because the React mouse events aren't working as expected when we use a disabled input in a div. (https://github.com/facebook/react/issues/10396)
+  useEffect(() => {
+    if (!levelEl) {
+      return
+    }
+
+    const ref = levelEl.current
+    const hoverInHandler = () => hoverChangeHandler(true)
+    const hoverOutHandler = () => {
+      if (!isOpen) {
+        hoverChangeHandler(false)
+      }
+    }
+
+    ref.addEventListener("mouseenter", hoverInHandler)
+    ref.addEventListener("mouseleave", hoverOutHandler)
+
+    return () => {
+      ref.removeEventListener("mouseenter", hoverInHandler)
+      ref.removeEventListener("mouseleave", hoverOutHandler)
+    }
+  }, [hoverChangeHandler, isOpen])
 
   return (
     <Flex
@@ -54,8 +84,6 @@ const Level = ({ data, onAccessChange, onHoverChange }: Props): JSX.Element => {
       borderBottomColor="gray.200"
       _last={{ borderBottom: 0 }}
       ref={levelEl}
-      onMouseEnter={() => hoverChangeHandler(true)}
-      onMouseLeave={() => hoverChangeHandler(false)}
     >
       <Stack direction="row" spacing="6">
         <Image src={`${data.imageUrl}`} boxSize="45px" alt="Level logo" />
