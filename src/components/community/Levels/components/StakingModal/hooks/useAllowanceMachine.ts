@@ -74,9 +74,7 @@ const allowanceMachine = createMachine<
           transaction: {
             invoke: {
               src: "confirmTransaction",
-              onDone: {
-                target: "#allowance.success",
-              },
+              onDone: "#allowance.notification",
               onError: "#allowance.error",
             },
           },
@@ -89,10 +87,22 @@ const allowanceMachine = createMachine<
         entry: "setError",
         exit: "removeError",
       },
-      success: {
-        // type: "final",
+      notification: {
+        initial: "showing",
+        states: {
+          showing: {
+            on: {
+              HIDE_NOTIFICATION: "hiding",
+            },
+          },
+          hiding: {
+            after: {
+              500: "#allowance.success",
+            },
+          },
+        },
       },
-      successAndShowNotification: {
+      success: {
         // type: "final",
       },
     },
@@ -108,10 +118,7 @@ const allowanceMachine = createMachine<
   },
   {
     guards: {
-      notSucceeded: (_context, _event, condMeta) => {
-        console.log(_context)
-        return true
-      },
+      notSucceeded: (_context, _event, { state }) => !state.matches("success"),
     },
     actions: {
       removeError: assign({ error: null }),
@@ -123,7 +130,7 @@ const allowanceMachine = createMachine<
 )
 
 const useAllowanceMachine = (): ReturnType => {
-  const [tokenAllowance, approve] = useTokenAllowance()
+  const [tokenAllowance, approve, mutate] = useTokenAllowance()
   const { account } = useWeb3React()
   const [state, send] = useMachine(allowanceMachine, {
     services: {

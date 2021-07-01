@@ -16,21 +16,14 @@ type ContextType = {
 const stakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
   {
     id: "staking",
-    initial: "initial",
+    initial: "disabled",
     context: {
       error: null,
     },
     states: {
-      initial: {
+      disabled: {
         on: {
           START: "idle",
-          START_AND_SHOW_NOTIFICATION: "showNotification",
-        },
-      },
-      showNotification: {
-        on: {
-          HIDE_NOTIFICATION: "idle",
-          STAKE: "loading",
         },
       },
       idle: {
@@ -58,20 +51,17 @@ const stakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
     },
     on: {
       SOFT_RESET: {
-        target: "initial",
+        target: "disabled",
         cond: "notSucceeded",
       },
       HARD_RESET: {
-        target: "initial",
+        target: "disabled",
       },
     },
   },
   {
     guards: {
-      notSucceeded: (_, event) => {
-        console.log(event)
-        return true
-      },
+      notSucceeded: (_context, _event, { state: { value } }) => value !== "success",
     },
     actions: {
       removeError: assign({ error: null }),
@@ -83,7 +73,7 @@ const stakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
 )
 
 const useStakingModalMachine = (amount: number): any => {
-  const [tokenAllowance] = useTokenAllowance()
+  const [tokenAllowance, , mutate] = useTokenAllowance()
   const {
     chainData: {
       contract: { address },
@@ -103,7 +93,7 @@ const useStakingModalMachine = (amount: number): any => {
   })
 
   useEffect(() => {
-    console.log(allowanceState.value)
+    console.log(allowanceState.toStrings()[allowanceState.toStrings().length - 1])
   }, [allowanceState])
 
   useEffect(() => {
@@ -115,10 +105,21 @@ const useStakingModalMachine = (amount: number): any => {
   }, [account, stakingSend])
 
   return {
-    allowanceState,
-    stakingState,
-    allowanceSend,
-    stakingSend,
+    reset: () => {
+      allowanceSend("SOFT_RESET")
+      stakingSend("SOFT_RESET")
+      mutate()
+    },
+    allowance: {
+      state: allowanceState.toStrings()[allowanceState.toStrings().length - 1],
+      context: allowanceState.context,
+      send: allowanceSend,
+    },
+    staking: {
+      state: stakingState.toStrings()[stakingState.toStrings().length - 1],
+      context: stakingState.context,
+      send: stakingSend,
+    },
   }
 }
 

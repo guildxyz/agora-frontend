@@ -40,12 +40,10 @@ const StakingModal = ({
       token: { symbol: tokenSymbol },
     },
   } = useCommunity()
-  const { allowanceState, stakingState, allowanceSend, stakingSend } =
-    useStakingModalMachine(amount)
+  const { allowance, staking, reset } = useStakingModalMachine(amount)
 
   const closeModal = () => {
-    allowanceSend("SOFT_RESET")
-    stakingSend("SOFT_RESET")
+    reset()
     onClose()
   }
 
@@ -54,13 +52,13 @@ const StakingModal = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {stakingState.value === "success"
+          {staking.state === "success"
             ? `Transaction submitted`
             : `Stake to join ${name}`}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {stakingState.value === "success" ? (
+          {staking.state === "success" ? (
             <>
               <Center>
                 <ArrowCircleUp
@@ -82,7 +80,7 @@ const StakingModal = ({
           ) : (
             <>
               <Error
-                error={stakingState.context.error || allowanceState.context.error}
+                error={staking.context.error || allowance.context.error}
                 processError={() => ({
                   title: "Error",
                   description: "Error description",
@@ -102,8 +100,7 @@ const StakingModal = ({
               so there's no unwanted space when it's not shown */}
           <VStack spacing="0" alignItems="strech">
             {(() => {
-              // We only have one tag per state, I don't see a reason why we would have more in the future
-              switch (allowanceState.value) {
+              switch (allowance.state) {
                 case "idle":
                 case "error":
                   return (
@@ -120,34 +117,38 @@ const StakingModal = ({
                       // so the button label will be positioned to the center
                       leftIcon={<span />}
                       justifyContent="space-between"
-                      onClick={() => allowanceSend("ALLOW")}
+                      onClick={() => allowance.send("ALLOW")}
                     >
                       {`Allow Agora to use ${tokenSymbol}`}
                     </ModalButton>
                   )
-                case "loading":
+                case "loading.permission":
                   return (
                     <ModalButton
                       mb="3"
                       isLoading
-                      loadingText={
-                        "TODO"
-                        /* state.configuration[0].key === "permission"
-                          ? "Waiting confirmation"
-                          : "Waiting for transaction to succeed" */
-                      }
+                      loadingText="Waiting confirmation"
                     />
                   )
-                case "successAndShowNotification":
+                case "loading.transaction":
                   return (
-                    <Collapse in={allowanceState.context.showApproveSuccess}>
+                    <ModalButton
+                      mb="3"
+                      isLoading
+                      loadingText="Waiting for transaction to succeed"
+                    />
+                  )
+                case "notification.showing":
+                case "notification.hiding":
+                  return (
+                    <Collapse in={allowance.state === "notification.showing"}>
                       <ModalButton
                         as="div"
                         colorScheme="gray"
                         variant="solidStatic"
                         rightIcon={
                           <CloseButton
-                            onClick={() => allowanceSend("HIDE_APPROVE_SUCCESS")}
+                            onClick={() => allowance.send("HIDE_NOTIFICATION")}
                           />
                         }
                         leftIcon={<Check />}
@@ -164,35 +165,33 @@ const StakingModal = ({
               }
             })()}
 
-            {/* {Object.keys(state.value)[0] === "stake" &&
-              (() => {
-                // We only have one tag per state, I don't see a reason why we would have more in the future
-                switch ([...state.tags][0]) {
-                  case "idle":
-                    return (
-                      <ModalButton onClick={() => send("STAKE")}>
-                        Confirm stake
-                      </ModalButton>
-                    )
-                  case "loading":
-                    return (
-                      <ModalButton isLoading loadingText="Waiting confirmation" />
-                    )
-                  case "success":
-                    return <ModalButton onClick={closeModal}>Close</ModalButton>
-                  default:
-                    return (
-                      <ModalButton
-                        disabled
-                        colorScheme="gray"
-                        bg="gray.200"
-                        _hover={{ bg: "gray.200" }}
-                      >
-                        Confirm stake
-                      </ModalButton>
-                    )
-                }
-              })()} */}
+            {(() => {
+              switch (staking.state) {
+                case "idle":
+                case "error":
+                  return (
+                    <ModalButton onClick={() => staking.send("STAKE")}>
+                      Confirm stake
+                    </ModalButton>
+                  )
+                case "loading":
+                  return <ModalButton isLoading loadingText="Waiting confirmation" />
+                case "success":
+                  return <ModalButton onClick={closeModal}>Close</ModalButton>
+                case "disabled":
+                default:
+                  return (
+                    <ModalButton
+                      disabled
+                      colorScheme="gray"
+                      bg="gray.200"
+                      _hover={{ bg: "gray.200" }}
+                    >
+                      Confirm stake
+                    </ModalButton>
+                  )
+              }
+            })()}
           </VStack>
         </ModalFooter>
       </ModalContent>
