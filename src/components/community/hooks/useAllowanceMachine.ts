@@ -10,6 +10,7 @@ import { useMachine } from "@xstate/react"
 import { useEffect } from "react"
 import { useWeb3React } from "@web3-react/core"
 import useTokenAllowance from "./useTokenAllowance"
+import { useCommunity } from "../Context"
 
 type AllowanceCheckEvent =
   | {
@@ -142,7 +143,12 @@ const allowanceMachine = createMachine<
 )
 
 const useAllowanceMachine = (): ReturnType => {
-  const [tokenAllowance, approve] = useTokenAllowance()
+  const {
+    chainData: {
+      token: { address: tokenAddress, name: tokenName },
+    },
+  } = useCommunity()
+  const [tokenAllowance, approve] = useTokenAllowance(tokenAddress, tokenName)
   const { account } = useWeb3React()
   const [state, send] = useMachine(allowanceMachine, {
     services: {
@@ -155,8 +161,6 @@ const useAllowanceMachine = (): ReturnType => {
         event.data.wait(),
     },
   })
-
-  useEffect(() => console.log(state.value), [state.value])
 
   useEffect(() => {
     send("SOFT_RESET")

@@ -6,8 +6,8 @@ import { useWeb3React } from "@web3-react/core"
 import { useCommunity } from "components/community/Context"
 import useContract from "hooks/useContract"
 import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
-import useTokenAllowance from "./useTokenAllowance"
-import useAllowanceMachine from "./useAllowanceMachine"
+import useTokenAllowance from "../../../../hooks/useTokenAllowance"
+import useAllowanceMachine from "../../../../hooks/useAllowanceMachine"
 
 type ContextType = {
   error: any
@@ -77,14 +77,15 @@ const stakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
 )
 
 const useStakingModalMachine = (amount: number): any => {
-  const [tokenAllowance] = useTokenAllowance()
   const {
     chainData: {
-      contract: { address },
+      contract: { address: contractAddress },
+      token: { address: tokenAddress, name: tokenName },
     },
   } = useCommunity()
+  const [tokenAllowance] = useTokenAllowance(tokenAddress, tokenName)
   const { account } = useWeb3React()
-  const contract = useContract(address, AGORA_SPACE_ABI, true)
+  const contract = useContract(contractAddress, AGORA_SPACE_ABI, true)
   const [allowanceState, allowanceSend] = useAllowanceMachine()
   const [stakingState, stakingSend] = useMachine(stakingModalMachine, {
     services: {
