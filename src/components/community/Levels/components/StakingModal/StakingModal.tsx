@@ -40,10 +40,10 @@ const StakingModal = ({
       token: { symbol: tokenSymbol },
     },
   } = useCommunity()
-  const { allowance, staking, reset } = useStakingModalMachine(amount)
+  const { allowance, staking, softReset } = useStakingModalMachine(amount)
 
   const closeModal = () => {
-    reset()
+    softReset()
     onClose()
   }
 

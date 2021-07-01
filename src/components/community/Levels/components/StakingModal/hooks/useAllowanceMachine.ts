@@ -5,6 +5,7 @@ import {
   Sender,
   State,
   assign,
+  StateMachine,
 } from "xstate"
 import { useMachine } from "@xstate/react"
 import { useEffect } from "react"
@@ -31,7 +32,8 @@ type ReturnType = [
   (
     event,
     payload?: EventData
-  ) => State<ContextType, DoneInvokeEvent<any> | AllowanceCheckEvent>
+  ) => State<ContextType, DoneInvokeEvent<any> | AllowanceCheckEvent>,
+  StateMachine<ContextType, any, DoneInvokeEvent<any> | AllowanceCheckEvent>
 ]
 
 const allowanceMachine = createMachine<
@@ -101,6 +103,9 @@ const allowanceMachine = createMachine<
             },
           },
         },
+        on: {
+          SUCCESS: "#allowance.success",
+        },
       },
       success: {
         // type: "final",
@@ -130,7 +135,7 @@ const allowanceMachine = createMachine<
 )
 
 const useAllowanceMachine = (): ReturnType => {
-  const [tokenAllowance, approve, mutate] = useTokenAllowance()
+  const [tokenAllowance, approve] = useTokenAllowance()
   const { account } = useWeb3React()
   const [state, send] = useMachine(allowanceMachine, {
     services: {
@@ -145,6 +150,10 @@ const useAllowanceMachine = (): ReturnType => {
   })
 
   useEffect(() => {
+    console.log(state.toStrings()[state.toStrings().length - 1])
+  }, [state])
+
+  useEffect(() => {
     send("SOFT_RESET")
   }, [tokenAllowance, send])
 
@@ -152,7 +161,7 @@ const useAllowanceMachine = (): ReturnType => {
     send("HARD_RESET")
   }, [account, send])
 
-  return [state, send]
+  return [state, send, allowanceMachine]
 }
 
 export default useAllowanceMachine

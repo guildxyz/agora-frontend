@@ -26,7 +26,7 @@ const useTokenAllowance = (): any => {
 
   const shouldFetch = typeof account === "string" && !!tokenContract
 
-  const { data, mutate } = useSWR(
+  const { data } = useSWR(
     shouldFetch
       ? [`${name}_allowance`, tokenContract, account, contractAddress]
       : null,
@@ -37,7 +37,7 @@ const useTokenAllowance = (): any => {
     const tx = await tokenContract.approve(contractAddress, MAX_VALUE)
     return tx
   }
-  return [data, approve, mutate]
+  return [data, approve]
 }
 
 export default useTokenAllowance

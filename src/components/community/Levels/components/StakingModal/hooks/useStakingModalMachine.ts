@@ -50,8 +50,12 @@ const stakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
       },
     },
     on: {
-      SOFT_RESET: {
+      SOFT_RESET_TO_DISABLED: {
         target: "disabled",
+        cond: "notSucceeded",
+      },
+      SOFT_RESET_TO_IDLE: {
+        target: "idle",
         cond: "notSucceeded",
       },
       HARD_RESET: {
@@ -73,7 +77,7 @@ const stakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
 )
 
 const useStakingModalMachine = (amount: number): any => {
-  const [tokenAllowance, , mutate] = useTokenAllowance()
+  const [tokenAllowance] = useTokenAllowance()
   const {
     chainData: {
       contract: { address },
@@ -92,12 +96,25 @@ const useStakingModalMachine = (amount: number): any => {
     },
   })
 
-  useEffect(() => {
-    console.log(allowanceState.toStrings()[allowanceState.toStrings().length - 1])
-  }, [allowanceState])
+  const softReset = () => {
+    if (allowanceState.matches("notification")) allowanceSend("SUCCESS")
+    else stakingSend("SOFT_RESET")
+    if (allowanceState.matches("notification") || allowanceState.matches("success"))
+      stakingSend("SOFT_RESET_TO_IDLE")
+    else stakingSend("SOFT_RESET_TO_DISABLED")
+  }
 
   useEffect(() => {
-    stakingSend("SOFT_RESET")
+    if (allowanceState.matches("notification") || allowanceState.matches("success"))
+      stakingSend("START")
+  }, [allowanceState, stakingSend])
+
+  useEffect(() => {
+    console.log(stakingState.toStrings()[stakingState.toStrings().length - 1])
+  }, [stakingState])
+
+  useEffect(() => {
+    stakingSend("SOFT_RESET_TO_DISABLED")
   }, [tokenAllowance, stakingSend])
 
   useEffect(() => {
@@ -105,11 +122,7 @@ const useStakingModalMachine = (amount: number): any => {
   }, [account, stakingSend])
 
   return {
-    reset: () => {
-      allowanceSend("SOFT_RESET")
-      stakingSend("SOFT_RESET")
-      mutate()
-    },
+    softReset,
     allowance: {
       state: allowanceState.toStrings()[allowanceState.toStrings().length - 1],
       context: allowanceState.context,
