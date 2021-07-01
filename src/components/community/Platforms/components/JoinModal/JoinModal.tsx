@@ -51,7 +51,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
           ) : (
             <VStack spacing="6">
               <Text>
-                Here’s your link. It’s only active for 10 minutes and is only usable
+                Here’s your link. It’s only active for 15 minutes and is only usable
                 once:
               </Text>
               <Link
