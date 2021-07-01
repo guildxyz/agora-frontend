@@ -1,4 +1,4 @@
-import { createMachine, assign, DoneInvokeEvent, Sender } from "xstate"
+import { createMachine, assign, DoneInvokeEvent } from "xstate"
 import { useMachine } from "@xstate/react"
 import { useEffect } from "react"
 import { parseEther } from "@ethersproject/units"
@@ -7,171 +7,83 @@ import { useCommunity } from "components/community/Context"
 import useContract from "hooks/useContract"
 import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
 import useTokenAllowance from "./useTokenAllowance"
-
-type AllowanceCheckEvent =
-  | {
-      type: "PERMISSION_NOT_GRANTED"
-    }
-  | {
-      type: "PERMISSION_IS_PENDING"
-    }
-  | {
-      type: "PERMISSION_IS_GRANTED"
-    }
+import useAllowanceMachine from "./useAllowanceMachine"
 
 type ContextType = {
   error: any
-  showApproveSuccess: boolean
 }
 
-const allowanceMachine = {
-  id: "allowance",
-  initial: "initial",
-  on: {
-    PERMISSION_GRANTED: "stake",
-  },
-  states: {
-    initial: {
-      invoke: {
-        src: "checkAllowance",
-        onError: "error",
-      },
-      on: {
-        PERMISSION_NOT_GRANTED: "idle",
-        PERMISSION_IS_PENDING: "loading.transaction",
-        PERMISSION_IS_GRANTED: "#root.stake",
-      },
-    },
-    idle: {
-      tags: "idle",
-      on: {
-        ALLOW: "loading",
-      },
-    },
-    loading: {
-      initial: "permission",
-      states: {
-        permission: {
-          tags: "loading",
-          invoke: {
-            src: "confirmPermission",
-            onDone: "transaction",
-            onError: "#allowance.error",
-          },
-        },
-        transaction: {
-          tags: "loading",
-          invoke: {
-            src: "confirmTransaction",
-            onDone: {
-              target: "#root.stake",
-              actions: "showApproveSuccess",
-            },
-            onError: "#allowance.error",
-          },
-        },
-      },
-    },
-    error: {
-      tags: "idle",
-      on: {
-        ALLOW: "loading",
-      },
-      entry: "setError",
-      exit: "removeError",
-    },
-  },
-}
-
-const stakeMachine = {
-  initial: "idle",
-  states: {
-    idle: {
-      tags: "idle",
-      on: {
-        STAKE: "loading",
-        HIDE_APPROVE_SUCCESS: {
-          target: "idle",
-          actions: "hideApproveSuccess",
-        },
-      },
-      exit: "hideApproveSuccess",
-    },
-    loading: {
-      tags: "loading",
-      invoke: {
-        src: "stake",
-        onDone: "success",
-        onError: "error",
-      },
-    },
-    error: {
-      tags: "idle",
-      on: {
-        STAKE: "loading",
-      },
-      entry: "setError",
-      exit: "removeError",
-    },
-    success: {
-      tags: "success",
-    },
-  },
-}
-
-const stakingModalMachine = createMachine<
-  ContextType,
-  DoneInvokeEvent<any> | AllowanceCheckEvent
->(
+const stakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
   {
-    id: "root",
-    initial: "allowance",
+    id: "staking",
+    initial: "initial",
     context: {
       error: null,
-      showApproveSuccess: false,
     },
     states: {
-      allowance: allowanceMachine,
-      stake: stakeMachine,
+      initial: {
+        on: {
+          START: "idle",
+          START_AND_SHOW_NOTIFICATION: "showNotification",
+        },
+      },
+      showNotification: {
+        on: {
+          HIDE_NOTIFICATION: "idle",
+          STAKE: "loading",
+        },
+      },
+      idle: {
+        on: {
+          STAKE: "loading",
+        },
+      },
+      loading: {
+        invoke: {
+          src: "stake",
+          onDone: "success",
+          onError: "error",
+        },
+      },
+      error: {
+        on: {
+          STAKE: "loading",
+        },
+        entry: "setError",
+        exit: "removeError",
+      },
+      success: {
+        // type: "final",
+      },
     },
     on: {
       SOFT_RESET: {
-        target: "allowance",
-        actions: "defaultContext",
+        target: "initial",
         cond: "notSucceeded",
       },
       HARD_RESET: {
-        target: "allowance",
-        actions: "defaultContext",
+        target: "initial",
       },
     },
   },
   {
     guards: {
-      notSucceeded: (_context, _event, condMeta) =>
-        !condMeta.state.hasTag("success"),
+      notSucceeded: (_, event) => {
+        console.log(event)
+        return true
+      },
     },
     actions: {
       removeError: assign({ error: null }),
       setError: assign<ContextType, DoneInvokeEvent<any>>({
         error: (_: ContextType, event: DoneInvokeEvent<any>) => event.data,
       }),
-      showApproveSuccess: assign<ContextType, DoneInvokeEvent<any>>({
-        showApproveSuccess: true,
-      }),
-      hideApproveSuccess: assign<ContextType, DoneInvokeEvent<any>>({
-        showApproveSuccess: false,
-      }),
-      defaultContext: assign<ContextType, DoneInvokeEvent<any>>({
-        error: null,
-        showApproveSuccess: false,
-      }),
     },
   }
 )
 
 const useStakingModalMachine = (amount: number): any => {
-  const [tokenAllowance, approve] = useTokenAllowance()
+  const [tokenAllowance] = useTokenAllowance()
   const {
     chainData: {
       contract: { address },
@@ -179,16 +91,9 @@ const useStakingModalMachine = (amount: number): any => {
   } = useCommunity()
   const { account } = useWeb3React()
   const contract = useContract(address, AGORA_SPACE_ABI, true)
-  const [state, send] = useMachine(stakingModalMachine, {
+  const [allowanceState, allowanceSend] = useAllowanceMachine()
+  const [stakingState, stakingSend] = useMachine(stakingModalMachine, {
     services: {
-      checkAllowance: () => (_send: Sender<AllowanceCheckEvent>) => {
-        if (!tokenAllowance) _send("PERMISSION_NOT_GRANTED")
-        else _send("PERMISSION_IS_GRANTED")
-      },
-      confirmPermission: approve,
-      confirmTransaction: async (_, event: DoneInvokeEvent<any>) =>
-        event.data.wait(),
-
       stake: async () => {
         const weiAmount = parseEther(amount.toString())
         const tx = await contract.deposit(weiAmount)
@@ -198,14 +103,23 @@ const useStakingModalMachine = (amount: number): any => {
   })
 
   useEffect(() => {
-    send("SOFT_RESET")
-  }, [tokenAllowance, send])
+    console.log(allowanceState.value)
+  }, [allowanceState])
 
   useEffect(() => {
-    send("HARD_RESET")
-  }, [account, send])
+    stakingSend("SOFT_RESET")
+  }, [tokenAllowance, stakingSend])
 
-  return [state, send]
+  useEffect(() => {
+    stakingSend("HARD_RESET")
+  }, [account, stakingSend])
+
+  return {
+    allowanceState,
+    stakingState,
+    allowanceSend,
+    stakingSend,
+  }
 }
 
 export default useStakingModalMachine
