@@ -97,32 +97,31 @@ const useStakingModalMachine = (amount: number): any => {
   })
 
   const softReset = () => {
-    if (allowanceState.matches("notification")) allowanceSend("SUCCESS")
-    else stakingSend("SOFT_RESET")
+    // if the allowance machine is in a success state, we only go back to idle
     if (allowanceState.matches("notification") || allowanceState.matches("success"))
       stakingSend("SOFT_RESET_TO_IDLE")
+    // otherwise to disabled, because, we are still waiting for allowance
     else stakingSend("SOFT_RESET_TO_DISABLED")
   }
 
-  useEffect(() => {
-    if (allowanceState.matches("notification") || allowanceState.matches("success"))
-      stakingSend("START")
-  }, [allowanceState, stakingSend])
-
-  useEffect(() => {
-    console.log(stakingState.toStrings()[stakingState.toStrings().length - 1])
-  }, [stakingState])
-
-  useEffect(() => {
-    stakingSend("SOFT_RESET_TO_DISABLED")
-  }, [tokenAllowance, stakingSend])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(softReset, [tokenAllowance, stakingSend])
 
   useEffect(() => {
     stakingSend("HARD_RESET")
   }, [account, stakingSend])
 
+  // start the staking process when allowance is in success state
+  useEffect(() => {
+    if (allowanceState.matches("notification") || allowanceState.matches("success"))
+      stakingSend("START")
+  }, [allowanceState, stakingSend])
+
   return {
-    softReset,
+    softReset: () => {
+      allowanceSend("SOFT_RESET")
+      softReset()
+    },
     allowance: {
       state: allowanceState.toStrings()[allowanceState.toStrings().length - 1],
       context: allowanceState.context,

@@ -170,7 +170,12 @@ const StakingModal = ({
                 case "idle":
                 case "error":
                   return (
-                    <ModalButton onClick={() => staking.send("STAKE")}>
+                    <ModalButton
+                      onClick={() => {
+                        allowance.send("HIDE_NOTIFICATION")
+                        staking.send("STAKE")
+                      }}
+                    >
                       Confirm stake
                     </ModalButton>
                   )

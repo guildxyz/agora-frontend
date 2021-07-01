@@ -5,7 +5,6 @@ import {
   Sender,
   State,
   assign,
-  StateMachine,
 } from "xstate"
 import { useMachine } from "@xstate/react"
 import { useEffect } from "react"
@@ -27,13 +26,13 @@ type ContextType = {
   error: any
 }
 
+// there is no syntax highlight for the send function without this type
 type ReturnType = [
   State<ContextType, DoneInvokeEvent<any> | AllowanceCheckEvent>,
   (
     event,
     payload?: EventData
-  ) => State<ContextType, DoneInvokeEvent<any> | AllowanceCheckEvent>,
-  StateMachine<ContextType, any, DoneInvokeEvent<any> | AllowanceCheckEvent>
+  ) => State<ContextType, DoneInvokeEvent<any> | AllowanceCheckEvent>
 ]
 
 const allowanceMachine = createMachine<
@@ -112,10 +111,16 @@ const allowanceMachine = createMachine<
       },
     },
     on: {
-      SOFT_RESET: {
-        target: "initial",
-        cond: "notSucceeded",
-      },
+      SOFT_RESET: [
+        {
+          target: "success",
+          cond: "notificationActive",
+        },
+        {
+          target: "initial",
+          cond: "notSucceeded",
+        },
+      ],
       HARD_RESET: {
         target: "initial",
       },
@@ -124,6 +129,8 @@ const allowanceMachine = createMachine<
   {
     guards: {
       notSucceeded: (_context, _event, { state }) => !state.matches("success"),
+      notificationActive: (_context, _event, { state }) =>
+        state.matches("notification"),
     },
     actions: {
       removeError: assign({ error: null }),
@@ -149,9 +156,7 @@ const useAllowanceMachine = (): ReturnType => {
     },
   })
 
-  useEffect(() => {
-    console.log(state.toStrings()[state.toStrings().length - 1])
-  }, [state])
+  useEffect(() => console.log(state.value), [state.value])
 
   useEffect(() => {
     send("SOFT_RESET")
@@ -161,7 +166,7 @@ const useAllowanceMachine = (): ReturnType => {
     send("HARD_RESET")
   }, [account, send])
 
-  return [state, send, allowanceMachine]
+  return [state, send]
 }
 
 export default useAllowanceMachine
