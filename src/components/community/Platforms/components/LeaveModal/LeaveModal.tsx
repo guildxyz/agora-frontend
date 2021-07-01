@@ -8,6 +8,7 @@ import {
   ModalFooter,
   Text,
   VStack,
+  PortalProps,
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
@@ -16,12 +17,18 @@ import platformsContent from "../../platformsContent"
 import processLeavePlatformMessage from "./utils/processLeavePlatformError"
 
 type Props = {
+  portalProps: PortalProps
   platform: string
   isOpen: boolean
   onClose: () => void
 }
 
-const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
+const LeaveModal = ({
+  portalProps,
+  platform,
+  isOpen,
+  onClose,
+}: Props): JSX.Element => {
   const [state, send] = useLeaveModalMachine(platform)
   const {
     leave: { title, membershipDescription, leaveDescription, buttonText },
@@ -32,7 +39,7 @@ const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
     onClose()
   }
   return (
-    <Modal isOpen={isOpen} onClose={closeModal}>
+    <Modal portalProps={portalProps} isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{title}</ModalHeader>

@@ -16,6 +16,7 @@ import type { Level as LevelType } from "temporaryData/types"
 import InfoTags from "components/community/Levels/components/InfoTags"
 import StakingModal from "../StakingModal"
 import useLevelAccess from "./hooks/useLevelAccess"
+import useContainerRef from "components/community/hooks/useContainerRef"
 
 type Props = {
   data: LevelType
@@ -25,7 +26,7 @@ const Level = ({ data }: Props): JSX.Element => {
   const communityData = useCommunity()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [hasAccess, noAccessMessage] = useLevelAccess(data.accessRequirement)
-  const modalRoot = useRef(null)
+  const containerRef = useContainerRef()
 
   return (
     <Flex justifyContent="space-between">
@@ -42,7 +43,6 @@ const Level = ({ data }: Props): JSX.Element => {
         </Stack>
       </Stack>
       <Stack alignItems="flex-end" justifyContent="center">
-        <Box w="0" h="0" ref={modalRoot} />
         {hasAccess && (
           <HStack spacing="3">
             <Text fontWeight="medium">You have access</Text>
@@ -66,7 +66,7 @@ const Level = ({ data }: Props): JSX.Element => {
         {!hasAccess && data.accessRequirement.type === "stake" && !noAccessMessage && (
           <StakingModal
             portalProps={{
-              containerRef: modalRoot,
+              containerRef,
               children: false,
             }}
             name={data.name}

@@ -9,6 +9,7 @@ import {
   Text,
   VStack,
   Icon,
+  PortalProps,
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
 import { Link } from "components/common/Link"
@@ -20,12 +21,18 @@ import useJoinModalMachine from "./hooks/useJoinModalMachine"
 import processSignError from "./utils/processJoinPlatformError"
 
 type Props = {
+  portalProps: PortalProps
   platform: string
   isOpen: boolean
   onClose: () => void
 }
 
-const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
+const JoinModal = ({
+  portalProps,
+  platform,
+  isOpen,
+  onClose,
+}: Props): JSX.Element => {
   const {
     join: { title, description },
   } = platformsContent[platform]
@@ -37,7 +44,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={closeModal}>
+    <Modal portalProps={portalProps} isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{title}</ModalHeader>
