@@ -104,35 +104,22 @@ const allowanceMachine = createMachine<
           },
         },
         on: {
-          SUCCESS: "#allowance.success",
+          SOFT_RESET: "#allowance.success",
         },
       },
       success: {
+        on: {
+          SOFT_RESET: "success",
+        },
         // type: "final",
       },
     },
     on: {
-      SOFT_RESET: [
-        {
-          target: "success",
-          cond: "notificationActive",
-        },
-        {
-          target: "initial",
-          cond: "notSucceeded",
-        },
-      ],
-      HARD_RESET: {
-        target: "initial",
-      },
+      SOFT_RESET: "initial", // this is overridden in deeper levels, so the two are not the same
+      HARD_RESET: "initial",
     },
   },
   {
-    guards: {
-      notSucceeded: (_context, _event, { state }) => !state.matches("success"),
-      notificationActive: (_context, _event, { state }) =>
-        state.matches("notification"),
-    },
     actions: {
       removeError: assign({ error: null }),
       setError: assign<ContextType, DoneInvokeEvent<any>>({

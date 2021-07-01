@@ -47,6 +47,11 @@ const StakingModal = ({
     onClose()
   }
 
+  const startStaking = () => {
+    allowance.send("HIDE_NOTIFICATION")
+    staking.send("STAKE")
+  }
+
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
@@ -108,7 +113,7 @@ const StakingModal = ({
                       mb="3"
                       rightIcon={
                         <Tooltip
-                          label="You have to give the Agora smart contracts permission to use your [token name]. You only have to do this once per token."
+                          label={`You have to give the Agora smart contracts permission to use your ${tokenSymbol}. You only have to do this once per token.`}
                           placement="top"
                         >
                           <Icon as={Info} tabIndex={0} />
@@ -170,14 +175,7 @@ const StakingModal = ({
                 case "idle":
                 case "error":
                   return (
-                    <ModalButton
-                      onClick={() => {
-                        allowance.send("HIDE_NOTIFICATION")
-                        staking.send("STAKE")
-                      }}
-                    >
-                      Confirm stake
-                    </ModalButton>
+                    <ModalButton onClick={startStaking}>Confirm stake</ModalButton>
                   )
                 case "loading":
                   return <ModalButton isLoading loadingText="Waiting confirmation" />

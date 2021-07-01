@@ -114,8 +114,16 @@ const useStakingModalMachine = (amount: number): any => {
 
   // start the staking process when allowance is in success state
   useEffect(() => {
-    if (allowanceState.matches("notification") || allowanceState.matches("success"))
-      stakingSend("START")
+    if (
+      // without this check, it would trigger twice when we start staking with the notificaion on
+      allowanceState.event.type !== "HIDE_NOTIFICATION" &&
+      allowanceState.event.type !== "xstate.after(500)#allowance.notification.hiding"
+    )
+      if (
+        allowanceState.matches("notification") ||
+        allowanceState.matches("success")
+      )
+        stakingSend("START")
   }, [allowanceState, stakingSend])
 
   return {
