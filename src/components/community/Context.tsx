@@ -1,8 +1,8 @@
-import React, { createContext, useEffect, useState, useContext, useRef } from "react"
-import { Chains } from "connectors"
-import { useWeb3React } from "@web3-react/core"
-import type { ProvidedCommunity, Community } from "temporaryData/types"
 import { Box, Portal } from "@chakra-ui/react"
+import { useWeb3React } from "@web3-react/core"
+import { Chains } from "connectors"
+import React, { createContext, useContext, useEffect, useRef, useState } from "react"
+import type { Community, ProvidedCommunity } from "temporaryData/types"
 import useColorPalette from "./hooks/useColorPalette"
 
 type Props = {
