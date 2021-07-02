@@ -11,74 +11,58 @@ import useAllowanceMachine from "../../../../hooks/useAllowanceMachine"
 
 type ContextType = {
   error: any
-  allowance: any
 }
 
-const stakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
-  {
-    id: "staking",
-    initial: "disabled",
-    context: {
-      error: null,
-      allowance: undefined,
-    },
-    states: {
-      disabled: {
-        entry: "spawnAllowanceMachine",
-        on: {
-          PERMISSION_GRANTED: "idle",
-          SOFT_RESET_TO_DISABLED: "",
-        },
-      },
-      idle: {
-        on: {
-          STAKE: "loading",
-        },
-      },
-      loading: {
-        invoke: {
-          src: "stake",
-          onDone: "success",
-          onError: "error",
-        },
-      },
-      error: {
-        on: {
-          STAKE: "loading",
-        },
-        entry: "setError",
-        exit: "removeError",
-      },
-      success: {
-        // type: "final",
+const stakingMachine = {
+  id: "staking",
+  initial: "disabled",
+  context: {
+    error: null,
+  },
+  states: {
+    disabled: {
+      on: {
+        PERMISSION_GRANTED: "#staking.idle",
+        SOFT_RESET_TO_DISABLED: "",
       },
     },
-    on: {
-      SOFT_RESET_TO_DISABLED: {
-        target: "disabled",
-        cond: "notSucceeded",
+    idle: {
+      on: {
+        STAKE: "#staking.loading",
       },
-      SOFT_RESET_TO_IDLE: {
-        target: "idle",
-        cond: "notSucceeded",
+    },
+    loading: {
+      invoke: {
+        src: "stake",
+        onDone: "#staking.success",
+        onError: "#staking.error",
       },
-      HARD_RESET: {
-        target: "disabled",
+    },
+    error: {
+      on: {
+        STAKE: "#staking.loading",
       },
+      entry: "setError",
+      exit: "removeError",
+    },
+    success: {
+      // type: "final",
     },
   },
-  {
-    guards: {
-      notSucceeded: (_context, _event, { state: { value } }) => value !== "success",
+  on: {
+    SOFT_RESET_TO_DISABLED: {
+      target: "#staking.disabled",
+      cond: "notSucceeded",
     },
-    actions: {
-      removeError: assign({ error: null }),
-      setError: assign<ContextType, DoneInvokeEvent<any>>({
-        error: (_: ContextType, event: DoneInvokeEvent<any>) => event.data,
-      }),
+    SOFT_RESET_TO_IDLE: {
+      target: "#staking.idle",
+      cond: "notSucceeded",
     },
-  }
-)
+    HARD_RESET: {
+      target: "#staking.disabled",
+    },
+  },
+}
 
 const useStakingModalMachine = (amount: number): any => {
   const {
@@ -90,8 +74,7 @@ const useStakingModalMachine = (amount: number): any => {
   const [tokenAllowance] = useTokenAllowance(tokenAddress, tokenName)
   const { account } = useWeb3React()
   const contract = useContract(contractAddress, AGORA_SPACE_ABI, true)
-  const allowanceMachine = useAllowanceMachine()
-  const [stakingState, stakingSend] = useMachine(stakingModalMachine, {
+  const { state, send, allowance } = useAllowanceMachine(stakingMachine, {
     services: {
       stake: async () => {
         const weiAmount = parseEther(amount.toString())
@@ -100,48 +83,39 @@ const useStakingModalMachine = (amount: number): any => {
       },
     },
     actions: {
-      spawnAllowanceMachine: assign({
-        // Actor will send update event to parent whenever its state changes
-        allowance: () => spawn(allowanceMachine, { sync: true }),
+      removeError: assign({ error: null }),
+      setError: assign<ContextType, DoneInvokeEvent<any>>({
+        error: (_: ContextType, event: DoneInvokeEvent<any>) => event.data,
       }),
     },
+    guards: {
+      notSucceeded: (_context, _event, { state: { value } }) => value !== "success",
+    },
   })
-  const { allowance } = stakingState.children
-  const machine = spawn(allowance, {
-    sync: true,
-  })
-
-  // const [allowanceState, allowanceSend] = useActor(allowance)
-
-  useEffect(() => console.log(stakingState.context.allowance?.state), [stakingState])
-  useEffect(() => console.log(stakingState.context), [stakingState])
 
   const softReset = () => {
-    stakingSend("SOFT_RESET_TO_DISABLED")
+    send("SOFT_RESET_TO_DISABLED")
   }
 
-  // useEffect(() => console.log(allowanceState), [allowanceState])
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(softReset, [tokenAllowance, stakingSend])
+  useEffect(softReset, [tokenAllowance, send])
 
   useEffect(() => {
-    stakingSend("HARD_RESET")
-  }, [account, stakingSend])
+    send("HARD_RESET")
+  }, [account, send])
 
   return {
     softReset: () => {
       softReset()
     },
-    /* allowance: {
-      state: allowanceState.toStrings()[allowanceState.toStrings().length - 1],
-      context: allowanceState.context,
-      send: allowanceSend,
-    }, */
+    allowance: {
+      state: allowance.state.toStrings()[allowance.state.toStrings().length - 1],
+      context: allowance.state.context,
+      send: allowance.send,
+    },
     staking: {
-      state: stakingState.toStrings()[stakingState.toStrings().length - 1],
-      context: stakingState.context,
-      send: stakingSend,
+      state: state.toStrings()[state.toStrings().length - 1],
+      context: state.context,
+      send,
     },
   }
 }

@@ -6,8 +6,10 @@ import {
   State,
   assign,
   StateMachine,
+  spawn,
+  sendParent,
 } from "xstate"
-import { useMachine } from "@xstate/react"
+import { useActor, useMachine } from "@xstate/react"
 import { useEffect } from "react"
 import { useWeb3React } from "@web3-react/core"
 import useTokenAllowance from "./useTokenAllowance"
@@ -90,6 +92,7 @@ const allowanceMachine = createMachine<
       },
       notification: {
         initial: "showing",
+        entry: "notifyParent",
         states: {
           showing: {
             on: {
@@ -108,6 +111,7 @@ const allowanceMachine = createMachine<
       },
       success: {
         type: "final",
+        entry: "notifyParent",
         on: {
           SOFT_RESET: "success",
         },
@@ -124,11 +128,12 @@ const allowanceMachine = createMachine<
       setError: assign<ContextType, DoneInvokeEvent<any>>({
         error: (_: ContextType, event: DoneInvokeEvent<any>) => event.data,
       }),
+      notifyParent: () => sendParent("PERMISSION_GRANTED"),
     },
   }
 )
 
-const useAllowanceMachine = (): ReturnType => {
+const useAllowanceMachine = (consumerMachine, consumerMachineOptions) => {
   const {
     chainData: {
       token: { address: tokenAddress, name: tokenName },
@@ -137,9 +142,10 @@ const useAllowanceMachine = (): ReturnType => {
   const [tokenAllowance, approve] = useTokenAllowance(tokenAddress, tokenName)
   const { account } = useWeb3React()
 
-  const machine = allowanceMachine.withConfig({
+  const [, , machine] = useMachine(allowanceMachine, {
     services: {
       checkAllowance: () => (_send: Sender<AllowanceCheckEvent>) => {
+        console.log(`tokenAllowance in sercive is: ${tokenAllowance}`)
         if (!tokenAllowance) _send("PERMISSION_NOT_GRANTED")
         else _send("PERMISSION_IS_GRANTED")
       },
@@ -149,7 +155,40 @@ const useAllowanceMachine = (): ReturnType => {
     },
   })
 
-  return machine
+  const spawnActor = () => spawn(machine, { sync: true })
+
+  const wrapperMachine = createMachine({
+    initial: "spawningAllowanceActor",
+    context: {
+      allowance: spawnActor(),
+    },
+    states: {
+      spawningAllowanceActor: {
+        entry: assign({
+          allowance: spawnActor,
+        }),
+      },
+      consumerMachine,
+    },
+  })
+
+  const [state, send] = useMachine(wrapperMachine, consumerMachineOptions)
+  const [allowanceState, allowanceSend] = useActor(state.context.allowance)
+
+  useEffect(() => {
+    allowanceSend({ type: "SOFT_RESET" })
+  }, [tokenAllowance, allowanceSend])
+
+  useEffect(() => console.log(allowanceState), [allowanceState])
+
+  return {
+    state,
+    send,
+    allowance: {
+      state,
+      send,
+    },
+  }
 }
 
 export default useAllowanceMachine
