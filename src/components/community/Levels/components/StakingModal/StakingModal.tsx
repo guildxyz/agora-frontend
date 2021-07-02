@@ -85,7 +85,7 @@ const StakingModal = ({
           ) : (
             <>
               <Error
-                error={staking.context.error || allowance?.context.error}
+                error={staking.error || allowance?.error}
                 processError={() => ({
                   title: "Error",
                   description: "Error description",

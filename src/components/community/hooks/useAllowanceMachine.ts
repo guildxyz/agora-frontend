@@ -8,6 +8,8 @@ import {
   StateMachine,
   spawn,
   sendParent,
+  ActorRef,
+  SpawnedActorRef,
 } from "xstate"
 import { useActor, useMachine } from "@xstate/react"
 import { useEffect } from "react"
@@ -26,19 +28,15 @@ type AllowanceCheckEvent =
       type: "PERMISSION_IS_GRANTED"
     }
 
-type ContextType = {
+type AllowanceContextType = {
   error: any
 }
-
-// there is no syntax highlight for the send function without this type
-type ReturnType = StateMachine<
-  ContextType,
-  any,
-  DoneInvokeEvent<any> | AllowanceCheckEvent
->
+type WrapperContextType = {
+  allowance: any
+}
 
 const allowanceMachine = createMachine<
-  ContextType,
+  AllowanceContextType,
   DoneInvokeEvent<any> | AllowanceCheckEvent
 >(
   {
@@ -125,15 +123,17 @@ const allowanceMachine = createMachine<
   {
     actions: {
       removeError: assign({ error: null }),
-      setError: assign<ContextType, DoneInvokeEvent<any>>({
-        error: (_: ContextType, event: DoneInvokeEvent<any>) => event.data,
+      setError: assign<AllowanceContextType, DoneInvokeEvent<any>>({
+        error: (_: AllowanceContextType, event: DoneInvokeEvent<any>) => event.data,
       }),
-      notifyParent: () => sendParent("PERMISSION_GRANTED"),
     },
   }
 )
 
-const useAllowanceMachine = (consumerMachine, consumerMachineOptions) => {
+const useAllowanceMachine = <ChildContextType>(
+  consumerMachine,
+  consumerMachineOptions
+) => {
   const {
     chainData: {
       token: { address: tokenAddress, name: tokenName },
@@ -145,7 +145,6 @@ const useAllowanceMachine = (consumerMachine, consumerMachineOptions) => {
   const [, , machine] = useMachine(allowanceMachine, {
     services: {
       checkAllowance: () => (_send: Sender<AllowanceCheckEvent>) => {
-        console.log(`tokenAllowance in sercive is: ${tokenAllowance}`)
         if (!tokenAllowance) _send("PERMISSION_NOT_GRANTED")
         else _send("PERMISSION_IS_GRANTED")
       },
@@ -153,40 +152,50 @@ const useAllowanceMachine = (consumerMachine, consumerMachineOptions) => {
       confirmTransaction: async (_, event: DoneInvokeEvent<any>) =>
         event.data.wait(),
     },
+    actions: {
+      notifyParent: (_context, _event, _meta) => {
+        console.log({ _context, _event, _meta })
+      },
+    },
   })
 
-  const spawnActor = () => spawn(machine, { sync: true })
-
-  const wrapperMachine = createMachine({
+  const wrapperMachine = createMachine<
+    WrapperContextType,
+    DoneInvokeEvent<any> | AllowanceCheckEvent
+  >({
     initial: "spawningAllowanceActor",
     context: {
-      allowance: spawnActor(),
+      allowance: null,
     },
     states: {
       spawningAllowanceActor: {
         entry: assign({
-          allowance: spawnActor,
+          allowance: () => spawn(machine, { sync: true }),
         }),
       },
       consumerMachine,
     },
   })
 
-  const [state, send] = useMachine(wrapperMachine, consumerMachineOptions)
-  const [allowanceState, allowanceSend] = useActor(state.context.allowance)
+  const [state, send] = useMachine<any, any>(wrapperMachine, consumerMachineOptions)
+  const [allowanceState, allowanceSend] = useActor(
+    state.context.allowance as SpawnedActorRef<any, any>
+  )
+  const softReset = () => allowanceSend({ type: "SOFT_RESET" })
 
-  useEffect(() => {
-    allowanceSend({ type: "SOFT_RESET" })
-  }, [tokenAllowance, allowanceSend])
+  useEffect(softReset, [tokenAllowance, allowanceSend])
 
   useEffect(() => console.log(allowanceState), [allowanceState])
 
   return {
-    state,
+    state: state?.toStrings()[state?.toStrings().length - 1],
+    error: state.context.error,
     send,
     allowance: {
-      state,
-      send,
+      state: allowanceState?.toStrings()[allowanceState?.toStrings().length - 1],
+      error: allowanceState?.context.error,
+      send: (event: string) => allowanceSend({ type: event }),
+      softReset,
     },
   }
 }

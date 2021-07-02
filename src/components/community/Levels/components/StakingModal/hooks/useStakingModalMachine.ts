@@ -74,24 +74,28 @@ const useStakingModalMachine = (amount: number): any => {
   const [tokenAllowance] = useTokenAllowance(tokenAddress, tokenName)
   const { account } = useWeb3React()
   const contract = useContract(contractAddress, AGORA_SPACE_ABI, true)
-  const { state, send, allowance } = useAllowanceMachine(stakingMachine, {
-    services: {
-      stake: async () => {
-        const weiAmount = parseEther(amount.toString())
-        const tx = await contract.deposit(weiAmount)
-        return tx
+  const { state, send, error, allowance } = useAllowanceMachine<ContextType>(
+    stakingMachine,
+    {
+      services: {
+        stake: async () => {
+          const weiAmount = parseEther(amount.toString())
+          const tx = await contract.deposit(weiAmount)
+          return tx
+        },
       },
-    },
-    actions: {
-      removeError: assign({ error: null }),
-      setError: assign<ContextType, DoneInvokeEvent<any>>({
-        error: (_: ContextType, event: DoneInvokeEvent<any>) => event.data,
-      }),
-    },
-    guards: {
-      notSucceeded: (_context, _event, { state: { value } }) => value !== "success",
-    },
-  })
+      actions: {
+        removeError: assign({ error: null }),
+        setError: assign<ContextType, DoneInvokeEvent<any>>({
+          error: (_: ContextType, event: DoneInvokeEvent<any>) => event.data,
+        }),
+      },
+      guards: {
+        notSucceeded: (_context, _event, { state: { value } }) =>
+          value !== "success",
+      },
+    }
+  )
 
   const softReset = () => {
     send("SOFT_RESET_TO_DISABLED")
@@ -106,15 +110,12 @@ const useStakingModalMachine = (amount: number): any => {
   return {
     softReset: () => {
       softReset()
+      allowance.softReset()
     },
-    allowance: {
-      state: allowance.state.toStrings()[allowance.state.toStrings().length - 1],
-      context: allowance.state.context,
-      send: allowance.send,
-    },
+    allowance,
     staking: {
-      state: state.toStrings()[state.toStrings().length - 1],
-      context: state.context,
+      state,
+      error,
       send,
     },
   }
