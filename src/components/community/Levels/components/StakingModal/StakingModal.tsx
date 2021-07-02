@@ -48,7 +48,7 @@ const StakingModal = ({
   }
 
   const startStaking = () => {
-    allowance.send("HIDE_NOTIFICATION")
+    allowance?.send("HIDE_NOTIFICATION")
     staking.send("STAKE")
   }
 
@@ -85,7 +85,7 @@ const StakingModal = ({
           ) : (
             <>
               <Error
-                error={staking.context.error || allowance.context.error}
+                error={staking.context.error || allowance?.context.error}
                 processError={() => ({
                   title: "Error",
                   description: "Error description",
@@ -105,7 +105,7 @@ const StakingModal = ({
               so there's no unwanted space when it's not shown */}
           <VStack spacing="0" alignItems="strech">
             {(() => {
-              switch (allowance.state) {
+              switch (allowance?.state) {
                 case "idle":
                 case "error":
                   return (
@@ -122,7 +122,7 @@ const StakingModal = ({
                       // so the button label will be positioned to the center
                       leftIcon={<span />}
                       justifyContent="space-between"
-                      onClick={() => allowance.send("ALLOW")}
+                      onClick={() => allowance?.send("ALLOW")}
                     >
                       {`Allow Agora to use ${tokenSymbol}`}
                     </ModalButton>
@@ -146,14 +146,14 @@ const StakingModal = ({
                 case "notification.showing":
                 case "notification.hiding":
                   return (
-                    <Collapse in={allowance.state === "notification.showing"}>
+                    <Collapse in={allowance?.state === "notification.showing"}>
                       <ModalButton
                         as="div"
                         colorScheme="gray"
                         variant="solidStatic"
                         rightIcon={
                           <CloseButton
-                            onClick={() => allowance.send("HIDE_NOTIFICATION")}
+                            onClick={() => allowance?.send("HIDE_NOTIFICATION")}
                           />
                         }
                         leftIcon={<Check />}

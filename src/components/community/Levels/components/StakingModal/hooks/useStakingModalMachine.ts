@@ -1,5 +1,5 @@
-import { createMachine, assign, DoneInvokeEvent } from "xstate"
-import { useMachine } from "@xstate/react"
+import { createMachine, assign, DoneInvokeEvent, spawn, StateMachine } from "xstate"
+import { useActor, useMachine } from "@xstate/react"
 import { useEffect } from "react"
 import { parseEther } from "@ethersproject/units"
 import { useWeb3React } from "@web3-react/core"
@@ -11,6 +11,7 @@ import useAllowanceMachine from "../../../../hooks/useAllowanceMachine"
 
 type ContextType = {
   error: any
+  allowance: any
 }
 
 const stakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
@@ -19,11 +20,14 @@ const stakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
     initial: "disabled",
     context: {
       error: null,
+      allowance: undefined,
     },
     states: {
       disabled: {
+        entry: "spawnAllowanceMachine",
         on: {
-          START: "idle",
+          PERMISSION_GRANTED: "idle",
+          SOFT_RESET_TO_DISABLED: "",
         },
       },
       idle: {
@@ -86,7 +90,7 @@ const useStakingModalMachine = (amount: number): any => {
   const [tokenAllowance] = useTokenAllowance(tokenAddress, tokenName)
   const { account } = useWeb3React()
   const contract = useContract(contractAddress, AGORA_SPACE_ABI, true)
-  const [allowanceState, allowanceSend] = useAllowanceMachine()
+  const allowanceMachine = useAllowanceMachine()
   const [stakingState, stakingSend] = useMachine(stakingModalMachine, {
     services: {
       stake: async () => {
@@ -95,15 +99,28 @@ const useStakingModalMachine = (amount: number): any => {
         return tx
       },
     },
+    actions: {
+      spawnAllowanceMachine: assign({
+        // Actor will send update event to parent whenever its state changes
+        allowance: () => spawn(allowanceMachine, { sync: true }),
+      }),
+    },
+  })
+  const { allowance } = stakingState.children
+  const machine = spawn(allowance, {
+    sync: true,
   })
 
+  // const [allowanceState, allowanceSend] = useActor(allowance)
+
+  useEffect(() => console.log(stakingState.context.allowance?.state), [stakingState])
+  useEffect(() => console.log(stakingState.context), [stakingState])
+
   const softReset = () => {
-    // if the allowance machine is in a success state, we only go back to idle
-    if (allowanceState.matches("notification") || allowanceState.matches("success"))
-      stakingSend("SOFT_RESET_TO_IDLE")
-    // otherwise to disabled, because, we are still waiting for allowance
-    else stakingSend("SOFT_RESET_TO_DISABLED")
+    stakingSend("SOFT_RESET_TO_DISABLED")
   }
+
+  // useEffect(() => console.log(allowanceState), [allowanceState])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(softReset, [tokenAllowance, stakingSend])
@@ -112,30 +129,15 @@ const useStakingModalMachine = (amount: number): any => {
     stakingSend("HARD_RESET")
   }, [account, stakingSend])
 
-  // start the staking process when allowance is in success state
-  useEffect(() => {
-    if (
-      // without this check, it would trigger twice when we start staking with the notificaion on
-      allowanceState.event.type !== "HIDE_NOTIFICATION" &&
-      allowanceState.event.type !== "xstate.after(500)#allowance.notification.hiding"
-    )
-      if (
-        allowanceState.matches("notification") ||
-        allowanceState.matches("success")
-      )
-        stakingSend("START")
-  }, [allowanceState, stakingSend])
-
   return {
     softReset: () => {
-      allowanceSend("SOFT_RESET")
       softReset()
     },
-    allowance: {
+    /* allowance: {
       state: allowanceState.toStrings()[allowanceState.toStrings().length - 1],
       context: allowanceState.context,
       send: allowanceSend,
-    },
+    }, */
     staking: {
       state: stakingState.toStrings()[stakingState.toStrings().length - 1],
       context: stakingState.context,

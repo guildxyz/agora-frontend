@@ -5,6 +5,7 @@ import {
   Sender,
   State,
   assign,
+  StateMachine,
 } from "xstate"
 import { useMachine } from "@xstate/react"
 import { useEffect } from "react"
@@ -28,13 +29,11 @@ type ContextType = {
 }
 
 // there is no syntax highlight for the send function without this type
-type ReturnType = [
-  State<ContextType, DoneInvokeEvent<any> | AllowanceCheckEvent>,
-  (
-    event,
-    payload?: EventData
-  ) => State<ContextType, DoneInvokeEvent<any> | AllowanceCheckEvent>
-]
+type ReturnType = StateMachine<
+  ContextType,
+  any,
+  DoneInvokeEvent<any> | AllowanceCheckEvent
+>
 
 const allowanceMachine = createMachine<
   ContextType,
@@ -108,10 +107,10 @@ const allowanceMachine = createMachine<
         },
       },
       success: {
+        type: "final",
         on: {
           SOFT_RESET: "success",
         },
-        // type: "final",
       },
     },
     on: {
@@ -137,7 +136,8 @@ const useAllowanceMachine = (): ReturnType => {
   } = useCommunity()
   const [tokenAllowance, approve] = useTokenAllowance(tokenAddress, tokenName)
   const { account } = useWeb3React()
-  const [state, send] = useMachine(allowanceMachine, {
+
+  const machine = allowanceMachine.withConfig({
     services: {
       checkAllowance: () => (_send: Sender<AllowanceCheckEvent>) => {
         if (!tokenAllowance) _send("PERMISSION_NOT_GRANTED")
@@ -149,15 +149,7 @@ const useAllowanceMachine = (): ReturnType => {
     },
   })
 
-  useEffect(() => {
-    send("SOFT_RESET")
-  }, [tokenAllowance, send])
-
-  useEffect(() => {
-    send("HARD_RESET")
-  }, [account, send])
-
-  return [state, send]
+  return machine
 }
 
 export default useAllowanceMachine
