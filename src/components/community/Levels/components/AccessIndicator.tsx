@@ -20,13 +20,13 @@ const AccessIndicator = ({
         left: 0,
         height: 0,
         width: "6px",
-        background: isNextLevelOk
-          ? "var(--chakra-colors-primary-100)"
-          : "var(--chakra-colors-gray-100)",
       }}
       transition={{ type: "just" }}
       animate={{
         height: hoverLevelPos,
+        background: isNextLevelOk
+          ? "var(--chakra-colors-primary-100)"
+          : "var(--chakra-colors-gray-200)",
       }}
     />
     <motion.div
