@@ -40,7 +40,8 @@ const StakingModal = ({
       token: { symbol: tokenSymbol },
     },
   } = useCommunity()
-  const { allowance, staking, softReset } = useStakingModalMachine(amount)
+  const { allowance, staking, notification, softReset } =
+    useStakingModalMachine(amount)
 
   const closeModal = () => {
     softReset()
@@ -143,17 +144,25 @@ const StakingModal = ({
                       loadingText="Waiting for transaction to succeed"
                     />
                   )
+                case "success":
+                default:
+                  return null
+              }
+            })()}
+
+            {(() => {
+              switch (notification?.state) {
                 case "notification.showing":
                 case "notification.hiding":
                   return (
-                    <Collapse in={allowance?.state === "notification.showing"}>
+                    <Collapse in={notification?.state === "notification.showing"}>
                       <ModalButton
                         as="div"
                         colorScheme="gray"
                         variant="solidStatic"
                         rightIcon={
                           <CloseButton
-                            onClick={() => allowance?.send("HIDE_NOTIFICATION")}
+                            onClick={() => notification?.send("HIDE_NOTIFICATION")}
                           />
                         }
                         leftIcon={<Check />}
@@ -164,7 +173,7 @@ const StakingModal = ({
                       </ModalButton>
                     </Collapse>
                   )
-                case "success":
+                case "notification.hidden":
                 default:
                   return null
               }

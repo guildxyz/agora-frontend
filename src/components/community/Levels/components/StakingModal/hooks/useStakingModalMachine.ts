@@ -15,17 +15,11 @@ type ContextType = {
 
 const stakingMachine = {
   id: "staking",
-  initial: "disabled",
+  initial: "idle",
   context: {
     error: null,
   },
   states: {
-    disabled: {
-      on: {
-        PERMISSION_GRANTED: "#staking.idle",
-        SOFT_RESET_TO_DISABLED: "",
-      },
-    },
     idle: {
       on: {
         STAKE: "#staking.loading",
@@ -51,7 +45,7 @@ const stakingMachine = {
   },
   on: {
     SOFT_RESET_TO_DISABLED: {
-      target: "#staking.disabled",
+      target: "#staking.idle",
       cond: "notSucceeded",
     },
     SOFT_RESET_TO_IDLE: {
@@ -59,7 +53,7 @@ const stakingMachine = {
       cond: "notSucceeded",
     },
     HARD_RESET: {
-      target: "#staking.disabled",
+      target: "#staking.idle",
     },
   },
 }
@@ -74,9 +68,8 @@ const useStakingModalMachine = (amount: number): any => {
   const [tokenAllowance] = useTokenAllowance(tokenAddress, tokenName)
   const { account } = useWeb3React()
   const contract = useContract(contractAddress, AGORA_SPACE_ABI, true)
-  const { state, send, error, allowance } = useAllowanceMachine<ContextType>(
-    stakingMachine,
-    {
+  const { state, send, error, allowance, notification } =
+    useAllowanceMachine<ContextType>(stakingMachine, {
       services: {
         stake: async () => {
           const weiAmount = parseEther(amount.toString())
@@ -94,14 +87,15 @@ const useStakingModalMachine = (amount: number): any => {
         notSucceeded: (_context, _event, { state: { value } }) =>
           value !== "success",
       },
-    }
-  )
+    })
 
   const softReset = () => {
     send("SOFT_RESET_TO_DISABLED")
   }
 
   useEffect(softReset, [tokenAllowance, send])
+
+  useEffect(() => console.log(state), [state])
 
   useEffect(() => {
     send("HARD_RESET")
@@ -113,6 +107,7 @@ const useStakingModalMachine = (amount: number): any => {
       allowance.softReset()
     },
     allowance,
+    notification,
     staking: {
       state,
       error,

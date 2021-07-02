@@ -75,7 +75,10 @@ const allowanceMachine = createMachine<
           transaction: {
             invoke: {
               src: "confirmTransaction",
-              onDone: "#allowance.notification",
+              onDone: {
+                target: "#allowance.success",
+                actions: "setNotification",
+              },
               onError: "#allowance.error",
             },
           },
@@ -88,28 +91,9 @@ const allowanceMachine = createMachine<
         entry: "setError",
         exit: "removeError",
       },
-      notification: {
-        initial: "showing",
-        entry: "notifyParent",
-        states: {
-          showing: {
-            on: {
-              HIDE_NOTIFICATION: "hiding",
-            },
-          },
-          hiding: {
-            after: {
-              500: "#allowance.success",
-            },
-          },
-        },
-        on: {
-          SOFT_RESET: "#allowance.success",
-        },
-      },
+
       success: {
         type: "final",
-        entry: "notifyParent",
         on: {
           SOFT_RESET: "success",
         },
@@ -142,7 +126,7 @@ const useAllowanceMachine = <ChildContextType>(
   const [tokenAllowance, approve] = useTokenAllowance(tokenAddress, tokenName)
   const { account } = useWeb3React()
 
-  const [, , machine] = useMachine(allowanceMachine, {
+  const [, , machine] = useMachine<any, any>(allowanceMachine, {
     services: {
       checkAllowance: () => (_send: Sender<AllowanceCheckEvent>) => {
         if (!tokenAllowance) _send("PERMISSION_NOT_GRANTED")
@@ -159,36 +143,69 @@ const useAllowanceMachine = <ChildContextType>(
     },
   })
 
-  const wrapperMachine = createMachine<
-    WrapperContextType,
-    DoneInvokeEvent<any> | AllowanceCheckEvent
-  >({
-    initial: "spawningAllowanceActor",
+  const wrapperMachine = createMachine<any, any>({
+    initial: "allowance",
     context: {
       allowance: null,
+      notification: false,
     },
     states: {
-      spawningAllowanceActor: {
-        entry: assign({
-          allowance: () => spawn(machine, { sync: true }),
-        }),
+      allowance: {
+        invoke: {
+          id: "allowance",
+          src: machine.machine,
+          onDone: "consumer",
+        },
       },
-      consumerMachine,
+      consumer: {
+        type: "parallel",
+        states: {
+          notification: {
+            initial: "showing",
+            states: {
+              showing: {
+                entry: (context, event, meta) =>
+                  console.log({ context, event, meta }),
+                on: {
+                  HIDE_NOTIFICATION: "hiding",
+                },
+              },
+              hiding: {
+                after: {
+                  500: "hidden",
+                },
+              },
+              hidden: {
+                type: "final",
+              },
+            },
+            on: {
+              SOFT_RESET: "notification.hidden",
+            },
+          },
+          consumerMachine,
+        },
+      },
     },
   })
 
-  const [state, send] = useMachine<any, any>(wrapperMachine, consumerMachineOptions)
+  const [state, send, service] = useMachine<any, any>(
+    wrapperMachine,
+    consumerMachineOptions
+  )
   const [allowanceState, allowanceSend] = useActor(
-    state.context.allowance as SpawnedActorRef<any, any>
+    service.initialState.children.allowance
   )
   const softReset = () => allowanceSend({ type: "SOFT_RESET" })
 
   useEffect(softReset, [tokenAllowance, allowanceSend])
 
-  useEffect(() => console.log(allowanceState), [allowanceState])
+  useEffect(() => console.log(state.toStrings()), [state])
 
   return {
-    state: state?.toStrings()[state?.toStrings().length - 1],
+    state: state
+      ?.toStrings()
+      [state?.toStrings().length - 1].slice("consumer.consumerMachine.".length),
     error: state.context.error,
     send,
     allowance: {
@@ -197,7 +214,12 @@ const useAllowanceMachine = <ChildContextType>(
       send: (event: string) => allowanceSend({ type: event }),
       softReset,
     },
+    notification: {
+      state: state
+        ?.toStrings()
+        [state?.toStrings().length - 2]?.slice("consumer.".length),
+      send,
+    },
   }
 }
-
 export default useAllowanceMachine
