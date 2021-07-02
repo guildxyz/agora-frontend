@@ -1,26 +1,26 @@
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  VStack,
-  Text,
-  Collapse,
-  CloseButton,
-  Tooltip,
   Center,
+  CloseButton,
+  Collapse,
   Icon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  Tooltip,
+  VStack,
 } from "@chakra-ui/react"
-import { Info, Check, ArrowCircleUp } from "phosphor-react"
+import { Error } from "components/common/Error"
+import ModalButton from "components/common/ModalButton"
+import { useCommunity } from "components/community/Context"
+import { ArrowCircleUp, Check, Info } from "phosphor-react"
 import { useEffect } from "react"
 import type { AccessRequirements } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
-import ModalButton from "components/common/ModalButton"
-import { Error } from "components/common/Error"
-import { useCommunity } from "components/community/Context"
 import useStakingModalMachine from "./hooks/useStakingModalMachine"
 
 type Props = {

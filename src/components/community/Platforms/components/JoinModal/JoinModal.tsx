@@ -1,4 +1,5 @@
 import {
+  Icon,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -8,7 +9,6 @@ import {
   ModalOverlay,
   Text,
   VStack,
-  Icon,
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
 import { Link } from "components/common/Link"
