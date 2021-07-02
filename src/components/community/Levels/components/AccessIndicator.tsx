@@ -18,12 +18,12 @@ const AccessIndicator = ({
         position: "absolute",
         top: 0,
         left: 0,
-        height: 0,
+        height: highestLevelPos,
         width: "6px",
       }}
       transition={{ type: "just" }}
       animate={{
-        height: hoverLevelPos,
+        height: hoverLevelPos || highestLevelPos,
         background: isNextLevelOk
           ? "var(--chakra-colors-primary-100)"
           : "var(--chakra-colors-gray-200)",
