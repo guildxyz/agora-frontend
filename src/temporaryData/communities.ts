@@ -130,7 +130,7 @@ const communities: Community[] = [
     },
     levels: [
       {
-        name: "Agora square",
+        name: "Swipers square",
         desc: "",
         imageUrl: "temporaryCommunityLogos/swipers.png",
         accessRequirement: {
@@ -145,13 +145,28 @@ const communities: Community[] = [
         },
       },
       {
-        name: "Agora members",
+        name: "Swipers members",
         desc: "Basic group for the basic HODLers",
         imageUrl: "temporaryCommunityLogos/swipers.png",
         accessRequirement: {
           type: "hold",
           amount: 5,
           timelockMs: 0,
+        },
+        membersCount: 0,
+        platforms: {
+          telegramGroups: [],
+          discordChannels: [],
+        },
+      },
+      {
+        name: "Swipers community owners",
+        desc: "Group for founders who tokenzied their communities",
+        imageUrl: "temporaryCommunityLogos/swipers.png",
+        accessRequirement: {
+          type: "stake",
+          amount: 150,
+          timelockMs: 600000,
         },
         membersCount: 0,
         platforms: {
