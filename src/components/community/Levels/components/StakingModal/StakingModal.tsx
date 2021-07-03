@@ -1,25 +1,26 @@
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  VStack,
-  Text,
-  Collapse,
-  CloseButton,
-  Tooltip,
   Center,
+  CloseButton,
+  Collapse,
   Icon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  Tooltip,
+  VStack,
 } from "@chakra-ui/react"
-import { Info, Check, ArrowCircleUp } from "phosphor-react"
+import { Error } from "components/common/Error"
+import ModalButton from "components/common/ModalButton"
+import { useCommunity } from "components/community/Context"
+import useAllowanceMachine from "components/community/hooks/useAllowanceMachine"
+import { ArrowCircleUp, Check, Info } from "phosphor-react"
 import type { AccessRequirements } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
-import ModalButton from "components/common/ModalButton"
-import { Error } from "components/common/Error"
-import { useCommunity } from "components/community/Context"
 import useStakingModalMachine from "./hooks/useStakingModalMachine"
 
 type Props = {
@@ -40,17 +41,18 @@ const StakingModal = ({
       token: { symbol: tokenSymbol },
     },
   } = useCommunity()
-  const { allowance, staking, notification, softReset } =
-    useStakingModalMachine(amount)
+  const [allowanceState, allowanceSend] = useAllowanceMachine()
+  const [stakeState, stakeSend] = useStakingModalMachine(amount)
 
   const closeModal = () => {
-    softReset()
+    allowanceSend("RESET")
+    stakeSend("RESET")
     onClose()
   }
 
   const startStaking = () => {
-    allowance?.send("HIDE_NOTIFICATION")
-    staking.send("STAKE")
+    allowanceSend("HIDE_NOTIFICATION")
+    stakeSend("STAKE")
   }
 
   return (
@@ -58,13 +60,13 @@ const StakingModal = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {staking.state === "success"
+          {stakeState === "success"
             ? `Transaction submitted`
             : `Stake to join ${name}`}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {staking.state === "success" ? (
+          {stakeState === "success" ? (
             <>
               <Center>
                 <ArrowCircleUp
@@ -86,7 +88,7 @@ const StakingModal = ({
           ) : (
             <>
               <Error
-                error={staking.error || allowance?.error}
+                error={stakeState.context.error || allowanceState.context.error}
                 processError={() => ({
                   title: "Error",
                   description: "Error description",
@@ -106,7 +108,7 @@ const StakingModal = ({
               so there's no unwanted space when it's not shown */}
           <VStack spacing="0" alignItems="strech">
             {(() => {
-              switch (allowance?.state) {
+              switch (allowanceState.value) {
                 case "idle":
                 case "error":
                   return (
@@ -123,12 +125,12 @@ const StakingModal = ({
                       // so the button label will be positioned to the center
                       leftIcon={<span />}
                       justifyContent="space-between"
-                      onClick={() => allowance?.send("ALLOW")}
+                      onClick={() => allowanceSend("ALLOW")}
                     >
                       {`Allow Agora to use ${tokenSymbol}`}
                     </ModalButton>
                   )
-                case "loading.permission":
+                case "waitingConfirmation":
                   return (
                     <ModalButton
                       mb="3"
@@ -136,7 +138,7 @@ const StakingModal = ({
                       loadingText="Waiting confirmation"
                     />
                   )
-                case "loading.transaction":
+                case "waitingForTransaction":
                   return (
                     <ModalButton
                       mb="3"
@@ -145,24 +147,20 @@ const StakingModal = ({
                     />
                   )
                 case "success":
+                case "successNotification":
                 default:
-                  return null
-              }
-            })()}
-
-            {(() => {
-              switch (notification?.state) {
-                case "notification.showing":
-                case "notification.hiding":
                   return (
-                    <Collapse in={notification?.state === "notification.showing"}>
+                    <Collapse
+                      in={allowanceState.value === "successNotification"}
+                      unmountOnExit
+                    >
                       <ModalButton
                         as="div"
                         colorScheme="gray"
                         variant="solidStatic"
                         rightIcon={
                           <CloseButton
-                            onClick={() => notification?.send("HIDE_NOTIFICATION")}
+                            onClick={() => allowanceSend("HIDE_NOTIFICATION")}
                           />
                         }
                         leftIcon={<Check />}
@@ -173,37 +171,36 @@ const StakingModal = ({
                       </ModalButton>
                     </Collapse>
                   )
-                case "notification.hidden":
-                default:
-                  return null
               }
             })()}
 
-            {(() => {
-              switch (staking.state) {
-                case "idle":
-                case "error":
-                  return (
-                    <ModalButton onClick={startStaking}>Confirm stake</ModalButton>
-                  )
-                case "loading":
-                  return <ModalButton isLoading loadingText="Waiting confirmation" />
-                case "success":
-                  return <ModalButton onClick={closeModal}>Close</ModalButton>
-                case "disabled":
-                default:
-                  return (
-                    <ModalButton
-                      disabled
-                      colorScheme="gray"
-                      bg="gray.200"
-                      _hover={{ bg: "gray.200" }}
-                    >
-                      Confirm stake
-                    </ModalButton>
-                  )
-              }
-            })()}
+            {["success", "successNotification"].includes(allowanceState.value) ? (
+              (() => {
+                switch (stakeState.value) {
+                  case "idle":
+                  case "error":
+                  default:
+                    return (
+                      <ModalButton onClick={startStaking}>Confirm stake</ModalButton>
+                    )
+                  case "loading":
+                    return (
+                      <ModalButton isLoading loadingText="Waiting confirmation" />
+                    )
+                  case "success":
+                    return <ModalButton onClick={closeModal}>Close</ModalButton>
+                }
+              })()
+            ) : (
+              <ModalButton
+                disabled
+                colorScheme="gray"
+                bg="gray.200"
+                _hover={{ bg: "gray.200" }}
+              >
+                Confirm stake
+              </ModalButton>
+            )}
           </VStack>
         </ModalFooter>
       </ModalContent>

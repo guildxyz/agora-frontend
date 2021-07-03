@@ -1,21 +1,8 @@
-import {
-  createMachine,
-  DoneInvokeEvent,
-  EventData,
-  Sender,
-  State,
-  assign,
-  StateMachine,
-  spawn,
-  sendParent,
-  ActorRef,
-  SpawnedActorRef,
-} from "xstate"
-import { useActor, useMachine } from "@xstate/react"
+import { useMachine } from "@xstate/react"
 import { useEffect } from "react"
-import { useWeb3React } from "@web3-react/core"
-import useTokenAllowance from "./useTokenAllowance"
+import { assign, createMachine, DoneInvokeEvent, Sender } from "xstate"
 import { useCommunity } from "../Context"
+import useTokenAllowance from "./useTokenAllowance"
 
 type AllowanceCheckEvent =
   | {
@@ -28,198 +15,107 @@ type AllowanceCheckEvent =
       type: "PERMISSION_IS_GRANTED"
     }
 
-type AllowanceContextType = {
+type ContextType = {
   error: any
 }
-type WrapperContextType = {
-  allowance: any
-}
 
-const allowanceMachine = createMachine<
-  AllowanceContextType,
-  DoneInvokeEvent<any> | AllowanceCheckEvent
->(
+const allowanceMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
   {
-    id: "allowance",
-    initial: "initial",
+    id: "allowanceMachine",
+    initial: "success",
     context: {
       error: null,
     },
     states: {
-      initial: {
-        invoke: {
-          src: "checkAllowance",
-          onError: "error",
-        },
+      idle: {
         on: {
-          PERMISSION_NOT_GRANTED: "idle",
-          PERMISSION_IS_PENDING: "loading.transaction",
+          ALLOW: "waitingConfirmation",
+          PERMISSION_IS_PENDING: "waitingForTransaction",
           PERMISSION_IS_GRANTED: "success",
         },
       },
-      idle: {
+      waitingConfirmation: {
+        invoke: {
+          src: "confirmPermission",
+          onDone: "waitingForTransaction",
+          onError: "error",
+        },
         on: {
-          ALLOW: "loading",
+          PERMISSION_IS_PENDING: "waitingForTransaction",
+          PERMISSION_IS_GRANTED: "successNotification",
         },
       },
-      loading: {
-        initial: "permission",
-        states: {
-          permission: {
-            invoke: {
-              src: "confirmPermission",
-              onDone: "transaction",
-              onError: "#allowance.error",
-            },
+      waitingForTransaction: {
+        invoke: {
+          src: "confirmTransaction",
+          onDone: {
+            target: "successNotification",
           },
-          transaction: {
-            invoke: {
-              src: "confirmTransaction",
-              onDone: {
-                target: "#allowance.success",
-                actions: "setNotification",
-              },
-              onError: "#allowance.error",
-            },
-          },
+          onError: "error",
+        },
+        on: {
+          PERMISSION_IS_GRANTED: "successNotification",
         },
       },
       error: {
         on: {
-          ALLOW: "loading",
+          ALLOW: "waitingConfirmation",
+          RESET: "idle",
+          PERMISSION_IS_PENDING: "waitingForTransaction",
+          PERMISSION_IS_GRANTED: "success",
         },
         entry: "setError",
         exit: "removeError",
       },
-
-      success: {
-        type: "final",
+      successNotification: {
         on: {
-          SOFT_RESET: "success",
+          HIDE_NOTIFICATION: "success",
+          RESET: "success",
+          PERMISSION_NOT_GRANTED: "idle",
         },
       },
-    },
-    on: {
-      SOFT_RESET: "initial", // this is overridden in deeper levels, so the two are not the same
-      HARD_RESET: "initial",
+      success: {
+        on: {
+          PERMISSION_NOT_GRANTED: "idle",
+          PERMISSION_IS_PENDING: "waitingForTransaction",
+        },
+      },
     },
   },
   {
     actions: {
       removeError: assign({ error: null }),
-      setError: assign<AllowanceContextType, DoneInvokeEvent<any>>({
-        error: (_: AllowanceContextType, event: DoneInvokeEvent<any>) => event.data,
+      setError: assign<ContextType, DoneInvokeEvent<any>>({
+        error: (_: ContextType, event: DoneInvokeEvent<any>) => event.data,
       }),
     },
   }
 )
 
-const useAllowanceMachine = <ChildContextType>(
-  consumerMachine,
-  consumerMachineOptions
-) => {
+const useAllowanceMachine = (): any => {
   const {
-    chainData: {
-      token: { address: tokenAddress, name: tokenName },
-    },
+    chainData: { token },
   } = useCommunity()
-  const [tokenAllowance, approve] = useTokenAllowance(tokenAddress, tokenName)
-  const { account } = useWeb3React()
+  const [tokenAllowance, approve] = useTokenAllowance(token)
 
-  const [, , machine] = useMachine<any, any>(allowanceMachine, {
+  const [state, send] = useMachine<any, any>(allowanceMachine, {
     services: {
-      checkAllowance: () => (_send: Sender<AllowanceCheckEvent>) => {
-        if (!tokenAllowance) _send("PERMISSION_NOT_GRANTED")
-        else _send("PERMISSION_IS_GRANTED")
-      },
+      checkAllowance: () => async (_send: Sender<AllowanceCheckEvent>) => {},
       confirmPermission: approve,
       confirmTransaction: async (_, event: DoneInvokeEvent<any>) =>
         event.data.wait(),
     },
-    actions: {
-      notifyParent: (_context, _event, _meta) => {
-        console.log({ _context, _event, _meta })
-      },
-    },
   })
 
-  const wrapperMachine = createMachine<any, any>({
-    initial: "allowance",
-    context: {
-      allowance: null,
-      notification: false,
-    },
-    states: {
-      allowance: {
-        invoke: {
-          id: "allowance",
-          src: machine.machine,
-          onDone: "consumer",
-        },
-      },
-      consumer: {
-        type: "parallel",
-        states: {
-          notification: {
-            initial: "showing",
-            states: {
-              showing: {
-                entry: (context, event, meta) =>
-                  console.log({ context, event, meta }),
-                on: {
-                  HIDE_NOTIFICATION: "hiding",
-                },
-              },
-              hiding: {
-                after: {
-                  500: "hidden",
-                },
-              },
-              hidden: {
-                type: "final",
-              },
-            },
-            on: {
-              SOFT_RESET: "notification.hidden",
-            },
-          },
-          consumerMachine,
-        },
-      },
-    },
-  })
+  useEffect(() => {
+    if (tokenAllowance === undefined) return
+    if (tokenAllowance) send("PERMISSION_IS_GRANTED")
+    else send("PERMISSION_NOT_GRANTED")
+  }, [tokenAllowance, send])
 
-  const [state, send, service] = useMachine<any, any>(
-    wrapperMachine,
-    consumerMachineOptions
-  )
-  const [allowanceState, allowanceSend] = useActor(
-    service.initialState.children.allowance
-  )
-  const softReset = () => allowanceSend({ type: "SOFT_RESET" })
+  // useEffect(() => console.log(state.value), [state])
 
-  useEffect(softReset, [tokenAllowance, allowanceSend])
-
-  useEffect(() => console.log(state.toStrings()), [state])
-
-  return {
-    state: state
-      ?.toStrings()
-      [state?.toStrings().length - 1].slice("consumer.consumerMachine.".length),
-    error: state.context.error,
-    send,
-    allowance: {
-      state: allowanceState?.toStrings()[allowanceState?.toStrings().length - 1],
-      error: allowanceState?.context.error,
-      send: (event: string) => allowanceSend({ type: event }),
-      softReset,
-    },
-    notification: {
-      state: state
-        ?.toStrings()
-        [state?.toStrings().length - 2]?.slice("consumer.".length),
-      send,
-    },
-  }
+  return [state, send]
 }
+
 export default useAllowanceMachine
