@@ -44,6 +44,20 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   useEffect(() => {
     const ref = levelEl.current
 
+    const mouseEnterHandler = () => {
+      setLevelData((prevState) => ({
+        ...prevState,
+        status: prevState.status === "access" ? "access" : "focus",
+      }))
+    }
+
+    const mouseLeaveHandler = () => {
+      setLevelData((prevState) => ({
+        ...prevState,
+        status: prevState.status === "access" ? "access" : "idle",
+      }))
+    }
+
     ref.addEventListener("mouseenter", mouseEnterHandler)
     ref.addEventListener("mouseleave", mouseLeaveHandler)
 
@@ -57,30 +71,16 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     setLevelData((prevState) => ({
       ...prevState,
       status: hasAccess ? "access" : "idle",
-      isDisabled: !hasAccess,
+      isDisabled: noAccessMessage.length > 0,
       element: levelEl.current,
     }))
-  }, [hasAccess, levelEl])
+  }, [hasAccess, noAccessMessage, levelEl])
 
   useEffect(() => {
     if (onChangeHandler) {
       onChangeHandler(levelData)
     }
   }, [levelData])
-
-  const mouseEnterHandler = () => {
-    setLevelData((prevState) => ({
-      ...prevState,
-      status: prevState.status === "access" ? "access" : "focus",
-    }))
-  }
-
-  const mouseLeaveHandler = () => {
-    setLevelData((prevState) => ({
-      ...prevState,
-      status: prevState.status === "access" ? "access" : "idle",
-    }))
-  }
 
   return (
     <Flex
@@ -92,8 +92,6 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       borderBottomColor="gray.200"
       _last={{ borderBottom: 0 }}
       ref={levelEl}
-      onMouseEnter={mouseEnterHandler}
-      onMouseLeave={mouseLeaveHandler}
     >
       <Stack direction="row" spacing="6">
         <Image src={`${data.imageUrl}`} boxSize="45px" alt="Level logo" />

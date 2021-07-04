@@ -13,9 +13,14 @@ type Props = { levelsState: { [x: number]: LevelData } }
 const AccessIndicator = ({ levelsState }) => {
   const [accessLevelHeight, setAccessLevelHeight] = useState(0)
   const [hoverLevelHeight, setHoverLevelHeight] = useState(0)
+  const [hoverColor, setHoverColor] = useState("var(--chakra-colors-primary-100)")
 
   useEffect(() => {
-    const levelsArray = Object.values(levelsState)
+    const levelsArray: LevelData[] = Object.values(levelsState)
+
+    if (levelsArray.length === 0) {
+      return
+    }
 
     // Set the height of the first indicator
     const accessedLevels = levelsArray.filter(
@@ -32,13 +37,18 @@ const AccessIndicator = ({ levelsState }) => {
     // Set the height of the second indicator
     let hoverLevel = null
     hoverLevel = levelsArray.find((level: LevelData) => level.status === "focus")
-
     const newHoverHeight =
       hoverLevel?.element.getBoundingClientRect().bottom -
         hoverLevel?.element.parentElement.getBoundingClientRect().top -
         accessLevelHeight || 0
 
     setHoverLevelHeight(newHoverHeight)
+
+    // Set the indicator color
+    const disabled = levelsArray.pop().isDisabled
+    setHoverColor(
+      disabled ? "var(--chakra-colors-gray-100)" : "var(--chakra-colors-primary-100)"
+    )
   }, [levelsState])
 
   return (
@@ -51,10 +61,10 @@ const AccessIndicator = ({ levelsState }) => {
           height: 0,
           width: "6px",
         }}
-        transition={{ type: "spring" }}
+        transition={{ type: "just" }}
         animate={{
           height: hoverLevelHeight,
-          background: "var(--chakra-colors-primary-100)",
+          background: hoverColor,
         }}
       />
       <motion.div
@@ -66,7 +76,7 @@ const AccessIndicator = ({ levelsState }) => {
           width: "6px",
           background: "var(--chakra-colors-primary-500)",
         }}
-        transition={{ type: "spring" }}
+        transition={{ type: "just" }}
         animate={{
           height: accessLevelHeight,
         }}
