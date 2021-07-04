@@ -1,58 +1,40 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Stack } from "@chakra-ui/react"
 import Card from "components/common/Card"
 import { useCommunity } from "components/community/Context"
 import Level from "./components/Level"
 import AccessIndicator from "./components/AccessIndicator"
 
-type LevelPosObj = {
-  [x: string]: number
+type LevelData = {
+  index: number
+  status: "idle" | "access" | "focus"
+  isDisabled: boolean
+  element: HTMLElement
 }
 
 const Levels = (): JSX.Element => {
   const { levels } = useCommunity()
-  const [levelsPos, setLevelsPos] = useState<LevelPosObj>({})
-  const [highestLevelPos, setHighestLevelPos] = useState(0)
-  const [hoverLevelPos, setHoverLevelPos] = useState(0)
-  const [isNextLevelOk, setIsNextLevelOk] = useState(false)
 
-  useEffect(() => {
-    setHighestLevelPos(
-      Object.values(levelsPos).reduce((a: number, b: number): number => a + b, 0)
-    )
-  }, [levelsPos])
+  const [levelsState, setLevelsState] = useState({})
 
-  const onAccessChangeHandler = (levelName: string, positionY: number) => {
-    if (levelsPos[levelName] !== positionY) {
-      setLevelsPos({ ...levelsPos, [levelName]: positionY })
-    }
-  }
-
-  const onHoverChangeHandler = (positionY: number, nextLevelOk?: boolean) => {
-    setIsNextLevelOk(nextLevelOk)
-    setHoverLevelPos(positionY)
+  const onLevelChange = (levelData: LevelData) => {
+    setLevelsState((prevState) => ({ ...prevState, [levelData.index]: levelData }))
   }
 
   return (
     <Card pos="relative" overflow="hidden" pl="8" pr="7">
       <Stack spacing="0">
-        {levels.map((level) => (
+        {levels.map((level, index) => (
           <Level
             key={level.name}
+            index={index}
             data={level}
-            onAccessChange={onAccessChangeHandler}
-            onHoverChange={onHoverChangeHandler}
+            onChangeHandler={onLevelChange}
           />
         ))}
       </Stack>
 
-      <AccessIndicator
-        {...{
-          hoverLevelPos,
-          highestLevelPos,
-          isNextLevelOk,
-        }}
-      />
+      <AccessIndicator levelsState={levelsState} />
     </Card>
   )
 }
