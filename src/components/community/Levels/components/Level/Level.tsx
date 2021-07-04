@@ -77,10 +77,26 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   }, [hasAccess, noAccessMessage, levelEl])
 
   useEffect(() => {
+    if (!isOpen && levelData.status === "focus") {
+      setLevelData((prevState) => ({
+        ...prevState,
+        status: hasAccess ? "access" : "idle",
+      }))
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (isOpen && levelData.status !== "focus") {
+      setLevelData((prevState) => ({
+        ...prevState,
+        status: "focus",
+      }))
+    }
+
     if (onChangeHandler) {
       onChangeHandler(levelData)
     }
-  }, [levelData])
+  }, [levelData, isOpen])
 
   return (
     <Flex
