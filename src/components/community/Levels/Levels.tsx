@@ -2,15 +2,8 @@ import { useState } from "react"
 import { Stack } from "@chakra-ui/react"
 import Card from "components/common/Card"
 import { useCommunity } from "components/community/Context"
-import Level from "./components/Level"
+import { Level, LevelData } from "./components/Level"
 import AccessIndicator from "./components/AccessIndicator"
-
-type LevelData = {
-  index: number
-  status: "idle" | "access" | "focus"
-  isDisabled: boolean
-  element: HTMLElement
-}
 
 const Levels = (): JSX.Element => {
   const { levels } = useCommunity()

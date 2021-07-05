@@ -47,7 +47,7 @@ const AccessIndicator = ({ levelsState }) => {
     // Set the indicator color
     const disabled = levelsArray.pop().isDisabled
     setHoverColor(
-      disabled ? "var(--chakra-colors-gray-100)" : "var(--chakra-colors-primary-100)"
+      disabled ? "var(--chakra-colors-gray-200)" : "var(--chakra-colors-primary-100)"
     )
   }, [levelsState])
 

@@ -35,7 +35,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   const [hasAccess, noAccessMessage] = useLevelAccess(data.accessRequirement)
   const levelEl = useRef(null)
   const [levelData, setLevelData] = useState<LevelData>({
-    index: index,
+    index,
     status: "idle",
     isDisabled: true,
     element: null,
@@ -157,4 +157,5 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   )
 }
 
-export default Level
+export { Level }
+export type { LevelData }
