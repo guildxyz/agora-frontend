@@ -115,7 +115,8 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   return (
     <Flex
       justifyContent="space-between"
-      alignItems="center"
+      alignItems={{ base: "flex-start", md: "center" }}
+      direction={{ base: "column", md: "row" }}
       boxSizing="border-box"
       py="10"
       borderBottom="1px"
@@ -123,8 +124,12 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       _last={{ borderBottom: 0 }}
       ref={levelEl}
     >
-      <Stack direction="row" spacing="6">
-        <Image src={`${data.imageUrl}`} boxSize="45px" alt="Level logo" />
+      <Stack direction="row" spacing="6" mb={{ base: 6, md: 0 }}>
+        <Image
+          src={`${data.imageUrl}`}
+          boxSize={{ base: "35px", sm: "45px" }}
+          alt="Level logo"
+        />
         <Stack>
           <Heading size="sm">{data.name}</Heading>
           <InfoTags
@@ -132,17 +137,26 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
             membersCount={data.membersCount}
             tokenSymbol={communityData.chainData.token.symbol}
           />
-          {data.desc && <Text pt="4">{data.desc}</Text>}
+          {data.desc && (
+            <Text fontSize={{ base: "sm", sm: "md" }} pt={{ base: 0, md: 4 }}>
+              {data.desc}
+            </Text>
+          )}
         </Stack>
       </Stack>
-      <Stack alignItems="flex-end" justifyContent="center">
+      <Stack
+        width={{ base: "full", md: "auto" }}
+        alignItems="flex-end"
+        justifyContent="center"
+        fontSize={{ base: "sm", sm: "md" }}
+      >
         {hasAccess && (
           <HStack spacing="3">
             <Text fontWeight="medium">You have access</Text>
             <CheckCircle
               color="var(--chakra-colors-green-500)"
               weight="fill"
-              size="26"
+              size="24"
             />
           </HStack>
         )}

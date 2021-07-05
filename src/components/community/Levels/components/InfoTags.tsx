@@ -20,14 +20,22 @@ type ChildProps = {
 }
 
 const InfoTag = ({ icon: Icon, label }: ChildProps): JSX.Element => (
-  <Stack direction="row" spacing="2" textColor="gray.450" alignItems="center">
+  <Stack
+    mr={{ base: 4, md: 8 }}
+    mb="2"
+    direction="row"
+    spacing="2"
+    textColor="gray.450"
+    fontSize={{ base: "sm", sm: "md" }}
+    alignItems="center"
+  >
     <Icon size="1.3em" />
     <Text fontWeight="medium">{label}</Text>
   </Stack>
 )
 
 const InfoTags = ({ data, membersCount, tokenSymbol }: Props): JSX.Element => (
-  <Stack direction="row" spacing="8">
+  <Stack direction="row" spacing="0" wrap="wrap" shouldWrapChildren>
     <InfoTag icon={accessRequirementIcons[data.type]} label={data.type} />
     {data.type !== "open" && (
       <InfoTag icon={Tag} label={`${data.amount} ${tokenSymbol}`} />

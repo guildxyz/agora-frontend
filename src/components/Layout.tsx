@@ -16,7 +16,7 @@ const Layout = ({ title, bg = "white", children }: Props): JSX.Element => (
       {/* <link rel="icon" href="/favicon.ico" /> */}
     </Head>
     <Box bg={bg} minHeight="100vh">
-      <Container maxW="container.lg" py={24} px={10}>
+      <Container maxW="container.lg" py={24} px={{ base: 4, md: 10 }}>
         <Stack
           direction={{ base: "column", md: "row" }}
           spacing="10"
