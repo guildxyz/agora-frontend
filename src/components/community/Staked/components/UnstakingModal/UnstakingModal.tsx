@@ -20,6 +20,7 @@ import { useCommunity } from "components/community/Context"
 import ModalButton from "components/common/ModalButton"
 import useAllowanceMachine from "components/community/hooks/useAllowanceMachine"
 import useUnstakingModalMachine from "./hooks/useUnstakingModalMachine"
+import processUnstakingError from "./utils/processUnstakingError"
 
 type Props = {
   isOpen: boolean
@@ -74,10 +75,7 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
             <>
               <Error
                 error={unstakeState.context.error || allowanceState.context.error}
-                processError={() => ({
-                  title: "TODO",
-                  description: "TODO",
-                })}
+                processError={processUnstakingError}
               />
               <Text>
                 By unstaking you’ll lose access to the relevant levels. You can
