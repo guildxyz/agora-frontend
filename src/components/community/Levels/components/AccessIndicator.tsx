@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-
-type LevelData = {
-  index: number
-  status: "idle" | "access" | "focus"
-  isDisabled: boolean
-  element: HTMLElement
-}
+import { LevelData } from "./Level"
 
 type Props = { levelsState: { [x: number]: LevelData } }
 
