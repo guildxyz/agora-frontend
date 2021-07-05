@@ -15,7 +15,12 @@ const ActionCard = ({ title, description, children }: Props): JSX.Element => (
     <Text mb="6" fontWeight="medium">
       {description}
     </Text>
-    <Stack direction="row" spacing="2" justifyContent="flex-end" mt="auto">
+    <Stack
+      direction={{ base: "column", sm: "row" }}
+      spacing="2"
+      justifyContent="flex-end"
+      mt="auto"
+    >
       {children}
     </Stack>
   </Card>

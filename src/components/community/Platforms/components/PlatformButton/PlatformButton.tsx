@@ -18,6 +18,7 @@ const PlatformButton = ({ platform }: Props): JSX.Element => {
   return (
     <>
       <Button
+        width="full"
         onClick={onOpen}
         colorScheme={platform}
         fontWeight="medium"
