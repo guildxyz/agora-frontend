@@ -17,6 +17,7 @@ import {
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
 import { useCommunity } from "components/community/Context"
+import useAverageTransactionTime from "hooks/useAverageTransactionTime"
 import { ArrowCircleUp, Check, Info } from "phosphor-react"
 import { useEffect } from "react"
 import type { AccessRequirements } from "temporaryData/types"
@@ -43,6 +44,7 @@ const StakingModal = ({
     },
   } = useCommunity()
   const [state, send] = useStakingModalMachine(amount)
+  const avgTransactionTime = useAverageTransactionTime()
 
   useEffect(() => {
     console.log({
@@ -77,8 +79,8 @@ const StakingModal = ({
                 />
               </Center>
               <Text fontWeight="medium" mt="8" mb="4">
-                Avarage transaction time is 2 minutes. You’ll be notified when it
-                succeeds.
+                Avarage transaction time is {msToReadableFormat(avgTransactionTime)}.
+                You’ll be notified when it succeeds.
               </Text>
               <Text textColor="gray">
                 You’ll recieve {amount} {stakeTokenSymbol} in return. Those mark your
