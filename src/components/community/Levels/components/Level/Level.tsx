@@ -63,7 +63,7 @@ const Level = ({ data }: Props): JSX.Element => {
           data.accessRequirement.type === "stake" &&
           !noAccessMessage && (
             <StakingModal
-              name={data.name}
+              levelName={data.name}
               accessRequirement={data.accessRequirement}
               {...{ isOpen, onClose }}
             />

@@ -17,21 +17,21 @@ import {
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
 import { useCommunity } from "components/community/Context"
-import useAllowanceMachine from "components/community/hooks/useAllowanceMachine"
+import useTokenAllowanceMachine from "components/community/hooks/useTokenAllowanceMachine"
 import { ArrowCircleUp, Check, Info } from "phosphor-react"
 import type { AccessRequirements } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
-import useStakingModalMachine from "./hooks/useStakingModalMachine"
+import useStakingModalMachine from "./hooks/useStakingMachine"
 
 type Props = {
-  name: string
+  levelName: string
   accessRequirement: AccessRequirements
   isOpen: boolean
   onClose: () => void
 }
 
 const StakingModal = ({
-  name,
+  levelName,
   accessRequirement: { amount, timelockMs },
   isOpen,
   onClose,
@@ -39,12 +39,12 @@ const StakingModal = ({
   const {
     chainData: { token },
   } = useCommunity()
-  const [allowanceState, allowanceSend] = useAllowanceMachine(token)
+  const [allowanceState, allowanceSend] = useTokenAllowanceMachine(token)
   const [stakeState, stakeSend] = useStakingModalMachine(amount)
 
   const closeModal = () => {
-    allowanceSend("RESET")
-    stakeSend("RESET")
+    allowanceSend("CLOSE_MODAL")
+    stakeSend("CLOSE_MODAL")
     onClose()
   }
 
@@ -60,7 +60,7 @@ const StakingModal = ({
         <ModalHeader>
           {stakeState.value === "success"
             ? `Transaction submitted`
-            : `Stake to join ${name}`}
+            : `Stake to join ${levelName}`}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -93,10 +93,10 @@ const StakingModal = ({
                 })}
               />
               <Text fontWeight="medium">
-                Stake {amount} {token.symbol} to gain access to {name}. Your tokens
-                will be locked for {msToReadableFormat(timelockMs)}, after that you
-                can unstake them anytime. You can always stake more to upgrade to
-                higher levels.
+                Stake {amount} {token.symbol} to gain access to {levelName}. Your
+                tokens will be locked for {msToReadableFormat(timelockMs)}, after
+                that you can unstake them anytime. You can always stake more to
+                upgrade to higher levels.
               </Text>
             </>
           )}
@@ -107,7 +107,7 @@ const StakingModal = ({
           <VStack spacing="0" alignItems="strech">
             {(() => {
               switch (allowanceState.value) {
-                case "idle":
+                case "noAllowance":
                 case "error":
                   return (
                     <ModalButton
@@ -144,8 +144,8 @@ const StakingModal = ({
                       loadingText="Waiting for transaction to succeed"
                     />
                   )
-                case "success":
                 case "successNotification":
+                case "allowanceGranted":
                 default:
                   return (
                     <Collapse
@@ -172,7 +172,9 @@ const StakingModal = ({
               }
             })()}
 
-            {["success", "successNotification"].includes(allowanceState.value) ? (
+            {["allowanceGranted", "successNotification"].includes(
+              allowanceState.value
+            ) ? (
               (() => {
                 switch (stakeState.value) {
                   case "idle":
@@ -181,7 +183,7 @@ const StakingModal = ({
                     return (
                       <ModalButton onClick={startStaking}>Confirm stake</ModalButton>
                     )
-                  case "loading":
+                  case "waitingConfirmation":
                     return (
                       <ModalButton isLoading loadingText="Waiting confirmation" />
                     )

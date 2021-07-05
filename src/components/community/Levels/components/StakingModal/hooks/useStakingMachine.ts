@@ -20,10 +20,10 @@ const stakingMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
     states: {
       idle: {
         on: {
-          STAKE: "loading",
+          STAKE: "waitingConfirmation",
         },
       },
-      loading: {
+      waitingConfirmation: {
         invoke: {
           src: "stake",
           onDone: "success",
@@ -32,18 +32,16 @@ const stakingMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
       },
       error: {
         on: {
-          STAKE: "loading",
-          RESET: "idle",
+          STAKE: "waitingConfirmation",
+          CLOSE_MODAL: "idle",
         },
         entry: "setError",
         exit: "removeError",
       },
-      success: {
-        // type: "final",
-      },
+      success: {},
     },
     on: {
-      HARD_RESET: "idle",
+      RESET: "idle",
     },
   },
   {
@@ -56,13 +54,13 @@ const stakingMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
   }
 )
 
-const useStakingModalMachine = (amount: number): any => {
+const useStakingMachine = (amount: number): any => {
   const {
     chainData: {
       contract: { address: contractAddress },
     },
   } = useCommunity()
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const contract = useContract(contractAddress, AGORA_SPACE_ABI, true)
 
   const [state, send] = useMachine<any, any>(stakingMachine, {
@@ -76,12 +74,10 @@ const useStakingModalMachine = (amount: number): any => {
   })
 
   useEffect(() => {
-    send("HARD_RESET")
-  }, [account, send])
-
-  // useEffect(() => console.log(state), [state])
+    send("RESET")
+  }, [account, chainId, send])
 
   return [state, send]
 }
 
-export default useStakingModalMachine
+export default useStakingMachine

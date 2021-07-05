@@ -1,7 +1,7 @@
 import { useMachine } from "@xstate/react"
 import { useEffect } from "react"
 import { Token } from "temporaryData/types"
-import { assign, createMachine, DoneInvokeEvent, Sender } from "xstate"
+import { assign, createMachine, DoneInvokeEvent } from "xstate"
 import useTokenAllowance from "./useTokenAllowance"
 
 type AllowanceCheckEvent =
@@ -19,24 +19,26 @@ type ContextType = {
   error: any
 }
 
-const allowanceMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
+const allowanceMachine = createMachine<
+  ContextType,
+  DoneInvokeEvent<any> | AllowanceCheckEvent
+>(
   {
-    id: "allowanceMachine",
-    initial: "success",
+    initial: "allowanceGranted",
     context: {
       error: null,
     },
     states: {
-      idle: {
+      noAllowance: {
         on: {
           ALLOW: "waitingConfirmation",
           PERMISSION_IS_PENDING: "waitingForTransaction",
-          PERMISSION_IS_GRANTED: "success",
+          PERMISSION_IS_GRANTED: "allowanceGranted",
         },
       },
       waitingConfirmation: {
         invoke: {
-          src: "confirmPermission",
+          src: "allowToken",
           onDone: "waitingForTransaction",
           onError: "error",
         },
@@ -47,7 +49,7 @@ const allowanceMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
       },
       waitingForTransaction: {
         invoke: {
-          src: "confirmTransaction",
+          src: "waitForTransactionSuccess",
           onDone: {
             target: "successNotification",
           },
@@ -57,28 +59,28 @@ const allowanceMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
           PERMISSION_IS_GRANTED: "successNotification",
         },
       },
+      successNotification: {
+        on: {
+          HIDE_NOTIFICATION: "allowanceGranted",
+          CLOSE_MODAL: "allowanceGranted",
+          PERMISSION_NOT_GRANTED: "noAllowance",
+        },
+      },
+      allowanceGranted: {
+        on: {
+          PERMISSION_NOT_GRANTED: "noAllowance",
+          PERMISSION_IS_PENDING: "waitingForTransaction",
+        },
+      },
       error: {
         on: {
           ALLOW: "waitingConfirmation",
-          RESET: "idle",
+          CLOSE_MODAL: "noAllowance",
           PERMISSION_IS_PENDING: "waitingForTransaction",
-          PERMISSION_IS_GRANTED: "success",
+          PERMISSION_IS_GRANTED: "allowanceGranted",
         },
         entry: "setError",
         exit: "removeError",
-      },
-      successNotification: {
-        on: {
-          HIDE_NOTIFICATION: "success",
-          RESET: "success",
-          PERMISSION_NOT_GRANTED: "idle",
-        },
-      },
-      success: {
-        on: {
-          PERMISSION_NOT_GRANTED: "idle",
-          PERMISSION_IS_PENDING: "waitingForTransaction",
-        },
       },
     },
   },
@@ -93,13 +95,12 @@ const allowanceMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
 )
 
 const useAllowanceMachine = (token: Token): any => {
-  const [tokenAllowance, approve] = useTokenAllowance(token)
+  const [tokenAllowance, allowToken] = useTokenAllowance(token)
 
   const [state, send] = useMachine<any, any>(allowanceMachine, {
     services: {
-      checkAllowance: () => async (_send: Sender<AllowanceCheckEvent>) => {},
-      confirmPermission: approve,
-      confirmTransaction: async (_, event: DoneInvokeEvent<any>) =>
+      allowToken,
+      waitForTransactionSuccess: async (_, event: DoneInvokeEvent<any>) =>
         event.data.wait(),
     },
   })
@@ -109,8 +110,6 @@ const useAllowanceMachine = (token: Token): any => {
     if (tokenAllowance) send("PERMISSION_IS_GRANTED")
     else send("PERMISSION_NOT_GRANTED")
   }, [tokenAllowance, send])
-
-  // useEffect(() => console.log(state.value), [state])
 
   return [state, send]
 }
