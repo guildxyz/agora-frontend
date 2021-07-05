@@ -37,11 +37,9 @@ const StakingModal = ({
   onClose,
 }: Props): JSX.Element => {
   const {
-    chainData: {
-      token: { symbol: tokenSymbol },
-    },
+    chainData: { token },
   } = useCommunity()
-  const [allowanceState, allowanceSend] = useAllowanceMachine()
+  const [allowanceState, allowanceSend] = useAllowanceMachine(token)
   const [stakeState, stakeSend] = useStakingModalMachine(amount)
 
   const closeModal = () => {
@@ -95,7 +93,7 @@ const StakingModal = ({
                 })}
               />
               <Text fontWeight="medium">
-                Stake {amount} {tokenSymbol} to gain access to {name}. Your tokens
+                Stake {amount} {token.symbol} to gain access to {name}. Your tokens
                 will be locked for {msToReadableFormat(timelockMs)}, after that you
                 can unstake them anytime. You can always stake more to upgrade to
                 higher levels.
@@ -116,7 +114,7 @@ const StakingModal = ({
                       mb="3"
                       rightIcon={
                         <Tooltip
-                          label={`You have to give the Agora smart contracts permission to use your ${tokenSymbol}. You only have to do this once per token.`}
+                          label={`You have to give the Agora smart contracts permission to use your ${token.symbol}. You only have to do this once per token.`}
                           placement="top"
                         >
                           <Icon as={Info} tabIndex={0} />
@@ -127,7 +125,7 @@ const StakingModal = ({
                       justifyContent="space-between"
                       onClick={() => allowanceSend("ALLOW")}
                     >
-                      {`Allow Agora to use ${tokenSymbol}`}
+                      {`Allow Agora to use ${token.symbol}`}
                     </ModalButton>
                   )
                 case "waitingConfirmation":
@@ -167,7 +165,7 @@ const StakingModal = ({
                         justifyContent="space-between"
                         mb="3"
                       >
-                        {`You can now stake ${tokenSymbol}`}
+                        {`You can now stake ${token.symbol}`}
                       </ModalButton>
                     </Collapse>
                   )

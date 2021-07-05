@@ -1,7 +1,7 @@
 import { useMachine } from "@xstate/react"
 import { useEffect } from "react"
+import { Token } from "temporaryData/types"
 import { assign, createMachine, DoneInvokeEvent, Sender } from "xstate"
-import { useCommunity } from "../Context"
 import useTokenAllowance from "./useTokenAllowance"
 
 type AllowanceCheckEvent =
@@ -92,10 +92,7 @@ const allowanceMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
   }
 )
 
-const useAllowanceMachine = (): any => {
-  const {
-    chainData: { token },
-  } = useCommunity()
+const useAllowanceMachine = (token: Token): any => {
   const [tokenAllowance, approve] = useTokenAllowance(token)
 
   const [state, send] = useMachine<any, any>(allowanceMachine, {
