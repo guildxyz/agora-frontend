@@ -98,6 +98,20 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     }
   }, [levelData, isModalOpen])
 
+  // If the level access changes while the modal is opened
+  useEffect(() => {
+    if (levelData.status === "focus" && hasAccess) {
+      setLevelData((prevState) => ({
+        ...prevState,
+        status: "access",
+      }))
+    }
+
+    if (onChangeHandler) {
+      onChangeHandler(levelData)
+    }
+  }, [hasAccess])
+
   return (
     <Flex
       justifyContent="space-between"
