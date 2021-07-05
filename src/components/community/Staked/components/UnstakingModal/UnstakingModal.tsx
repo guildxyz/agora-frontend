@@ -18,6 +18,7 @@ import { ArrowCircleUp, Info, Check } from "phosphor-react"
 import { Error } from "components/common/Error"
 import { useCommunity } from "components/community/Context"
 import ModalButton from "components/common/ModalButton"
+import useAllowanceMachine from "components/community/hooks/useAllowanceMachine"
 import useUnstakingModalMachine from "./hooks/useUnstakingModalMachine"
 
 type Props = {
@@ -26,27 +27,36 @@ type Props = {
 }
 
 const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
-  const [state, send] = useUnstakingModalMachine()
   const {
-    chainData: {
-      token: { symbol: tokenSymbol },
-    },
+    chainData: { stakeToken },
   } = useCommunity()
+  const tokenSymbol = stakeToken.symbol
+  const [allowanceState, allowanceSend] = useAllowanceMachine(stakeToken)
+  const [unstakeState, unstakeSend] = useUnstakingModalMachine()
 
   const closeModal = () => {
-    send("RESET")
+    allowanceSend("RESET")
+    unstakeSend("RESET")
     onClose()
   }
+
+  const startUnstaking = () => {
+    allowanceSend("HIDE_NOTIFICATION")
+    unstakeSend("UNSTAKE")
+  }
+
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {state.value === "success" ? "Transaction submitted" : "Unstake tokens"}
+          {unstakeState.value === "success"
+            ? "Transaction submitted"
+            : "Unstake tokens"}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {state.hasTag("success") ? (
+          {unstakeState.value === "success" ? (
             <>
               <Center>
                 <ArrowCircleUp
@@ -63,7 +73,7 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
           ) : (
             <>
               <Error
-                error={state.context.error}
+                error={unstakeState.context.error || allowanceState.context.error}
                 processError={() => ({
                   title: "TODO",
                   description: "TODO",
@@ -78,99 +88,104 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
         </ModalBody>
         <ModalFooter>
           <VStack spacing="0" alignItems="strech">
-            {Object.keys(state.value)[0] === "allowance" &&
-              (() => {
-                // We only have one tag per state, I don't see a reason why we would have more in the future
-                switch ([...state.tags][0]) {
-                  case "idle":
-                    return (
+            {(() => {
+              switch (allowanceState.value) {
+                case "idle":
+                case "error":
+                  return (
+                    <ModalButton
+                      mb="3"
+                      rightIcon={
+                        <Tooltip
+                          label={`You have to give the Agora smart contracts permission to use your ${tokenSymbol}. You only have to do this once per token.`}
+                          placement="top"
+                        >
+                          <Icon as={Info} tabIndex={0} />
+                        </Tooltip>
+                      }
+                      // so the button label will be positioned to the center
+                      leftIcon={<span />}
+                      justifyContent="space-between"
+                      onClick={() => allowanceSend("ALLOW")}
+                    >
+                      {`Allow Agora to use ${tokenSymbol}`}
+                    </ModalButton>
+                  )
+                case "waitingConfirmation":
+                  return (
+                    <ModalButton
+                      mb="3"
+                      isLoading
+                      loadingText="Waiting confirmation"
+                    />
+                  )
+                case "waitingForTransaction":
+                  return (
+                    <ModalButton
+                      mb="3"
+                      isLoading
+                      loadingText="Waiting for transaction to succeed"
+                    />
+                  )
+
+                case "success":
+                case "successNotification":
+                default:
+                  return (
+                    <Collapse
+                      in={allowanceState.value === "successNotification"}
+                      unmountOnExit
+                    >
                       <ModalButton
-                        mb="3"
+                        as="div"
+                        colorScheme="gray"
+                        variant="solidStatic"
                         rightIcon={
-                          <Tooltip
-                            label="You have to give the Agora smart contracts permission to use your [token name]. You only have to do this once per token."
-                            placement="top"
-                          >
-                            <Icon as={Info} tabIndex={0} />
-                          </Tooltip>
+                          <CloseButton
+                            onClick={() => allowanceSend("HIDE_NOTIFICATION")}
+                          />
                         }
-                        // so the button label will be positioned to the center
-                        leftIcon={<span />}
+                        leftIcon={<Check />}
                         justifyContent="space-between"
-                        onClick={() => send("ALLOW")}
-                      >
-                        {`Allow Agora to use ${tokenSymbol}`}
-                      </ModalButton>
-                    )
-                  case "loading":
-                    return (
-                      <ModalButton
                         mb="3"
-                        isLoading
-                        loadingText={
-                          state.meta[
-                            `root.${state.toStrings()[state.toStrings().length - 1]}`
-                          ].loadingText
-                        }
-                      />
-                    )
-                  default:
-                    return null
-                }
-              })()}
+                      >
+                        {`You can now unstake ${tokenSymbol}`}
+                      </ModalButton>
+                    </Collapse>
+                  )
+              }
+            })()}
 
-            <Collapse in={state.context.showApproveSuccess}>
-              <ModalButton
-                as="div"
-                colorScheme="gray"
-                variant="solidStatic"
-                rightIcon={
-                  <CloseButton onClick={() => send("HIDE_APPROVE_SUCCESS")} />
-                }
-                leftIcon={<Check />}
-                justifyContent="space-between"
-                mb="3"
-              >
-                {`You can now unstake ${tokenSymbol}`}
-              </ModalButton>
-            </Collapse>
-
-            {Object.keys(state.value)[0] === "unstake" &&
+            {["success", "successNotification"].includes(allowanceState.value) ? (
               (() => {
                 // We only have one tag per state, I don't see a reason why we would have more in the future
-                switch ([...state.tags][0]) {
+                switch (unstakeState.value) {
                   case "idle":
+                  case "error":
+                  default:
                     return (
-                      <ModalButton onClick={() => send("UNSTAKE")}>
+                      <ModalButton onClick={startUnstaking}>
                         Confirm unstake
                       </ModalButton>
                     )
                   case "loading":
                     return (
-                      <ModalButton
-                        isLoading
-                        loadingText={
-                          state.meta[
-                            `root.${state.toStrings()[state.toStrings().length - 1]}`
-                          ].loadingText
-                        }
-                      />
+                      <ModalButton isLoading loadingText="Waiting confirmation" />
                     )
                   case "success":
                     return <ModalButton onClick={closeModal}>Close</ModalButton>
-                  default:
-                    return (
-                      <ModalButton
-                        disabled
-                        colorScheme="gray"
-                        bg="gray.200"
-                        _hover={{ bg: "gray.200" }}
-                      >
-                        Confirm unstake
-                      </ModalButton>
-                    )
                 }
-              })()}
+              })()
+            ) : (
+              <ModalButton
+                disabled
+                colorScheme="gray"
+                bg="gray.200"
+                _hover={{ bg: "gray.200" }}
+              >
+                Confirm unstake
+              </ModalButton>
+            )}
           </VStack>
         </ModalFooter>
       </ModalContent>
