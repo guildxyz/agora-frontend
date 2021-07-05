@@ -3,8 +3,6 @@ import { parseUnits } from "@ethersproject/units"
 import useSWR from "swr"
 import useKeepSWRDataLiveAsBlocksArrive from "./useKeepSWRDataLiveAsBlocksArrive"
 
-const KEY = "4TXV79KN4T8ZHKYDVKFWJ95CUVA81MR9VK"
-
 const getGasPrice = async (
   url: string,
   type: "Propose" | "Safe" | "Fast"
@@ -12,7 +10,6 @@ const getGasPrice = async (
   const gasPrice = await fetch(url)
     .then((response) => response.json())
     .then((body) => body.result[type + "GasPrice"])
-  console.log(parseUnits(gasPrice, "gwei"))
   return parseUnits(gasPrice, "gwei")
 }
 
@@ -25,7 +22,7 @@ const useGasPrice = (type: "propose" | "pafe" | "fast"): BigNumber => {
   const gasEstimationType = type.charAt(0).toUpperCase() + type.slice(1)
   const { data: gasPrice, mutate } = useSWR(
     [
-      `https://api-ropsten.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${KEY}`,
+      `https://api-ropsten.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`,
       gasEstimationType,
     ],
     getGasPrice,

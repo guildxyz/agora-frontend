@@ -21,7 +21,7 @@ const useAverageTransactionTime = (): number => {
 
   const { data: averageTransactionTime, mutate } = useSWR(
     [
-      `https://api-ropsten.etherscan.io/api?module=gastracker&action=gasestimate&gasprice=${gasPrice}&apikey=${KEY}`,
+      `https://api-ropsten.etherscan.io/api?module=gastracker&action=gasestimate&gasprice=${gasPrice}&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`,
       gasPrice,
     ],
     getAverageTransactionTime
