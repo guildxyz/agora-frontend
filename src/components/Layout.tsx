@@ -1,4 +1,4 @@
-import { Box, Container, Heading, HStack } from "@chakra-ui/react"
+import { Box, Container, Heading, Stack } from "@chakra-ui/react"
 import Head from "next/head"
 import Account from "components/web3Connection/Account"
 
@@ -17,12 +17,22 @@ const Layout = ({ title, bg = "white", children }: Props): JSX.Element => (
     </Head>
     <Box bg={bg} minHeight="100vh">
       <Container maxW="container.lg" py={24} px={10}>
-        <HStack justify="space-between" align="center" pb={16}>
-          <Heading size="2xl" fontFamily="display">
+        <Stack
+          direction={{ base: "column", md: "row" }}
+          spacing="10"
+          justify="space-between"
+          align="center"
+          pb={16}
+        >
+          <Heading
+            size="2xl"
+            fontFamily="display"
+            textAlign={{ base: "center", md: "left" }}
+          >
             {title}
           </Heading>
           <Account />
-        </HStack>
+        </Stack>
         {children}
       </Container>
     </Box>

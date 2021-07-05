@@ -42,12 +42,25 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
             <Image src={`${community.imageUrl}`} boxSize="45px" alt="Level logo" />
             <Stack spacing="3">
               <Heading size="sm">{community.name}</Heading>
-              <Stack direction="row" spacing="3">
+              <Stack
+                direction="row"
+                justifyContent="flex-start"
+                spacing="0"
+                wrap="wrap"
+                shouldWrapChildren
+              >
                 <Tag
+                  mr="3"
+                  mb="3"
                   colorScheme="blackAlpha"
                   textColor="blackAlpha.700"
                 >{`${membersCount} members`}</Tag>
-                <Tag colorScheme="blackAlpha" textColor="blackAlpha.700">
+                <Tag
+                  mr="3"
+                  mb="3"
+                  colorScheme="blackAlpha"
+                  textColor="blackAlpha.700"
+                >
                   {`${community.levels.length} levels`}
                 </Tag>
                 <Tag colorScheme="blackAlpha" textColor="blackAlpha.700">
