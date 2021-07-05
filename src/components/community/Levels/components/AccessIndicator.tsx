@@ -10,10 +10,10 @@ type LevelData = {
 
 type Props = { levelsState: { [x: number]: LevelData } }
 
-const AccessIndicator = ({ levelsState }) => {
-  const [accessLevelHeight, setAccessLevelHeight] = useState(0)
-  const [hoverLevelHeight, setHoverLevelHeight] = useState(0)
-  const [hoverColor, setHoverColor] = useState("var(--chakra-colors-primary-100)")
+const AccessIndicator = ({ levelsState }: Props) => {
+  const [accessHeight, setAccessHeight] = useState(0)
+  const [focusHeight, setFocusHeight] = useState(0)
+  const [focusColor, setFocusColor] = useState("var(--chakra-colors-primary-100)")
 
   useEffect(() => {
     const levelsArray: LevelData[] = Object.values(levelsState)
@@ -32,21 +32,21 @@ const AccessIndicator = ({ levelsState }) => {
       newAccessHeight += level.element.getBoundingClientRect().height
     })
 
-    setAccessLevelHeight(newAccessHeight)
+    setAccessHeight(newAccessHeight)
 
     // Set the height of the second indicator
-    let hoverLevel = null
-    hoverLevel = levelsArray.find((level: LevelData) => level.status === "focus")
-    const newHoverHeight =
-      hoverLevel?.element.getBoundingClientRect().bottom -
-        hoverLevel?.element.parentElement.getBoundingClientRect().top -
-        accessLevelHeight || 0
+    let focusLevel = null
+    focusLevel = levelsArray.find((level: LevelData) => level.status === "focus")
+    const newFocusHeight =
+      focusLevel?.element.getBoundingClientRect().bottom -
+        focusLevel?.element.parentElement.getBoundingClientRect().top -
+        accessHeight || 0
 
-    setHoverLevelHeight(newHoverHeight)
+    setFocusHeight(newFocusHeight)
 
     // Set the indicator color
     const disabled = levelsArray.pop().isDisabled
-    setHoverColor(
+    setFocusColor(
       disabled ? "var(--chakra-colors-gray-200)" : "var(--chakra-colors-primary-100)"
     )
   }, [levelsState])
@@ -56,15 +56,15 @@ const AccessIndicator = ({ levelsState }) => {
       <motion.div
         style={{
           position: "absolute",
-          top: accessLevelHeight,
+          top: accessHeight,
           left: 0,
           height: 0,
           width: "6px",
         }}
         transition={{ type: "just" }}
         animate={{
-          height: hoverLevelHeight,
-          background: hoverColor,
+          height: focusHeight,
+          background: focusColor,
         }}
       />
       <motion.div
@@ -78,7 +78,7 @@ const AccessIndicator = ({ levelsState }) => {
         }}
         transition={{ type: "just" }}
         animate={{
-          height: accessLevelHeight,
+          height: accessHeight,
         }}
       />
     </>

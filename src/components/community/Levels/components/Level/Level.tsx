@@ -31,7 +31,7 @@ type LevelData = {
 
 const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   const communityData = useCommunity()
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen: isModalOpen, onOpen, onClose } = useDisclosure()
   const [hasAccess, noAccessMessage] = useLevelAccess(data.accessRequirement)
   const levelEl = useRef(null)
   const [levelData, setLevelData] = useState<LevelData>({
@@ -77,16 +77,16 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   }, [hasAccess, noAccessMessage, levelEl])
 
   useEffect(() => {
-    if (!isOpen && levelData.status === "focus") {
+    if (!isModalOpen && levelData.status === "focus") {
       setLevelData((prevState) => ({
         ...prevState,
         status: hasAccess ? "access" : "idle",
       }))
     }
-  }, [isOpen])
+  }, [isModalOpen])
 
   useEffect(() => {
-    if (isOpen && levelData.status !== "focus") {
+    if (isModalOpen && levelData.status !== "focus") {
       setLevelData((prevState) => ({
         ...prevState,
         status: "focus",
@@ -96,7 +96,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     if (onChangeHandler) {
       onChangeHandler(levelData)
     }
-  }, [levelData, isOpen])
+  }, [levelData, isModalOpen])
 
   return (
     <Flex
@@ -148,7 +148,8 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
             <StakingModal
               name={data.name}
               accessRequirement={data.accessRequirement}
-              {...{ isOpen, onClose }}
+              isOpen={isModalOpen}
+              onClose={onClose}
             />
           )}
         {noAccessMessage && <Text fontWeight="medium">{noAccessMessage}</Text>}
