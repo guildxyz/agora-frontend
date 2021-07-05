@@ -60,13 +60,13 @@ const StakingModal = ({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {stakeState === "success"
+          {stakeState.value === "success"
             ? `Transaction submitted`
             : `Stake to join ${name}`}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {stakeState === "success" ? (
+          {stakeState.value === "success" ? (
             <>
               <Center>
                 <ArrowCircleUp
