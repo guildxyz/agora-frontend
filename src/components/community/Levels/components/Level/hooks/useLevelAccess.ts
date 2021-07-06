@@ -9,15 +9,18 @@ const useLevelAccess = (data: AccessRequirements): [boolean, string] => {
   } = useCommunity()
   const { data: tokenBalance } = useBalance(token)
   const { data: stakeBalance } = useBalance(stakeToken)
+  const amount = data.type === "stake" ? data.amount - stakeBalance : data.amount
   const { active } = useWeb3React()
 
   if (data.type === "open") return [true, ""]
 
   if (!active) return [false, "Wallet not connected"]
 
-  if (stakeBalance >= data.amount) return [true, ""]
+  if (Number.isNaN(amount)) return [false, "Loading requirement amount"]
 
-  if (tokenBalance < data.amount) return [false, "Insufficient balance"]
+  if (stakeBalance >= amount) return [true, ""]
+
+  if (tokenBalance < amount) return [false, "Insufficient balance"]
 
   if (data.type === "hold") return [true, ""]
 

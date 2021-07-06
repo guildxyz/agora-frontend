@@ -19,20 +19,21 @@ import ModalButton from "components/common/ModalButton"
 import { useCommunity } from "components/community/Context"
 import useTokenAllowanceMachine from "components/community/hooks/useTokenAllowanceMachine"
 import { ArrowCircleUp, Check, Info } from "phosphor-react"
-import type { AccessRequirements } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
 import useStakingModalMachine from "./hooks/useStakingMachine"
 
 type Props = {
   levelName: string
-  accessRequirement: AccessRequirements
+  amount: number
+  timelock: number
   isOpen: boolean
   onClose: () => void
 }
 
 const StakingModal = ({
   levelName,
-  accessRequirement: { amount, timelockMs },
+  amount,
+  timelock,
   isOpen,
   onClose,
 }: Props): JSX.Element => {
@@ -95,9 +96,9 @@ const StakingModal = ({
               />
               <Text fontWeight="medium">
                 Stake {amount} {token.symbol} to gain access to {levelName}. Your
-                tokens will be locked for {msToReadableFormat(timelockMs)}, after
-                that you can unstake them anytime. You can always stake more to
-                upgrade to higher levels.
+                tokens will be locked for {msToReadableFormat(timelock)}, after that
+                you can unstake them anytime. You can always stake more to upgrade to
+                higher levels.
               </Text>
             </>
           )}

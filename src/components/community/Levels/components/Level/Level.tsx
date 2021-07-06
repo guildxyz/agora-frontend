@@ -15,6 +15,7 @@ import { CheckCircle } from "phosphor-react"
 import type { Level as LevelType } from "temporaryData/types"
 import StakingModal from "../StakingModal"
 import useLevelAccess from "./hooks/useLevelAccess"
+import useBalance from "hooks/useBalance"
 
 type Props = {
   data: LevelType
@@ -30,9 +31,15 @@ type LevelData = {
 }
 
 const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
-  const communityData = useCommunity()
+  const {
+    chainData: {
+      token: { symbol: tokenSymbol },
+      stakeToken,
+    },
+  } = useCommunity()
   const { isOpen: isModalOpen, onOpen, onClose } = useDisclosure()
   const [hasAccess, noAccessMessage] = useLevelAccess(data.accessRequirement)
+  const { data: stakeBalance } = useBalance(stakeToken)
   const levelEl = useRef(null)
   const [levelData, setLevelData] = useState<LevelData>({
     index,
@@ -116,7 +123,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
           <InfoTags
             data={data.accessRequirement}
             membersCount={data.membersCount}
-            tokenSymbol={communityData.chainData.token.symbol}
+            tokenSymbol={tokenSymbol}
           />
           {data.desc && <Text pt="4">{data.desc}</Text>}
         </Stack>
@@ -147,7 +154,8 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
           !noAccessMessage && (
             <StakingModal
               levelName={data.name}
-              accessRequirement={data.accessRequirement}
+              amount={data.accessRequirement.amount - stakeBalance}
+              timelock={data.accessRequirement.timelockMs}
               isOpen={isModalOpen}
               onClose={onClose}
             />
