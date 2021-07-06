@@ -1,9 +1,7 @@
 import { useWeb3React } from "@web3-react/core"
-import { formatUnits, parseUnits } from "@ethersproject/units"
+import { parseUnits } from "@ethersproject/units"
 import useSWR from "swr"
 import useKeepSWRDataLiveAsBlocksArrive from "./useKeepSWRDataLiveAsBlocksArrive"
-import { useEffect } from "react"
-import { BigNumber } from "@ethersproject/bignumber"
 
 /**
  * Calls the etherscan API with SWR to keep the data up-to-date.
@@ -16,9 +14,9 @@ const useEstimateTransactionTime = (transaction): number => {
     const gasPrice = await library.estimateGas(transaction)
     const weiGasPrice = parseUnits(gasPrice.toString(), "gwei")
 
-    url += `&gasprice=${weiGasPrice}`
+    const URL = `${url}&gasprice=${weiGasPrice}`
 
-    const estimatedTransactionTime = await fetch(url)
+    const estimatedTransactionTime = await fetch(URL)
       .then((response) => response.json())
       .then((body) => +body.result)
     return estimatedTransactionTime

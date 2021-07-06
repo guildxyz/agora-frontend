@@ -1,4 +1,4 @@
-import { Center, Text } from "@chakra-ui/layout"
+import { Center, Text } from "@chakra-ui/react"
 import useEstimateTransactionTime from "hooks/useEstimateTransactionTime"
 import { ArrowCircleUp } from "phosphor-react"
 import msToReadableFormat from "utils/msToReadableFormat"
