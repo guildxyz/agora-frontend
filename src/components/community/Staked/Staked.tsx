@@ -1,4 +1,4 @@
-import { Button, Box, Tooltip, useDisclosure } from "@chakra-ui/react"
+import { Button, Box, Tooltip, useDisclosure, ScaleFade } from "@chakra-ui/react"
 import ActionCard from "components/common/ActionCard"
 import msToReadableFormat from "utils/msToReadableFormat"
 import useUnstake from "./components/UnstakingModal/hooks/useUnstake"
@@ -11,7 +11,7 @@ const Staked = (): JSX.Element => {
   const { canUnstake, expirity } = useUnstake()
 
   return (
-    hasStaked && (
+    <ScaleFade in={hasStaked} initialScale={0.9} unmountOnExit>
       <ActionCard title="Staked" description="TODO">
         <Tooltip
           isDisabled={canUnstake}
@@ -32,7 +32,7 @@ const Staked = (): JSX.Element => {
         </Tooltip>
         <UnstakingModal isOpen={isOpen} onClose={onClose} />
       </ActionCard>
-    )
+    </ScaleFade>
   )
 }
 
