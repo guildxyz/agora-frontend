@@ -36,8 +36,8 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
   const [unstakeState, unstakeSend] = useUnstakingModalMachine()
 
   const closeModal = () => {
-    allowanceSend("RESET")
-    unstakeSend("RESET")
+    allowanceSend("CLOSE_MODAL")
+    unstakeSend("CLOSE_MODAL")
     onClose()
   }
 
@@ -88,7 +88,7 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
           <VStack spacing="0" alignItems="strech">
             {(() => {
               switch (allowanceState.value) {
-                case "idle":
+                case "noAllowance":
                 case "error":
                   return (
                     <ModalButton
@@ -126,8 +126,8 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
                     />
                   )
 
-                case "success":
                 case "successNotification":
+                case "allowanceGranted":
                 default:
                   return (
                     <Collapse
@@ -154,9 +154,10 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
               }
             })()}
 
-            {["success", "successNotification"].includes(allowanceState.value) ? (
+            {["allowanceGranted", "successNotification"].includes(
+              allowanceState.value
+            ) ? (
               (() => {
-                // We only have one tag per state, I don't see a reason why we would have more in the future
                 switch (unstakeState.value) {
                   case "idle":
                   case "error":
@@ -166,7 +167,7 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
                         Confirm unstake
                       </ModalButton>
                     )
-                  case "loading":
+                  case "waitingConfirmation":
                     return (
                       <ModalButton isLoading loadingText="Waiting confirmation" />
                     )

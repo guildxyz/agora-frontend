@@ -17,10 +17,10 @@ const unstakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
     states: {
       idle: {
         on: {
-          UNSTAKE: "loading",
+          UNSTAKE: "waitingConfirmation",
         },
       },
-      loading: {
+      waitingConfirmation: {
         invoke: {
           src: "unstake",
           onDone: "success",
@@ -29,8 +29,8 @@ const unstakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
       },
       error: {
         on: {
-          UNSTAKE: "loading",
-          RESET: "idle",
+          UNSTAKE: "waitingConfirmation",
+          CLOSE_MODAL: "idle",
         },
         entry: "setError",
         exit: "removeError",
@@ -38,9 +38,7 @@ const unstakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
       success: {},
     },
     on: {
-      HARD_RESET: {
-        target: "idle",
-      },
+      RESET: "idle",
     },
   },
   {
@@ -55,12 +53,12 @@ const unstakingModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
 
 const useUnstakingModalMachine = (): any => {
   const { unstake } = useUnstake()
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const [state, send] = useMachine(unstakingModalMachine, { services: { unstake } })
 
   useEffect(() => {
-    send("HARD_RESET")
-  }, [account, send])
+    send("RESET")
+  }, [account, chainId, send])
 
   return [state, send]
 }

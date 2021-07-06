@@ -15,7 +15,7 @@ const Staked = (): JSX.Element => {
       <ActionCard title="Staked" description="TODO">
         <Tooltip
           isDisabled={canUnstake}
-          label={`You can't unstake, yout timelock expires in ${msToReadableFormat(
+          label={`You can't unstake yet, your timelock expires in ${msToReadableFormat(
             expirity
           )}`}
         >
