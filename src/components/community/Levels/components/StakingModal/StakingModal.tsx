@@ -22,6 +22,7 @@ import { ArrowCircleUp, Check, Info } from "phosphor-react"
 import type { AccessRequirements } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
 import useStakingModalMachine from "./hooks/useStakingMachine"
+import processStakingError from "./utils/processStakingError"
 
 type Props = {
   levelName: string
@@ -88,10 +89,7 @@ const StakingModal = ({
             <>
               <Error
                 error={stakeState.context.error || allowanceState.context.error}
-                processError={() => ({
-                  title: "Error",
-                  description: "Error description",
-                })}
+                processError={processStakingError}
               />
               <Text fontWeight="medium">
                 Stake {amount} {token.symbol} to gain access to {levelName}. Your
