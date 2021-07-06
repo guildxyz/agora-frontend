@@ -24,7 +24,7 @@ const useStaked = () => {
   const { account } = useWeb3React()
 
   const getTimelocks = async (): Promise<StakedType> => {
-    let staked: StakedType = {
+    const staked: StakedType = {
       unlocked: 0,
       locked: [],
     }
@@ -35,19 +35,21 @@ const useStaked = () => {
         timelock = await contract.timelocks(account, i)
         return true
       } catch (_) {
+        timelock = null
         return false
       }
     }
 
-    for (let i = 0; await tryToGetTimelock(i); i++) {
-      const { amount, expires: _expires } = timelock
-      const expires = _expires.toNumber() * 1000
+    // eslint-disable-next-line no-await-in-loop
+    for (let i = 0; await tryToGetTimelock(i); i += 1) {
+      const { amount, expires } = timelock
+      const expiresDate = new Date(expires.toNumber() * 1000)
       if (expires < Date.now()) {
         staked.unlocked += +formatEther(amount)
       } else {
         staked.locked.push({
           amount: +formatEther(amount),
-          expires: new Date(expires),
+          expires: expiresDate,
         })
       }
     }
@@ -56,7 +58,7 @@ const useStaked = () => {
   }
 
   const { data, mutate } = useSWR(
-    !!address ? [address, contract] : null,
+    address ? [address, contract] : null,
     getTimelocks,
     {
       initialData: {

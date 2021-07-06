@@ -8,7 +8,6 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import ActionCard from "components/common/ActionCard"
-import { useEffect } from "react"
 import msToReadableFormat from "utils/msToReadableFormat"
 import { useCommunity } from "../Context"
 import UnstakingModal from "./components/UnstakingModal/UnstakingModal"
@@ -23,8 +22,6 @@ const Staked = (): JSX.Element => {
   } = useCommunity()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { unlocked, locked } = useStaked()
-
-  useEffect(() => console.log({ unlocked, locked }), [unlocked, locked])
 
   return (
     <ScaleFade in={!!unlocked || !!locked.length} initialScale={0.9} unmountOnExit>
