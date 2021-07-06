@@ -35,13 +35,13 @@ const useTokenAllowance = (token: Token): any => {
 
   useKeepSWRDataLiveAsBlocksArrive(result.mutate)
 
-  const approve = async () => {
+  const allowToken = async () => {
     const tx = await tokenContract.approve(contractAddress, MAX_VALUE)
     return tx
   }
 
   const { data } = result
-  return [data, approve]
+  return [data, allowToken]
 }
 
 export default useTokenAllowance
