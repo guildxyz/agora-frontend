@@ -18,7 +18,7 @@ import { ArrowCircleUp, Info, Check } from "phosphor-react"
 import { Error } from "components/common/Error"
 import { useCommunity } from "components/community/Context"
 import ModalButton from "components/common/ModalButton"
-import useAllowanceMachine from "components/community/hooks/useAllowanceMachine"
+import useTokenAllowanceMachine from "components/community/hooks/useTokenAllowanceMachine"
 import useUnstakingModalMachine from "./hooks/useUnstakingModalMachine"
 import processUnstakingError from "./utils/processUnstakingError"
 
@@ -32,7 +32,7 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
     chainData: { stakeToken },
   } = useCommunity()
   const tokenSymbol = stakeToken.symbol
-  const [allowanceState, allowanceSend] = useAllowanceMachine(stakeToken)
+  const [allowanceState, allowanceSend] = useTokenAllowanceMachine(stakeToken)
   const [unstakeState, unstakeSend] = useUnstakingModalMachine()
 
   const closeModal = () => {
