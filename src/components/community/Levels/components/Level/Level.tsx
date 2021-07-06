@@ -3,7 +3,6 @@ import {
   Button,
   Flex,
   Heading,
-  HStack,
   Image,
   Stack,
   Text,
@@ -124,10 +123,11 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       _last={{ borderBottom: 0 }}
       ref={levelEl}
     >
-      <Stack direction="row" spacing="6" mb={{ base: 6, md: 0 }}>
+      <Stack direction="row" spacing={{ base: 0, sm: 6 }} mb={{ base: 6, md: 0 }}>
         <Image
           src={`${data.imageUrl}`}
-          boxSize={{ base: "35px", sm: "45px" }}
+          display={{ base: "none", sm: "block" }}
+          boxSize="45px"
           alt="Level logo"
         />
         <Stack>
@@ -146,19 +146,19 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       </Stack>
       <Stack
         width={{ base: "full", md: "auto" }}
-        alignItems="flex-end"
+        alignItems={{ base: "flex-start", sm: "flex-end" }}
         justifyContent="center"
         fontSize={{ base: "sm", sm: "md" }}
       >
         {hasAccess && (
-          <HStack spacing="3">
+          <Stack spacing="3" direction={{ base: "row-reverse", sm: "row" }}>
             <Text fontWeight="medium">You have access</Text>
             <CheckCircle
               color="var(--chakra-colors-green-500)"
               weight="fill"
               size="24"
             />
-          </HStack>
+          </Stack>
         )}
         {!hasAccess && data.accessRequirement.type === "stake" && (
           <Button
