@@ -4,6 +4,7 @@ import useContract from "hooks/useContract"
 import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
 import useSWR from "swr"
 import { formatEther } from "@ethersproject/units"
+import useKeepSWRDataLiveAsBlocksArrive from "hooks/useKeepSWRDataLiveAsBlocksArrive"
 
 type StakedType = {
   unlocked: number
@@ -54,12 +55,18 @@ const useStaked = () => {
     return staked
   }
 
-  const { data } = useSWR(!!address ? [address, contract] : null, getTimelocks, {
-    initialData: {
-      unlocked: 0,
-      locked: [],
-    },
-  })
+  const { data, mutate } = useSWR(
+    !!address ? [address, contract] : null,
+    getTimelocks,
+    {
+      initialData: {
+        unlocked: 0,
+        locked: [],
+      },
+    }
+  )
+
+  useKeepSWRDataLiveAsBlocksArrive(mutate)
 
   return data
 }

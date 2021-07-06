@@ -8,11 +8,11 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import ActionCard from "components/common/ActionCard"
+import { useEffect } from "react"
 import msToReadableFormat from "utils/msToReadableFormat"
 import { useCommunity } from "../Context"
-import useUnstake from "./components/UnstakingModal/hooks/useUnstake"
 import UnstakingModal from "./components/UnstakingModal/UnstakingModal"
-import useStakedAmounts from "./hooks/useStaked"
+import useStaked from "./hooks/useStaked"
 import formatDate from "./utils/formatDate"
 
 const Staked = (): JSX.Element => {
@@ -22,8 +22,9 @@ const Staked = (): JSX.Element => {
     },
   } = useCommunity()
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { unlocked, locked } = useStakedAmounts()
-  const { canUnstake, expirity } = useUnstake()
+  const { unlocked, locked } = useStaked()
+
+  useEffect(() => console.log({ unlocked, locked }), [unlocked, locked])
 
   return (
     <ScaleFade in={!!unlocked || !!locked.length} initialScale={0.9} unmountOnExit>
@@ -46,14 +47,14 @@ const Staked = (): JSX.Element => {
         }
       >
         <Tooltip
-          isDisabled={canUnstake}
-          label={`You can't unstake yet, your timelock expires in ${msToReadableFormat(
-            expirity
+          isDisabled={!!unlocked}
+          label={`You can't unstake yet, your next timelock expires in ${msToReadableFormat(
+            Math.min(...locked.map(({ expires }) => +expires)) - Date.now()
           )}`}
         >
           <Box>
             <Button
-              disabled={!canUnstake}
+              disabled={!unlocked}
               colorScheme="primary"
               fontWeight="medium"
               onClick={onOpen}
