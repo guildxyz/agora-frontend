@@ -13,9 +13,9 @@ import { useCommunity } from "components/community/Context"
 import InfoTags from "components/community/Levels/components/InfoTags"
 import { CheckCircle } from "phosphor-react"
 import type { Level as LevelType } from "temporaryData/types"
+import useBalance from "hooks/useBalance"
 import StakingModal from "../StakingModal"
 import useLevelAccess from "./hooks/useLevelAccess"
-import useBalance from "hooks/useBalance"
 
 type Props = {
   data: LevelType
