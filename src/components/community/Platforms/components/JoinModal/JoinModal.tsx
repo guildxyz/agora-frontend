@@ -1,22 +1,23 @@
 import {
+  Icon,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
   ModalBody,
+  ModalCloseButton,
+  ModalContent,
   ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Text,
   VStack,
 } from "@chakra-ui/react"
+import { Error } from "components/common/Error"
 import { Link } from "components/common/Link"
+import ModalButton from "components/common/ModalButton"
 import { ArrowSquareOut } from "phosphor-react"
 import QRCode from "qrcode.react"
-import { Error } from "components/common/Error"
-import ModalButton from "components/common/ModalButton"
-import useJoinModalMachine from "./hooks/useJoinModalMachine"
 import platformsContent from "../../platformsContent"
-import processSignError from "./utils/processSignError"
+import useJoinModalMachine from "./hooks/useJoinModalMachine"
+import processSignError from "./utils/processJoinPlatformError"
 
 type Props = {
   platform: string
@@ -48,20 +49,21 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
           ) : (
             <VStack spacing="6">
               <Text>
-                Here’s your link. It’s only active for 10 minutes and is only usable
+                Here’s your link. It’s only active for 15 minutes and is only usable
                 once:
               </Text>
               <Link
-                href={state.context.inviteData.link}
-                color="#006BFF"
+                href={state.context.inviteData.inviteLink}
+                color="blue.600"
                 display="flex"
+                alignItems="center"
                 isExternal
               >
-                {state.context.inviteData.link}
-                <ArrowSquareOut size="1.3em" weight="light" color="#006BFF" />
+                {state.context.inviteData.inviteLink}
+                <Icon as={ArrowSquareOut} mx="2" />
               </Link>
-              <QRCode size={150} value={state.context.inviteData.link} />
-              {!!state.context.inviteData.code && (
+              <QRCode size={150} value={state.context.inviteData.inviteLink} />
+              {!!state.context.inviteData.joinCode && (
                 <>
                   <Text>
                     If there’s lot of traffic right now, the bot might ask you for a
@@ -69,7 +71,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
                     not the case, but if it is, here’s what you need:
                   </Text>
                   <Text fontWeight="700" fontSize="2xl" letterSpacing="5px">
-                    {state.context.inviteData.code}
+                    {state.context.inviteData.joinCode}
                   </Text>
                 </>
               )}

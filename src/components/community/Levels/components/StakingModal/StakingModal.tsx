@@ -37,7 +37,7 @@ const StakingModal = ({
   onClose,
 }: Props): JSX.Element => {
   const {
-    chainData: { token },
+    chainData: { token, stakeToken },
   } = useCommunity()
   const [allowanceState, allowanceSend] = useTokenAllowanceMachine(token)
   const [stakeState, stakeSend] = useStakingModalMachine(amount)
@@ -78,9 +78,10 @@ const StakingModal = ({
                 succeeds.
               </Text>
               <Text textColor="gray">
-                You’ll recieve 0,5 yCakeAgoraToken in return. Those mark your
-                position, so don’t sell or send them because you will lose access to
-                the community level and won’t be able to get your yCake tokens back.
+                You’ll recieve {amount} {stakeToken.symbol} in return. Those mark
+                your position, so don’t sell or send them because you will lose
+                access to the community level and won’t be able to get your{" "}
+                {token.symbol} tokens back.
               </Text>
             </>
           ) : (

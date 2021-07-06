@@ -1,18 +1,18 @@
 import {
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
   ModalBody,
+  ModalCloseButton,
+  ModalContent,
   ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Text,
   VStack,
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
-import useLeaveModalMachine from "./hooks/useLeaveModalMachine"
 import platformsContent from "../../platformsContent"
+import useLeaveModalMachine from "./hooks/useLeaveModalMachine"
 import processLeavePlatformMessage from "./utils/processLeavePlatformError"
 
 type Props = {
@@ -22,10 +22,10 @@ type Props = {
 }
 
 const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
-  const [state, send] = useLeaveModalMachine(platform)
   const {
     leave: { title, membershipDescription, leaveDescription, buttonText },
   } = platformsContent[platform]
+  const [state, send] = useLeaveModalMachine(platform)
 
   const closeModal = () => {
     send("CLOSE_MODAL")
