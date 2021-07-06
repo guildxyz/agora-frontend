@@ -17,8 +17,8 @@ import {
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
 import { useCommunity } from "components/community/Context"
-import useAverageTransactionTime from "hooks/useAverageTransactionTime"
 import { ArrowCircleUp, Check, Info } from "phosphor-react"
+import TransactionSubmitted from "components/common/TransactionSubmitted"
 import { useEffect } from "react"
 import type { AccessRequirements } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
@@ -44,7 +44,6 @@ const StakingModal = ({
     },
   } = useCommunity()
   const [state, send] = useStakingModalMachine(amount)
-  const avgTransactionTime = useAverageTransactionTime()
 
   useEffect(() => {
     console.log({
@@ -70,25 +69,12 @@ const StakingModal = ({
         <ModalCloseButton />
         <ModalBody>
           {state.value === "success" ? (
-            <>
-              <Center>
-                <ArrowCircleUp
-                  size="50%"
-                  color="var(--chakra-colors-primary-500)"
-                  weight="thin"
-                />
-              </Center>
-              <Text fontWeight="medium" mt="8" mb="4">
-                Avarage transaction time is {msToReadableFormat(avgTransactionTime)}.
-                You’ll be notified when it succeeds.
-              </Text>
-              <Text textColor="gray">
-                You’ll recieve {amount} {stakeTokenSymbol} in return. Those mark your
-                position, so don’t sell or send them because you will lose access to
-                the community level and won’t be able to get your {tokenSymbol}{" "}
-                tokens back.
-              </Text>
-            </>
+            <TransactionSubmitted transaction={state.context.transaction}>
+              You’ll recieve {amount} {stakeTokenSymbol} in return. Those mark your
+              position, so don’t sell or send them because you will lose access to
+              the community level and won’t be able to get your {tokenSymbol} tokens
+              back.
+            </TransactionSubmitted>
           ) : (
             <>
               <Error

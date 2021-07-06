@@ -20,6 +20,7 @@ type AllowanceCheckEvent =
 
 type ContextType = {
   error: any
+  transaction: any
   showApproveSuccess: boolean
 }
 
@@ -32,6 +33,7 @@ const stakingModalMachine = createMachine<
     context: {
       error: null,
       showApproveSuccess: false,
+      transaction: null,
     },
     states: {
       initial: {
@@ -117,7 +119,10 @@ const stakingModalMachine = createMachine<
         },
         exit: "removeError",
       },
-      success: {},
+      success: {
+        entry: "setTransaction",
+        exit: "removeTransaction",
+      },
     },
     on: {
       RESET: {
@@ -136,6 +141,10 @@ const stakingModalMachine = createMachine<
       removeError: assign({ error: null }),
       setError: assign<ContextType, DoneInvokeEvent<any>>({
         error: (_: ContextType, event: DoneInvokeEvent<any>) => event.data,
+      }),
+      removeTransaction: assign({ transaction: null }),
+      setTransaction: assign<ContextType, DoneInvokeEvent<any>>({
+        transaction: (_: ContextType, event: DoneInvokeEvent<any>) => event.data,
       }),
       showApproveSuccess: assign<ContextType, DoneInvokeEvent<any>>({
         showApproveSuccess: true,
