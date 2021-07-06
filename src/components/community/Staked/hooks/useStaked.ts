@@ -24,35 +24,40 @@ const useStaked = () => {
   const { account } = useWeb3React()
 
   const getTimelocks = async (): Promise<StakedType> => {
-    const staked: StakedType = {
+    const getStaked = async (
+      i: number,
+      { unlocked, locked }: StakedType
+    ): Promise<StakedType> => {
+      try {
+        const { amount, expires } = await contract.timelocks(account, i)
+        const expiresNumber = expires.toNumber() * 1000
+        if (expiresNumber < Date.now()) {
+          return await getStaked(i + 1, {
+            unlocked: unlocked + +formatEther(amount),
+            locked,
+          })
+        }
+        return await getStaked(i + 1, {
+          unlocked,
+          locked: [
+            ...locked,
+            {
+              amount: +formatEther(amount),
+              expires: new Date(expiresNumber),
+            },
+          ],
+        })
+      } catch (_) {
+        return { unlocked, locked }
+      }
+    }
+
+    const staked = await getStaked(0, {
       unlocked: 0,
       locked: [],
-    }
+    })
 
-    let timelock = null
-    const tryToGetTimelock = async (i: number) => {
-      try {
-        timelock = await contract.timelocks(account, i)
-        return true
-      } catch (_) {
-        timelock = null
-        return false
-      }
-    }
-
-    // eslint-disable-next-line no-await-in-loop
-    for (let i = 0; await tryToGetTimelock(i); i += 1) {
-      const { amount, expires } = timelock
-      const expiresNumber = expires.toNumber() * 1000
-      if (expiresNumber < Date.now()) {
-        staked.unlocked += +formatEther(amount)
-      } else {
-        staked.locked.push({
-          amount: +formatEther(amount),
-          expires: new Date(expiresNumber),
-        })
-      }
-    }
+    // console.log(staked)
 
     return staked
   }
