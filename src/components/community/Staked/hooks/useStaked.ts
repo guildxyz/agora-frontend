@@ -5,7 +5,7 @@ import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
 import useSWR from "swr"
 import { formatEther } from "@ethersproject/units"
 
-type StakedAmountsType = {
+type StakedType = {
   unlocked: number
   locked: Array<{
     amount: number
@@ -13,7 +13,7 @@ type StakedAmountsType = {
   }>
 }
 
-const useStakedAmounts = () => {
+const useStaked = () => {
   const {
     chainData: {
       contract: { address },
@@ -22,8 +22,8 @@ const useStakedAmounts = () => {
   const contract = useContract(address, AGORA_SPACE_ABI, true)
   const { account } = useWeb3React()
 
-  const getTimelocks = async (): Promise<StakedAmountsType> => {
-    let stakedAmounts: StakedAmountsType = {
+  const getTimelocks = async (): Promise<StakedType> => {
+    let staked: StakedType = {
       unlocked: 0,
       locked: [],
     }
@@ -42,16 +42,16 @@ const useStakedAmounts = () => {
       const { amount, expires: _expires } = timelock
       const expires = _expires.toNumber() * 1000
       if (expires < Date.now()) {
-        stakedAmounts.unlocked += +formatEther(amount)
+        staked.unlocked += +formatEther(amount)
       } else {
-        stakedAmounts.locked.push({
+        staked.locked.push({
           amount: +formatEther(amount),
           expires: new Date(expires),
         })
       }
     }
 
-    return stakedAmounts
+    return staked
   }
 
   const { data } = useSWR(!!address ? [address, contract] : null, getTimelocks, {
@@ -64,4 +64,4 @@ const useStakedAmounts = () => {
   return data
 }
 
-export default useStakedAmounts
+export default useStaked

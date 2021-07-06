@@ -5,13 +5,14 @@ import {
   useDisclosure,
   ScaleFade,
   Text,
+  VStack,
 } from "@chakra-ui/react"
 import ActionCard from "components/common/ActionCard"
 import msToReadableFormat from "utils/msToReadableFormat"
 import { useCommunity } from "../Context"
 import useUnstake from "./components/UnstakingModal/hooks/useUnstake"
 import UnstakingModal from "./components/UnstakingModal/UnstakingModal"
-import useStakedAmounts from "./hooks/useStakedAmounts"
+import useStakedAmounts from "./hooks/useStaked"
 import formatDate from "./utils/formatDate"
 
 const Staked = (): JSX.Element => {
@@ -29,7 +30,7 @@ const Staked = (): JSX.Element => {
       <ActionCard
         title="Staked"
         description={
-          <>
+          <VStack alignItems="flex-start">
             {!!unlocked && (
               <Text>
                 {unlocked} {stakeTokenSymbol} - unlocked
@@ -41,7 +42,7 @@ const Staked = (): JSX.Element => {
                   {amount} {stakeTokenSymbol} - locked until {formatDate(expires)}
                 </Text>
               ))}
-          </>
+          </VStack>
         }
       >
         <Tooltip
