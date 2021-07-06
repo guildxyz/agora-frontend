@@ -43,13 +43,13 @@ const useStaked = () => {
     // eslint-disable-next-line no-await-in-loop
     for (let i = 0; await tryToGetTimelock(i); i += 1) {
       const { amount, expires } = timelock
-      const expiresDate = new Date(expires.toNumber() * 1000)
-      if (expires < Date.now()) {
+      const expiresNumber = expires.toNumber() * 1000
+      if (expiresNumber < Date.now()) {
         staked.unlocked += +formatEther(amount)
       } else {
         staked.locked.push({
           amount: +formatEther(amount),
-          expires: expiresDate,
+          expires: new Date(expiresNumber),
         })
       }
     }
