@@ -148,6 +148,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
                   <Icon
                     as={XCircle}
                     tabIndex={0}
+                    display={{ base: "block", md: "none" }}
                     color="var(--chakra-colors-orange-400)"
                     weight="fill"
                     w={6}
@@ -160,6 +161,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
                   <Icon
                     as={CheckCircle}
                     tabIndex={0}
+                    display={{ base: "block", md: "none" }}
                     color="var(--chakra-colors-green-500)"
                     weight="fill"
                     w={6}
