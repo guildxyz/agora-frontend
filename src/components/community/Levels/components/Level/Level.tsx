@@ -1,19 +1,24 @@
 import { useRef, useState, useEffect } from "react"
 import {
+  Box,
   Button,
   Flex,
   Heading,
   Image,
   Stack,
+  HStack,
   Text,
   useDisclosure,
+  Tooltip,
+  Icon,
 } from "@chakra-ui/react"
 import { useCommunity } from "components/community/Context"
 import InfoTags from "components/community/Levels/components/InfoTags"
-import { CheckCircle } from "phosphor-react"
+import { CheckCircle, XCircle } from "phosphor-react"
 import type { Level as LevelType } from "temporaryData/types"
 import StakingModal from "../StakingModal"
 import useLevelAccess from "./hooks/useLevelAccess"
+import AccessText from "./components/AccessText"
 
 type Props = {
   data: LevelType
@@ -123,15 +128,47 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       _last={{ borderBottom: 0 }}
       ref={levelEl}
     >
-      <Stack direction="row" spacing={{ base: 0, sm: 6 }} mb={{ base: 6, md: 0 }}>
+      <Stack
+        direction="row"
+        flex="1"
+        spacing={{ base: 4, sm: 6 }}
+        mb={{ base: 6, md: 0 }}
+      >
         <Image
           src={`${data.imageUrl}`}
-          display={{ base: "none", sm: "block" }}
-          boxSize="45px"
+          boxSize={{ base: "40px", sm: "45px" }}
           alt="Level logo"
         />
         <Stack>
-          <Heading size="sm">{data.name}</Heading>
+          <Heading size="sm">
+            <HStack>
+              <span>{data.name}</span>
+              {noAccessMessage && (
+                <Tooltip label={noAccessMessage}>
+                  <Icon
+                    as={XCircle}
+                    tabIndex={0}
+                    color="var(--chakra-colors-orange-400)"
+                    weight="fill"
+                    w={6}
+                    h={6}
+                  />
+                </Tooltip>
+              )}
+              {hasAccess && (
+                <Tooltip label="You have access">
+                  <Icon
+                    as={CheckCircle}
+                    tabIndex={0}
+                    color="var(--chakra-colors-green-500)"
+                    weight="fill"
+                    w={6}
+                    h={6}
+                  />
+                </Tooltip>
+              )}
+            </HStack>
+          </Heading>
           <InfoTags
             data={data.accessRequirement}
             membersCount={data.membersCount}
@@ -148,18 +185,36 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
         width={{ base: "full", md: "auto" }}
         alignItems={{ base: "flex-start", sm: "flex-end" }}
         justifyContent="center"
-        fontSize={{ base: "sm", sm: "md" }}
       >
         {hasAccess && (
-          <Stack spacing="3" direction={{ base: "row-reverse", sm: "row" }}>
-            <Text fontWeight="medium">You have access</Text>
-            <CheckCircle
-              color="var(--chakra-colors-green-500)"
-              weight="fill"
-              size="24"
-            />
-          </Stack>
+          <AccessText
+            text="You have access"
+            icon={
+              <Icon
+                as={CheckCircle}
+                color="var(--chakra-colors-green-500)"
+                weight="fill"
+                w={6}
+                h={6}
+              />
+            }
+          />
         )}
+        {noAccessMessage && (
+          <AccessText
+            text={noAccessMessage}
+            icon={
+              <Icon
+                as={XCircle}
+                color="var(--chakra-colors-orange-400)"
+                weight="fill"
+                w={6}
+                h={6}
+              />
+            }
+          />
+        )}
+
         {!hasAccess && data.accessRequirement.type === "stake" && (
           <Button
             colorScheme="primary"
@@ -180,7 +235,6 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
               onClose={onClose}
             />
           )}
-        {noAccessMessage && <Text fontWeight="medium">{noAccessMessage}</Text>}
       </Stack>
     </Flex>
   )
