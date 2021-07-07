@@ -59,7 +59,7 @@ const Web3Modal = ({
   }, [active, closeModal])
 
   return (
-    <Modal isOpen={isModalOpen} onClose={closeModal}>
+    <Modal motionPreset="slideInBottom" isOpen={isModalOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Connect to a wallet</ModalHeader>

@@ -57,7 +57,7 @@ const StakingModal = ({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={closeModal}>
+    <Modal motionPreset="slideInBottom" isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>

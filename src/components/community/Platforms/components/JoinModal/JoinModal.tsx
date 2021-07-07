@@ -37,7 +37,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={closeModal}>
+    <Modal motionPreset="slideInBottom" isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{title}</ModalHeader>

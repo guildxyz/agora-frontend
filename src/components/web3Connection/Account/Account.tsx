@@ -25,6 +25,7 @@ const Account = (): JSX.Element => {
   const cardStyleProps = {
     borderRadius: "2xl",
     width: "max",
+    maxWidth: "calc(100% - var(--chakra-space-8))",
     marginLeft: "auto",
     marginRight: { base: 4, sm: 0 },
   }
