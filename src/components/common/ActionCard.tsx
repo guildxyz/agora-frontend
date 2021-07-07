@@ -3,7 +3,7 @@ import Card from "./Card"
 
 type Props = {
   title: string
-  description: string | JSX.Element
+  description: string | JSX.Element[]
   children: JSX.Element | JSX.Element[]
 }
 

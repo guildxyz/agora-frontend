@@ -4,8 +4,7 @@ import {
   Tooltip,
   useDisclosure,
   ScaleFade,
-  Text,
-  VStack,
+  chakra,
 } from "@chakra-ui/react"
 import ActionCard from "components/common/ActionCard"
 import msToReadableFormat from "utils/msToReadableFormat"
@@ -27,21 +26,18 @@ const Staked = (): JSX.Element => {
     <ScaleFade in={!!unlocked || !!locked.length} initialScale={0.9} unmountOnExit>
       <ActionCard
         title="Staked"
-        description={
-          <VStack alignItems="flex-start">
-            {!!unlocked && (
-              <Text>
-                {unlocked} {stakeTokenSymbol} - unlocked
-              </Text>
-            )}
-            {!!locked.length &&
-              locked.map(({ amount, expires }) => (
-                <Text key={+expires}>
-                  {amount} {stakeTokenSymbol} - locked until {formatDate(expires)}
-                </Text>
-              ))}
-          </VStack>
-        }
+        description={[
+          !!unlocked && (
+            <chakra.span display="block" key="unlocked">
+              {unlocked} {stakeTokenSymbol} - unlocked
+            </chakra.span>
+          ),
+          ...locked.map(({ amount, expires }) => (
+            <chakra.span display="block" key={+expires}>
+              {amount} {stakeTokenSymbol} - locked until {formatDate(expires)}
+            </chakra.span>
+          )),
+        ]}
       >
         <Tooltip
           isDisabled={!!unlocked}
