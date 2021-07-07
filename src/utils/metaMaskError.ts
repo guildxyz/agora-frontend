@@ -30,35 +30,15 @@ const processMetaMaskError = (error: MetaMaskError): ErrorInfo => {
         title: "Chain Disconnected",
         description: "MetaMask is not connected to the requested chain",
       }
-    case -32700:
-      return {
-        title: "Parse error",
-        description: "Invalid JSON",
-      }
-    case -32600:
-      return {
-        title: "Invalid request",
-        description: "JSON is not a valid request object",
-      }
-    case -32601:
-      return {
-        title: "Method not found",
-        description: "Method does not exist",
-      }
-    case -32602:
-      return {
-        title: "Invalid params",
-        description: "Invalid method parameters",
-      }
     case -32603:
       return {
         title: "Internal error",
         description: "Internal JSON-RPC error",
       }
-    case -32000:
+    case -32003:
       return {
-        title: "Invalid input",
-        description: "Missing or invalid parameters",
+        title: "Transaction rejected",
+        description: "Transaction creation failed",
       }
     case -32001:
       return {
@@ -70,10 +50,30 @@ const processMetaMaskError = (error: MetaMaskError): ErrorInfo => {
         title: "Resource unavailable",
         description: "Requested resource not available",
       }
-    case -32003:
+    case -32600:
       return {
-        title: "Transaction rejected",
-        description: "Transaction creation failed",
+        title: "Invalid request",
+        description: "JSON is not a valid request object",
+      }
+    case -32700:
+      return {
+        title: "Parse error",
+        description: "Invalid JSON",
+      }
+    case -32601:
+      return {
+        title: "Method not found",
+        description: "Method does not exist",
+      }
+    case -32602:
+      return {
+        title: "Invalid params",
+        description: "Invalid method parameters",
+      }
+    case -32000:
+      return {
+        title: "Invalid input",
+        description: "Missing or invalid parameters",
       }
     case -32004:
       return {
@@ -91,13 +91,11 @@ const processMetaMaskError = (error: MetaMaskError): ErrorInfo => {
         description: "Version of JSON-RPC protocol is not supported",
       }
     default:
-      break
-  }
-
-  console.error(error)
-  return {
-    title: "An unknown error occurred",
-    description: "Check the console for more details",
+      console.error(error)
+      return {
+        title: "An unknown error occurred",
+        description: "Check the console for more details",
+      }
   }
 }
 
