@@ -1,4 +1,5 @@
 import { ErrorInfo } from "components/common/Error"
+import { processMetaMaskError } from "utils/metaMaskError"
 import { SignErrorType } from "../hooks/usePersonalSign"
 
 const processJoinPlatformError = (
@@ -19,21 +20,7 @@ const processJoinPlatformError = (
     }
   }
   // if it's an error from signing
-  switch (error.code) {
-    case 4001:
-      return {
-        title: "Cancelled",
-        description: "The signature process got cancelled",
-      }
-    default:
-      break
-  }
-
-  console.error(error)
-  return {
-    title: "An unknown error occurred",
-    description: "Check the console for more details",
-  }
+  return processMetaMaskError(error)
 }
 
 export default processJoinPlatformError
