@@ -10,7 +10,7 @@ type Props = {
 const Card = ({ children, ...rest }: Props): JSX.Element => (
   <Box
     shadow="md"
-    borderRadius="2xl"
+    borderRadius={{ base: 0, sm: "2xl" }}
     bg="white"
     display="flex"
     flexDirection="column"

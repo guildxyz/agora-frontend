@@ -24,7 +24,7 @@ const InfoTag = ({ icon: Icon, label }: ChildProps): JSX.Element => (
     mr={{ base: 4, md: 8 }}
     mb="2"
     direction="row"
-    spacing="2"
+    spacing={{ base: 1, sm: 2 }}
     textColor="gray.450"
     fontSize={{ base: "sm", sm: "md" }}
     alignItems="center"

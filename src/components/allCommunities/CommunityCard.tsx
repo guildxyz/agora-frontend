@@ -22,7 +22,8 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
       >
         <Card
           role="group"
-          p="7"
+          px={{ base: 4, sm: 7 }}
+          py="7"
           bgGradient="linear(to-l, var(--chakra-colors-primary-50), white)"
           bgRepeat="no-repeat"
           bgSize="150%"
@@ -36,7 +37,7 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
           <Stack
             position="relative"
             direction="row"
-            spacing="10"
+            spacing={{ base: 5, sm: 10 }}
             alignItems="center"
           >
             <Image src={`${community.imageUrl}`} boxSize="45px" alt="Level logo" />
@@ -50,14 +51,14 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
                 shouldWrapChildren
               >
                 <Tag
-                  mr="3"
-                  mb="3"
+                  mr={{ base: 2, sm: 3 }}
+                  mb={{ base: 2, sm: 3 }}
                   colorScheme="blackAlpha"
                   textColor="blackAlpha.700"
                 >{`${membersCount} members`}</Tag>
                 <Tag
-                  mr="3"
-                  mb="3"
+                  mr={{ base: 2, sm: 3 }}
+                  mb={{ base: 2, sm: 3 }}
                   colorScheme="blackAlpha"
                   textColor="blackAlpha.700"
                 >

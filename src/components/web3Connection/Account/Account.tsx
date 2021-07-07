@@ -22,9 +22,16 @@ const Account = (): JSX.Element => {
   const ENSName = useENSName(account)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
+  const cardStyleProps = {
+    borderRadius: "2xl",
+    width: "max",
+    marginLeft: "auto",
+    marginRight: { base: 4, sm: 0 },
+  }
+
   if (typeof window === "undefined") {
     return (
-      <Card>
+      <Card {...cardStyleProps}>
         <Button variant="ghost" isLoading>
           Connect to a wallet
         </Button>
@@ -33,7 +40,7 @@ const Account = (): JSX.Element => {
   }
   if (error instanceof UnsupportedChainIdError) {
     return (
-      <Card>
+      <Card {...cardStyleProps}>
         <Button
           variant="ghost"
           onClick={openModal}
@@ -47,7 +54,7 @@ const Account = (): JSX.Element => {
   }
   if (typeof account !== "string") {
     return (
-      <Card>
+      <Card {...cardStyleProps}>
         <Button
           variant="ghost"
           isLoading={!triedEager}
@@ -61,7 +68,7 @@ const Account = (): JSX.Element => {
   }
   return (
     <>
-      <Card>
+      <Card {...cardStyleProps}>
         <ButtonGroup isAttached variant="ghost">
           {!!communityData && (
             <>

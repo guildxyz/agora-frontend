@@ -15,7 +15,12 @@ const Levels = (): JSX.Element => {
   }
 
   return (
-    <Card pos="relative" overflow="hidden" pl="8" pr="7">
+    <Card
+      pos="relative"
+      overflow="hidden"
+      pl={{ base: 5, sm: 8 }}
+      pr={{ base: 4, sm: 7 }}
+    >
       <Stack spacing="0">
         {levels.map((level, index) => (
           <Level

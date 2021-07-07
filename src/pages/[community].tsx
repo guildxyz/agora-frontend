@@ -1,5 +1,5 @@
 import { GetStaticProps, GetStaticPaths } from "next"
-import { SimpleGrid, Stack, Text } from "@chakra-ui/react"
+import { Center, SimpleGrid, Stack, Text } from "@chakra-ui/react"
 import { Link } from "components/common/Link"
 import Layout from "components/Layout"
 import { communities } from "temporaryData/communities"
@@ -20,14 +20,19 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => (
       bg="linear-gradient(white 0px, var(--chakra-colors-primary-50) 700px)"
     >
       <Stack spacing={10}>
-        <Text fontWeight="medium">{communityData.description}</Text>
-        <SimpleGrid templateColumns={{ base: "100%", md: "3fr 2fr" }} gap="10">
+        <Text px={{ base: 4, sm: 0 }} fontWeight="medium">
+          {communityData.description}
+        </Text>
+        <SimpleGrid
+          templateColumns={{ base: "100%", md: "3fr 2fr" }}
+          gap={{ base: 5, md: 10 }}
+        >
           <Platforms />
           <Staked />
         </SimpleGrid>
         <Levels />
         {/* <pre>{JSON.stringify(communityData, undefined, 2)}</pre> */}
-        <Link href="/" pt={8}>
+        <Link href="/" pt={2} textAlign={{ base: "center", sm: "left" }}>
           Back to all communities
         </Link>
       </Stack>
