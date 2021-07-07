@@ -1,29 +1,87 @@
-import { Heading, Text, Stack } from "@chakra-ui/react"
+import {
+  Heading,
+  Text,
+  Stack,
+  HStack,
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionButton,
+  AccordionIcon,
+} from "@chakra-ui/react"
 import Card from "./Card"
 
 type Props = {
+  withAccordion?: boolean
   title: string
   description: string
   children: JSX.Element | JSX.Element[]
 }
 
-const ActionCard = ({ title, description, children }: Props): JSX.Element => (
-  <Card p={6}>
+const ActionCardContent = ({ title, description, children }: Props) => (
+  <>
     <Heading size="sm" mb="2">
       {title}
     </Heading>
     <Text mb="6" fontWeight="medium">
       {description}
     </Text>
-    <Stack
-      direction={{ base: "column", sm: "row" }}
-      spacing="2"
-      justifyContent="flex-end"
-      mt="auto"
-    >
+    <HStack spacing="2" justifyContent="flex-end" mt="auto">
       {children}
-    </Stack>
-  </Card>
+    </HStack>
+  </>
 )
+
+const ActionCard = ({
+  withAccordion = false,
+  title,
+  description,
+  children,
+}: Props): JSX.Element => {
+  if (!withAccordion) {
+    return (
+      <Card p={6}>
+        <ActionCardContent {...{ title, description, children }} />
+      </Card>
+    )
+  }
+
+  return (
+    <>
+      <Card display={{ base: "block", md: "none" }} p={6}>
+        <Accordion allowMultiple>
+          <AccordionItem border="none">
+            <AccordionButton p="0" _hover={{ bg: "none" }}>
+              <Stack
+                w="full"
+                justifyContent="space-between"
+                justifyItems="center"
+                direction="row"
+              >
+                <Heading size="sm" mb="2">
+                  {title}
+                </Heading>
+                <AccordionIcon />
+              </Stack>
+            </AccordionButton>
+
+            <AccordionPanel p="0">
+              <Text mb="6" fontWeight="medium">
+                {description}
+              </Text>
+              <HStack spacing="2" justifyContent="flex-end" mt="auto">
+                {children}
+              </HStack>
+            </AccordionPanel>
+          </AccordionItem>
+        </Accordion>
+      </Card>
+
+      <Card display={{ base: "none", md: "block" }} p={6}>
+        <ActionCardContent {...{ title, description, children }} />
+      </Card>
+    </>
+  )
+}
 
 export default ActionCard
