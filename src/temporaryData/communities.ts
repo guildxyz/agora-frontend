@@ -77,7 +77,22 @@ const communities: Community[] = [
         imageUrl: "temporaryCommunityLogos/agora3.png",
         accessRequirement: {
           type: "stake",
-          amount: 50,
+          amount: 20,
+          timelockMs: 600000,
+        },
+        membersCount: 0,
+        platforms: {
+          telegramGroups: [],
+          discordChannels: [],
+        },
+      },
+      {
+        name: "teszt",
+        desc: "Group for founders who tokenzied their communities",
+        imageUrl: "temporaryCommunityLogos/agora3.png",
+        accessRequirement: {
+          type: "stake",
+          amount: 30,
           timelockMs: 600000,
         },
         membersCount: 0,
