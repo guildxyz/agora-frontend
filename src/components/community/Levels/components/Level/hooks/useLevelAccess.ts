@@ -12,9 +12,10 @@ const useLevelAccess = (data: AccessRequirements): [boolean, string] => {
   const amount = data.type === "stake" ? data.amount - stakeBalance : data.amount
   const { active } = useWeb3React()
 
-  if (data.type === "open") return [true, ""]
-
   if (!active) return [false, "Wallet not connected"]
+
+  // If we need open levels to be accessible without wallet, this one should be the first if
+  if (data.type === "open") return [true, ""]
 
   if (Number.isNaN(amount)) return [false, "Loading requirement amount"]
 
