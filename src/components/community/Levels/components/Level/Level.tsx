@@ -37,9 +37,20 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       stakeToken,
     },
   } = useCommunity()
-  const { isOpen: isModalOpen, onOpen, onClose } = useDisclosure()
-  const [hasAccess, noAccessMessage] = useLevelAccess(data.accessRequirement)
+  const {
+    isOpen: isStakingModalOpen,
+    onOpen: onStakingModalOpen,
+    onClose: onStakingModalClose,
+  } = useDisclosure()
   const { data: stakeBalance } = useBalance(stakeToken)
+  const neededAmount =
+    data.accessRequirement.type === "stake"
+      ? data.accessRequirement.amount - stakeBalance
+      : data.accessRequirement.amount
+  const [hasAccess, noAccessMessage] = useLevelAccess(
+    data.accessRequirement.type,
+    neededAmount
+  )
   const levelEl = useRef(null)
   const [levelData, setLevelData] = useState<LevelData>({
     index,
@@ -84,16 +95,16 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   }, [hasAccess, noAccessMessage, levelEl])
 
   useEffect(() => {
-    if (!isModalOpen && levelData.status === "focus") {
+    if (!isStakingModalOpen && levelData.status === "focus") {
       setLevelData((prevState) => ({
         ...prevState,
         status: hasAccess ? "access" : "idle",
       }))
     }
-  }, [isModalOpen])
+  }, [isStakingModalOpen])
 
   useEffect(() => {
-    if (isModalOpen && levelData.status !== "focus") {
+    if (isStakingModalOpen && levelData.status !== "focus") {
       setLevelData((prevState) => ({
         ...prevState,
         status: "focus",
@@ -103,7 +114,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     if (onChangeHandler) {
       onChangeHandler(levelData)
     }
-  }, [levelData, isModalOpen])
+  }, [levelData, isStakingModalOpen])
 
   return (
     <Flex
@@ -143,7 +154,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
           <Button
             colorScheme="primary"
             fontWeight="medium"
-            onClick={onOpen}
+            onClick={onStakingModalOpen}
             disabled={!!noAccessMessage}
           >
             Stake to join
@@ -154,10 +165,10 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
           !noAccessMessage && (
             <StakingModal
               levelName={data.name}
-              amount={data.accessRequirement.amount - stakeBalance}
+              amount={neededAmount}
               timelock={data.accessRequirement.timelockMs}
-              isOpen={isModalOpen}
-              onClose={onClose}
+              isOpen={isStakingModalOpen}
+              onClose={onStakingModalClose}
             />
           )}
         {noAccessMessage && <Text fontWeight="medium">{noAccessMessage}</Text>}

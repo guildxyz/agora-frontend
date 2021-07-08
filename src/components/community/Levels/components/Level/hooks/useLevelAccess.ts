@@ -1,31 +1,29 @@
 import { useWeb3React } from "@web3-react/core"
 import { useCommunity } from "components/community/Context"
 import useBalance from "hooks/useBalance"
-import { AccessRequirements } from "temporaryData/types"
 
-const useLevelAccess = (data: AccessRequirements): [boolean, string] => {
+const useLevelAccess = (type: string, neededAmount: number): [boolean, string] => {
   const {
     chainData: { token, stakeToken },
   } = useCommunity()
   const { data: tokenBalance } = useBalance(token)
   const { data: stakeBalance } = useBalance(stakeToken)
-  const amount = data.type === "stake" ? data.amount - stakeBalance : data.amount
   const { active } = useWeb3React()
 
   if (!active) return [false, "Wallet not connected"]
 
   // If we need open levels to be accessible without wallet, this one should be the first if
-  if (data.type === "open") return [true, ""]
+  if (type === "open") return [true, ""]
 
-  if (Number.isNaN(amount)) return [false, "Loading requirement amount"]
+  if (Number.isNaN(neededAmount)) return [false, "Loading requirement amount"]
 
-  if (stakeBalance >= amount) return [true, ""]
+  if (stakeBalance >= neededAmount) return [true, ""]
 
-  if (tokenBalance < amount) return [false, "Insufficient balance"]
+  if (tokenBalance < neededAmount) return [false, "Insufficient balance"]
 
-  if (data.type === "hold") return [true, ""]
+  if (type === "hold") return [true, ""]
 
-  if (data.type === "stake") return [false, ""]
+  if (type === "stake") return [false, ""]
 }
 
 export default useLevelAccess
