@@ -143,32 +143,27 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
           <Heading size="sm">
             <HStack>
               <span>{data.name}</span>
-              {noAccessMessage && (
-                <Tooltip label={noAccessMessage}>
-                  <Icon
-                    as={XCircle}
-                    tabIndex={0}
-                    display={{ base: "block", md: "none" }}
-                    color="var(--chakra-colors-orange-400)"
-                    weight="fill"
-                    w={6}
-                    h={6}
-                  />
-                </Tooltip>
-              )}
-              {hasAccess && (
-                <Tooltip label="You have access">
-                  <Icon
-                    as={CheckCircle}
-                    tabIndex={0}
-                    display={{ base: "block", md: "none" }}
-                    color="var(--chakra-colors-green-500)"
-                    weight="fill"
-                    w={6}
-                    h={6}
-                  />
-                </Tooltip>
-              )}
+              <Tooltip hasArrow label={noAccessMessage || "You have access"}>
+                <Icon
+                  as={hasAccess ? CheckCircle : XCircle}
+                  tabIndex={0}
+                  display={{ base: "block", md: "none" }}
+                  color={
+                    hasAccess
+                      ? "var(--chakra-colors-green-500)"
+                      : "var(--chakra-colors-orange-400)"
+                  }
+                  weight="fill"
+                  w={6}
+                  h={6}
+                  borderRadius="full"
+                  _focus={{
+                    outline: "none",
+                    outlineOffset: 0,
+                    boxShadow: "var(--chakra-shadows-outline)",
+                  }}
+                />
+              </Tooltip>
             </HStack>
           </Heading>
           <InfoTags
