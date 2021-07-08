@@ -2,11 +2,11 @@ import { parseEther } from "@ethersproject/units"
 import { useWeb3React } from "@web3-react/core"
 import { useMachine } from "@xstate/react"
 import { useCommunity } from "components/community/Context"
-import useBalance from "hooks/useBalance"
+import useStaked from "components/community/Staked/hooks/useStaked"
+import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
 import useContract from "hooks/useContract"
 import { useEffect } from "react"
 import { assign, createMachine, DoneInvokeEvent } from "xstate"
-import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
 
 type ContextType = {
   error: Error | null
@@ -59,16 +59,15 @@ const useUnstakingModalMachine = (): any => {
   const {
     chainData: {
       contract: { address },
-      stakeToken,
     },
   } = useCommunity()
-  const { data: staked } = useBalance(stakeToken)
   const contract = useContract(address, AGORA_SPACE_ABI, true)
   const { account, chainId } = useWeb3React()
+  const { unlockedAmount } = useStaked()
   const [state, send] = useMachine(unstakingModalMachine, {
     services: {
       unstake: async () => {
-        const weiAmount = parseEther(staked.toString())
+        const weiAmount = parseEther(unlockedAmount.toString())
         const tx = await contract.withdraw(weiAmount)
         return tx
       },
