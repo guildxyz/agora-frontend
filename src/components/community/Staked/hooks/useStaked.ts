@@ -1,20 +1,64 @@
+import { Contract } from "@ethersproject/contracts"
+import { formatEther } from "@ethersproject/units"
 import { useWeb3React } from "@web3-react/core"
 import { useCommunity } from "components/community/Context"
-import useContract from "hooks/useContract"
 import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
-import useSWR from "swr"
-import { formatEther } from "@ethersproject/units"
+import useContract from "hooks/useContract"
 import useKeepSWRDataLiveAsBlocksArrive from "hooks/useKeepSWRDataLiveAsBlocksArrive"
+import useSWR from "swr"
 
 type StakedType = {
-  unlocked: number
+  unlockedAmount: number
   locked: Array<{
     amount: number
     expires: Date
   }>
 }
 
-const useStaked = () => {
+const getTimelocks = async (
+  _: string,
+  contract: Contract,
+  account: string
+): Promise<StakedType> => {
+  const getStaked = async (
+    i: number,
+    { unlockedAmount, locked }: StakedType
+  ): Promise<StakedType> => {
+    try {
+      const { amount, expires } = await contract.timelocks(account, i)
+      const expiresNumber = expires.toNumber() * 1000
+      if (expiresNumber < Date.now()) {
+        return await getStaked(i + 1, {
+          unlockedAmount: unlockedAmount + +formatEther(amount),
+          locked,
+        })
+      }
+      return await getStaked(i + 1, {
+        unlockedAmount,
+        locked: [
+          ...locked,
+          {
+            amount: +formatEther(amount),
+            expires: new Date(expiresNumber),
+          },
+        ],
+      })
+    } catch (_) {
+      return { unlockedAmount, locked }
+    }
+  }
+
+  const staked = await getStaked(0, {
+    unlockedAmount: 0,
+    locked: [],
+  })
+
+  console.log(staked)
+
+  return staked
+}
+
+const useStaked = (): StakedType => {
   const {
     chainData: {
       contract: { address },
@@ -23,51 +67,12 @@ const useStaked = () => {
   const contract = useContract(address, AGORA_SPACE_ABI, true)
   const { account } = useWeb3React()
 
-  const getTimelocks = async (): Promise<StakedType> => {
-    const getStaked = async (
-      i: number,
-      { unlocked, locked }: StakedType
-    ): Promise<StakedType> => {
-      try {
-        const { amount, expires } = await contract.timelocks(account, i)
-        const expiresNumber = expires.toNumber() * 1000
-        if (expiresNumber < Date.now()) {
-          return await getStaked(i + 1, {
-            unlocked: unlocked + +formatEther(amount),
-            locked,
-          })
-        }
-        return await getStaked(i + 1, {
-          unlocked,
-          locked: [
-            ...locked,
-            {
-              amount: +formatEther(amount),
-              expires: new Date(expiresNumber),
-            },
-          ],
-        })
-      } catch (_) {
-        return { unlocked, locked }
-      }
-    }
-
-    const staked = await getStaked(0, {
-      unlocked: 0,
-      locked: [],
-    })
-
-    // console.log(staked)
-
-    return staked
-  }
-
   const { data, mutate } = useSWR(
-    address ? [address, contract] : null,
+    address ? ["staked", contract, account] : null,
     getTimelocks,
     {
       initialData: {
-        unlocked: 0,
+        unlockedAmount: 0,
         locked: [],
       },
     }

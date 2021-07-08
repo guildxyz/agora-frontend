@@ -16,38 +16,42 @@ import formatDate from "./utils/formatDate"
 const Staked = (): JSX.Element => {
   const {
     chainData: {
-      stakeToken: { symbol: stakeTokenSymbol },
+      token: { symbol },
     },
   } = useCommunity()
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { unlocked, locked } = useStaked()
+  const { unlockedAmount, locked } = useStaked()
 
   return (
-    <ScaleFade in={!!unlocked || !!locked.length} initialScale={0.9} unmountOnExit>
+    <ScaleFade
+      in={!!unlockedAmount || !!locked.length}
+      initialScale={0.9}
+      unmountOnExit
+    >
       <ActionCard
         title="Staked"
         description={[
-          !!unlocked && (
+          !!unlockedAmount && (
             <chakra.span display="block" key="unlocked">
-              {unlocked} {stakeTokenSymbol} - unlocked
+              {unlockedAmount} {symbol}
             </chakra.span>
           ),
           ...locked.map(({ amount, expires }) => (
             <chakra.span display="block" key={+expires}>
-              {amount} {stakeTokenSymbol} - locked until {formatDate(expires)}
+              {amount} {symbol} - locked until {formatDate(expires)}
             </chakra.span>
           )),
         ]}
       >
         <Tooltip
-          isDisabled={!!unlocked}
+          isDisabled={!!unlockedAmount}
           label={`You can't unstake yet, your next timelock expires in ${msToReadableFormat(
             Math.min(...locked.map(({ expires }) => +expires)) - Date.now()
           )}`}
         >
           <Box>
             <Button
-              disabled={!unlocked}
+              disabled={!unlockedAmount}
               colorScheme="primary"
               fontWeight="medium"
               onClick={onOpen}
