@@ -22,6 +22,7 @@ const Account = (): JSX.Element => {
   const ENSName = useENSName(account)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
+  // Not sure if this is the right way doing this, but I wanted to reuse the same props for every Card, so we can style all Cards at once in this component
   const cardStyleProps = {
     borderRadius: "2xl",
     width: "max",
@@ -30,9 +31,17 @@ const Account = (): JSX.Element => {
     marginRight: { base: 4, sm: 0 },
   }
 
+  const { borderRadius, width, maxWidth, marginLeft, marginRight } = cardStyleProps
+
   if (typeof window === "undefined") {
     return (
-      <Card {...cardStyleProps}>
+      <Card
+        borderRadius={borderRadius}
+        width={width}
+        maxWidth={maxWidth}
+        marginLeft={marginLeft}
+        marginRight={marginRight}
+      >
         <Button variant="ghost" isLoading>
           Connect to a wallet
         </Button>
@@ -41,7 +50,13 @@ const Account = (): JSX.Element => {
   }
   if (error instanceof UnsupportedChainIdError) {
     return (
-      <Card {...cardStyleProps}>
+      <Card
+        borderRadius={borderRadius}
+        width={width}
+        maxWidth={maxWidth}
+        marginLeft={marginLeft}
+        marginRight={marginRight}
+      >
         <Button
           variant="ghost"
           onClick={openModal}
@@ -55,7 +70,13 @@ const Account = (): JSX.Element => {
   }
   if (typeof account !== "string") {
     return (
-      <Card {...cardStyleProps}>
+      <Card
+        borderRadius={borderRadius}
+        width={width}
+        maxWidth={maxWidth}
+        marginLeft={marginLeft}
+        marginRight={marginRight}
+      >
         <Button
           variant="ghost"
           isLoading={!triedEager}
@@ -69,7 +90,13 @@ const Account = (): JSX.Element => {
   }
   return (
     <>
-      <Card {...cardStyleProps}>
+      <Card
+        borderRadius={borderRadius}
+        width={width}
+        maxWidth={maxWidth}
+        marginLeft={marginLeft}
+        marginRight={marginRight}
+      >
         <ButtonGroup isAttached variant="ghost">
           {!!communityData && (
             <>

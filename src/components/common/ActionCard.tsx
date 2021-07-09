@@ -11,14 +11,13 @@ import {
 } from "@chakra-ui/react"
 import Card from "./Card"
 
-type Props = {
-  withAccordion?: boolean
+type ContentProps = {
   title: string
   description: string
   children: JSX.Element | JSX.Element[]
 }
 
-const ActionCardContent = ({ title, description, children }: Props) => (
+const ActionCardContent = ({ title, description, children }: ContentProps) => (
   <>
     <Heading size="sm" mb="2">
       {title}
@@ -31,6 +30,13 @@ const ActionCardContent = ({ title, description, children }: Props) => (
     </HStack>
   </>
 )
+
+type Props = {
+  withAccordion?: boolean
+  title: string
+  description: string
+  children: JSX.Element | JSX.Element[]
+}
 
 const ActionCard = ({
   withAccordion = false,
