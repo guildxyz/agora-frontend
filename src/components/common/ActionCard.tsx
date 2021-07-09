@@ -33,6 +33,7 @@ const ActionCardContent = ({ title, description, children }: ContentProps) => (
 
 type Props = {
   withAccordion?: boolean
+  opened?: boolean
   title: string
   description: string
   children: JSX.Element | JSX.Element[]
@@ -40,6 +41,7 @@ type Props = {
 
 const ActionCard = ({
   withAccordion = false,
+  opened,
   title,
   description,
   children,
@@ -55,7 +57,7 @@ const ActionCard = ({
   return (
     <>
       <Card display={{ base: "block", md: "none" }} p={6}>
-        <Accordion allowMultiple>
+        <Accordion defaultIndex={opened && 0} allowMultiple>
           <AccordionItem border="none">
             <AccordionButton p="0" _hover={{ bg: "none" }}>
               <Stack

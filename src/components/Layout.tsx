@@ -29,7 +29,7 @@ const Layout = ({ title, bg = "white", children }: Props): JSX.Element => (
         >
           <Heading
             px={{ base: 4, sm: 0 }}
-            fontSize={{ base: "xl", md: "3xl" }}
+            fontSize={{ base: "2xl", sm: "3xl" }}
             fontFamily="display"
             textAlign="left"
           >
