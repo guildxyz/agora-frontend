@@ -1,7 +1,7 @@
 import { useWeb3React } from "@web3-react/core"
 import { useCommunity } from "components/community/Context"
 import useBalance from "hooks/useBalance"
-import { AccessRequirement } from "temporaryData/types"
+import type { AccessRequirement } from "temporaryData/types"
 import useNeededAmount from "../../../hooks/useNeededAmount"
 
 const useLevelAccess = (accessRequirement: AccessRequirement): [boolean, string] => {
