@@ -1,4 +1,3 @@
-import { useRef, useState, useEffect } from "react"
 import {
   Button,
   Flex,
@@ -12,8 +11,8 @@ import {
 import { useCommunity } from "components/community/Context"
 import InfoTags from "components/community/Levels/components/InfoTags"
 import { CheckCircle } from "phosphor-react"
+import { useEffect, useRef, useState } from "react"
 import type { Level as LevelType } from "temporaryData/types"
-import useBalance from "hooks/useBalance"
 import StakingModal from "../StakingModal"
 import useLevelAccess from "./hooks/useLevelAccess"
 
@@ -34,7 +33,6 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   const {
     chainData: {
       token: { symbol: tokenSymbol },
-      stakeToken,
     },
   } = useCommunity()
   const {
@@ -42,15 +40,8 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     onOpen: onStakingModalOpen,
     onClose: onStakingModalClose,
   } = useDisclosure()
-  const { data: stakeBalance } = useBalance(stakeToken)
-  const neededAmount =
-    data.accessRequirement.type === "stake"
-      ? data.accessRequirement.amount - stakeBalance
-      : data.accessRequirement.amount
-  const [hasAccess, noAccessMessage] = useLevelAccess(
-    data.accessRequirement.type,
-    neededAmount
-  )
+  const [hasAccess, noAccessMessage] = useLevelAccess(data.accessRequirement)
+
   const levelEl = useRef(null)
   const [levelData, setLevelData] = useState<LevelData>({
     index,
@@ -165,8 +156,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
           !noAccessMessage && (
             <StakingModal
               levelName={data.name}
-              amount={neededAmount}
-              timelock={data.accessRequirement.timelockMs}
+              accessRequirement={data.accessRequirement}
               isOpen={isStakingModalOpen}
               onClose={onStakingModalClose}
             />
