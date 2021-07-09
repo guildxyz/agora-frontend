@@ -1,10 +1,11 @@
-import { createMachine, assign, DoneInvokeEvent, Sender } from "xstate"
-import { useMachine } from "@xstate/react"
-import { useEffect } from "react"
+import { TransactionRequest } from "@ethersproject/providers"
 import { parseEther } from "@ethersproject/units"
+import { useMachine } from "@xstate/react"
 import { useCommunity } from "components/community/Context"
-import useContract from "hooks/useContract"
 import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
+import useContract from "hooks/useContract"
+import { useEffect } from "react"
+import { assign, createMachine, DoneInvokeEvent, Sender } from "xstate"
 import useTokenAllowance from "./useTokenAllowance"
 
 type AllowanceCheckEvent =
@@ -20,7 +21,7 @@ type AllowanceCheckEvent =
 
 type ContextType = {
   error: any
-  transaction: any
+  transaction: TransactionRequest | null
   showApproveSuccess: boolean
 }
 
@@ -142,7 +143,9 @@ const stakingModalMachine = createMachine<
       setError: assign<ContextType, DoneInvokeEvent<any>>({
         error: (_: ContextType, event: DoneInvokeEvent<any>) => event.data,
       }),
-      removeTransaction: assign({ transaction: null }),
+      removeTransaction: assign<ContextType, DoneInvokeEvent<any>>({
+        transaction: null,
+      }),
       setTransaction: assign<ContextType, DoneInvokeEvent<any>>({
         transaction: (_: ContextType, event: DoneInvokeEvent<any>) => event.data,
       }),
