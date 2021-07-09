@@ -73,7 +73,7 @@ const StakingModal = ({
               <Text textColor="gray" mt="4">
                 You’ll recieve {amount} {stakeToken.symbol} in return. Those mark
                 your position, so don’t sell or send them because you will lose
-                access to the community level and won’t be able to get your
+                access to the community level and won’t be able to get your{" "}
                 {token.symbol} tokens back.
               </Text>
             </>

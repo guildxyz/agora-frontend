@@ -16,8 +16,11 @@ const TransactionSubmitted = ({ transaction }) => {
         />
       </Center>
       <Text fontWeight="medium" mt="8">
-        Avarage transaction time is {msToReadableFormat(estimatedTransactionTime)}.
-        You’ll be notified when it succeeds.
+        Estimated transaction time is{" "}
+        {estimatedTransactionTime
+          ? msToReadableFormat(estimatedTransactionTime)
+          : "[loading...]"}
+        . You’ll be notified when it succeeds.
       </Text>
     </>
   )
