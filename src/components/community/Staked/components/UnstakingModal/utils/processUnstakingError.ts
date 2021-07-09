@@ -1,21 +1,17 @@
 import { ErrorInfo } from "components/common/Error"
-import { SignErrorType } from "components/community/Platforms/components/JoinModal/hooks/usePersonalSign"
+import type { MetaMaskError } from "utils/processMetaMaskError"
+import { processMetaMaskError } from "utils/processMetaMaskError"
 
-const processUnstakingError = (error: SignErrorType): ErrorInfo => {
-  const { code, message } = error
-
-  switch (code) {
-    case 4001:
+const processUnstakingError = (error: MetaMaskError): ErrorInfo => {
+  switch (error.message) {
+    case "execution reverted: Not enough unlocked tokens":
       return {
-        title: "Signature denied",
-        description: "User denied transaction signature.",
+        title: "Not enough unlocked tokens",
+        description:
+          "If your timelock has just expired, you have to wait until the next block to be able unstake. Try again!",
       }
     default:
-      console.error(message)
-      return {
-        title: "An unknown error occurred",
-        description: "Check the console for more details.",
-      }
+      return processMetaMaskError(error)
   }
 }
 

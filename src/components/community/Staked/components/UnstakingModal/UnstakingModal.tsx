@@ -1,25 +1,25 @@
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  Text,
-  Center,
-  VStack,
-  Tooltip,
-  Icon,
-  Collapse,
   CloseButton,
+  Collapse,
+  Icon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  Tooltip,
+  VStack,
 } from "@chakra-ui/react"
-import { ArrowCircleUp, Info, Check } from "phosphor-react"
 import { Error } from "components/common/Error"
-import { useCommunity } from "components/community/Context"
 import ModalButton from "components/common/ModalButton"
+import TransactionSubmitted from "components/common/TransactionSubmitted"
+import { useCommunity } from "components/community/Context"
 import useTokenAllowanceMachine from "components/community/hooks/useTokenAllowanceMachine"
-import useUnstakingModalMachine from "./hooks/useUnstakingModalMachine"
+import { Check, Info } from "phosphor-react"
+import useUnstakingModalMachine from "./hooks/useUnstakingMachine"
 import processUnstakingError from "./utils/processUnstakingError"
 
 type Props = {
@@ -58,19 +58,7 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
         <ModalCloseButton />
         <ModalBody>
           {unstakeState.value === "success" ? (
-            <>
-              <Center>
-                <ArrowCircleUp
-                  size="50%"
-                  color="var(--chakra-colors-primary-500)"
-                  weight="thin"
-                />
-              </Center>
-              <Text fontWeight="medium" mt="8" mb="4">
-                Avarage transaction time is 2 minutes. You’ll be notified when it
-                succeeds.
-              </Text>
-            </>
+            <TransactionSubmitted transaction={unstakeState.context.transaction} />
           ) : (
             <>
               <Error
