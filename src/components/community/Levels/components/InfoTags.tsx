@@ -1,6 +1,6 @@
 import { Stack, Text } from "@chakra-ui/react"
 import { Lock, LockOpen, LockSimpleOpen, Tag, Users } from "phosphor-react"
-import { AccessRequirement } from "temporaryData/types"
+import type { AccessRequirement } from "temporaryData/types"
 
 type Props = {
   data: AccessRequirement
