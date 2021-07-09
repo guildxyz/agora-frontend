@@ -5,6 +5,7 @@ import { useCommunity } from "components/community/Context"
 import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
 import useContract from "hooks/useContract"
 import useKeepSWRDataLiveAsBlocksArrive from "hooks/useKeepSWRDataLiveAsBlocksArrive"
+import { useEffect } from "react"
 import useSWR from "swr"
 
 type StakedType = {
@@ -46,18 +47,18 @@ const getTimelocks = async (
         ],
       })
     } catch (_) {
+      console.info(
+        "%cThe logged error is expected, it's needed for fetching the user's timelocks. We can't prevent MetaMask from logging it",
+        "color: gray"
+      )
       return { unlockedAmount, locked }
     }
   }
 
-  const staked = await getStaked(0, {
+  return getStaked(0, {
     unlockedAmount: 0,
     locked: [],
   })
-
-  console.log(staked)
-
-  return staked
 }
 
 const useStaked = (): StakedType => {
@@ -67,10 +68,10 @@ const useStaked = (): StakedType => {
     },
   } = useCommunity()
   const contract = useContract(address, AGORA_SPACE_ABI, true)
-  const { account } = useWeb3React()
+  const { account, active } = useWeb3React()
 
   const { data, mutate } = useSWR(
-    address ? ["staked", contract, account] : null,
+    active ? ["staked", contract, account] : null,
     getTimelocks,
     {
       initialData: {
