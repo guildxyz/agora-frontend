@@ -58,15 +58,13 @@ const ActionCard = ({
                 justifyItems="center"
                 direction="row"
               >
-                <Heading size="sm" mb="2">
-                  {title}
-                </Heading>
+                <Heading size="sm">{title}</Heading>
                 <AccordionIcon />
               </Stack>
             </AccordionButton>
 
             <AccordionPanel p="0">
-              <Text mb="6" fontWeight="medium">
+              <Text pt="2" mb="6" fontWeight="medium">
                 {description}
               </Text>
               <HStack spacing="2" justifyContent="flex-end" mt="auto">

@@ -122,7 +122,8 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       alignItems={{ base: "flex-start", md: "center" }}
       direction={{ base: "column", md: "row" }}
       boxSizing="border-box"
-      py="10"
+      pt="10"
+      pb={{ base: 0, md: 10 }}
       borderBottom="1px"
       borderBottomColor="gray.200"
       _last={{ borderBottom: 0 }}

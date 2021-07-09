@@ -18,7 +18,7 @@ const Layout = ({ title, bg = "white", children }: Props): JSX.Element => (
     <Box bg={bg} minHeight="100vh">
       <Container
         maxW="container.lg"
-        py={{ base: 8, sm: 12, md: 24 }}
+        py={{ base: 4, sm: 12, md: 24 }}
         px={{ base: 0, sm: 10 }}
       >
         <Stack
