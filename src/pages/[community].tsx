@@ -19,13 +19,13 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => (
       title={`${communityData.name} community`}
       bg="linear-gradient(white 0px, var(--chakra-colors-primary-50) 700px)"
     >
-      <Stack spacing={10}>
+      <Stack spacing={{ base: 8, sm: 10 }}>
         <Text px={{ base: 4, sm: 0 }} fontWeight="medium">
           {communityData.description}
         </Text>
         <SimpleGrid
           templateColumns={{ base: "100%", md: "3fr 2fr" }}
-          gap={{ base: 5, md: 10 }}
+          gap={{ base: 0, sm: 5, md: 10 }}
         >
           <Platforms />
           <Staked />

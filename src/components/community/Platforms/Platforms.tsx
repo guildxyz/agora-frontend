@@ -31,7 +31,9 @@ const Platforms = (): JSX.Element => {
             isDisabled={!!account || noAccessToAnyLevels()}
             label={tooltipLabel(account)}
           >
-            <PlatformButton platform={platform} />
+            <span>
+              <PlatformButton platform={platform} />
+            </span>
           </Tooltip>
         ))}
     </ActionCard>
