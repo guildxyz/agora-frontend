@@ -26,7 +26,7 @@ const PlatformButton = ({ platform }: Props): JSX.Element => {
         disabled={!account}
       >
         <Box as="span">{isMember ? "Leave" : "Join"}</Box>
-        <Box as="span" display={{ base: "none", md: "inline" }}>{` ${
+        <Box as="span" display={{ base: "none", sm: "inline" }}>{` ${
           platform.charAt(0).toUpperCase() + platform.slice(1)
         }`}</Box>
       </Button>

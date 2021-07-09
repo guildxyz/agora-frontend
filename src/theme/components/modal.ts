@@ -14,7 +14,8 @@ const styles = {
       right: 7,
     },
     header: {
-      px: { base: 6, sm: 10 },
+      pl: { base: 6, sm: 10 },
+      pr: { base: 16, sm: 10 },
       py: 8,
       fontFamily: "display",
       fontWeight: "bold",
@@ -26,7 +27,7 @@ const styles = {
     footer: {
       px: { base: 6, sm: 10 },
       pt: 2,
-      pb: { base: 6, sm: 10 },
+      pb: 10,
       "> *": {
         w: "full",
       },
