@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
-import { processMetaMaskError } from "utils/metaMaskError"
+import { processMetaMaskError } from "utils/processMetaMaskError"
 import platformsContent from "../../platformsContent"
 import useLeaveModalMachine from "./hooks/useLeaveModalMachine"
 

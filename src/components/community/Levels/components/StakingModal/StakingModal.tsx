@@ -20,7 +20,7 @@ import { useCommunity } from "components/community/Context"
 import useTokenAllowanceMachine from "components/community/hooks/useTokenAllowanceMachine"
 import { ArrowCircleUp, Check, Info } from "phosphor-react"
 import type { AccessRequirements } from "temporaryData/types"
-import { processMetaMaskError } from "utils/metaMaskError"
+import { processMetaMaskError } from "utils/processMetaMaskError"
 import msToReadableFormat from "utils/msToReadableFormat"
 import useStakingModalMachine from "./hooks/useStakingMachine"
 

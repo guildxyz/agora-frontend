@@ -1,5 +1,5 @@
 import { ErrorInfo } from "components/common/Error"
-import { processMetaMaskError } from "utils/metaMaskError"
+import { processMetaMaskError } from "utils/processMetaMaskError"
 import { SignErrorType } from "../hooks/usePersonalSign"
 
 const processJoinPlatformError = (
