@@ -3,7 +3,7 @@ import useEstimateTransactionTime from "hooks/useEstimateTransactionTime"
 import { ArrowCircleUp } from "phosphor-react"
 import msToReadableFormat from "utils/msToReadableFormat"
 
-const TransactionSubmitted = ({ transaction, children }) => {
+const TransactionSubmitted = ({ transaction }) => {
   const estimatedTransactionTime = useEstimateTransactionTime(transaction)
 
   return (
@@ -15,11 +15,10 @@ const TransactionSubmitted = ({ transaction, children }) => {
           weight="thin"
         />
       </Center>
-      <Text fontWeight="medium" mt="8" mb="4">
+      <Text fontWeight="medium" mt="8">
         Avarage transaction time is {msToReadableFormat(estimatedTransactionTime)}.
         You’ll be notified when it succeeds.
       </Text>
-      <Text textColor="gray">{children}</Text>
     </>
   )
 }

@@ -1,5 +1,4 @@
 import {
-  Center,
   CloseButton,
   Collapse,
   Icon,
@@ -16,9 +15,9 @@ import {
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
-import { useCommunity } from "components/community/Context"
-import { ArrowCircleUp, Check, Info } from "phosphor-react"
 import TransactionSubmitted from "components/common/TransactionSubmitted"
+import { useCommunity } from "components/community/Context"
+import { Check, Info } from "phosphor-react"
 import { useEffect } from "react"
 import type { AccessRequirements } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
@@ -69,12 +68,16 @@ const StakingModal = ({
         <ModalCloseButton />
         <ModalBody>
           {state.value === "success" ? (
-            <TransactionSubmitted transaction={state.context.transaction}>
-              You’ll recieve {amount} {stakeTokenSymbol} in return. Those mark your
-              position, so don’t sell or send them because you will lose access to
-              the community level and won’t be able to get your {tokenSymbol} tokens
-              back.
-            </TransactionSubmitted>
+            <>
+              <TransactionSubmitted transaction={state.context.transaction} />
+
+              <Text textColor="gray" mt="4">
+                You’ll recieve {amount} {stakeTokenSymbol} in return. Those mark your
+                position, so don’t sell or send them because you will lose access to
+                the community level and won’t be able to get your {tokenSymbol}{" "}
+                tokens back.
+              </Text>
+            </>
           ) : (
             <>
               <Error
