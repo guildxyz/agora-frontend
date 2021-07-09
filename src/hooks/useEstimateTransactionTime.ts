@@ -8,20 +8,13 @@ import useSWR from "swr"
 const getEstimatedTransactionTime = async (
   _: string,
   gasPrice: BigNumber
-): Promise<number> => {
-  const url = `https://api-ropsten.etherscan.io/api?module=gastracker&action=gasestimate&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}&gasprice=${gasPrice}`
-
-  const estimatedTransactionTime = await fetch(url)
+): Promise<number> =>
+  fetch(
+    `https://api-ropsten.etherscan.io/api?module=gastracker&action=gasestimate&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}&gasprice=${gasPrice}`
+  )
     .then((response) => response.json())
-    .then((body) => +body.result)
+    .then((body) => +body.result * 1000)
 
-  return estimatedTransactionTime * 1000
-}
-
-/**
- * Calls the etherscan API with SWR to keep the data up-to-date.
- * @returns Estimated time for given transaction
- */
 const useEstimateTransactionTime = (transaction: TransactionRequest): number => {
   const { library } = useWeb3React()
   const [gasPrice, setGasPrice] = useState<BigNumber>()
@@ -36,7 +29,8 @@ const useEstimateTransactionTime = (transaction: TransactionRequest): number => 
 
   const { data } = useSWR(
     gasPrice ? ["estimatedTransactionTime", gasPrice] : null,
-    getEstimatedTransactionTime
+    getEstimatedTransactionTime,
+    { revalidateOnFocus: false }
   )
 
   return data
