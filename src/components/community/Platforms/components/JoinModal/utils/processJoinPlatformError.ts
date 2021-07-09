@@ -1,9 +1,9 @@
 import { ErrorInfo } from "components/common/Error"
+import type { MetaMaskError } from "utils/processMetaMaskError"
 import { processMetaMaskError } from "utils/processMetaMaskError"
-import { SignErrorType } from "../hooks/usePersonalSign"
 
 const processJoinPlatformError = (
-  error: Error | Response | SignErrorType
+  error: Error | Response | MetaMaskError
 ): ErrorInfo => {
   // if it's a network error from fetching
   if (error instanceof Error) {
