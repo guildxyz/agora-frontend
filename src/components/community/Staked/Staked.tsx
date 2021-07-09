@@ -36,8 +36,8 @@ const Staked = (): JSX.Element => {
               {unlockedAmount} {symbol}
             </chakra.span>
           ),
-          ...locked.map(({ amount, expires }) => (
-            <chakra.span display="block" key={+expires}>
+          ...locked.map(({ amount, expires, id }) => (
+            <chakra.span display="block" key={id}>
               {amount} {symbol} - locked until {formatDate(expires)}
             </chakra.span>
           )),

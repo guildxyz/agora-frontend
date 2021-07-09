@@ -12,6 +12,7 @@ type StakedType = {
   locked: Array<{
     amount: number
     expires: Date
+    id: number
   }>
 }
 
@@ -40,6 +41,7 @@ const getTimelocks = async (
           {
             amount: +formatEther(amount),
             expires: new Date(expiresNumber),
+            id: i,
           },
         ],
       })
