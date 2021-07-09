@@ -20,6 +20,7 @@ import { useCommunity } from "components/community/Context"
 import useTokenAllowanceMachine from "components/community/hooks/useTokenAllowanceMachine"
 import { ArrowCircleUp, Check, Info } from "phosphor-react"
 import type { AccessRequirement } from "temporaryData/types"
+import { processMetaMaskError } from "utils/processMetaMaskError"
 import msToReadableFormat from "utils/msToReadableFormat"
 import useNeededAmount from "../../hooks/useNeededAmount"
 import useStakingModalMachine from "./hooks/useStakingMachine"
@@ -90,10 +91,7 @@ const StakingModal = ({
             <>
               <Error
                 error={stakeState.context.error || allowanceState.context.error}
-                processError={() => ({
-                  title: "Error",
-                  description: "Error description",
-                })}
+                processError={processMetaMaskError}
               />
               <Text fontWeight="medium">
                 Stake {amount} {token.symbol} to gain access to {levelName}. Your
