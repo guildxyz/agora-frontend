@@ -10,6 +10,7 @@ import {
   ModalOverlay,
   Stack,
   Text,
+  useBreakpointValue,
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -18,8 +19,11 @@ import MetaMaskOnboarding from "@metamask/onboarding"
 import injected from "connectors"
 import { Link } from "components/common/Link"
 import { Error } from "components/common/Error"
+import { motion } from "framer-motion"
 import ConnectorButton from "./components/ConnectorButton"
 import processConnectionError from "./utils/processConnectionError"
+
+const MotionModalContent = motion(ModalContent)
 
 type Props = {
   activatingConnector: AbstractConnector
@@ -36,6 +40,7 @@ const Web3Modal = ({
 }: Props): JSX.Element => {
   const { error } = useWeb3React()
   const { active, activate, connector, setError } = useWeb3React()
+  const modalDrag = useBreakpointValue({ base: "y", md: false })
 
   // initialize metamask onboarding
   const onboarding = useRef<MetaMaskOnboarding>()
@@ -52,6 +57,12 @@ const Web3Modal = ({
   }
   const handleOnboarding = () => onboarding.current?.startOnboarding()
 
+  const handleModalDrag = (_, info) => {
+    if (info.offset.y > 100) {
+      closeModal()
+    }
+  }
+
   useEffect(() => {
     if (active) {
       closeModal()
@@ -61,7 +72,11 @@ const Web3Modal = ({
   return (
     <Modal motionPreset="slideInBottom" isOpen={isModalOpen} onClose={closeModal}>
       <ModalOverlay />
-      <ModalContent>
+      <MotionModalContent
+        drag={modalDrag}
+        dragConstraints={{ top: 100 }}
+        onDragEnd={handleModalDrag}
+      >
         <ModalHeader>Connect to a wallet</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -102,7 +117,7 @@ const Web3Modal = ({
             </Link>
           </Text>
         </ModalFooter>
-      </ModalContent>
+      </MotionModalContent>
     </Modal>
   )
 }

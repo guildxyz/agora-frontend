@@ -13,6 +13,7 @@ import {
   useDisclosure,
   Icon,
   Tag,
+  useBreakpointValue,
 } from "@chakra-ui/react"
 import { useCommunity } from "components/community/Context"
 import InfoTags from "components/community/Levels/components/InfoTags"
@@ -46,6 +47,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     isDisabled: true,
     element: null,
   })
+  const stakeButtonSize = useBreakpointValue({ base: "sm", md: "md" })
 
   useEffect(() => {
     const ref = levelEl.current
@@ -174,7 +176,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
               fontWeight="medium"
               onClick={onOpen}
               disabled={!!noAccessMessage}
-              size="sm"
+              size={stakeButtonSize}
             >
               Stake
             </Button>
