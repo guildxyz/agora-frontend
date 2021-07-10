@@ -9,12 +9,12 @@ import {
   Tooltip,
   useClipboard,
 } from "@chakra-ui/react"
+import AppModal from "components/common/AppModal"
 import { useWeb3React } from "@web3-react/core"
 import { useContext } from "react"
 import shortenHex from "utils/shortenHex"
 import { Web3Connection } from "../Web3ConnectionManager"
 import Identicon from "./components/Identicon"
-import AppModal from "components/common/AppModal"
 
 const AccountModal = ({ isOpen, onClose }) => {
   const { account } = useWeb3React()

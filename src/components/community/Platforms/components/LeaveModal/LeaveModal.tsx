@@ -6,12 +6,12 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react"
+import AppModal from "components/common/AppModal"
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
 import { processMetaMaskError } from "utils/processMetaMaskError"
 import platformsContent from "../../platformsContent"
 import useLeaveModalMachine from "./hooks/useLeaveModalMachine"
-import AppModal from "components/common/AppModal"
 
 type Props = {
   platform: string

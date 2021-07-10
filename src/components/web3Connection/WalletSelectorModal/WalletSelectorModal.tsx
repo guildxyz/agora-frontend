@@ -8,6 +8,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
+import AppModal from "components/common/AppModal"
 import { useWeb3React } from "@web3-react/core"
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { AbstractConnector } from "@web3-react/abstract-connector"
@@ -17,7 +18,6 @@ import { Link } from "components/common/Link"
 import { Error } from "components/common/Error"
 import ConnectorButton from "./components/ConnectorButton"
 import processConnectionError from "./utils/processConnectionError"
-import AppModal from "components/common/AppModal"
 
 type Props = {
   activatingConnector: AbstractConnector

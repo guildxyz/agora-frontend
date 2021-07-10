@@ -10,6 +10,7 @@ import {
   Tooltip,
   VStack,
 } from "@chakra-ui/react"
+import AppModal from "components/common/AppModal"
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
 import TransactionSubmitted from "components/common/TransactionSubmitted"
@@ -21,7 +22,6 @@ import msToReadableFormat from "utils/msToReadableFormat"
 import { processMetaMaskError } from "utils/processMetaMaskError"
 import useNeededAmount from "../../hooks/useNeededAmount"
 import useStakingModalMachine from "./hooks/useStakingMachine"
-import AppModal from "components/common/AppModal"
 
 type Props = {
   levelName: string
