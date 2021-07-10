@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { useCommunity } from "components/community/Context"
 import { useContext } from "react"
 import { Button, ButtonGroup, Divider, useDisclosure } from "@chakra-ui/react"
@@ -22,7 +23,6 @@ const Account = (): JSX.Element => {
   const ENSName = useENSName(account)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
-  // Not sure if this is the right way doing this, but I wanted to reuse the same props for every Card, so we can style all Cards at once in this component
   const cardStyleProps = {
     borderRadius: "2xl",
     width: "max",
@@ -31,17 +31,9 @@ const Account = (): JSX.Element => {
     marginRight: { base: 4, sm: 0 },
   }
 
-  const { borderRadius, width, maxWidth, marginLeft, marginRight } = cardStyleProps
-
   if (typeof window === "undefined") {
     return (
-      <Card
-        borderRadius={borderRadius}
-        width={width}
-        maxWidth={maxWidth}
-        marginLeft={marginLeft}
-        marginRight={marginRight}
-      >
+      <Card {...cardStyleProps}>
         <Button variant="ghost" isLoading>
           Connect to a wallet
         </Button>
@@ -50,13 +42,7 @@ const Account = (): JSX.Element => {
   }
   if (error instanceof UnsupportedChainIdError) {
     return (
-      <Card
-        borderRadius={borderRadius}
-        width={width}
-        maxWidth={maxWidth}
-        marginLeft={marginLeft}
-        marginRight={marginRight}
-      >
+      <Card {...cardStyleProps}>
         <Button
           variant="ghost"
           onClick={openModal}
@@ -70,13 +56,7 @@ const Account = (): JSX.Element => {
   }
   if (typeof account !== "string") {
     return (
-      <Card
-        borderRadius={borderRadius}
-        width={width}
-        maxWidth={maxWidth}
-        marginLeft={marginLeft}
-        marginRight={marginRight}
-      >
+      <Card {...cardStyleProps}>
         <Button
           variant="ghost"
           isLoading={!triedEager}
@@ -90,13 +70,7 @@ const Account = (): JSX.Element => {
   }
   return (
     <>
-      <Card
-        borderRadius={borderRadius}
-        width={width}
-        maxWidth={maxWidth}
-        marginLeft={marginLeft}
-        marginRight={marginRight}
-      >
+      <Card {...cardStyleProps}>
         <ButtonGroup isAttached variant="ghost">
           {!!communityData && (
             <>

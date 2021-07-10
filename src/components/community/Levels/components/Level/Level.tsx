@@ -1,20 +1,22 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+// I disabled it manually, because the AccessIndicator works properly with the current dependency list, and the other dependencies shouldn't be added - KovJonas
 import { useRef, useState, useEffect } from "react"
 import {
-  Box,
   Button,
-  Flex,
+  Grid,
+  GridItem,
   Heading,
   Image,
   Stack,
-  HStack,
+  VStack,
   Text,
   useDisclosure,
-  Tooltip,
   Icon,
+  Tag,
 } from "@chakra-ui/react"
 import { useCommunity } from "components/community/Context"
 import InfoTags from "components/community/Levels/components/InfoTags"
-import { CheckCircle, XCircle } from "phosphor-react"
+import { CheckCircle } from "phosphor-react"
 import type { Level as LevelType } from "temporaryData/types"
 import StakingModal from "../StakingModal"
 import useLevelAccess from "./hooks/useLevelAccess"
@@ -117,124 +119,91 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   }, [hasAccess])
 
   return (
-    <Flex
-      justifyContent="space-between"
-      alignItems={{ base: "flex-start", md: "center" }}
-      direction={{ base: "column", md: "row" }}
+    <Grid
+      templateRows="auto auto"
+      templateColumns={{ base: "45px auto 80px", md: "45px 3fr 1fr" }}
+      columnGap={{ base: 4, sm: 6 }}
+      rowGap={{ base: 4, md: 2 }}
       boxSizing="border-box"
-      pt="10"
-      pb={{ base: 0, md: 10 }}
+      py={{ base: 8, md: 10 }}
       borderBottom="1px"
       borderBottomColor="gray.200"
       _last={{ borderBottom: 0 }}
       ref={levelEl}
     >
-      <Stack
-        direction="row"
-        flex="1"
-        spacing={{ base: 4, sm: 6 }}
-        mb={{ base: 6, md: 0 }}
-      >
-        <Image
-          src={`${data.imageUrl}`}
-          boxSize={{ base: "40px", sm: "45px" }}
-          alt="Level logo"
-        />
-        <Stack>
-          <Heading size="sm">
-            <HStack>
-              <span>{data.name}</span>
-              <Tooltip hasArrow label={noAccessMessage || "You have access"}>
+      <GridItem rowSpan={{ base: 1, md: 2 }}>
+        <Image src={`${data.imageUrl}`} boxSize="45px" alt="Level logo" />
+      </GridItem>
+      <GridItem>
+        <Heading size="sm">
+          <VStack alignItems="flex-start" spacing="1">
+            <Tag
+              display={{ base: "flex", lg: "none" }}
+              size="sm"
+              colorScheme={hasAccess ? "green" : "orange"}
+            >
+              {noAccessMessage || "You have access"}
+            </Tag>
+            <span>{data.name}</span>
+          </VStack>
+        </Heading>
+      </GridItem>
+      <GridItem rowSpan={{ base: 1, md: 2 }}>
+        <Stack
+          alignItems={{ base: "flex-start", sm: "flex-end" }}
+          justifyContent="center"
+        >
+          {hasAccess && (
+            <AccessText
+              text="You have access"
+              icon={
                 <Icon
-                  as={hasAccess ? CheckCircle : XCircle}
-                  tabIndex={0}
-                  display={{ base: "block", md: "none" }}
-                  color={
-                    hasAccess
-                      ? "var(--chakra-colors-green-500)"
-                      : "var(--chakra-colors-orange-400)"
-                  }
+                  as={CheckCircle}
+                  color="var(--chakra-colors-green-500)"
                   weight="fill"
                   w={6}
                   h={6}
-                  borderRadius="full"
-                  _focus={{
-                    outline: "none",
-                    outlineOffset: 0,
-                    boxShadow: "var(--chakra-shadows-outline)",
-                  }}
                 />
-              </Tooltip>
-            </HStack>
-          </Heading>
-          <InfoTags
-            data={data.accessRequirement}
-            membersCount={data.membersCount}
-            tokenSymbol={communityData.chainData.token.symbol}
-          />
-          {data.desc && (
-            <Text fontSize={{ base: "sm", sm: "md" }} pt={{ base: 0, md: 4 }}>
-              {data.desc}
-            </Text>
-          )}
-        </Stack>
-      </Stack>
-      <Stack
-        width={{ base: "full", md: "auto" }}
-        alignItems={{ base: "flex-start", sm: "flex-end" }}
-        justifyContent="center"
-      >
-        {hasAccess && (
-          <AccessText
-            text="You have access"
-            icon={
-              <Icon
-                as={CheckCircle}
-                color="var(--chakra-colors-green-500)"
-                weight="fill"
-                w={6}
-                h={6}
-              />
-            }
-          />
-        )}
-        {noAccessMessage && (
-          <AccessText
-            text={noAccessMessage}
-            icon={
-              <Icon
-                as={XCircle}
-                color="var(--chakra-colors-orange-400)"
-                weight="fill"
-                w={6}
-                h={6}
-              />
-            }
-          />
-        )}
-
-        {!hasAccess && data.accessRequirement.type === "stake" && (
-          <Button
-            colorScheme="primary"
-            fontWeight="medium"
-            onClick={onOpen}
-            disabled={!!noAccessMessage}
-          >
-            Stake to join
-          </Button>
-        )}
-        {!hasAccess &&
-          data.accessRequirement.type === "stake" &&
-          !noAccessMessage && (
-            <StakingModal
-              name={data.name}
-              accessRequirement={data.accessRequirement}
-              isOpen={isModalOpen}
-              onClose={onClose}
+              }
             />
           )}
-      </Stack>
-    </Flex>
+          {noAccessMessage && <AccessText text={noAccessMessage} />}
+          {!hasAccess && data.accessRequirement.type === "stake" && (
+            <Button
+              colorScheme="primary"
+              fontWeight="medium"
+              onClick={onOpen}
+              disabled={!!noAccessMessage}
+              size="sm"
+            >
+              Stake
+            </Button>
+          )}
+          {!hasAccess &&
+            data.accessRequirement.type === "stake" &&
+            !noAccessMessage && (
+              <StakingModal
+                name={data.name}
+                accessRequirement={data.accessRequirement}
+                isOpen={isModalOpen}
+                onClose={onClose}
+              />
+            )}
+        </Stack>
+      </GridItem>
+      <GridItem colSpan={{ base: 3, md: 1 }}>
+        <InfoTags
+          data={data.accessRequirement}
+          membersCount={data.membersCount}
+          tokenSymbol={communityData.chainData.token.symbol}
+        />
+        {data.desc && (
+          <Text fontSize="md" pt={{ base: 0, md: 4 }}>
+            {data.desc}
+          </Text>
+        )}
+      </GridItem>
+    </Grid>
   )
 }
 
