@@ -37,9 +37,18 @@ type LevelData = {
 }
 
 const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
-  const communityData = useCommunity()
-  const { isOpen: isModalOpen, onOpen, onClose } = useDisclosure()
+  const {
+    chainData: {
+      token: { symbol: tokenSymbol },
+    },
+  } = useCommunity()
+  const {
+    isOpen: isStakingModalOpen,
+    onOpen: onStakingModalOpen,
+    onClose: onStakingModalClose,
+  } = useDisclosure()
   const [hasAccess, noAccessMessage] = useLevelAccess(data.accessRequirement)
+
   const levelEl = useRef(null)
   const [levelData, setLevelData] = useState<LevelData>({
     index,
@@ -85,16 +94,16 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   }, [hasAccess, noAccessMessage, levelEl])
 
   useEffect(() => {
-    if (!isModalOpen && levelData.status === "focus") {
+    if (!isStakingModalOpen && levelData.status === "focus") {
       setLevelData((prevState) => ({
         ...prevState,
         status: hasAccess ? "access" : "idle",
       }))
     }
-  }, [isModalOpen])
+  }, [isStakingModalOpen])
 
   useEffect(() => {
-    if (isModalOpen && levelData.status !== "focus") {
+    if (isStakingModalOpen && levelData.status !== "focus") {
       setLevelData((prevState) => ({
         ...prevState,
         status: "focus",
@@ -104,7 +113,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     if (onChangeHandler) {
       onChangeHandler(levelData)
     }
-  }, [levelData, isModalOpen])
+  }, [levelData, isStakingModalOpen])
 
   // If the level access changes while the modal is opened
   useEffect(() => {
@@ -174,7 +183,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
             <Button
               colorScheme="primary"
               fontWeight="medium"
-              onClick={onOpen}
+              onClick={onStakingModalOpen}
               disabled={!!noAccessMessage}
               size={stakeButtonSize}
             >
@@ -185,10 +194,10 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
             data.accessRequirement.type === "stake" &&
             !noAccessMessage && (
               <StakingModal
-                name={data.name}
+                levelName={data.name}
                 accessRequirement={data.accessRequirement}
-                isOpen={isModalOpen}
-                onClose={onClose}
+                isOpen={isStakingModalOpen}
+                onClose={onStakingModalClose}
               />
             )}
         </Stack>
@@ -197,7 +206,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
         <InfoTags
           data={data.accessRequirement}
           membersCount={data.membersCount}
-          tokenSymbol={communityData.chainData.token.symbol}
+          tokenSymbol={tokenSymbol}
         />
         {data.desc && (
           <Text fontSize="md" pt={{ base: 0, md: 4 }}>
