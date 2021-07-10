@@ -147,51 +147,32 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
         <Image src={`${data.imageUrl}`} boxSize="45px" alt="Level logo" />
       </GridItem>
       <GridItem order={{ base: 1, md: 2 }}>
-        <Heading size="sm">
-          <VStack alignItems="flex-start" spacing="2">
-            <Tag
-              display={{ base: "flex", lg: "none" }}
-              size="sm"
-              colorScheme={
-                hasAccess
-                  ? "green"
-                  : !hasAccess && data.accessRequirement.type === "stake"
-                  ? "gray" // Attention! The gray color is actually the community color!
-                  : "blackAlpha"
-              }
-              sx={
-                !hasAccess &&
-                data.accessRequirement.type === "stake" && {
-                  "--chakra-colors-gray-100": "var(--chakra-colors-primary-100)",
-                  "--chakra-colors-gray-800": "var(--chakra-colors-primary-700)",
-                }
-              }
-            >
-              {hasAccess && <TagLeftIcon as={Check} />}
-              <TagLabel
-                color={
-                  !hasAccess &&
-                  data.accessRequirement.type === "stake" &&
-                  theme.color["--chakra-colors-primary-500"]
-                }
-              >
-                {hasAccess
-                  ? "You have access"
-                  : !hasAccess && data.accessRequirement.type === "stake"
-                  ? "Stake to join"
-                  : noAccessMessage}
-              </TagLabel>
-            </Tag>
-            <span>{data.name}</span>
-          </VStack>
-        </Heading>
+        <Heading size="sm">{data.name}</Heading>
       </GridItem>
       <GridItem
         order={{ base: 4, md: 3 }}
         rowSpan={{ base: 1, md: 2 }}
         colSpan={{ base: 2, md: 1 }}
       >
-        <Stack alignItems="flex-end" justifyContent="center">
+        <Stack
+          direction={{ base: "row", md: "column" }}
+          alignItems={{ base: "center", md: "flex-end" }}
+          justifyContent={{
+            base: hasAccess || noAccessMessage ? "space-between" : "flex-end",
+            md: "flex-end",
+          }}
+        >
+          {(hasAccess || noAccessMessage) && (
+            <Tag
+              display={{ base: "flex", lg: "none" }}
+              size="sm"
+              colorScheme={hasAccess ? "green" : "blackAlpha"}
+            >
+              {hasAccess && <TagLeftIcon as={Check} />}
+              <TagLabel>{hasAccess ? "You have access" : noAccessMessage}</TagLabel>
+            </Tag>
+          )}
+
           {hasAccess && (
             <AccessText
               text="You have access"
@@ -229,14 +210,18 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
             )}
         </Stack>
       </GridItem>
-      <GridItem order={{ base: 3, md: 4 }} colSpan={{ base: 3, md: 1 }}>
+      <GridItem
+        mt={{ base: -8, md: 0 }}
+        order={{ base: 3, md: 4 }}
+        colSpan={{ base: 3, md: 1 }}
+      >
         <InfoTags
           data={data.accessRequirement}
           membersCount={data.membersCount}
           tokenSymbol={tokenSymbol}
         />
         {data.desc && (
-          <Text fontSize="md" pt={{ base: 0, md: 4 }}>
+          <Text fontSize="md" pt={4}>
             {data.desc}
           </Text>
         )}
