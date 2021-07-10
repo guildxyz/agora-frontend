@@ -1,16 +1,12 @@
 import { useEffect, useRef } from "react"
 import {
   Button,
-  Modal,
   ModalBody,
   ModalCloseButton,
-  ModalContent,
   ModalFooter,
   ModalHeader,
-  ModalOverlay,
   Stack,
   Text,
-  useBreakpointValue,
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -19,11 +15,9 @@ import MetaMaskOnboarding from "@metamask/onboarding"
 import injected from "connectors"
 import { Link } from "components/common/Link"
 import { Error } from "components/common/Error"
-import { motion } from "framer-motion"
 import ConnectorButton from "./components/ConnectorButton"
 import processConnectionError from "./utils/processConnectionError"
-
-const MotionModalContent = motion(ModalContent)
+import AppModal from "components/common/AppModal"
 
 type Props = {
   activatingConnector: AbstractConnector
@@ -40,8 +34,6 @@ const Web3Modal = ({
 }: Props): JSX.Element => {
   const { error } = useWeb3React()
   const { active, activate, connector, setError } = useWeb3React()
-  const modalDrag = useBreakpointValue({ base: "y", md: false })
-  const modalInitialBottom = useBreakpointValue({ base: -100, md: 0 })
 
   // initialize metamask onboarding
   const onboarding = useRef<MetaMaskOnboarding>()
@@ -58,12 +50,6 @@ const Web3Modal = ({
   }
   const handleOnboarding = () => onboarding.current?.startOnboarding()
 
-  const handleModalDrag = (_, info) => {
-    if (info.offset.y > 80) {
-      closeModal()
-    }
-  }
-
   useEffect(() => {
     if (active) {
       closeModal()
@@ -71,22 +57,8 @@ const Web3Modal = ({
   }, [active, closeModal])
 
   return (
-    <Modal motionPreset="none" isOpen={isModalOpen} onClose={closeModal}>
-      <ModalOverlay
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transitionDuration="0.2"
-      />
-      <MotionModalContent
-        initial={{ opacity: 0, bottom: modalInitialBottom }}
-        animate={{ opacity: 1, bottom: 0 }}
-        exit={{ opacity: 0, bottom: modalInitialBottom }}
-        transition={{ duration: 0.2 }}
-        drag={modalDrag}
-        dragConstraints={{ top: 0, bottom: 80 }}
-        onDragEnd={handleModalDrag}
-      >
+    <AppModal isOpen={isModalOpen} onClose={closeModal}>
+      <>
         <ModalHeader>Connect to a wallet</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -127,8 +99,8 @@ const Web3Modal = ({
             </Link>
           </Text>
         </ModalFooter>
-      </MotionModalContent>
-    </Modal>
+      </>
+    </AppModal>
   )
 }
 
