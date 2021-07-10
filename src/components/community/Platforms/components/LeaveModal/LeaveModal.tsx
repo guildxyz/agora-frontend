@@ -1,11 +1,8 @@
 import {
-  Modal,
   ModalBody,
   ModalCloseButton,
-  ModalContent,
   ModalFooter,
   ModalHeader,
-  ModalOverlay,
   Text,
   VStack,
 } from "@chakra-ui/react"
@@ -14,6 +11,7 @@ import ModalButton from "components/common/ModalButton"
 import { processMetaMaskError } from "utils/processMetaMaskError"
 import platformsContent from "../../platformsContent"
 import useLeaveModalMachine from "./hooks/useLeaveModalMachine"
+import AppModal from "components/common/AppModal"
 
 type Props = {
   platform: string
@@ -32,9 +30,8 @@ const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
     onClose()
   }
   return (
-    <Modal motionPreset="slideInBottom" isOpen={isOpen} onClose={closeModal}>
-      <ModalOverlay />
-      <ModalContent>
+    <AppModal isOpen={isOpen} onClose={closeModal}>
+      <>
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -53,8 +50,8 @@ const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
             {buttonText}
           </ModalButton>
         </ModalFooter>
-      </ModalContent>
-    </Modal>
+      </>
+    </AppModal>
   )
 }
 

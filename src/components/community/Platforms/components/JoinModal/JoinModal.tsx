@@ -1,12 +1,9 @@
 import {
   Icon,
-  Modal,
   ModalBody,
   ModalCloseButton,
-  ModalContent,
   ModalFooter,
   ModalHeader,
-  ModalOverlay,
   Text,
   VStack,
 } from "@chakra-ui/react"
@@ -18,6 +15,7 @@ import QRCode from "qrcode.react"
 import platformsContent from "../../platformsContent"
 import useJoinModalMachine from "./hooks/useJoinModalMachine"
 import processJoinPlatformError from "./utils/processJoinPlatformError"
+import AppModal from "components/common/AppModal"
 
 type Props = {
   platform: string
@@ -37,9 +35,8 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   }
 
   return (
-    <Modal motionPreset="slideInBottom" isOpen={isOpen} onClose={closeModal}>
-      <ModalOverlay />
-      <ModalContent>
+    <AppModal isOpen={isOpen} onClose={closeModal}>
+      <>
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -97,8 +94,8 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
             }
           })()}
         </ModalFooter>
-      </ModalContent>
-    </Modal>
+      </>
+    </AppModal>
   )
 }
 

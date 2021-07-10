@@ -2,13 +2,10 @@ import {
   CloseButton,
   Collapse,
   Icon,
-  Modal,
   ModalBody,
   ModalCloseButton,
-  ModalContent,
   ModalFooter,
   ModalHeader,
-  ModalOverlay,
   Text,
   Tooltip,
   VStack,
@@ -24,6 +21,7 @@ import msToReadableFormat from "utils/msToReadableFormat"
 import { processMetaMaskError } from "utils/processMetaMaskError"
 import useNeededAmount from "../../hooks/useNeededAmount"
 import useStakingModalMachine from "./hooks/useStakingMachine"
+import AppModal from "components/common/AppModal"
 
 type Props = {
   levelName: string
@@ -57,9 +55,8 @@ const StakingModal = ({
   }
 
   return (
-    <Modal motionPreset="slideInBottom" isOpen={isOpen} onClose={closeModal}>
-      <ModalOverlay />
-      <ModalContent>
+    <AppModal isOpen={isOpen} onClose={closeModal}>
+      <>
         <ModalHeader>
           {stakeState.value === "success"
             ? `Transaction submitted`
@@ -195,8 +192,8 @@ const StakingModal = ({
             )}
           </VStack>
         </ModalFooter>
-      </ModalContent>
-    </Modal>
+      </>
+    </AppModal>
   )
 }
 

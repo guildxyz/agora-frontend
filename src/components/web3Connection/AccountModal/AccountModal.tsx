@@ -1,12 +1,9 @@
 import {
   Button,
-  Modal,
   ModalBody,
   ModalCloseButton,
-  ModalContent,
   ModalFooter,
   ModalHeader,
-  ModalOverlay,
   Stack,
   Text,
   Tooltip,
@@ -17,6 +14,7 @@ import { useContext } from "react"
 import shortenHex from "utils/shortenHex"
 import { Web3Connection } from "../Web3ConnectionManager"
 import Identicon from "./components/Identicon"
+import AppModal from "components/common/AppModal"
 
 const AccountModal = ({ isOpen, onClose }) => {
   const { account } = useWeb3React()
@@ -29,9 +27,8 @@ const AccountModal = ({ isOpen, onClose }) => {
   }
 
   return (
-    <Modal motionPreset="slideInBottom" isOpen={isOpen} onClose={onClose}>
-      <ModalOverlay />
-      <ModalContent>
+    <AppModal isOpen={isOpen} onClose={onClose}>
+      <>
         <ModalHeader>Account</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -61,8 +58,8 @@ const AccountModal = ({ isOpen, onClose }) => {
             </Button>
           </Stack>
         </ModalFooter>
-      </ModalContent>
-    </Modal>
+      </>
+    </AppModal>
   )
 }
 
