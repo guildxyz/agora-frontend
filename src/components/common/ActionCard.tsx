@@ -13,7 +13,7 @@ import Card from "./Card"
 
 type ContentProps = {
   title: string
-  description: string
+  description: string | JSX.Element[]
   children: JSX.Element | JSX.Element[]
 }
 
@@ -35,7 +35,7 @@ type Props = {
   withAccordion?: boolean
   opened?: boolean
   title: string
-  description: string
+  description: string | JSX.Element[]
   children: JSX.Element | JSX.Element[]
 }
 
@@ -56,7 +56,7 @@ const ActionCard = ({
 
   return (
     <>
-      <Card display={{ base: "block", md: "none" }} p={6}>
+      <Card display={{ base: "block", md: "none" }} p={6} h="full">
         <Accordion defaultIndex={opened && 0} allowMultiple>
           <AccordionItem border="none">
             <AccordionButton p="0" _hover={{ bg: "none" }}>
