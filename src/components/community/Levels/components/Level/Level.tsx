@@ -13,11 +13,12 @@ import {
   useDisclosure,
   Icon,
   Tag,
-  useBreakpointValue,
+  TagLeftIcon,
+  TagLabel,
 } from "@chakra-ui/react"
 import { useCommunity } from "components/community/Context"
 import InfoTags from "components/community/Levels/components/InfoTags"
-import { CheckCircle } from "phosphor-react"
+import { Check, CheckCircle } from "phosphor-react"
 import type { Level as LevelType } from "temporaryData/types"
 import StakingModal from "../StakingModal"
 import useLevelAccess from "./hooks/useLevelAccess"
@@ -41,6 +42,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     chainData: {
       token: { symbol: tokenSymbol },
     },
+    theme,
   } = useCommunity()
   const {
     isOpen: isStakingModalOpen,
@@ -56,7 +58,6 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     isDisabled: true,
     element: null,
   })
-  const stakeButtonSize = useBreakpointValue({ base: "sm", md: "md" })
 
   useEffect(() => {
     const ref = levelEl.current
@@ -132,7 +133,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   return (
     <Grid
       templateRows="auto auto"
-      templateColumns={{ base: "45px auto 80px", md: "45px 3fr 1fr" }}
+      templateColumns={{ base: "1fr 45px", md: "45px 3fr 1fr" }}
       columnGap={{ base: 4, sm: 6 }}
       rowGap={{ base: 4, md: 2 }}
       boxSizing="border-box"
@@ -142,28 +143,55 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       _last={{ borderBottom: 0 }}
       ref={levelEl}
     >
-      <GridItem rowSpan={{ base: 1, md: 2 }}>
+      <GridItem order={{ base: 2, md: 1 }} rowSpan={{ base: 1, md: 2 }}>
         <Image src={`${data.imageUrl}`} boxSize="45px" alt="Level logo" />
       </GridItem>
-      <GridItem>
+      <GridItem order={{ base: 1, md: 2 }}>
         <Heading size="sm">
-          <VStack alignItems="flex-start" spacing="1">
+          <VStack alignItems="flex-start" spacing="2">
             <Tag
               display={{ base: "flex", lg: "none" }}
               size="sm"
-              colorScheme={hasAccess ? "green" : "orange"}
+              colorScheme={
+                hasAccess
+                  ? "green"
+                  : !hasAccess && data.accessRequirement.type === "stake"
+                  ? "gray" // Attention! The gray color is actually the community color!
+                  : "blackAlpha"
+              }
+              sx={
+                !hasAccess &&
+                data.accessRequirement.type === "stake" && {
+                  "--chakra-colors-gray-100": "var(--chakra-colors-primary-100)",
+                  "--chakra-colors-gray-800": "var(--chakra-colors-primary-700)",
+                }
+              }
             >
-              {noAccessMessage || "You have access"}
+              {hasAccess && <TagLeftIcon as={Check} />}
+              <TagLabel
+                color={
+                  !hasAccess &&
+                  data.accessRequirement.type === "stake" &&
+                  theme.color["--chakra-colors-primary-500"]
+                }
+              >
+                {hasAccess
+                  ? "You have access"
+                  : !hasAccess && data.accessRequirement.type === "stake"
+                  ? "Stake to join"
+                  : noAccessMessage}
+              </TagLabel>
             </Tag>
             <span>{data.name}</span>
           </VStack>
         </Heading>
       </GridItem>
-      <GridItem rowSpan={{ base: 1, md: 2 }}>
-        <Stack
-          alignItems={{ base: "flex-start", sm: "flex-end" }}
-          justifyContent="center"
-        >
+      <GridItem
+        order={{ base: 4, md: 3 }}
+        rowSpan={{ base: 1, md: 2 }}
+        colSpan={{ base: 2, md: 1 }}
+      >
+        <Stack alignItems="flex-end" justifyContent="center">
           {hasAccess && (
             <AccessText
               text="You have access"
@@ -185,9 +213,8 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
               fontWeight="medium"
               onClick={onStakingModalOpen}
               disabled={!!noAccessMessage}
-              size={stakeButtonSize}
             >
-              Stake
+              Stake to join
             </Button>
           )}
           {!hasAccess &&
@@ -202,7 +229,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
             )}
         </Stack>
       </GridItem>
-      <GridItem colSpan={{ base: 3, md: 1 }}>
+      <GridItem order={{ base: 3, md: 4 }} colSpan={{ base: 3, md: 1 }}>
         <InfoTags
           data={data.accessRequirement}
           membersCount={data.membersCount}
