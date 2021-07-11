@@ -18,8 +18,8 @@ const Levels = (): JSX.Element => {
     <Card
       pos="relative"
       overflow="hidden"
-      pl={{ base: 5, sm: 8 }}
-      pr={{ base: 4, sm: 7 }}
+      pl={{ base: 6, sm: 8 }}
+      pr={{ base: 5, sm: 7 }}
     >
       <Stack spacing="0">
         {levels.map((level, index) => (

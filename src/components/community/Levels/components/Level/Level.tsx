@@ -1,27 +1,27 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 // I disabled it manually, because the AccessIndicator works properly with the current dependency list, and the other dependencies shouldn't be added - KovJonas
-import { useRef, useState, useEffect } from "react"
 import {
   Button,
   Grid,
   GridItem,
   Heading,
+  Icon,
   Image,
   Stack,
+  Tag,
+  TagLabel,
+  TagLeftIcon,
   Text,
   useDisclosure,
-  Icon,
-  Tag,
-  TagLeftIcon,
-  TagLabel,
 } from "@chakra-ui/react"
 import { useCommunity } from "components/community/Context"
 import InfoTags from "components/community/Levels/components/InfoTags"
 import { Check, CheckCircle } from "phosphor-react"
+import { useEffect, useRef, useState } from "react"
 import type { Level as LevelType } from "temporaryData/types"
 import StakingModal from "../StakingModal"
-import useLevelAccess from "./hooks/useLevelAccess"
 import AccessText from "./components/AccessText"
+import useLevelAccess from "./hooks/useLevelAccess"
 
 type Props = {
   data: LevelType
@@ -41,7 +41,6 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     chainData: {
       token: { symbol: tokenSymbol },
     },
-    theme,
   } = useCommunity()
   const {
     isOpen: isStakingModalOpen,
@@ -132,8 +131,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   return (
     <Stack
       direction={{ base: "column", md: "row" }}
-      spacing={{ base: 4, sm: 6 }}
-      boxSizing="border-box"
+      spacing={6}
       py={{ base: 8, md: 10 }}
       borderBottom="1px"
       borderBottomColor="gray.200"
@@ -141,54 +139,38 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       ref={levelEl}
     >
       <Grid
-        position="relative"
         width="full"
-        templateRows="auto auto"
-        templateColumns={{ base: "1fr 45px", md: "45px 1fr" }}
+        templateColumns={{ base: "1fr auto", md: "auto 1fr" }}
         columnGap={{ base: 4, sm: 6 }}
-        rowGap={2}
+        rowGap={6}
+        alignItems="center"
       >
-        <GridItem
-          order={{ base: 2, md: 1 }}
-          colSpan={{ base: 0, md: 1 }}
-          rowSpan={2}
-        >
-          <Image
-            position={{ base: "absolute", md: "relative" }}
-            top="0"
-            right="0"
-            src={`${data.imageUrl}`}
-            boxSize="45px"
-            alt="Level logo"
-          />
-        </GridItem>
-        <GridItem order={{ base: 1, md: 2 }}>
-          <Heading size="sm">{data.name}</Heading>
-        </GridItem>
-        <GridItem
-          order={{ base: 2, md: 3 }}
-          colSpan={{ base: 2, md: 1 }}
-          pr={{ base: 8, md: 0 }}
-        >
+        <GridItem order={{ md: 1 }}>
+          <Heading size="sm" mb="3">
+            {data.name}
+          </Heading>
           <InfoTags
             data={data.accessRequirement}
             membersCount={data.membersCount}
             tokenSymbol={tokenSymbol}
           />
-          {data.desc && (
-            <Text fontSize="md" pt={4}>
-              {data.desc}
-            </Text>
-          )}
         </GridItem>
+        <GridItem order={{ md: 0 }}>
+          <Image src={`${data.imageUrl}`} boxSize="45px" alt="Level logo" />
+        </GridItem>
+        {data.desc && (
+          <GridItem colSpan={{ base: 2, md: 1 }} colStart={{ md: 2 }} order={2}>
+            <Text fontSize="md">{data.desc}</Text>
+          </GridItem>
+        )}
       </Grid>
 
       <Stack
         direction={{ base: "row", md: "column" }}
         alignItems={{ base: "center", md: "flex-end" }}
         justifyContent={{
-          base: hasAccess || noAccessMessage ? "space-between" : "flex-end",
-          md: "flex-end",
+          base: "space-between",
+          md: "center",
         }}
       >
         {(hasAccess || noAccessMessage) && (
@@ -208,7 +190,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
             icon={
               <Icon
                 as={CheckCircle}
-                color="var(--chakra-colors-green-500)"
+                color="var(--chakra-colors-green-600)"
                 weight="fill"
                 w={6}
                 h={6}
@@ -216,27 +198,30 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
             }
           />
         )}
-        {noAccessMessage && <AccessText text={noAccessMessage} />}
-        {!hasAccess && data.accessRequirement.type === "stake" && (
-          <Button
-            colorScheme="primary"
-            fontWeight="medium"
-            onClick={onStakingModalOpen}
-            disabled={!!noAccessMessage}
-          >
-            Stake to join
-          </Button>
-        )}
-        {!hasAccess &&
+        {(() =>
           data.accessRequirement.type === "stake" &&
-          !noAccessMessage && (
-            <StakingModal
-              levelName={data.name}
-              accessRequirement={data.accessRequirement}
-              isOpen={isStakingModalOpen}
-              onClose={onStakingModalClose}
-            />
-          )}
+          !hasAccess && (
+            <>
+              <Button
+                colorScheme="primary"
+                fontWeight="medium"
+                ml="auto"
+                onClick={onStakingModalOpen}
+                disabled={!!noAccessMessage}
+              >
+                Stake to join
+              </Button>
+              {!noAccessMessage && (
+                <StakingModal
+                  levelName={data.name}
+                  accessRequirement={data.accessRequirement}
+                  isOpen={isStakingModalOpen}
+                  onClose={onStakingModalClose}
+                />
+              )}
+            </>
+          ))()}
+        {noAccessMessage && <AccessText text={noAccessMessage} />}
       </Stack>
     </Stack>
   )

@@ -1,4 +1,4 @@
-import { Box, Stack, Text } from "@chakra-ui/react"
+import { HStack, Text } from "@chakra-ui/react"
 
 type Props = {
   text: string
@@ -6,14 +6,12 @@ type Props = {
 }
 
 const AccessText = ({ text, icon }: Props): JSX.Element => (
-  <Box display={{ base: "none", md: "block" }} width="max-content">
-    <Stack spacing="2" direction={{ base: "row-reverse", sm: "row" }}>
-      <Text fontSize={{ base: "sm", lg: "md" }} fontWeight="medium">
-        {text}
-      </Text>
-      {icon}
-    </Stack>
-  </Box>
+  <HStack display={{ base: "none", md: "flex" }} spacing="2" width="max-content">
+    <Text fontSize={{ base: "sm", md: "md" }} fontWeight="medium">
+      {text}
+    </Text>
+    {icon}
+  </HStack>
 )
 
 export default AccessText
