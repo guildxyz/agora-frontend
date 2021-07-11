@@ -1,21 +1,23 @@
-import { useEffect, useRef } from "react"
 import {
   Button,
   ModalBody,
   ModalCloseButton,
+  ModalContent,
   ModalFooter,
   ModalHeader,
+  ModalOverlay,
   Stack,
   Text,
 } from "@chakra-ui/react"
-import AppModal from "components/common/AppModal"
-import { useWeb3React } from "@web3-react/core"
+import MetaMaskOnboarding from "@metamask/onboarding"
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { AbstractConnector } from "@web3-react/abstract-connector"
-import MetaMaskOnboarding from "@metamask/onboarding"
-import injected from "connectors"
-import { Link } from "components/common/Link"
+import { useWeb3React } from "@web3-react/core"
 import { Error } from "components/common/Error"
+import { Link } from "components/common/Link"
+import Modal from "components/common/Modal"
+import injected from "connectors"
+import React, { useEffect, useRef } from "react"
 import ConnectorButton from "./components/ConnectorButton"
 import processConnectionError from "./utils/processConnectionError"
 
@@ -57,8 +59,9 @@ const Web3Modal = ({
   }, [active, closeModal])
 
   return (
-    <AppModal isOpen={isModalOpen} onClose={closeModal}>
-      <>
+    <Modal isOpen={isModalOpen} onClose={closeModal}>
+      <ModalOverlay />
+      <ModalContent>
         <ModalHeader>Connect to a wallet</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -99,8 +102,8 @@ const Web3Modal = ({
             </Link>
           </Text>
         </ModalFooter>
-      </>
-    </AppModal>
+      </ModalContent>
+    </Modal>
   )
 }
 

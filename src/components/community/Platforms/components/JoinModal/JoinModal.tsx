@@ -1,6 +1,5 @@
 import {
   Icon,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -12,6 +11,7 @@ import {
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
 import { Link } from "components/common/Link"
+import Modal from "components/common/Modal"
 import ModalButton from "components/common/ModalButton"
 import { ArrowSquareOut } from "phosphor-react"
 import QRCode from "qrcode.react"
@@ -35,7 +35,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   }
 
   return (
-    <Modal motionPreset="slideInBottom" isOpen={isOpen} onClose={closeModal}>
+    <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{title}</ModalHeader>

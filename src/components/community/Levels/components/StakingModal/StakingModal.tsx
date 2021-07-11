@@ -2,7 +2,6 @@ import {
   CloseButton,
   Collapse,
   Icon,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -14,6 +13,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
+import Modal from "components/common/Modal"
 import ModalButton from "components/common/ModalButton"
 import TransactionSubmitted from "components/common/TransactionSubmitted"
 import { useCommunity } from "components/community/Context"
@@ -54,7 +54,7 @@ const StakingModal = ({
   }
 
   return (
-    <Modal motionPreset="slideInBottom" isOpen={isOpen} onClose={closeModal}>
+    <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
