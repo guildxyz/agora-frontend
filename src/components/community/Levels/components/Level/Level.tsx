@@ -8,7 +8,6 @@ import {
   Heading,
   Image,
   Stack,
-  VStack,
   Text,
   useDisclosure,
   Icon,
