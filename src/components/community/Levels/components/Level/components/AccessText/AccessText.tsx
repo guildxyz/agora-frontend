@@ -6,7 +6,7 @@ type Props = {
 }
 
 const AccessText = ({ text, icon }: Props): JSX.Element => (
-  <Box display={{ base: "none", lg: "block" }}>
+  <Box display={{ base: "none", md: "block" }} width="max-content">
     <Stack spacing="2" direction={{ base: "row-reverse", sm: "row" }}>
       <Text fontSize={{ base: "sm", lg: "md" }} fontWeight="medium">
         {text}

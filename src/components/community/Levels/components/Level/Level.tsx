@@ -131,11 +131,9 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   }, [hasAccess])
 
   return (
-    <Grid
-      templateRows="auto auto"
-      templateColumns={{ base: "1fr 45px", md: "45px 3fr 1fr" }}
-      columnGap={{ base: 4, sm: 6 }}
-      rowGap={{ base: 4, md: 2 }}
+    <Stack
+      direction={{ base: "column", md: "row" }}
+      spacing={{ base: 4, sm: 6 }}
       boxSizing="border-box"
       py={{ base: 8, md: 10 }}
       borderBottom="1px"
@@ -143,90 +141,105 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       _last={{ borderBottom: 0 }}
       ref={levelEl}
     >
-      <GridItem order={{ base: 2, md: 1 }} rowSpan={{ base: 1, md: 2 }}>
-        <Image src={`${data.imageUrl}`} boxSize="45px" alt="Level logo" />
-      </GridItem>
-      <GridItem order={{ base: 1, md: 2 }}>
-        <Heading size="sm">{data.name}</Heading>
-      </GridItem>
-      <GridItem
-        order={{ base: 4, md: 3 }}
-        rowSpan={{ base: 1, md: 2 }}
-        colSpan={{ base: 2, md: 1 }}
+      <Grid
+        position="relative"
+        width="full"
+        templateRows="auto auto"
+        templateColumns={{ base: "1fr 45px", md: "45px 1fr" }}
+        columnGap={{ base: 4, sm: 6 }}
+        rowGap={2}
       >
-        <Stack
-          direction={{ base: "row", md: "column" }}
-          alignItems={{ base: "center", md: "flex-end" }}
-          justifyContent={{
-            base: hasAccess || noAccessMessage ? "space-between" : "flex-end",
-            md: "flex-end",
-          }}
+        <GridItem
+          order={{ base: 2, md: 1 }}
+          colSpan={{ base: 0, md: 1 }}
+          rowSpan={2}
         >
-          {(hasAccess || noAccessMessage) && (
-            <Tag
-              display={{ base: "flex", lg: "none" }}
-              size="sm"
-              colorScheme={hasAccess ? "green" : "blackAlpha"}
-            >
-              {hasAccess && <TagLeftIcon as={Check} />}
-              <TagLabel>{hasAccess ? "You have access" : noAccessMessage}</TagLabel>
-            </Tag>
+          <Image
+            position={{ base: "absolute", md: "relative" }}
+            top="0"
+            right="0"
+            src={`${data.imageUrl}`}
+            boxSize="45px"
+            alt="Level logo"
+          />
+        </GridItem>
+        <GridItem order={{ base: 1, md: 2 }}>
+          <Heading size="sm">{data.name}</Heading>
+        </GridItem>
+        <GridItem
+          order={{ base: 2, md: 3 }}
+          colSpan={{ base: 2, md: 1 }}
+          pr={{ base: 8, md: 0 }}
+        >
+          <InfoTags
+            data={data.accessRequirement}
+            membersCount={data.membersCount}
+            tokenSymbol={tokenSymbol}
+          />
+          {data.desc && (
+            <Text fontSize="md" pt={4}>
+              {data.desc}
+            </Text>
           )}
+        </GridItem>
+      </Grid>
 
-          {hasAccess && (
-            <AccessText
-              text="You have access"
-              icon={
-                <Icon
-                  as={CheckCircle}
-                  color="var(--chakra-colors-green-500)"
-                  weight="fill"
-                  w={6}
-                  h={6}
-                />
-              }
+      <Stack
+        direction={{ base: "row", md: "column" }}
+        alignItems={{ base: "center", md: "flex-end" }}
+        justifyContent={{
+          base: hasAccess || noAccessMessage ? "space-between" : "flex-end",
+          md: "flex-end",
+        }}
+      >
+        {(hasAccess || noAccessMessage) && (
+          <Tag
+            display={{ base: "flex", md: "none" }}
+            size="sm"
+            colorScheme={hasAccess ? "green" : "blackAlpha"}
+          >
+            {hasAccess && <TagLeftIcon as={Check} />}
+            <TagLabel>{hasAccess ? "You have access" : noAccessMessage}</TagLabel>
+          </Tag>
+        )}
+
+        {hasAccess && (
+          <AccessText
+            text="You have access"
+            icon={
+              <Icon
+                as={CheckCircle}
+                color="var(--chakra-colors-green-500)"
+                weight="fill"
+                w={6}
+                h={6}
+              />
+            }
+          />
+        )}
+        {noAccessMessage && <AccessText text={noAccessMessage} />}
+        {!hasAccess && data.accessRequirement.type === "stake" && (
+          <Button
+            colorScheme="primary"
+            fontWeight="medium"
+            onClick={onStakingModalOpen}
+            disabled={!!noAccessMessage}
+          >
+            Stake to join
+          </Button>
+        )}
+        {!hasAccess &&
+          data.accessRequirement.type === "stake" &&
+          !noAccessMessage && (
+            <StakingModal
+              levelName={data.name}
+              accessRequirement={data.accessRequirement}
+              isOpen={isStakingModalOpen}
+              onClose={onStakingModalClose}
             />
           )}
-          {noAccessMessage && <AccessText text={noAccessMessage} />}
-          {!hasAccess && data.accessRequirement.type === "stake" && (
-            <Button
-              colorScheme="primary"
-              fontWeight="medium"
-              onClick={onStakingModalOpen}
-              disabled={!!noAccessMessage}
-            >
-              Stake to join
-            </Button>
-          )}
-          {!hasAccess &&
-            data.accessRequirement.type === "stake" &&
-            !noAccessMessage && (
-              <StakingModal
-                levelName={data.name}
-                accessRequirement={data.accessRequirement}
-                isOpen={isStakingModalOpen}
-                onClose={onStakingModalClose}
-              />
-            )}
-        </Stack>
-      </GridItem>
-      <GridItem
-        mt={{ base: -8, md: 0 }}
-        order={{ base: 3, md: 4 }}
-        colSpan={{ base: 3, md: 1 }}
-      >
-        <InfoTags
-          data={data.accessRequirement}
-          membersCount={data.membersCount}
-          tokenSymbol={tokenSymbol}
-        />
-        {data.desc && (
-          <Text fontSize="md" pt={4}>
-            {data.desc}
-          </Text>
-        )}
-      </GridItem>
-    </Grid>
+      </Stack>
+    </Stack>
   )
 }
 
