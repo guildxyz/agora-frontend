@@ -1,13 +1,15 @@
 import {
   Icon,
+  Modal,
   ModalBody,
   ModalCloseButton,
+  ModalContent,
   ModalFooter,
   ModalHeader,
+  ModalOverlay,
   Text,
   VStack,
 } from "@chakra-ui/react"
-import AppModal from "components/common/AppModal"
 import { Error } from "components/common/Error"
 import { Link } from "components/common/Link"
 import ModalButton from "components/common/ModalButton"
@@ -22,21 +24,20 @@ type Props = {
   isOpen: boolean
   onClose: () => void
 }
-
 const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const {
     join: { title, description },
   } = platformsContent[platform]
   const [state, send] = useJoinModalMachine(platform)
-
   const closeModal = () => {
     send("CLOSE_MODAL")
     onClose()
   }
 
   return (
-    <AppModal isOpen={isOpen} onClose={closeModal}>
-      <>
+    <Modal motionPreset="slideInBottom" isOpen={isOpen} onClose={closeModal}>
+      <ModalOverlay />
+      <ModalContent>
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -94,8 +95,8 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
             }
           })()}
         </ModalFooter>
-      </>
-    </AppModal>
+      </ModalContent>
+    </Modal>
   )
 }
 

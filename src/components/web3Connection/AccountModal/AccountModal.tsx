@@ -1,15 +1,17 @@
 import {
   Button,
+  Modal,
   ModalBody,
   ModalCloseButton,
+  ModalContent,
   ModalFooter,
   ModalHeader,
+  ModalOverlay,
   Stack,
   Text,
   Tooltip,
   useClipboard,
 } from "@chakra-ui/react"
-import AppModal from "components/common/AppModal"
 import { useWeb3React } from "@web3-react/core"
 import { useContext } from "react"
 import shortenHex from "utils/shortenHex"
@@ -20,15 +22,15 @@ const AccountModal = ({ isOpen, onClose }) => {
   const { account } = useWeb3React()
   const { openModal } = useContext(Web3Connection)
   const { hasCopied, onCopy } = useClipboard(account)
-
   const handleWalletProviderSwitch = () => {
     openModal()
     onClose()
   }
 
   return (
-    <AppModal isOpen={isOpen} onClose={onClose}>
-      <>
+    <Modal motionPreset="slideInBottom" isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
         <ModalHeader>Account</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -58,8 +60,8 @@ const AccountModal = ({ isOpen, onClose }) => {
             </Button>
           </Stack>
         </ModalFooter>
-      </>
-    </AppModal>
+      </ModalContent>
+    </Modal>
   )
 }
 

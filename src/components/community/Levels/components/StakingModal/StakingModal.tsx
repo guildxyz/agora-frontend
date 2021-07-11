@@ -2,15 +2,17 @@ import {
   CloseButton,
   Collapse,
   Icon,
+  Modal,
   ModalBody,
   ModalCloseButton,
+  ModalContent,
   ModalFooter,
   ModalHeader,
+  ModalOverlay,
   Text,
   Tooltip,
   VStack,
 } from "@chakra-ui/react"
-import AppModal from "components/common/AppModal"
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
 import TransactionSubmitted from "components/common/TransactionSubmitted"
@@ -29,7 +31,6 @@ type Props = {
   isOpen: boolean
   onClose: () => void
 }
-
 const StakingModal = ({
   levelName,
   accessRequirement,
@@ -42,21 +43,20 @@ const StakingModal = ({
   const amount = useNeededAmount(accessRequirement)
   const [allowanceState, allowanceSend] = useTokenAllowanceMachine(token)
   const [stakeState, stakeSend] = useStakingModalMachine(amount)
-
   const closeModal = () => {
     allowanceSend("CLOSE_MODAL")
     stakeSend("CLOSE_MODAL")
     onClose()
   }
-
   const startStaking = () => {
     allowanceSend("HIDE_NOTIFICATION")
     stakeSend("STAKE")
   }
 
   return (
-    <AppModal isOpen={isOpen} onClose={closeModal}>
-      <>
+    <Modal motionPreset="slideInBottom" isOpen={isOpen} onClose={closeModal}>
+      <ModalOverlay />
+      <ModalContent>
         <ModalHeader>
           {stakeState.value === "success"
             ? `Transaction submitted`
@@ -160,7 +160,6 @@ const StakingModal = ({
                   )
               }
             })()}
-
             {["allowanceGranted", "successNotification"].includes(
               allowanceState.value
             ) ? (
@@ -192,8 +191,8 @@ const StakingModal = ({
             )}
           </VStack>
         </ModalFooter>
-      </>
-    </AppModal>
+      </ModalContent>
+    </Modal>
   )
 }
 
