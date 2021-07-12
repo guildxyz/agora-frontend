@@ -48,7 +48,7 @@ const ActionCard = ({
 }: Props): JSX.Element => {
   if (!withAccordion) {
     return (
-      <Card p={6}>
+      <Card isFullWidthOnMobile p={6}>
         <ActionCardContent {...{ title, description, children }} />
       </Card>
     )
@@ -56,7 +56,12 @@ const ActionCard = ({
 
   return (
     <>
-      <Card display={{ base: "block", md: "none" }} p={6} h="full">
+      <Card
+        isFullWidthOnMobile
+        display={{ base: "block", md: "none" }}
+        p={6}
+        h="full"
+      >
         <Accordion defaultIndex={opened && 0} allowMultiple>
           <AccordionItem border="none">
             <AccordionButton p="0" _hover={{ bg: "none" }}>

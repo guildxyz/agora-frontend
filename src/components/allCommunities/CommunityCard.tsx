@@ -22,7 +22,6 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
       >
         <Card
           role="group"
-          mx={{ base: 4, sm: 0 }}
           px={{ base: 5, sm: 7 }}
           py="7"
           bgGradient="linear(to-l, var(--chakra-colors-primary-50), white)"

@@ -28,7 +28,6 @@ const Account = (): JSX.Element => {
     width: "max",
     maxWidth: { base: "calc(100% - var(--chakra-space-8))", md: "max" },
     marginLeft: "auto",
-    marginRight: { base: 4, sm: 0 },
   }
 
   if (typeof window === "undefined") {
