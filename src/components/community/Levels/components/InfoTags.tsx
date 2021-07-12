@@ -36,7 +36,7 @@ const InfoTag = ({ icon: Icon, label }: ChildProps): JSX.Element => (
 )
 
 const InfoTags = ({ data, membersCount, tokenSymbol }: Props): JSX.Element => (
-  <Wrap direction="row">
+  <Wrap direction="row" spacing={{ base: 2, lg: 4 }}>
     <InfoTag
       icon={accessRequirementIcons[data.type]}
       label={`${data.type} ${

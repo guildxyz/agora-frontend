@@ -22,7 +22,8 @@ const styles = {
     },
     body: {
       px: { base: 6, sm: 10 },
-      pb: { base: 6, sm: 10 },
+      pt: { base: 1, sm: 2 },
+      pb: { base: 9, sm: 10 },
     },
     footer: {
       px: { base: 6, sm: 10 },

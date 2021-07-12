@@ -16,7 +16,11 @@ const Layout = ({ title, bg = "white", children }: Props): JSX.Element => (
       {/* <link rel="icon" href="/favicon.ico" /> */}
     </Head>
     <Box bg={bg} minHeight="100vh">
-      <Container maxW="container.lg" py={{ base: 4, sm: 12, md: 24 }}>
+      <Container
+        maxW="container.lg"
+        py={{ base: 4, md: 12, lg: 24 }}
+        px={{ base: 4, sm: 6, md: 8, lg: 10 }}
+      >
         <Stack
           direction={{ base: "column-reverse", md: "row" }}
           spacing={8}
@@ -24,10 +28,8 @@ const Layout = ({ title, bg = "white", children }: Props): JSX.Element => (
           pb={{ base: 8, md: 16 }}
         >
           <Heading
-            px={{ base: 4, sm: 0 }}
             fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
             fontFamily="display"
-            textAlign="left"
           >
             {title}
           </Heading>
