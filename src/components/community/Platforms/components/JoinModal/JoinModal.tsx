@@ -24,11 +24,13 @@ type Props = {
   isOpen: boolean
   onClose: () => void
 }
+
 const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const {
     join: { title, description },
   } = platformsContent[platform]
   const [state, send] = useJoinModalMachine(platform)
+
   const closeModal = () => {
     send("CLOSE_MODAL")
     onClose()

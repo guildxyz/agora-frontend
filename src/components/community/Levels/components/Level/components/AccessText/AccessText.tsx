@@ -7,7 +7,7 @@ type Props = {
 
 const AccessText = ({ text, icon }: Props): JSX.Element => (
   <HStack display={{ base: "none", md: "flex" }} spacing="2" width="max-content">
-    <Text fontSize={{ base: "sm", md: "md" }} fontWeight="medium">
+    <Text fontSize="md" fontWeight="medium">
       {text}
     </Text>
     {icon}

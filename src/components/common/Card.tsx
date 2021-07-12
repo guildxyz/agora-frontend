@@ -16,7 +16,7 @@ const Card = ({
   <Box
     mx={isFullWidthOnMobile && { base: -4, sm: 0 }}
     shadow="md"
-    borderRadius={isFullWidthOnMobile ? { base: "none", sm: "2xl" } : "2xl"}
+    borderRadius={{ base: isFullWidthOnMobile ? "none" : "2xl", sm: "2xl" }}
     bg="white"
     display="flex"
     flexDirection="column"

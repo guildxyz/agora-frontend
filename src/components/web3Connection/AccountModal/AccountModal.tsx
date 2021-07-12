@@ -22,6 +22,7 @@ const AccountModal = ({ isOpen, onClose }) => {
   const { account } = useWeb3React()
   const { openModal } = useContext(Web3Connection)
   const { hasCopied, onCopy } = useClipboard(account)
+
   const handleWalletProviderSwitch = () => {
     openModal()
     onClose()

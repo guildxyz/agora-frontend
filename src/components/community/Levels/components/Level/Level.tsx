@@ -173,6 +173,9 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
           md: "center",
         }}
       >
+        {/* On mobile we use the Tag component to indicate level access state, on desktop AccessText.
+            This is not nice, will refactor it to one component and handle the responsive styles there
+            when we'll know exactly what we want design-wise */}
         {(hasAccess || noAccessMessage) && (
           <Tag
             display={{ base: "flex", md: "none" }}
@@ -183,18 +186,11 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
             <TagLabel>{hasAccess ? "You have access" : noAccessMessage}</TagLabel>
           </Tag>
         )}
-
         {hasAccess && (
           <AccessText
             text="You have access"
             icon={
-              <Icon
-                as={CheckCircle}
-                color="var(--chakra-colors-green-600)"
-                weight="fill"
-                w={6}
-                h={6}
-              />
+              <Icon as={CheckCircle} color="green.600" weight="fill" boxSize={6} />
             }
           />
         )}

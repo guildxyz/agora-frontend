@@ -20,11 +20,13 @@ type Props = {
   isOpen: boolean
   onClose: () => void
 }
+
 const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const {
     leave: { title, membershipDescription, leaveDescription, buttonText },
   } = platformsContent[platform]
   const [state, send] = useLeaveModalMachine(platform)
+
   const closeModal = () => {
     send("CLOSE_MODAL")
     onClose()

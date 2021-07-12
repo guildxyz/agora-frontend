@@ -28,7 +28,6 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
           bgRepeat="no-repeat"
           bgSize="150%"
           bgPosition="-100%"
-          borderRadius="2xl"
           transition="background-position 0.6s ease"
           _hover={{
             bgPosition: "0",

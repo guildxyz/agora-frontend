@@ -33,7 +33,7 @@ const Layout = ({ title, bg = "white", children }: Props): JSX.Element => (
           >
             {title}
           </Heading>
-          <HStack>
+          <HStack justify="flex-end">
             <Account />
           </HStack>
         </Stack>

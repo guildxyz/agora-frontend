@@ -19,7 +19,6 @@ const Platforms = (): JSX.Element => {
 
   return (
     <ActionCard
-      opened
       title="Platforms"
       description="All platforms are bridged together so you’ll see the same messages everywhere."
     >

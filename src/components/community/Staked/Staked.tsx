@@ -29,7 +29,6 @@ const Staked = (): JSX.Element => {
       unmountOnExit
     >
       <ActionCard
-        withAccordion
         title="Staked"
         description={[
           !!unlockedAmount && (
