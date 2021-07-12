@@ -20,6 +20,7 @@ import { useCommunity } from "components/community/Context"
 import useTokenAllowanceMachine from "components/community/hooks/useTokenAllowanceMachine"
 import { Check, Info } from "phosphor-react"
 import type { AccessRequirement } from "temporaryData/types"
+import Allowance from "components/community/components/Allowance"
 import msToReadableFormat from "utils/msToReadableFormat"
 import { processMetaMaskError } from "utils/processMetaMaskError"
 import useNeededAmount from "../../hooks/useNeededAmount"
@@ -97,72 +98,11 @@ const StakingModal = ({
           {/* margin is applied on the approve button,
               so there's no unwanted space when it's not shown */}
           <VStack spacing="0" alignItems="strech">
-            {(() => {
-              switch (allowanceState.value) {
-                case "noAllowance":
-                case "error":
-                  return (
-                    <ModalButton
-                      mb="3"
-                      rightIcon={
-                        <Tooltip
-                          label={`You have to give the Agora smart contracts permission to use your ${token.symbol}. You only have to do this once per token.`}
-                          placement="top"
-                        >
-                          <Icon as={Info} tabIndex={0} />
-                        </Tooltip>
-                      }
-                      // so the button label will be positioned to the center
-                      leftIcon={<span />}
-                      justifyContent="space-between"
-                      onClick={() => allowanceSend("ALLOW")}
-                    >
-                      {`Allow Agora to use ${token.symbol}`}
-                    </ModalButton>
-                  )
-                case "waitingConfirmation":
-                  return (
-                    <ModalButton
-                      mb="3"
-                      isLoading
-                      loadingText="Waiting confirmation"
-                    />
-                  )
-                case "waitingForTransaction":
-                  return (
-                    <ModalButton
-                      mb="3"
-                      isLoading
-                      loadingText="Waiting for transaction to succeed"
-                    />
-                  )
-                case "successNotification":
-                case "allowanceGranted":
-                default:
-                  return (
-                    <Collapse
-                      in={allowanceState.value === "successNotification"}
-                      unmountOnExit
-                    >
-                      <ModalButton
-                        as="div"
-                        colorScheme="gray"
-                        variant="solidStatic"
-                        rightIcon={
-                          <CloseButton
-                            onClick={() => allowanceSend("HIDE_NOTIFICATION")}
-                          />
-                        }
-                        leftIcon={<Check />}
-                        justifyContent="space-between"
-                        mb="3"
-                      >
-                        {`You can now stake ${token.symbol}`}
-                      </ModalButton>
-                    </Collapse>
-                  )
-              }
-            })()}
+            <Allowance
+              state={allowanceState}
+              send={allowanceSend}
+              successText={`You can now stake ${token.symbol}`}
+            />
 
             {["allowanceGranted", "successNotification"].includes(
               allowanceState.value
