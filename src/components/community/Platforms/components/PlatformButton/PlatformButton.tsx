@@ -1,8 +1,8 @@
-import { Button, Box, useDisclosure } from "@chakra-ui/react"
+import { Button, useDisclosure } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import LeaveModal from "../LeaveModal"
-import JoinModal from "../JoinModal"
 import platformsContent from "../../platformsContent"
+import JoinModal from "../JoinModal"
+import LeaveModal from "../LeaveModal"
 import useIsMember from "./hooks/useIsMember"
 
 type Props = {
@@ -25,10 +25,9 @@ const PlatformButton = ({ platform }: Props): JSX.Element => {
         variant={isMember ? "outline" : "solid"}
         disabled={!account}
       >
-        <Box as="span">{isMember ? "Leave" : "Join"}</Box>
-        <Box as="span" display={{ base: "none", sm: "inline" }}>{` ${
+        {`${isMember ? "Leave" : "Join"} ${
           platform.charAt(0).toUpperCase() + platform.slice(1)
-        }`}</Box>
+        }`}
       </Button>
       {isMember ? (
         <LeaveModal {...{ platform, isOpen, onClose }} />

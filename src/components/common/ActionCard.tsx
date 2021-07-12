@@ -1,13 +1,13 @@
 import {
-  Heading,
-  Text,
-  Stack,
-  HStack,
   Accordion,
-  AccordionItem,
-  AccordionPanel,
   AccordionButton,
   AccordionIcon,
+  AccordionItem,
+  AccordionPanel,
+  Heading,
+  Stack,
+  Text,
+  Wrap,
 } from "@chakra-ui/react"
 import Card from "./Card"
 
@@ -25,9 +25,9 @@ const ActionCardContent = ({ title, description, children }: ContentProps) => (
     <Text mb="6" fontWeight="medium">
       {description}
     </Text>
-    <HStack spacing="2" justifyContent="flex-end" mt="auto">
+    <Wrap spacing="2" justify="flex-end" mt="auto" shouldWrapChildren>
       {children}
-    </HStack>
+    </Wrap>
   </>
 )
 
@@ -75,15 +75,15 @@ const ActionCard = ({
               <Text pt="2" mb="6" fontWeight="medium">
                 {description}
               </Text>
-              <HStack spacing="2" justifyContent="flex-end" mt="auto">
+              <Wrap spacing="2" justify="flex-end" mt="auto" shouldWrapChildren>
                 {children}
-              </HStack>
+              </Wrap>
             </AccordionPanel>
           </AccordionItem>
         </Accordion>
       </Card>
 
-      <Card display={{ base: "none", md: "block" }} p={6}>
+      <Card display={{ base: "none", md: "flex" }} p={6} h="full">
         <ActionCardContent {...{ title, description, children }} />
       </Card>
     </>

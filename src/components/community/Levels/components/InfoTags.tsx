@@ -22,6 +22,7 @@ type ChildProps = {
 
 const InfoTag = ({ icon: Icon, label }: ChildProps): JSX.Element => (
   <Stack
+    as="li"
     direction="row"
     textColor="gray.450"
     alignItems="center"

@@ -23,13 +23,13 @@ const Layout = ({ title, bg = "white", children }: Props): JSX.Element => (
       >
         <Stack
           direction={{ base: "column-reverse", md: "row" }}
-          spacing={{ base: 5, md: 10 }}
+          spacing={8}
           justify="space-between"
           pb={{ base: 8, md: 16 }}
         >
           <Heading
             px={{ base: 4, sm: 0 }}
-            fontSize={{ base: "2xl", sm: "3xl" }}
+            fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
             fontFamily="display"
             textAlign="left"
           >

@@ -1,4 +1,4 @@
-import { Heading, Image, Stack, Tag } from "@chakra-ui/react"
+import { Heading, Image, Stack, Tag, Wrap } from "@chakra-ui/react"
 import Card from "components/common/Card"
 import { Link } from "components/common/Link"
 import { CommunityProvider } from "components/community/Context"
@@ -23,7 +23,7 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
         <Card
           role="group"
           mx={{ base: 4, sm: 0 }}
-          px={{ base: 4, sm: 7 }}
+          px={{ base: 5, sm: 7 }}
           py="7"
           bgGradient="linear(to-l, var(--chakra-colors-primary-50), white)"
           bgRepeat="no-repeat"
@@ -45,31 +45,18 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
             <Image src={`${community.imageUrl}`} boxSize="45px" alt="Level logo" />
             <Stack spacing="3">
               <Heading size="sm">{community.name}</Heading>
-              <Stack
-                direction="row"
-                justifyContent="flex-start"
-                spacing="0"
-                wrap="wrap"
-                shouldWrapChildren
-              >
+              <Wrap spacing="2" shouldWrapChildren>
                 <Tag
-                  mr={{ base: 2, sm: 3 }}
-                  mb={{ base: 2, sm: 3 }}
                   colorScheme="blackAlpha"
                   textColor="blackAlpha.700"
                 >{`${membersCount} members`}</Tag>
-                <Tag
-                  mr={{ base: 2, sm: 3 }}
-                  mb={{ base: 2, sm: 3 }}
-                  colorScheme="blackAlpha"
-                  textColor="blackAlpha.700"
-                >
+                <Tag colorScheme="blackAlpha" textColor="blackAlpha.700">
                   {`${community.levels.length} levels`}
                 </Tag>
                 <Tag colorScheme="blackAlpha" textColor="blackAlpha.700">
                   {`min: ${community.levels[0].accessRequirement.amount} ${community.chainData.ropsten.token.symbol}`}
                 </Tag>
-              </Stack>
+              </Wrap>
             </Stack>
           </Stack>
         </Card>
