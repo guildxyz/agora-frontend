@@ -1,7 +1,7 @@
-import { Modal } from "@chakra-ui/react"
+import { Modal as ChakraModal } from "@chakra-ui/react"
 import { useAllowance } from "../hooks/useAllowance"
 
-const ModalContent = ({ isOpen, onClose, children }) => {
+const Modal = ({ isOpen, onClose, children }) => {
   const { send } = useAllowance()
 
   const closeModal = () => {
@@ -10,10 +10,10 @@ const ModalContent = ({ isOpen, onClose, children }) => {
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={closeModal}>
+    <ChakraModal isOpen={isOpen} onClose={closeModal}>
       {children}
-    </Modal>
+    </ChakraModal>
   )
 }
 
-export default ModalContent
+export default Modal

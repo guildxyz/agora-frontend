@@ -65,28 +65,22 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
         <AllowanceModalFooter
           successText={`You can now unstake ${tokenSymbol}`}
           disabledText="Confirm unstake"
+          childState={state.value}
         >
-          {(hideNotification: () => void) => {
+          {(() => {
             switch (state.value) {
               case "idle":
               case "error":
               default:
                 return (
-                  <ModalButton
-                    onClick={() => {
-                      startUnstaking()
-                      hideNotification()
-                    }}
-                  >
-                    Confirm unstake
-                  </ModalButton>
+                  <ModalButton onClick={startUnstaking}>Confirm unstake</ModalButton>
                 )
               case "waitingConfirmation":
                 return <ModalButton isLoading loadingText="Waiting confirmation" />
               case "success":
                 return <ModalButton onClick={closeModal}>Close</ModalButton>
             }
-          }}
+          })()}
         </AllowanceModalFooter>
       </ModalContent>
     </AllowanceModal>

@@ -3,12 +3,12 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  Text,
+  Text
 } from "@chakra-ui/react"
 import {
   AllowanceModal,
   AllowanceModalBody,
-  AllowanceModalFooter,
+  AllowanceModalFooter
 } from "components/common/Allowance"
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
@@ -88,6 +88,7 @@ const StakingModal = ({
         <AllowanceModalFooter
           successText={`You can now stake ${token.symbol}`}
           disabledText="Confirm stake"
+          childState={state.value}
         >
           {(hideNotification: () => void) => {
             switch (state.value) {

@@ -3,7 +3,7 @@ import { Error } from "components/common/Error"
 import { processMetaMaskError } from "utils/processMetaMaskError"
 import { useAllowance } from "./hooks/useAllowance"
 
-const Body = ({ children }) => {
+const AllowanceModalBody = ({ children }) => {
   const { state } = useAllowance()
 
   return (
@@ -13,4 +13,4 @@ const Body = ({ children }) => {
     </ModalBody>
   )
 }
-export default Body
+export default AllowanceModalBody

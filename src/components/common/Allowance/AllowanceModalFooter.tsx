@@ -8,10 +8,21 @@ import {
 } from "@chakra-ui/react"
 import ModalButton from "components/common/ModalButton"
 import { Check, Info } from "phosphor-react"
+import { useEffect } from "react"
 import { useAllowance } from "./hooks/useAllowance"
 
-const Footer = ({ children, disabledText, successText }) => {
+const AllowanceModalFooter = ({
+  disabledText,
+  successText,
+  childState,
+  children,
+}) => {
   const { state, send, token } = useAllowance()
+
+  useEffect(() => {
+    if (childState !== "idle") send("HIDE_NOTIFICATION")
+  }, [childState, send])
+
   return (
     <ModalFooter>
       <VStack spacing="0" alignItems="strech">
@@ -76,7 +87,7 @@ const Footer = ({ children, disabledText, successText }) => {
         })()}
 
         {["allowanceGranted", "successNotification"].includes(state.value) ? (
-          children(() => send("HIDE_NOTIFICATION"))
+          children
         ) : (
           <ModalButton
             disabled
@@ -92,4 +103,4 @@ const Footer = ({ children, disabledText, successText }) => {
   )
 }
 
-export default Footer
+export default AllowanceModalFooter
