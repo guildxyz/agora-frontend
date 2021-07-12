@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react"
 import ModalButton from "components/common/ModalButton"
 import { Check, Info } from "phosphor-react"
-import { useAllowance } from "./Context"
+import { useAllowance } from "./hooks/useAllowance"
 
 const Footer = ({ children, disabledText, successText }) => {
   const { state, send, token } = useAllowance()

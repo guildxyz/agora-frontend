@@ -1,7 +1,7 @@
 import { ModalBody } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
 import { processMetaMaskError } from "utils/processMetaMaskError"
-import { useAllowance } from "./Context"
+import { useAllowance } from "./hooks/useAllowance"
 
 const Body = ({ children }) => {
   const { state } = useAllowance()

@@ -1,5 +1,5 @@
 import { Modal } from "@chakra-ui/react"
-import { useAllowance } from "../Context"
+import { useAllowance } from "../hooks/useAllowance"
 
 const ModalContent = ({ isOpen, onClose, children }) => {
   const { send } = useAllowance()

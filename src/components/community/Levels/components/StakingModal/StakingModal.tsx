@@ -9,7 +9,7 @@ import {
   AllowanceModal,
   AllowanceModalBody,
   AllowanceModalFooter,
-} from "components/common/AllowanceModal"
+} from "components/common/Allowance"
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
 import TransactionSubmitted from "components/common/TransactionSubmitted"
