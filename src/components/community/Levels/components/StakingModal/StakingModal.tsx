@@ -1,26 +1,20 @@
 import {
-  CloseButton,
-  Collapse,
-  Icon,
-  Modal,
-  ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
-  Tooltip,
-  VStack,
 } from "@chakra-ui/react"
+import {
+  AllowanceModal,
+  AllowanceModalBody,
+  AllowanceModalFooter,
+} from "components/common/AllowanceModal"
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
 import TransactionSubmitted from "components/common/TransactionSubmitted"
 import { useCommunity } from "components/community/Context"
-import useTokenAllowanceMachine from "components/community/hooks/useTokenAllowanceMachine"
-import { Check, Info } from "phosphor-react"
 import type { AccessRequirement } from "temporaryData/types"
-import Allowance from "components/community/components/Allowance"
 import msToReadableFormat from "utils/msToReadableFormat"
 import { processMetaMaskError } from "utils/processMetaMaskError"
 import useNeededAmount from "../../hooks/useNeededAmount"
@@ -43,34 +37,31 @@ const StakingModal = ({
     chainData: { token, stakeToken },
   } = useCommunity()
   const amount = useNeededAmount(accessRequirement)
-  const [allowanceState, allowanceSend] = useTokenAllowanceMachine(token)
-  const [stakeState, stakeSend] = useStakingModalMachine(amount)
+  const [state, send] = useStakingModalMachine(amount)
 
   const closeModal = () => {
-    allowanceSend("CLOSE_MODAL")
-    stakeSend("CLOSE_MODAL")
+    send("CLOSE_MODAL")
     onClose()
   }
 
   const startStaking = () => {
-    allowanceSend("HIDE_NOTIFICATION")
-    stakeSend("STAKE")
+    send("STAKE")
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={closeModal}>
+    <AllowanceModal token={token} isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {stakeState.value === "success"
+          {state.value === "success"
             ? `Transaction submitted`
             : `Stake to join ${levelName}`}
         </ModalHeader>
         <ModalCloseButton />
-        <ModalBody>
-          {stakeState.value === "success" ? (
+        <AllowanceModalBody>
+          {state.value === "success" ? (
             <>
-              <TransactionSubmitted transaction={stakeState.context.transaction} />
+              <TransactionSubmitted transaction={state.context.transaction} />
               <Text textColor="gray" mt="4">
                 You’ll recieve {amount} {stakeToken.symbol} in return. Those mark
                 your position, so don’t sell or send them because you will lose
@@ -81,7 +72,7 @@ const StakingModal = ({
           ) : (
             <>
               <Error
-                error={stakeState.context.error || allowanceState.context.error}
+                error={state.context.error}
                 processError={processMetaMaskError}
               />
               <Text fontWeight="medium">
@@ -93,50 +84,35 @@ const StakingModal = ({
               </Text>
             </>
           )}
-        </ModalBody>
-        <ModalFooter>
-          {/* margin is applied on the approve button,
-              so there's no unwanted space when it's not shown */}
-          <VStack spacing="0" alignItems="strech">
-            <Allowance
-              state={allowanceState}
-              send={allowanceSend}
-              successText={`You can now stake ${token.symbol}`}
-            />
-
-            {["allowanceGranted", "successNotification"].includes(
-              allowanceState.value
-            ) ? (
-              (() => {
-                switch (stakeState.value) {
-                  case "idle":
-                  case "error":
-                  default:
-                    return (
-                      <ModalButton onClick={startStaking}>Confirm stake</ModalButton>
-                    )
-                  case "waitingConfirmation":
-                    return (
-                      <ModalButton isLoading loadingText="Waiting confirmation" />
-                    )
-                  case "success":
-                    return <ModalButton onClick={closeModal}>Close</ModalButton>
-                }
-              })()
-            ) : (
-              <ModalButton
-                disabled
-                colorScheme="gray"
-                bg="gray.200"
-                _hover={{ bg: "gray.200" }}
-              >
-                Confirm stake
-              </ModalButton>
-            )}
-          </VStack>
-        </ModalFooter>
+        </AllowanceModalBody>
+        <AllowanceModalFooter
+          successText={`You can now stake ${token.symbol}`}
+          disabledText="Confirm stake"
+        >
+          {(hideNotification: () => void) => {
+            switch (state.value) {
+              case "idle":
+              case "error":
+              default:
+                return (
+                  <ModalButton
+                    onClick={() => {
+                      startStaking()
+                      hideNotification()
+                    }}
+                  >
+                    Confirm stake
+                  </ModalButton>
+                )
+              case "waitingConfirmation":
+                return <ModalButton isLoading loadingText="Waiting confirmation" />
+              case "success":
+                return <ModalButton onClick={closeModal}>Close</ModalButton>
+            }
+          }}
+        </AllowanceModalFooter>
       </ModalContent>
-    </Modal>
+    </AllowanceModal>
   )
 }
 
