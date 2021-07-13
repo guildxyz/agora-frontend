@@ -1,5 +1,10 @@
-/* eslint-disable react/jsx-props-no-spreading */
-import { Button, ButtonGroup, Divider, useDisclosure } from "@chakra-ui/react"
+import {
+  useColorMode,
+  Button,
+  ButtonGroup,
+  Divider,
+  useDisclosure,
+} from "@chakra-ui/react"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 import Card from "components/common/Card"
 import { useCommunity } from "components/community/Context"
@@ -17,6 +22,7 @@ type Props = {
 }
 
 const Account = (): JSX.Element => {
+  const { colorMode } = useColorMode()
   const communityData = useCommunity()
   const { error, account } = useWeb3React()
   const { openModal, triedEager } = useContext(Web3Connection)
@@ -67,7 +73,11 @@ const Account = (): JSX.Element => {
           {!!communityData && (
             <>
               <Balance token={communityData.chainData.token} />
-              <Divider orientation="vertical" h="var(--chakra-space-11)" />
+              <Divider
+                orientation="vertical"
+                h="var(--chakra-space-11)"
+                borderColor={colorMode === "light" ? "gray.200" : "gray.500"}
+              />
             </>
           )}
           <Button leftIcon={<Wallet />} onClick={onOpen}>

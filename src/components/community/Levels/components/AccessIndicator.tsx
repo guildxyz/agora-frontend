@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import { useColorMode } from "@chakra-ui/react"
 import { LevelData } from "./Level"
-
 type Props = { levelsState: { [x: number]: LevelData } }
 
 const AccessIndicator = ({ levelsState }: Props) => {
@@ -9,6 +9,7 @@ const AccessIndicator = ({ levelsState }: Props) => {
     width: window.innerWidth,
     height: window.innerHeight,
   })
+  const { colorMode } = useColorMode()
   const [accessHeight, setAccessHeight] = useState(0)
   const [focusHeight, setFocusHeight] = useState(0)
   const [focusColor, setFocusColor] = useState("var(--chakra-colors-primary-100)")
@@ -73,6 +74,7 @@ const AccessIndicator = ({ levelsState }: Props) => {
           left: 0,
           height: 0,
           width: "6px",
+          opacity: colorMode === "light" ? 1 : 0.6,
         }}
         transition={{ type: "just" }}
         animate={{
@@ -88,6 +90,7 @@ const AccessIndicator = ({ levelsState }: Props) => {
           height: 0,
           width: "6px",
           background: "var(--chakra-colors-primary-500)",
+          opacity: colorMode === "light" ? 1 : 0.8,
         }}
         transition={{ type: "just" }}
         animate={{

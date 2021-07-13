@@ -1,4 +1,5 @@
-import { Button, useDisclosure } from "@chakra-ui/react"
+import { Button, useDisclosure, useColorMode } from "@chakra-ui/react"
+import theme from "theme"
 import { useWeb3React } from "@web3-react/core"
 import platformsContent from "../../platformsContent"
 import JoinModal from "../JoinModal"
@@ -10,6 +11,7 @@ type Props = {
 }
 
 const PlatformButton = ({ platform }: Props): JSX.Element => {
+  const { colorMode } = useColorMode()
   const { account } = useWeb3React()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { logo: Logo } = platformsContent[platform]
@@ -20,6 +22,8 @@ const PlatformButton = ({ platform }: Props): JSX.Element => {
       <Button
         onClick={onOpen}
         colorScheme={platform}
+        color="white"
+        bgColor={theme.colors[platform][400]}
         fontWeight="medium"
         leftIcon={<Logo />}
         variant={isMember ? "outline" : "solid"}
