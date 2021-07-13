@@ -11,7 +11,10 @@ type Props = {
 }
 
 const AllCommunities = ({ communities }: Props): JSX.Element => {
-  const { joined, hasAccess, other } = useCategorizedCommunities(communities)
+  const {
+    categories: { joined, hasAccess, other },
+    areCategoriesLoading,
+  } = useCategorizedCommunities(communities)
 
   return (
     <Layout
@@ -22,14 +25,30 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
         <CategorySection
           title="Your communities"
           communities={joined}
-          placeholder="You're not part of any communities yet"
+          placeholder={
+            areCategoriesLoading
+              ? "[loading...]"
+              : "You're not part of any communities yet"
+          }
         />
         <CategorySection
           title="Communities you have access to"
           communities={hasAccess}
-          placeholder="You don't have access to any communities"
+          placeholder={
+            areCategoriesLoading
+              ? "[loading...]"
+              : "You don't have access to any communities"
+          }
         />
-        <CategorySection title="Other communities" communities={other} />
+        <CategorySection
+          title="Other communities"
+          communities={other}
+          placeholder={
+            areCategoriesLoading
+              ? "[loading...]"
+              : "There aren't any other communities"
+          }
+        />
       </Stack>
     </Layout>
   )

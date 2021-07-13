@@ -97,7 +97,11 @@ const categorizeCommunities = async (
 
 const useCategorizedCommunities = (communities: Community[]) => {
   const { account, chainId, library } = useWeb3React()
-  const { data: categorized, mutate } = useSWR(
+  const {
+    data: categories,
+    mutate,
+    error,
+  } = useSWR(
     ["categorized_communities", communities, account, Chains[chainId], library],
     categorizeCommunities,
     {
@@ -111,7 +115,7 @@ const useCategorizedCommunities = (communities: Community[]) => {
 
   useKeepSWRDataLiveAsBlocksArrive(mutate)
 
-  return categorized
+  return { categories, areCategoriesLoading: !categories && !error }
 }
 
 export default useCategorizedCommunities

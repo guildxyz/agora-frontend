@@ -18,8 +18,6 @@ const CategorySection = ({
 
   const isConnected = typeof account === "string" && !!library
 
-  if (!placeholder && !communities.length) return null
-
   return (
     <Stack spacing={4}>
       <Heading size="md" as="h4">
