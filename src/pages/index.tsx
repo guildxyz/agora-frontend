@@ -1,7 +1,6 @@
-import { SimpleGrid, Stack, Text } from "@chakra-ui/react"
-import { useWeb3React } from "@web3-react/core"
+import { Stack } from "@chakra-ui/react"
 import CategorySection from "components/allCommunities/CategorySection"
-import CommunityCard from "components/allCommunities/CommunityCard"
+import useCategorizedCommunities from "components/allCommunities/hooks/useCategorizedCommunities"
 import Layout from "components/Layout"
 import { GetStaticProps } from "next"
 import type { Community } from "temporaryData/communities"
@@ -12,9 +11,7 @@ type Props = {
 }
 
 const AllCommunities = ({ communities }: Props): JSX.Element => {
-  const { account, library } = useWeb3React()
-
-  const isConnected = typeof account === "string" && !!library
+  const { joined, hasAccess, other } = useCategorizedCommunities(communities)
 
   return (
     <Layout
@@ -22,29 +19,17 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
       bg="linear-gradient(white 0px, var(--chakra-colors-gray-100) 700px)"
     >
       <Stack spacing={8}>
-        <CategorySection title="Your communities">
-          {isConnected ? (
-            <Text>You're not part of any communities yet</Text>
-          ) : (
-            <div>Wallet not connected</div>
-          )}
-        </CategorySection>
-
-        <CategorySection title="Communities you have access to">
-          {isConnected ? (
-            <Text>You don't have access to any communities</Text>
-          ) : (
-            <div>Wallet not connected</div>
-          )}
-        </CategorySection>
-
-        <CategorySection title="All communities">
-          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={10}>
-            {communities.map((i) => (
-              <CommunityCard community={i} key={i.id} />
-            ))}
-          </SimpleGrid>
-        </CategorySection>
+        <CategorySection
+          title="Your communities"
+          communities={joined}
+          placeholder="You're not part of any communities yet"
+        />
+        <CategorySection
+          title="Communities you have access to"
+          communities={hasAccess}
+          placeholder="You don't have access to any communities"
+        />
+        <CategorySection title="Other communities" communities={other} />
       </Stack>
     </Layout>
   )
