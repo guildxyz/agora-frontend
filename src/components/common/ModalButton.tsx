@@ -8,7 +8,7 @@ type Props = {
 }
 
 const ModalButton = ({ children, ...rest }: Props): JSX.Element => (
-  <Button w="100%" colorScheme="primary" size="lg" {...rest}>
+  <Button w="100%" colorScheme="primary" size="lg" color="white" {...rest}>
     {children}
   </Button>
 )

@@ -206,6 +206,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
                 ml="auto"
                 onClick={onStakingModalOpen}
                 disabled={!!noAccessMessage}
+                color="white"
               >
                 Stake to join
               </Button>

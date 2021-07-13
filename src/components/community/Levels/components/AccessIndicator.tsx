@@ -74,7 +74,6 @@ const AccessIndicator = ({ levelsState }: Props) => {
           left: 0,
           height: 0,
           width: "6px",
-          opacity: colorMode === "light" ? 1 : 0.6,
         }}
         transition={{ type: "just" }}
         animate={{
@@ -89,8 +88,10 @@ const AccessIndicator = ({ levelsState }: Props) => {
           left: 0,
           height: 0,
           width: "6px",
-          background: "var(--chakra-colors-primary-500)",
-          opacity: colorMode === "light" ? 1 : 0.8,
+          background:
+            colorMode === "light"
+              ? "var(--chakra-colors-primary-500)"
+              : "var(--chakra-colors-primary-300)",
         }}
         transition={{ type: "just" }}
         animate={{

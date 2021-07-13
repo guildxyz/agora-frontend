@@ -1,4 +1,5 @@
 import {
+  useColorMode,
   CloseButton,
   Collapse,
   Icon,
@@ -46,10 +47,12 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
     unstakeSend("UNSTAKE")
   }
 
+  const { colorMode } = useColorMode()
+
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent color={colorMode === "light" ? "gray.800" : "white"}>
         <ModalHeader>
           {unstakeState.value === "success"
             ? "Transaction submitted"

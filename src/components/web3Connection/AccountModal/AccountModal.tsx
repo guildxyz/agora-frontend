@@ -1,4 +1,5 @@
 import {
+  useColorMode,
   Button,
   ModalBody,
   ModalCloseButton,
@@ -28,10 +29,12 @@ const AccountModal = ({ isOpen, onClose }) => {
     onClose()
   }
 
+  const { colorMode } = useColorMode()
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent color={colorMode === "light" ? "gray.800" : "white"}>
         <ModalHeader>Account</ModalHeader>
         <ModalCloseButton />
         <ModalBody>

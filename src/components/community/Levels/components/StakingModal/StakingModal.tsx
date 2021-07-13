@@ -1,4 +1,5 @@
 import {
+  useColorMode,
   CloseButton,
   Collapse,
   Icon,
@@ -52,11 +53,12 @@ const StakingModal = ({
     allowanceSend("HIDE_NOTIFICATION")
     stakeSend("STAKE")
   }
+  const { colorMode } = useColorMode()
 
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent color={colorMode === "light" ? "gray.800" : "white"}>
         <ModalHeader>
           {stakeState.value === "success"
             ? `Transaction submitted`
