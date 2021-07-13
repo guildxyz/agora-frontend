@@ -1,8 +1,10 @@
 import { Stack } from "@chakra-ui/react"
+import { useWeb3React } from "@web3-react/core"
 import CategorySection from "components/allCommunities/CategorySection"
-import useCategorizedCommunities from "components/allCommunities/hooks/useCategorizedCommunities"
+import useCategorizeCommunities from "components/allCommunities/hooks/useCategorizeCommunities"
 import Layout from "components/Layout"
 import { GetStaticProps } from "next"
+import { useMemo } from "react"
 import type { Community } from "temporaryData/communities"
 import { communities as communitiesJSON } from "temporaryData/communities"
 
@@ -14,7 +16,16 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
   const {
     categories: { joined, hasAccess, other },
     areCategoriesLoading,
-  } = useCategorizedCommunities(communities)
+  } = useCategorizeCommunities(communities)
+  const { account, library } = useWeb3React()
+
+  const isConnected = typeof account === "string" && !!library
+
+  const defaultPlaceholder = useMemo(() => {
+    if (!isConnected) return "Wallet not connected"
+    if (areCategoriesLoading) return "[loading...]"
+    return null
+  }, [isConnected, areCategoriesLoading])
 
   return (
     <Layout
@@ -26,28 +37,20 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
           title="Your communities"
           communities={joined}
           placeholder={
-            areCategoriesLoading
-              ? "[loading...]"
-              : "You're not part of any communities yet"
+            defaultPlaceholder ?? "You're not part of any communities yet"
           }
         />
         <CategorySection
           title="Communities you have access to"
           communities={hasAccess}
           placeholder={
-            areCategoriesLoading
-              ? "[loading...]"
-              : "You don't have access to any communities"
+            defaultPlaceholder ?? "You don't have access to any communities"
           }
         />
         <CategorySection
           title="Other communities"
           communities={other}
-          placeholder={
-            areCategoriesLoading
-              ? "[loading...]"
-              : "There aren't any other communities"
-          }
+          placeholder={defaultPlaceholder ?? "There aren't any other communities"}
         />
       </Stack>
     </Layout>

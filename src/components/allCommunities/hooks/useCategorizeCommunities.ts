@@ -14,6 +14,7 @@ type Categories = {
   other: Array<Community>
 }
 
+// TODO: replace with a backend-connected implementation once it's available
 const joinedCommunities = async (address: string) => [1]
 
 const categorizeCommunities = async (
@@ -95,7 +96,7 @@ const categorizeCommunities = async (
   })
 }
 
-const useCategorizedCommunities = (communities: Community[]) => {
+const useCategorizeCommunities = (communities: Community[]) => {
   const { account, chainId, library } = useWeb3React()
   const {
     data: categories,
@@ -118,4 +119,4 @@ const useCategorizedCommunities = (communities: Community[]) => {
   return { categories, areCategoriesLoading: !categories && !error }
 }
 
-export default useCategorizedCommunities
+export default useCategorizeCommunities
