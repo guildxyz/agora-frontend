@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useColorMode } from "@chakra-ui/react"
 import { LevelData } from "./Level"
+
 type Props = { levelsState: { [x: number]: LevelData } }
 
 const AccessIndicator = ({ levelsState }: Props) => {

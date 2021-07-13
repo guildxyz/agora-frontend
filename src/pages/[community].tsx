@@ -20,7 +20,7 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
       <Layout
         title={`${communityData.name} community`}
         bg={colorMode === "light" ? "white" : "var(--chakra-colors-gray-800)"}
-        bgGradient={`linear-gradient(${
+        bgGradient={`linear(${
           colorMode === "light" ? "white" : "var(--chakra-colors-gray-800)"
         } 0px, var(--chakra-colors-primary-50) 700px)`}
         bgBlendMode={colorMode === "light" ? "normal" : "color"}

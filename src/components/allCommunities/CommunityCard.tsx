@@ -1,4 +1,4 @@
-import { Heading, Image, Stack, Tag, Wrap } from "@chakra-ui/react"
+import { useColorMode, Heading, Image, Stack, Tag, Wrap } from "@chakra-ui/react"
 import Card from "components/common/Card"
 import { Link } from "components/common/Link"
 import { CommunityProvider } from "components/community/Context"
@@ -13,6 +13,8 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
     .map((level) => level.membersCount)
     .reduce((accumulator, currentValue) => accumulator + currentValue)
 
+  const { colorMode } = useColorMode()
+
   return (
     <CommunityProvider data={community}>
       <Link
@@ -24,7 +26,10 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
           role="group"
           px={{ base: 5, sm: 7 }}
           py="7"
-          bgGradient="linear(to-l, var(--chakra-colors-primary-50), white)"
+          bgGradient={`linear(to-l, var(--chakra-colors-primary-50), ${
+            colorMode === "light" ? "white" : "var(--chakra-colors-gray-800)"
+          })`}
+          bgBlendMode={colorMode === "light" ? "normal" : "color"}
           bgRepeat="no-repeat"
           bgSize="150%"
           bgPosition="-100%"
@@ -45,13 +50,25 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
               <Heading size="sm">{community.name}</Heading>
               <Wrap spacing="2" shouldWrapChildren>
                 <Tag
-                  colorScheme="blackAlpha"
-                  textColor="blackAlpha.700"
+                  colorScheme={colorMode === "light" ? "blackAlpha" : "whiteAlpha"}
+                  textColor={
+                    colorMode === "light" ? "blackAlpha.700" : "whiteAlpha.800"
+                  }
                 >{`${membersCount} members`}</Tag>
-                <Tag colorScheme="blackAlpha" textColor="blackAlpha.700">
+                <Tag
+                  colorScheme={colorMode === "light" ? "blackAlpha" : "whiteAlpha"}
+                  textColor={
+                    colorMode === "light" ? "blackAlpha.700" : "whiteAlpha.800"
+                  }
+                >
                   {`${community.levels.length} levels`}
                 </Tag>
-                <Tag colorScheme="blackAlpha" textColor="blackAlpha.700">
+                <Tag
+                  colorScheme={colorMode === "light" ? "blackAlpha" : "whiteAlpha"}
+                  textColor={
+                    colorMode === "light" ? "blackAlpha.700" : "whiteAlpha.800"
+                  }
+                >
                   {`min: ${community.levels[0].accessRequirement.amount} ${community.chainData.ropsten.token.symbol}`}
                 </Tag>
               </Wrap>
