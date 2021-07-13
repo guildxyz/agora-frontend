@@ -3,12 +3,12 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
-  Text
+  Text,
 } from "@chakra-ui/react"
 import {
   AllowanceModal,
   AllowanceModalBody,
-  AllowanceModalFooter
+  AllowanceModalFooter,
 } from "components/common/Allowance"
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
@@ -90,27 +90,20 @@ const StakingModal = ({
           disabledText="Confirm stake"
           childState={state.value}
         >
-          {(hideNotification: () => void) => {
+          {(() => {
             switch (state.value) {
               case "idle":
               case "error":
               default:
                 return (
-                  <ModalButton
-                    onClick={() => {
-                      startStaking()
-                      hideNotification()
-                    }}
-                  >
-                    Confirm stake
-                  </ModalButton>
+                  <ModalButton onClick={startStaking}>Confirm stake</ModalButton>
                 )
               case "waitingConfirmation":
                 return <ModalButton isLoading loadingText="Waiting confirmation" />
               case "success":
                 return <ModalButton onClick={closeModal}>Close</ModalButton>
             }
-          }}
+          })()}
         </AllowanceModalFooter>
       </ModalContent>
     </AllowanceModal>
