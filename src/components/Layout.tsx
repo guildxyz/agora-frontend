@@ -1,14 +1,14 @@
 import {
   useColorMode,
-  FormControl,
-  FormLabel,
   Switch,
+  Icon,
   Box,
   Container,
   Heading,
   Stack,
   HStack,
 } from "@chakra-ui/react"
+import { Moon, Sun } from "phosphor-react"
 import Head from "next/head"
 import Account from "components/web3Connection/Account"
 
@@ -63,33 +63,41 @@ const Layout = ({
             >
               {title}
             </Heading>
-            <HStack justify="space-between">
-              <FormControl
-                display="flex"
-                flexDirection={{ base: "column", sm: "row", md: "column" }}
-                alignItems="center"
-                justifyContent={{ base: "center", sm: "flex-start", md: "center" }}
-                width="max-content"
+            <HStack justify={{ base: "space-between", md: "flex-end" }}>
+              <Switch
+                position="relative"
+                mt={1}
+                size="lg"
+                id="color-mode"
+                colorScheme="primary"
+                isChecked={colorMode === "light"}
+                onChange={(e) => setColorMode(e.target.checked ? "light" : "dark")}
               >
-                <Switch
-                  size="sm"
-                  id="color-mode"
-                  colorScheme="primary"
-                  isChecked={colorMode === "dark"}
-                  onChange={(e) => setColorMode(e.target.checked ? "dark" : "light")}
-                ></Switch>
-                <FormLabel
-                  m="0"
-                  ml={{ base: 0, sm: 2 }}
-                  width="max-content"
-                  htmlFor="color-mode"
-                  color={colorMode === "light" ? "gray.800" : "white"}
-                  textAlign="center"
-                  fontSize="xs"
+                <Box
+                  overflow="hidden"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  width="full"
+                  height="full"
+                  position="absolute"
+                  top="-1px"
+                  left={0}
                 >
-                  Dark mode
-                </FormLabel>
-              </FormControl>
+                  <Icon
+                    as={Sun}
+                    weight="fill"
+                    color="white"
+                    transform="translateX(-50%)"
+                  />
+                  <Icon
+                    as={Moon}
+                    weight="fill"
+                    color="white"
+                    transform="translateX(0)"
+                  />
+                </Box>
+              </Switch>
               <Account />
             </HStack>
           </Stack>
