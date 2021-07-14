@@ -31,12 +31,11 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
           })`}
           bgBlendMode={colorMode === "light" ? "normal" : "color"}
           bgRepeat="no-repeat"
-          bgSize="150%"
-          bgPosition="-100%"
-          transition="background-position 0.6s ease"
+          bgSize="400%"
+          transition="background-size 0.8s ease"
           _hover={{
-            bgPosition: "0",
-            transition: "background-position 0.4s ease",
+            bgSize: "100%",
+            transition: "background-size 0.24s ease",
           }}
         >
           <Stack
