@@ -5,6 +5,18 @@ type Dict = Record<string, any>
 const solid = (props: Dict) => {
   const { colorScheme: c } = props
 
+  if (c === "gray") {
+    return {
+      bg: mode(`${c}.100`, `${c}.400`)(props),
+      _hover: {
+        bg: mode(`${c}.200`, `${c}.300`)(props),
+      },
+      _active: {
+        bg: mode(`${c}.300`, `${c}.200`)(props),
+      },
+    }
+  }
+
   return {
     bg: mode(`${c}.500`, `${c}.400`)(props),
     _hover: {
