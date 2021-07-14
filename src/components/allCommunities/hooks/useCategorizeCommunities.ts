@@ -2,6 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { Contract } from "@ethersproject/contracts"
 import { useWeb3React } from "@web3-react/core"
 import { Chains } from "connectors"
+import { hasAccessToLevel } from "components/community/Levels/components/Level/hooks/useLevelAccess"
 import ERC20_ABI from "constants/erc20abi.json"
 import useKeepSWRDataLiveAsBlocksArrive from "hooks/useKeepSWRDataLiveAsBlocksArrive"
 import useSWR from "swr"
@@ -43,43 +44,39 @@ const categorizeCommunities = async (
       return categories
     }
 
-    // Always has access if there is an open level
+    // hasAccessToLevel would check this but since it's a common case and we can avoid fetching the balances, I decided to leave it here
     if (community.levels[0].accessRequirement.type === "open") {
       categories.hasAccess.push(community)
       return categories
     }
 
-    // Has access if enough tokens are staked
     const stakeTokenContract = new Contract(
       community.chainData[currentChain].stakeToken.address,
       ERC20_ABI,
       provider
     )
-
-    const stakeBalance = await stakeTokenContract
-      .balanceOf(address)
-      .then((balance: BigNumber) => +parseBalance(balance))
-
-    if (stakeBalance >= community.levels[0].accessRequirement.amount) {
-      categories.hasAccess.push(community)
-      return categories
-    }
-
-    // Has access if enough tokens are held
-    const holdTokenContract = new Contract(
+    const tokenContract = new Contract(
       community.chainData[currentChain].token.address,
       ERC20_ABI,
       provider
     )
 
-    const holdBalance = await holdTokenContract
-      .balanceOf(address)
-      .then((balance: BigNumber) => +parseBalance(balance))
+    const [stakeBalance, tokenBalance] = await Promise.all([
+      stakeTokenContract
+        .balanceOf(address)
+        .then((balance: BigNumber) => +parseBalance(balance)),
+      tokenContract
+        .balanceOf(address)
+        .then((balance: BigNumber) => +parseBalance(balance)),
+    ])
 
-    if (
-      community.levels[0].accessRequirement.type === "hold" &&
-      holdBalance >= community.levels[0].accessRequirement.amount
-    ) {
+    const [hasAccess] = hasAccessToLevel(
+      community.levels[0].accessRequirement,
+      stakeBalance,
+      tokenBalance
+    )
+
+    if (hasAccess) {
       categories.hasAccess.push(community)
       return categories
     }
