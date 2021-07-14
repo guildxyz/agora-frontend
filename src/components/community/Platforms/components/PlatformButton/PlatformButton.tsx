@@ -4,9 +4,10 @@ import LeaveModal from "../LeaveModal"
 import JoinModal from "../JoinModal"
 import platformsContent from "../../platformsContent"
 import useIsMember from "./hooks/useIsMember"
+import type { PlatformName } from "../../platformsContent"
 
 type Props = {
-  platform: string
+  platform: PlatformName
 }
 
 const PlatformButton = ({ platform }: Props): JSX.Element => {

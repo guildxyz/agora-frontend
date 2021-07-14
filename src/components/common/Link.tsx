@@ -2,14 +2,9 @@
 import { PropsWithChildren } from "react"
 import NextLink from "next/link"
 import { LinkProps as NextLinkProps } from "next/dist/client/link"
-import {
-  Link as ChakraLink,
-  LinkProps as ChakraLinkProps,
-} from "@chakra-ui/react"
+import { Link as ChakraLink, LinkProps as ChakraLinkProps } from "@chakra-ui/react"
 
-export type NextChakraLinkProps = PropsWithChildren<
-  NextLinkProps & Omit<ChakraLinkProps, "as">
->
+export type Props = PropsWithChildren<NextLinkProps & Omit<ChakraLinkProps, "as">>
 
 //  Has to be a new component because both chakra and next share the `as` keyword
 export const Link = ({
@@ -21,7 +16,7 @@ export const Link = ({
   prefetch,
   children,
   ...chakraProps
-}: NextChakraLinkProps): JSX.Element => (
+}: Props): JSX.Element => (
   <NextLink
     passHref
     href={href}

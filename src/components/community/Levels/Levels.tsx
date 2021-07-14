@@ -5,10 +5,14 @@ import { useCommunity } from "components/community/Context"
 import { Level, LevelData } from "./components/Level"
 import AccessIndicator from "./components/AccessIndicator"
 
+type LevelState = {
+  [_: number]: LevelData
+}
+
 const Levels = (): JSX.Element => {
   const { levels } = useCommunity()
 
-  const [levelsState, setLevelsState] = useState({})
+  const [levelsState, setLevelsState] = useState<LevelState>({})
 
   const onLevelChange = (levelData: LevelData) => {
     setLevelsState((prevState) => ({ ...prevState, [levelData.index]: levelData }))

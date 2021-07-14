@@ -16,7 +16,7 @@ const useBalance = (token: Token) => {
 
   const shouldFetch = typeof account === "string" && !!library
 
-  const result = useSWR(
+  const result = useSWR<number>(
     shouldFetch ? [`${token.name}_balance`, account, tokenContract, chainId] : null,
     getBalance
   )

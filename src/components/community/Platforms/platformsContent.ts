@@ -1,6 +1,27 @@
 import { DiscordLogo, TelegramLogo } from "phosphor-react"
+import type { Icon } from "temporaryData/types"
 
-const platformsContent = {
+type PlatformName = "telegram" | "discord"
+
+type PlatformData = {
+  logo: Icon
+  join: {
+    title: string
+    description: string
+  }
+  leave: {
+    title: string
+    membershipDescription: string
+    leaveDescription: string
+    buttonText: string
+  }
+}
+
+type Platforms = {
+  [_ in PlatformName]: PlatformData
+}
+
+const platformsContent: Platforms = {
   telegram: {
     logo: TelegramLogo,
     join: {
@@ -36,3 +57,4 @@ const platformsContent = {
 }
 
 export default platformsContent
+export type { PlatformName, PlatformData }

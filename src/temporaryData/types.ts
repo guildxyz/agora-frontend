@@ -1,3 +1,6 @@
+import { IconProps } from "phosphor-react"
+import { EventData, State } from "xstate"
+
 type Token = {
   address: string
   name: string
@@ -29,6 +32,13 @@ type Level = {
     discordChannels: [] | DiscordChannel[]
   }
 }
+
+/* type Platforms = {
+  [_ in PlatformName]: {
+    active: boolean
+    serverId?: number
+  }
+} */
 
 type Platforms = {
   telegram: {
@@ -72,6 +82,19 @@ type ProvidedCommunity = CommunityBase & {
   chainData: ChainData
 }
 
+type Address = `0x${string}`
+
+type MetaMaskError = { code: number; message: string }
+
+type Machine<Context> = [
+  State<Context>,
+  (event: string, payload?: EventData) => State<Context>
+]
+
+type Icon = React.ForwardRefExoticComponent<
+  IconProps & React.RefAttributes<SVGSVGElement>
+>
+
 export type {
   Community,
   Token,
@@ -80,4 +103,8 @@ export type {
   AccessRequirement,
   ChainData,
   ProvidedCommunity,
+  Address,
+  MetaMaskError,
+  Machine,
+  Icon,
 }
