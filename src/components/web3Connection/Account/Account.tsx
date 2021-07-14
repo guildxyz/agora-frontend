@@ -1,5 +1,6 @@
 import {
   useColorMode,
+  useBreakpointValue,
   Button,
   ButtonGroup,
   Divider,
@@ -28,6 +29,7 @@ const Account = (): JSX.Element => {
   const { openModal, triedEager } = useContext(Web3Connection)
   const ENSName = useENSName(account)
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const shortenHexText = useBreakpointValue({ base: 2, sm: 4 })
 
   if (typeof window === "undefined") {
     return (
@@ -68,7 +70,7 @@ const Account = (): JSX.Element => {
   }
   return (
     <>
-      <Card>
+      <Card maxWidth="70%">
         <ButtonGroup isAttached variant="ghost">
           {!!communityData && (
             <>
@@ -81,7 +83,7 @@ const Account = (): JSX.Element => {
             </>
           )}
           <Button leftIcon={<Wallet />} onClick={onOpen}>
-            {ENSName || `${shortenHex(account, 4)}`}
+            {ENSName || `${shortenHex(account, shortenHexText)}`}
           </Button>
         </ButtonGroup>
       </Card>

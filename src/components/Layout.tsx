@@ -1,6 +1,8 @@
 import {
   useColorMode,
-  Button,
+  FormControl,
+  FormLabel,
+  Switch,
   Box,
   Container,
   Heading,
@@ -27,7 +29,7 @@ const Layout = ({
   bgBlendMode,
   children,
 }: Props): JSX.Element => {
-  const { colorMode, toggleColorMode } = useColorMode()
+  const { colorMode, setColorMode } = useColorMode()
 
   return (
     <>
@@ -48,11 +50,6 @@ const Layout = ({
           py={{ base: 4, md: 12, lg: 24 }}
           px={{ base: 4, sm: 6, md: 8, lg: 10 }}
         >
-          {/* Temp... */}
-          <Button onClick={toggleColorMode}>
-            Toggle {colorMode === "light" ? "Dark" : "Light"}
-          </Button>
-
           <Stack
             direction={{ base: "column-reverse", md: "row" }}
             spacing={8}
@@ -66,7 +63,33 @@ const Layout = ({
             >
               {title}
             </Heading>
-            <HStack justify="flex-end">
+            <HStack justify="space-between">
+              <FormControl
+                display="flex"
+                flexDirection={{ base: "column", sm: "row", md: "column" }}
+                alignItems="center"
+                justifyContent={{ base: "center", sm: "flex-start", md: "center" }}
+                width="max-content"
+              >
+                <Switch
+                  size="sm"
+                  id="color-mode"
+                  colorScheme="primary"
+                  isChecked={colorMode === "dark"}
+                  onChange={(e) => setColorMode(e.target.checked ? "dark" : "light")}
+                ></Switch>
+                <FormLabel
+                  m="0"
+                  ml={{ base: 0, sm: 2 }}
+                  width="max-content"
+                  htmlFor="color-mode"
+                  color={colorMode === "light" ? "gray.800" : "white"}
+                  textAlign="center"
+                  fontSize="xs"
+                >
+                  Dark mode
+                </FormLabel>
+              </FormControl>
               <Account />
             </HStack>
           </Stack>
