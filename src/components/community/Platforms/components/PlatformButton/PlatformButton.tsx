@@ -1,4 +1,4 @@
-import { Button, useDisclosure, useColorMode } from "@chakra-ui/react"
+import { useBreakpointValue, Button, useDisclosure } from "@chakra-ui/react"
 import theme from "theme"
 import { useWeb3React } from "@web3-react/core"
 import platformsContent from "../../platformsContent"
@@ -11,11 +11,11 @@ type Props = {
 }
 
 const PlatformButton = ({ platform }: Props): JSX.Element => {
-  const { colorMode } = useColorMode()
   const { account } = useWeb3React()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { logo: Logo } = platformsContent[platform]
   const isMember = useIsMember(platform)
+  const buttonSize = useBreakpointValue({ base: "sm", sm: "md" })
 
   return (
     <>
@@ -23,6 +23,7 @@ const PlatformButton = ({ platform }: Props): JSX.Element => {
         onClick={onOpen}
         colorScheme={platform}
         color="white"
+        size={buttonSize}
         bgColor={theme.colors[platform][400]}
         fontWeight="medium"
         leftIcon={<Logo />}

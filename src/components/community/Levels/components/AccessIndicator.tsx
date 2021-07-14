@@ -62,9 +62,9 @@ const AccessIndicator = ({ levelsState }: Props) => {
     // Set the indicator color
     const disabled = levelsArray.pop().isDisabled
     setFocusColor(
-      disabled ? "var(--chakra-colors-gray-200)" : "var(--chakra-colors-primary-100)"
+      disabled ? "var(--chakra-colors-gray-200)" : "var(--chakra-colors-primary-200)"
     )
-  }, [levelsState, windowSize])
+  }, [levelsState, windowSize, accessHeight])
 
   return (
     <>
@@ -92,7 +92,7 @@ const AccessIndicator = ({ levelsState }: Props) => {
           background:
             colorMode === "light"
               ? "var(--chakra-colors-primary-500)"
-              : "var(--chakra-colors-primary-300)",
+              : "var(--chakra-colors-primary-400)",
         }}
         transition={{ type: "just" }}
         animate={{
