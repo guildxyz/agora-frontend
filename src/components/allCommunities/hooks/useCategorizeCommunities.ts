@@ -6,7 +6,7 @@ import { hasAccessToLevel } from "components/community/Levels/components/Level/h
 import ERC20_ABI from "constants/erc20abi.json"
 import useKeepSWRDataLiveAsBlocksArrive from "hooks/useKeepSWRDataLiveAsBlocksArrive"
 import useSWR from "swr"
-import { Community } from "temporaryData/types"
+import { Community, Token } from "temporaryData/types"
 import parseBalance from "utils/parseBalance"
 
 type Categories = {
@@ -17,6 +17,27 @@ type Categories = {
 
 // TODO: replace with a backend-connected implementation once it's available
 const joinedCommunities = async (address: string) => [1]
+
+const getBalances = async (
+  stakeTokenAddress: string,
+  tokenAddress: string,
+  provider: any,
+  address: string
+): Promise<[number, number]> => {
+  const stakeTokenContract = new Contract(stakeTokenAddress, ERC20_ABI, provider)
+  const tokenContract = new Contract(tokenAddress, ERC20_ABI, provider)
+
+  const [stakeBalance, tokenBalance] = await Promise.all([
+    stakeTokenContract
+      .balanceOf(address)
+      .then((balance: BigNumber) => +parseBalance(balance)),
+    tokenContract
+      .balanceOf(address)
+      .then((balance: BigNumber) => +parseBalance(balance)),
+  ])
+
+  return [stakeBalance, tokenBalance]
+}
 
 const categorizeCommunities = async (
   _: "categorized_communities",
@@ -50,25 +71,12 @@ const categorizeCommunities = async (
       return categories
     }
 
-    const stakeTokenContract = new Contract(
+    const [stakeBalance, tokenBalance] = await getBalances(
       community.chainData[currentChain].stakeToken.address,
-      ERC20_ABI,
-      provider
-    )
-    const tokenContract = new Contract(
       community.chainData[currentChain].token.address,
-      ERC20_ABI,
-      provider
+      provider,
+      address
     )
-
-    const [stakeBalance, tokenBalance] = await Promise.all([
-      stakeTokenContract
-        .balanceOf(address)
-        .then((balance: BigNumber) => +parseBalance(balance)),
-      tokenContract
-        .balanceOf(address)
-        .then((balance: BigNumber) => +parseBalance(balance)),
-    ])
 
     const [hasAccess] = hasAccessToLevel(
       community.levels[0].accessRequirement,
@@ -86,11 +94,15 @@ const categorizeCommunities = async (
     return categories
   }
 
-  return await communities.reduce(updateCategories, {
+  const categories = await communities.reduce(updateCategories, {
     joined: [],
     hasAccess: [],
     other: [],
   })
+
+  // console.log(categories)
+
+  return categories
 }
 
 const useCategorizeCommunities = (communities: Community[]) => {
