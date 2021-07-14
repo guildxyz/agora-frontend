@@ -8,6 +8,7 @@ const solid = (props: Dict) => {
   if (c === "gray") {
     return {
       bg: mode(`${c}.100`, `${c}.400`)(props),
+      color: "white",
       _hover: {
         bg: mode(`${c}.200`, `${c}.300`)(props),
       },
@@ -19,6 +20,7 @@ const solid = (props: Dict) => {
 
   return {
     bg: mode(`${c}.500`, `${c}.400`)(props),
+    color: "white",
     _hover: {
       bg: mode(`${c}.400`, `${c}.300`)(props),
     },

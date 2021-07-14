@@ -29,7 +29,7 @@ const Account = (): JSX.Element => {
   const { openModal, triedEager } = useContext(Web3Connection)
   const ENSName = useENSName(account)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const shortenHexText = useBreakpointValue({ base: 2, sm: 4 })
+  const shortenHexText = useBreakpointValue({ base: 2, sm: 3 })
 
   if (typeof window === "undefined") {
     return (
