@@ -21,7 +21,6 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
   return (
     <Layout
       title="All communities on Agora"
-      bg="var(--chakra-colors-gray-800)"
       bgGradient={`linear(${
         colorMode === "light" ? "white" : "var(--chakra-colors-gray-800)"
       } 0px, ${
