@@ -7,13 +7,13 @@ const solid = (props: Dict) => {
 
   if (c === "gray") {
     return {
-      bg: mode(`${c}.100`, `${c}.400`)(props),
-      color: "white",
+      bg: mode(`${c}.100`, `${c}.500`)(props),
+      color: mode("black", "white")(props),
       _hover: {
-        bg: mode(`${c}.200`, `${c}.300`)(props),
+        bg: mode(`${c}.200`, `${c}.400`)(props),
       },
       _active: {
-        bg: mode(`${c}.300`, `${c}.200`)(props),
+        bg: mode(`${c}.300`, `${c}.300`)(props),
       },
     }
   }
