@@ -34,4 +34,12 @@ const App = ({ Component, pageProps }: AppProps): JSX.Element => (
   </ChakraWrapper>
 )
 
+export function getServerSideProps({ req }) {
+  return {
+    props: {
+      cookies: req.headers.cookie ?? "",
+    },
+  }
+}
+
 export default App
