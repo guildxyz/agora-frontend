@@ -1,5 +1,5 @@
 import ActionCard from "components/common/ActionCard"
-import { Tooltip } from "@chakra-ui/react"
+import { Box, Tooltip } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { useCommunity } from "components/community/Context"
 import PlatformButton from "./components/PlatformButton"
@@ -30,9 +30,9 @@ const Platforms = (): JSX.Element => {
             isDisabled={!!account || noAccessToAnyLevels()}
             label={tooltipLabel(account)}
           >
-            <span>
+            <Box>
               <PlatformButton platform={platform} />
-            </span>
+            </Box>
           </Tooltip>
         ))}
     </ActionCard>

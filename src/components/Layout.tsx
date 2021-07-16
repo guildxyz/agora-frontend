@@ -61,7 +61,7 @@ const Layout = ({
             >
               {title}
             </Heading>
-            <HStack justify={{ base: "space-between", md: "flex-end" }}>
+            <HStack justify="flex-end">
               <ColorModeSwitch />
               <Account />
             </HStack>
