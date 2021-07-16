@@ -1,4 +1,4 @@
-import { Heading, Stack, Box } from "@chakra-ui/react"
+import { Heading, Stack } from "@chakra-ui/react"
 
 type Props = {
   title: string
@@ -10,7 +10,7 @@ const CategorySection = ({ title, children }: Props): JSX.Element => (
     <Heading fontSize={{ base: "md", sm: "lg" }} as="h4">
       {title}
     </Heading>
-    <Box>{children}</Box>
+    {children}
   </Stack>
 )
 
