@@ -22,7 +22,6 @@ const PlatformButton = ({ platform }: Props): JSX.Element => {
       <Button
         onClick={onOpen}
         colorScheme={platform}
-        color="white"
         size={buttonSize}
         bgColor={theme.colors[platform][400]}
         fontWeight="medium"

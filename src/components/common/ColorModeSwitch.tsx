@@ -1,7 +1,7 @@
 import { useColorMode, Switch, Box, Icon } from "@chakra-ui/react"
 import { Moon, Sun } from "phosphor-react"
 
-const ColorModeSwitch = () => {
+const ColorModeSwitch = (): JSX.Element => {
   const { colorMode, setColorMode } = useColorMode()
 
   return (
