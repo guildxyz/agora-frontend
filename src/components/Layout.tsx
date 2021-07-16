@@ -1,16 +1,14 @@
 import {
   useColorMode,
-  Switch,
-  Icon,
   Box,
   Container,
   Heading,
   Stack,
   HStack,
 } from "@chakra-ui/react"
-import { Moon, Sun } from "phosphor-react"
 import Head from "next/head"
 import Account from "components/web3Connection/Account"
+import ColorModeSwitch from "./common/ColorModeSwitch"
 
 type Props = {
   title: string
@@ -29,7 +27,7 @@ const Layout = ({
   bgBlendMode,
   children,
 }: Props): JSX.Element => {
-  const { colorMode, setColorMode } = useColorMode()
+  const { colorMode } = useColorMode()
 
   return (
     <>
@@ -64,40 +62,7 @@ const Layout = ({
               {title}
             </Heading>
             <HStack justify={{ base: "space-between", md: "flex-end" }}>
-              <Switch
-                position="relative"
-                mt={1}
-                size="lg"
-                id="color-mode"
-                colorScheme="primary"
-                isChecked={colorMode === "light"}
-                onChange={(e) => setColorMode(e.target.checked ? "light" : "dark")}
-              >
-                <Box
-                  overflow="hidden"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  width="full"
-                  height="full"
-                  position="absolute"
-                  top="-1px"
-                  left={0}
-                >
-                  <Icon
-                    as={Sun}
-                    weight="fill"
-                    color="white"
-                    transform="translateX(-50%)"
-                  />
-                  <Icon
-                    as={Moon}
-                    weight="fill"
-                    color="white"
-                    transform="translateX(0)"
-                  />
-                </Box>
-              </Switch>
+              <ColorModeSwitch />
               <Account />
             </HStack>
           </Stack>
