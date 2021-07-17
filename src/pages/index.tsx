@@ -1,4 +1,4 @@
-import { useColorMode, SimpleGrid, Stack, Text } from "@chakra-ui/react"
+import { SimpleGrid, Stack, Text } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import CategorySection from "components/allCommunities/CategorySection"
 import CommunityCard from "components/allCommunities/CommunityCard"
@@ -16,19 +16,8 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
 
   const isConnected = typeof account === "string" && !!library
 
-  const { colorMode } = useColorMode()
-
   return (
-    <Layout
-      title="All communities on Agora"
-      bgGradient={`linear(${
-        colorMode === "light" ? "white" : "var(--chakra-colors-gray-800)"
-      } 0px, ${
-        colorMode === "light"
-          ? "var(--chakra-colors-gray-100)"
-          : "var(--chakra-colors-gray-900)"
-      } 700px)`}
-    >
+    <Layout title="All communities on Agora">
       <Stack spacing={8}>
         <CategorySection title="Your communities">
           {isConnected ? (

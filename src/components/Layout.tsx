@@ -12,21 +12,11 @@ import ColorModeSwitch from "./common/ColorModeSwitch"
 
 type Props = {
   title: string
-  bg?: string
-  bgColor?: string
-  bgGradient?: string
-  bgBlendMode?: string
+  theme?: boolean
   children: JSX.Element
 }
 
-const Layout = ({
-  title,
-  bg = "white",
-  bgColor,
-  bgGradient,
-  bgBlendMode,
-  children,
-}: Props): JSX.Element => {
+const Layout = ({ title, theme = false, children }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
 
   return (
@@ -37,10 +27,23 @@ const Layout = ({
         {/* <link rel="icon" href="/favicon.ico" /> */}
       </Head>
       <Box
-        bg={bg}
-        bgColor={bgColor}
-        bgGradient={bgGradient}
-        bgBlendMode={bgBlendMode}
+        bgColor={
+          colorMode === "light" ? "gray.100" : "var(--chakra-colors-gray-800)"
+        }
+        bgGradient={
+          theme
+            ? `linear(${
+                colorMode === "light" ? "white" : "var(--chakra-colors-gray-800)"
+              } 0px, var(--chakra-colors-primary-50) 700px)`
+            : `linear(${
+                colorMode === "light" ? "white" : "var(--chakra-colors-gray-800)"
+              } 0px, ${
+                colorMode === "light"
+                  ? "var(--chakra-colors-gray-100)"
+                  : "var(--chakra-colors-gray-900)"
+              } 700px)`
+        }
+        bgBlendMode={colorMode === "light" ? "normal" : theme && "color"}
         minHeight="100vh"
       >
         <Container
