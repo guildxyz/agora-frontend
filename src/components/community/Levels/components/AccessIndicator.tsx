@@ -92,10 +92,7 @@ const AccessIndicator = ({ levelsState }: Props) => {
           left: 0,
           height: 0,
           width: "6px",
-          background:
-            colorMode === "light"
-              ? "var(--chakra-colors-primary-500)"
-              : "var(--chakra-colors-primary-400)",
+          background: "var(--chakra-colors-primary-500)",
         }}
         transition={{ type: "just" }}
         animate={{

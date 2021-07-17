@@ -2,31 +2,21 @@ import { mode } from "@chakra-ui/theme-tools"
 
 type Dict = Record<string, any>
 
-const solid = (props: Dict) => {
+function variantSolid(props: Dict) {
   const { colorScheme: c } = props
 
-  if (c === "gray") {
-    return {
-      bg: mode(`${c}.100`, `${c}.500`)(props),
-      color: mode("black", "white")(props),
-      _hover: {
-        bg: mode(`${c}.200`, `${c}.400`)(props),
-      },
-      _active: {
-        bg: mode(`${c}.300`, `${c}.300`)(props),
-      },
-    }
-  }
+  if (c !== "gray") {
+    const bg = `${c}.500`
 
-  return {
-    bg: mode(`${c}.500`, `${c}.400`)(props),
-    color: "white",
-    _hover: {
-      bg: mode(`${c}.400`, `${c}.300`)(props),
-    },
-    _active: {
-      bg: mode(`${c}.300`, `${c}.200`)(props),
-    },
+    return {
+      bg,
+      color: "white",
+      _hover: {
+        bg: mode(`${c}.600`, `${c}.400`)(props),
+        _disabled: { bg },
+      },
+      _active: { bg: mode(`${c}.700`, `${c}.300`)(props) },
+    }
   }
 }
 
@@ -62,7 +52,7 @@ const styles = {
     },
   },
   variants: {
-    solid,
+    solid: variantSolid,
     solidStatic: variantSolidStatic,
   },
 }
