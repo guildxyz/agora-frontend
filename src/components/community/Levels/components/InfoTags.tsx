@@ -27,7 +27,7 @@ const InfoTag = ({ icon: Icon, label }: ChildProps): JSX.Element => {
     <Stack
       as="li"
       direction="row"
-      textColor={colorMode === "light" ? "gray.450" : "gray.300"}
+      textColor={colorMode === "light" ? "gray.450" : "gray.350"}
       alignItems="center"
       fontSize={{ base: "sm", md: "md" }}
       spacing={{ base: 1, sm: 2 }}
