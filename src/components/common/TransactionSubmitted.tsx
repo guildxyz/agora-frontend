@@ -13,9 +13,7 @@ const TransactionSubmitted = ({ transaction }) => {
         <ArrowCircleUp
           size="50%"
           color={
-            colorMode === "light"
-              ? "var(--chakra-colors-primary-500)"
-              : "var(--chakra-colors-primary-400)"
+            colorMode === "light" ? "var(--chakra-colors-primary-500)" : "white"
           }
           weight="thin"
         />
