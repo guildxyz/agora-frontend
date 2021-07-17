@@ -182,12 +182,7 @@ const StakingModal = ({
                 }
               })()
             ) : (
-              <ModalButton
-                disabled
-                colorScheme="gray"
-                bg="gray.200"
-                _hover={{ bg: "gray.200" }}
-              >
+              <ModalButton disabled colorScheme="gray">
                 Confirm stake
               </ModalButton>
             )}
