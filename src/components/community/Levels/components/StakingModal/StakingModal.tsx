@@ -69,7 +69,7 @@ const StakingModal = ({
           {stakeState.value === "success" ? (
             <>
               <TransactionSubmitted transaction={stakeState.context.transaction} />
-              <Text textColor={colorMode === "light" ? "gray" : "gray.200"} mt="4">
+              <Text colorScheme="gray" mt="4">
                 You’ll recieve {amount} {stakeToken.symbol} in return. Those mark
                 your position, so don’t sell or send them because you will lose
                 access to the community level and won’t be able to get your{" "}
