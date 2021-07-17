@@ -15,6 +15,7 @@ type Props = {
 
 const CommunityPage = ({ communityData }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
+
   return (
     <CommunityProvider data={communityData}>
       <Layout
@@ -26,12 +27,7 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
         bgBlendMode={colorMode === "light" ? "normal" : "color"}
       >
         <Stack spacing={{ base: 7, xl: 9 }}>
-          <Text
-            fontWeight="medium"
-            color={colorMode === "light" ? "gray.800" : "white"}
-          >
-            {communityData.description}
-          </Text>
+          <Text fontWeight="medium">{communityData.description}</Text>
           <SimpleGrid
             templateColumns={{ base: "100%", md: "3fr 2fr" }}
             gap={{ base: 5, md: 7, xl: 9 }}
@@ -43,12 +39,7 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
             <Levels />
           </Box>
           {/* <pre>{JSON.stringify(communityData, undefined, 2)}</pre> */}
-          <Link
-            href="/"
-            pt={2}
-            textAlign={{ base: "center", sm: "left" }}
-            color={colorMode === "light" ? "gray.800" : "white"}
-          >
+          <Link href="/" pt={2} textAlign={{ base: "center", sm: "left" }}>
             Back to all communities
           </Link>
         </Stack>

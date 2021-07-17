@@ -182,16 +182,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
           <Tag
             display={{ base: "flex", md: "none" }}
             size="sm"
-            colorScheme={
-              hasAccess
-                ? "green"
-                : (colorMode === "light" && "blackAlpha") || "whiteAlpha"
-            }
-            color={
-              hasAccess
-                ? (colorMode === "light" && "green.500") || "green.500"
-                : (colorMode === "light" && "blackAlpha.800") || "whiteAlpha.800"
-            }
+            colorScheme={hasAccess ? "green" : "gray"}
           >
             {hasAccess && <TagLeftIcon as={Check} />}
             <TagLabel>{hasAccess ? "You have access" : noAccessMessage}</TagLabel>

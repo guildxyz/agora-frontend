@@ -21,7 +21,6 @@ const Card = ({
       shadow="md"
       borderRadius={{ base: isFullWidthOnMobile ? "none" : "2xl", sm: "2xl" }}
       bg={colorMode === "light" ? "white" : "gray.700"}
-      color={colorMode === "light" ? "gray.800" : "white"}
       display="flex"
       flexDirection="column"
       {...rest}

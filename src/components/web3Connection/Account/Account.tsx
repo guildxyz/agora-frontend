@@ -1,9 +1,8 @@
 import {
-  useColorMode,
-  useBreakpointValue,
   Button,
   ButtonGroup,
   Divider,
+  useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
@@ -23,7 +22,6 @@ type Props = {
 }
 
 const Account = (): JSX.Element => {
-  const { colorMode } = useColorMode()
   const communityData = useCommunity()
   const { error, account } = useWeb3React()
   const { openModal, triedEager } = useContext(Web3Connection)
@@ -70,16 +68,12 @@ const Account = (): JSX.Element => {
   }
   return (
     <>
-      <Card maxWidth="70%">
+      <Card>
         <ButtonGroup isAttached variant="ghost">
           {!!communityData && (
             <>
               <Balance token={communityData.chainData.token} />
-              <Divider
-                orientation="vertical"
-                h="var(--chakra-space-11)"
-                borderColor={colorMode === "light" ? "gray.200" : "gray.500"}
-              />
+              <Divider orientation="vertical" h="var(--chakra-space-11)" />
             </>
           )}
           <Button leftIcon={<Wallet />} onClick={onOpen}>
