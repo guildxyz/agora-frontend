@@ -24,7 +24,7 @@ const useColorPalette = (
 
     const swatches = {
       [`--${prefix}-50`]: Color(colorCode)
-        .lightness(55 + lightnessStep * 5.2)
+        .lightness(50 + lightnessStep * 5.2)
         .rotate(lightRotateStep * 5)
         .saturate(lightSaturateStep * 5)
         .hex(),
@@ -34,7 +34,7 @@ const useColorPalette = (
         .saturate(lightSaturateStep * 4)
         .hex(),
       [`--${prefix}-200`]: Color(colorCode)
-        .lightness(55 + lightnessStep * 3.6)
+        .lightness(55 + lightnessStep * 3.8)
         .rotate(lightRotateStep * 3)
         .saturate(lightSaturateStep * 3)
         .hex(),
@@ -55,17 +55,17 @@ const useColorPalette = (
         .saturate(darkSaturateStep * 1)
         .hex(),
       [`--${prefix}-700`]: Color(colorCode)
-        .lightness(55 - darknessStep * 2.8)
+        .lightness(55 - darknessStep * 2.6)
         .rotate(darkRotateStep * 2)
         .saturate(darkSaturateStep * 2)
         .hex(),
       [`--${prefix}-800`]: Color(colorCode)
-        .lightness(55 - darknessStep * 3.6)
+        .lightness(55 - darknessStep * 3.2)
         .rotate(darkRotateStep * 3)
         .saturate(darkSaturateStep * 3)
         .hex(),
       [`--${prefix}-900`]: Color(colorCode)
-        .lightness(55 - darknessStep * 4)
+        .lightness(55 - darknessStep * 3.8)
         .rotate(darkRotateStep * 4)
         .saturate(darkSaturateStep * 4)
         .hex(),
