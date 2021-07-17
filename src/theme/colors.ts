@@ -1,4 +1,4 @@
-const customGray = {
+const gray = {
   50: "#fafafa",
   100: "#f4f4f5",
   200: "#e4e4e7",
@@ -14,8 +14,8 @@ const customGray = {
 }
 
 const colors = {
-  primary: customGray,
-  gray: customGray,
+  gray,
+  primary: gray,
   indigo: {
     50: "#eef2ff",
     100: "#e0e7ff",

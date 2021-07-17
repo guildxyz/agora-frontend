@@ -1,17 +1,12 @@
-import { mode } from "@chakra-ui/theme-tools"
-
-type Dict = Record<string, any>
-
 const styles = {
   parts: ["dialog", "closeButton", "header", "footer", "body"],
-  baseStyle: (props: Dict) => ({
+  baseStyle: {
     dialog: {
       borderTopRadius: "xl",
       borderBottomRadius: { base: 0, sm: "xl" },
       overflow: "hidden",
       marginTop: "auto",
       marginBottom: { base: 0, sm: "auto" },
-      color: mode("gray.800", "white")(props),
     },
     closeButton: {
       borderRadius: "full",
@@ -38,7 +33,7 @@ const styles = {
         w: "full",
       },
     },
-  }),
+  },
 }
 
 export default styles

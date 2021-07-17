@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { mode } from "@chakra-ui/theme-tools"
 
 type Dict = Record<string, any>
