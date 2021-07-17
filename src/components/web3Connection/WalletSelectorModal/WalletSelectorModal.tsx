@@ -1,5 +1,4 @@
 import {
-  useColorMode,
   Button,
   ModalBody,
   ModalCloseButton,
@@ -59,12 +58,10 @@ const Web3Modal = ({
     }
   }, [active, closeModal])
 
-  const { colorMode } = useColorMode()
-
   return (
     <Modal isOpen={isModalOpen} onClose={closeModal}>
       <ModalOverlay />
-      <ModalContent color={colorMode === "light" ? "gray.800" : "white"}>
+      <ModalContent>
         <ModalHeader>Connect to a wallet</ModalHeader>
         <ModalCloseButton />
         <ModalBody>

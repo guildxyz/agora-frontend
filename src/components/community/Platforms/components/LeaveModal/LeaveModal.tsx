@@ -1,5 +1,4 @@
 import {
-  useColorMode,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -33,12 +32,10 @@ const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
     onClose()
   }
 
-  const { colorMode } = useColorMode()
-
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
-      <ModalContent color={colorMode === "light" ? "gray.800" : "white"}>
+      <ModalContent>
         <ModalHeader>{title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>

@@ -58,7 +58,7 @@ const StakingModal = ({
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
-      <ModalContent color={colorMode === "light" ? "gray.800" : "white"}>
+      <ModalContent>
         <ModalHeader>
           {stakeState.value === "success"
             ? `Transaction submitted`
