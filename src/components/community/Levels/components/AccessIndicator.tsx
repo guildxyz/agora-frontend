@@ -13,7 +13,7 @@ const AccessIndicator = ({ levelsState }: Props) => {
   const { colorMode } = useColorMode()
   const [accessHeight, setAccessHeight] = useState(0)
   const [focusHeight, setFocusHeight] = useState(0)
-  const [focusColor, setFocusColor] = useState("var(--chakra-colors-primary-100)")
+  const [focusColor, setFocusColor] = useState("var(--chakra-colors-primary-200)")
 
   useEffect(() => {
     const handleResize = () => {
