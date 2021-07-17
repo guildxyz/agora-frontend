@@ -8,7 +8,7 @@ import {
 } from "@chakra-ui/react"
 import Head from "next/head"
 import Account from "components/web3Connection/Account"
-import ColorModeSwitch from "./common/ColorModeSwitch"
+import ColorModeSwitch from "./components/ColorModeSwitch"
 
 type Props = {
   title: string
