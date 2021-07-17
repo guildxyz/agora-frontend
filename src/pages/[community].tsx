@@ -15,7 +15,7 @@ type Props = {
 
 const CommunityPage = ({ communityData }: Props): JSX.Element => (
   <CommunityProvider data={communityData}>
-    <Layout title={`${communityData.name} community`} theme>
+    <Layout title={`${communityData.name} community`}>
       <Stack spacing={{ base: 7, xl: 9 }}>
         <Text fontWeight="medium">{communityData.description}</Text>
         <SimpleGrid

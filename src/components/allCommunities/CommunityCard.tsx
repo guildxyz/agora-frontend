@@ -26,7 +26,7 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
           role="group"
           px={{ base: 5, sm: 7 }}
           py="7"
-          bgGradient={`linear(to-l, var(--chakra-colors-primary-50), ${
+          bgGradient={`linear(to-l, var(--chakra-colors-primary-100), ${
             colorMode === "light" ? "white" : "var(--chakra-colors-gray-800)"
           })`}
           bgBlendMode={colorMode === "light" ? "normal" : "color"}
@@ -48,26 +48,9 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
             <Stack spacing="3">
               <Heading size="sm">{community.name}</Heading>
               <Wrap spacing="2" shouldWrapChildren>
-                <Tag
-                  colorScheme={colorMode === "light" ? "blackAlpha" : "whiteAlpha"}
-                  textColor={
-                    colorMode === "light" ? "blackAlpha.700" : "whiteAlpha.800"
-                  }
-                >{`${membersCount} members`}</Tag>
-                <Tag
-                  colorScheme={colorMode === "light" ? "blackAlpha" : "whiteAlpha"}
-                  textColor={
-                    colorMode === "light" ? "blackAlpha.700" : "whiteAlpha.800"
-                  }
-                >
-                  {`${community.levels.length} levels`}
-                </Tag>
-                <Tag
-                  colorScheme={colorMode === "light" ? "blackAlpha" : "whiteAlpha"}
-                  textColor={
-                    colorMode === "light" ? "blackAlpha.700" : "whiteAlpha.800"
-                  }
-                >
+                <Tag colorScheme="alpha">{`${membersCount} members`}</Tag>
+                <Tag colorScheme="alpha">{`${community.levels.length} levels`}</Tag>
+                <Tag colorScheme="alpha">
                   {`min: ${community.levels[0].accessRequirement.amount} ${community.chainData.ropsten.token.symbol}`}
                 </Tag>
               </Wrap>

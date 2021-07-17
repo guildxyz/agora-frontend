@@ -12,11 +12,10 @@ import ColorModeSwitch from "./common/ColorModeSwitch"
 
 type Props = {
   title: string
-  theme?: boolean
   children: JSX.Element
 }
 
-const Layout = ({ title, theme = false, children }: Props): JSX.Element => {
+const Layout = ({ title, children }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
 
   return (
@@ -30,20 +29,10 @@ const Layout = ({ title, theme = false, children }: Props): JSX.Element => {
         bgColor={
           colorMode === "light" ? "gray.100" : "var(--chakra-colors-gray-800)"
         }
-        bgGradient={
-          theme
-            ? `linear(${
-                colorMode === "light" ? "white" : "var(--chakra-colors-gray-800)"
-              } 0px, var(--chakra-colors-primary-50) 700px)`
-            : `linear(${
-                colorMode === "light" ? "white" : "var(--chakra-colors-gray-800)"
-              } 0px, ${
-                colorMode === "light"
-                  ? "var(--chakra-colors-gray-100)"
-                  : "var(--chakra-colors-gray-900)"
-              } 700px)`
-        }
-        bgBlendMode={colorMode === "light" ? "normal" : theme && "color"}
+        bgGradient={`linear(${
+          colorMode === "light" ? "white" : "var(--chakra-colors-gray-800)"
+        } 0px, var(--chakra-colors-primary-100) 700px)`}
+        bgBlendMode={colorMode === "light" ? "normal" : "color"}
         minHeight="100vh"
       >
         <Container
