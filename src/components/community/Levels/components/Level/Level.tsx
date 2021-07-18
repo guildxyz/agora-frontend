@@ -39,7 +39,7 @@ type FullLevelData = {
   index: number
   isDisabled: boolean
   element: HTMLElement
-  state: "idle" | "focus" | "pending" | "access"
+  state: "idle" | "focus" | "modalfocus" | "pending" | "access"
 }
 
 const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
@@ -63,7 +63,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     element: null,
   })
 
-  const [state, send] = useLevelDataMachine(index)
+  const [state, send] = useLevelDataMachine()
 
   // Registering the eventListeners
   useEffect(() => {
@@ -102,6 +102,21 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     }))
   }, [noAccessMessage])
 
+  // Transition to the access state
+  useEffect(() => {
+    if (hasAccess) {
+      send("ACCESS", { data: levelData })
+    }
+  }, [hasAccess])
+
+  useEffect(() => {
+    if (isStakingModalOpen) {
+      send("MODALIN", { data: levelData })
+    } else {
+      send("MODALOUT", { data: levelData })
+    }
+  }, [isStakingModalOpen])
+
   // If the state changes, send up the level data
   useEffect(() => {
     console.log("STATE CHANGED!", { ...levelData, state: state.value })
@@ -109,81 +124,6 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       onChangeHandler({ ...levelData, state: state.value })
     }
   }, [state])
-
-  //
-
-  /*
-  useEffect(() => {
-    const ref = levelEl.current
-
-    const mouseEnterHandler = () => {
-      setLevelData((prevState) => ({
-        ...prevState,
-        status: prevState.status === "access" ? "access" : "focus",
-      }))
-    }
-
-    const mouseLeaveHandler = () => {
-      setLevelData((prevState) => ({
-        ...prevState,
-        status: prevState.status === "access" ? "access" : "idle",
-      }))
-    }
-
-    ref.addEventListener("mouseenter", mouseEnterHandler)
-    ref.addEventListener("mouseleave", mouseLeaveHandler)
-
-    return () => {
-      ref.removeEventListener("mouseenter", mouseEnterHandler)
-      ref.removeEventListener("mouseleave", mouseLeaveHandler)
-    }
-  }, [])
-
-  useEffect(() => {
-    setLevelData((prevState) => ({
-      ...prevState,
-      status: hasAccess ? "access" : "idle",
-      isDisabled: noAccessMessage.length > 0,
-      element: levelEl.current,
-    }))
-  }, [hasAccess, noAccessMessage, levelEl])
-
-  useEffect(() => {
-    if (!isStakingModalOpen && levelData.status === "focus") {
-      setLevelData((prevState) => ({
-        ...prevState,
-        status: hasAccess ? "access" : "idle",
-      }))
-    }
-  }, [isStakingModalOpen])
-
-  useEffect(() => {
-    if (isStakingModalOpen && levelData.status !== "focus") {
-      setLevelData((prevState) => ({
-        ...prevState,
-        status: "focus",
-      }))
-    }
-
-    if (onChangeHandler) {
-      onChangeHandler(levelData)
-    }
-  }, [levelData, isStakingModalOpen])
-
-  // If the level access changes while the modal is opened
-  useEffect(() => {
-    if (levelData.status === "focus" && hasAccess) {
-      setLevelData((prevState) => ({
-        ...prevState,
-        status: "access",
-      }))
-    }
-
-    if (onChangeHandler) {
-      onChangeHandler(levelData)
-    }
-  }, [hasAccess])
-  */
 
   return (
     <Stack

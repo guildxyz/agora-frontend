@@ -5,12 +5,9 @@
 
 import { useMachine } from "@xstate/react"
 import { createMachine, DoneInvokeEvent, assign } from "xstate"
-import { useEffect } from "react"
 
 type ContextType = {
   index: number
-  isDisabled: boolean
-  element: HTMLElement
 }
 
 const levelDataMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
@@ -19,8 +16,6 @@ const levelDataMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
     initial: "idle",
     context: {
       index: null,
-      isDisabled: true,
-      element: null,
     },
     states: {
       idle: {
@@ -37,6 +32,13 @@ const levelDataMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
           PENDING: { target: "pending" },
           ACCESS: { target: "access" },
           FOCUSOUT: { target: "idle" },
+          MODALIN: { target: "modalfocus" },
+        },
+      },
+      modalfocus: {
+        entry: "updateLevelData",
+        on: {
+          MODALOUT: { target: "idle" },
         },
       },
       pending: {
@@ -64,21 +66,13 @@ const levelDataMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
       updateLevelData: assign<ContextType, DoneInvokeEvent<any>>({
         index: (context: ContextType, event: DoneInvokeEvent<any>) =>
           !context.index && event.data?.index,
-        isDisabled: (_: ContextType, event: DoneInvokeEvent<any>) =>
-          event.data?.isDisabled,
-        element: (context: ContextType, event: DoneInvokeEvent<any>) =>
-          !context.element && event.data?.element,
       }),
     },
   }
 )
 
-const useLevelDataMachine = (index: number): any => {
+const useLevelDataMachine = (): any => {
   const [state, send] = useMachine(levelDataMachine)
-
-  useEffect(() => {
-    send("LOAD")
-  }, [index, send])
 
   return [state, send]
 }

@@ -51,7 +51,10 @@ const AccessIndicator = ({ levelsState }: Props) => {
 
     // Set the height of the second indicator
     let focusLevel = null
-    focusLevel = levelsArray.find((level: FullLevelData) => level.state === "focus")
+    focusLevel = levelsArray.find(
+      (level: FullLevelData) =>
+        level.state === "focus" || level.state === "modalfocus"
+    )
     const newFocusHeight =
       focusLevel?.element.getBoundingClientRect().bottom -
         focusLevel?.element.parentElement.getBoundingClientRect().top -
