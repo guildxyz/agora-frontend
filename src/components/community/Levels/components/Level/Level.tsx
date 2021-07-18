@@ -63,18 +63,18 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     element: null,
   })
 
-  const [state, send] = useLevelDataMachine()
+  const [state, send] = useLevelDataMachine(isStakingModalOpen)
 
   // Registering the eventListeners
   useEffect(() => {
     const ref = levelEl.current
 
     const mouseEnterHandler = () => {
-      send("FOCUSIN", { data: levelData })
+      send("FOCUSIN")
     }
 
     const mouseLeaveHandler = () => {
-      send("FOCUSOUT", { data: levelData })
+      send("FOCUSOUT")
     }
 
     ref.addEventListener("mouseenter", mouseEnterHandler)
@@ -105,16 +105,13 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   // Transition to the access state
   useEffect(() => {
     if (hasAccess) {
-      send("ACCESS", { data: levelData })
+      send("ACCESS")
     }
   }, [hasAccess])
 
+  // Transition to the modalfocus state
   useEffect(() => {
-    if (isStakingModalOpen) {
-      send("MODALIN", { data: levelData })
-    } else {
-      send("MODALOUT", { data: levelData })
-    }
+    send(isStakingModalOpen ? "MODALIN" : "MODALOUT")
   }, [isStakingModalOpen])
 
   // If the state changes, send up the level data

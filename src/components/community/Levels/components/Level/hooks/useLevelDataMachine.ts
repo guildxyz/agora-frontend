@@ -1,78 +1,54 @@
-/*
-- LevelData típusú context
-- idle, focus, pending, access state-k
-*/
-
 import { useMachine } from "@xstate/react"
-import { createMachine, DoneInvokeEvent, assign } from "xstate"
+import { createMachine, DoneInvokeEvent } from "xstate"
 
-type ContextType = {
-  index: number
-}
-
-const levelDataMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
-  {
-    id: "levelData",
-    initial: "idle",
-    context: {
-      index: null,
-    },
-    states: {
-      idle: {
-        entry: "updateLevelData",
-        on: {
-          FOCUSIN: { target: "focus" },
-          PENDING: { target: "pending" },
-          ACCESS: { target: "access" },
-        },
-      },
-      focus: {
-        entry: "updateLevelData",
-        on: {
-          PENDING: { target: "pending" },
-          ACCESS: { target: "access" },
-          FOCUSOUT: { target: "idle" },
-          MODALIN: { target: "modalfocus" },
-        },
-      },
-      modalfocus: {
-        entry: "updateLevelData",
-        on: {
-          MODALOUT: { target: "idle" },
-        },
-      },
-      pending: {
-        entry: "updateLevelData",
-        on: {
-          ACCESS: { target: "access" },
-          ERROR: { target: "idle" },
-        },
-      },
-      access: {
-        entry: "updateLevelData",
-        on: {
-          NOACCESS: "idle",
-        },
+const levelDataMachine = createMachine<any, DoneInvokeEvent<any>>({
+  id: "levelData",
+  initial: "idle",
+  states: {
+    idle: {
+      on: {
+        FOCUSIN: { target: "focus" },
+        PENDING: { target: "pending" },
+        ACCESS: { target: "access" },
       },
     },
-    on: {
-      LOAD: {
-        target: "idle",
+    focus: {
+      on: {
+        PENDING: { target: "pending" },
+        ACCESS: { target: "access" },
+        FOCUSOUT: { target: "idle" },
+        MODALIN: { target: "modalfocus" },
+      },
+    },
+    modalfocus: {
+      on: {
+        MODALOUT: { target: "idle" },
+      },
+    },
+    pending: {
+      on: {
+        ACCESS: { target: "access" },
+        ERROR: { target: "idle" },
+      },
+    },
+    access: {
+      on: {
+        NOACCESS: "idle",
       },
     },
   },
-  {
-    actions: {
-      updateLevelData: assign<ContextType, DoneInvokeEvent<any>>({
-        index: (context: ContextType, event: DoneInvokeEvent<any>) =>
-          !context.index && event.data?.index,
-      }),
+  on: {
+    LOAD: {
+      target: "idle",
     },
-  }
-)
+  },
+})
 
-const useLevelDataMachine = (): any => {
+// isModalOpen-t átadni + guard!
+const useLevelDataMachine = (isModalOpen: boolean): any => {
   const [state, send] = useMachine(levelDataMachine)
+
+  // TODO...
 
   return [state, send]
 }
