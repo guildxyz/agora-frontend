@@ -48,9 +48,9 @@ const useColorPalette = (
         .rotate(lightRotateStep * 1)
         .saturate(lightSaturateStep * 1)
         .hex(),
-      [`--${prefix}-500`]: Color(colorCode).lightness(55).hex(),
+      [`--${prefix}-500`]: Color(colorCode).lightness(60).hex(),
       [`--${prefix}-600`]: Color(colorCode)
-        .lightness(55 - darknessStep * 2)
+        .lightness(50 - darknessStep * 1)
         .rotate(darkRotateStep * 1)
         .saturate(darkSaturateStep * 1)
         .hex(),
