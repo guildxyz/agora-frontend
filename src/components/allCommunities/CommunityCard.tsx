@@ -21,11 +21,13 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
         href={`/${community.urlName}`}
         _hover={{ textDecor: "none" }}
         borderRadius="2xl"
+        w="full"
       >
         <Card
           role="group"
           px={{ base: 5, sm: 7 }}
           py="7"
+          w="full"
           bgGradient={`linear(to-l, var(--chakra-colors-primary-100), ${
             colorMode === "light" ? "white" : "var(--chakra-colors-gray-800)"
           })`}

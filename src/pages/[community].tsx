@@ -29,7 +29,7 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => (
           <Levels />
         </Box>
         {/* <pre>{JSON.stringify(communityData, undefined, 2)}</pre> */}
-        <Link href="/" pt={2} textAlign={{ base: "center", sm: "left" }}>
+        <Link href="/" pt={2}>
           Back to all communities
         </Link>
       </Stack>
