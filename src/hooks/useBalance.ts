@@ -16,14 +16,14 @@ const useBalance = (token: Token) => {
 
   const shouldFetch = typeof account === "string" && !!library
 
-  const { data: balance, mutate } = useSWR(
+  const { data, mutate } = useSWR(
     shouldFetch ? [`${token.name}_balance`, account, tokenContract, chainId] : null,
     getBalance
   )
 
   useKeepSWRDataLiveAsBlocksArrive(mutate)
 
-  return balance
+  return data
 }
 
 export default useBalance
