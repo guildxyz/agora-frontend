@@ -49,7 +49,6 @@ const Layout = ({ title, children }: Props): JSX.Element => {
             <Heading
               fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
               fontFamily="display"
-              color={colorMode === "light" ? "gray.800" : "white"}
             >
               {title}
             </Heading>
