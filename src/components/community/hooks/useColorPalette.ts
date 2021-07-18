@@ -50,12 +50,12 @@ const useColorPalette = (
         .hex(),
       [`--${prefix}-500`]: Color(colorCode).lightness(60).hex(),
       [`--${prefix}-600`]: Color(colorCode)
-        .lightness(50 - darknessStep * 1)
-        .rotate(darkRotateStep * 1)
-        .saturate(darkSaturateStep * 1)
+        .lightness(60 - darknessStep * 0.8)
+        .rotate(darkRotateStep * 0.5)
+        .saturate(darkSaturateStep * 0.2)
         .hex(),
       [`--${prefix}-700`]: Color(colorCode)
-        .lightness(55 - darknessStep * 2.6)
+        .lightness(55 - darknessStep * 2)
         .rotate(darkRotateStep * 2)
         .saturate(darkSaturateStep * 2)
         .hex(),
