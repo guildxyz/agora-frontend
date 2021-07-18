@@ -2,7 +2,6 @@ import {
   CloseButton,
   Collapse,
   Icon,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -14,6 +13,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
+import Modal from "components/common/Modal"
 import ModalButton from "components/common/ModalButton"
 import TransactionSubmitted from "components/common/TransactionSubmitted"
 import { useCommunity } from "components/community/Context"
@@ -31,7 +31,6 @@ type Props = {
   isOpen: boolean
   onClose: () => void
 }
-
 const StakingModal = ({
   levelName,
   accessRequirement,
@@ -44,13 +43,11 @@ const StakingModal = ({
   const amount = useNeededAmount(accessRequirement)
   const [allowanceState, allowanceSend] = useTokenAllowanceMachine(token)
   const [stakeState, stakeSend] = useStakingModalMachine(amount)
-
   const closeModal = () => {
     allowanceSend("CLOSE_MODAL")
     stakeSend("CLOSE_MODAL")
     onClose()
   }
-
   const startStaking = () => {
     allowanceSend("HIDE_NOTIFICATION")
     stakeSend("STAKE")
@@ -70,7 +67,7 @@ const StakingModal = ({
           {stakeState.value === "success" ? (
             <>
               <TransactionSubmitted transaction={stakeState.context.transaction} />
-              <Text textColor="gray" mt="4">
+              <Text colorScheme="gray" mt="4">
                 You’ll recieve {amount} {stakeToken.symbol} in return. Those mark
                 your position, so don’t sell or send them because you will lose
                 access to the community level and won’t be able to get your{" "}
@@ -163,7 +160,6 @@ const StakingModal = ({
                   )
               }
             })()}
-
             {["allowanceGranted", "successNotification"].includes(
               allowanceState.value
             ) ? (
@@ -184,12 +180,7 @@ const StakingModal = ({
                 }
               })()
             ) : (
-              <ModalButton
-                disabled
-                colorScheme="gray"
-                bg="gray.200"
-                _hover={{ bg: "gray.200" }}
-              >
+              <ModalButton disabled colorScheme="gray">
                 Confirm stake
               </ModalButton>
             )}

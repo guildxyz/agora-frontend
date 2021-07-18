@@ -1,4 +1,4 @@
-import { Heading, Image, Stack, Tag } from "@chakra-ui/react"
+import { useColorMode, Heading, Image, Stack, Tag, Wrap } from "@chakra-ui/react"
 import Card from "components/common/Card"
 import { Link } from "components/common/Link"
 import { CommunityProvider } from "components/community/Context"
@@ -13,47 +13,49 @@ const CommunityCard = ({ community }: Props): JSX.Element => {
     .map((level) => level.membersCount)
     .reduce((accumulator, currentValue) => accumulator + currentValue)
 
+  const { colorMode } = useColorMode()
+
   return (
     <CommunityProvider data={community}>
       <Link
         href={`/${community.urlName}`}
         _hover={{ textDecor: "none" }}
         borderRadius="2xl"
+        w="full"
       >
         <Card
           role="group"
-          p="7"
-          bgGradient="linear(to-l, var(--chakra-colors-primary-50), white)"
+          px={{ base: 5, sm: 7 }}
+          py="7"
+          w="full"
+          bgGradient={`linear(to-l, var(--chakra-colors-primary-100), ${
+            colorMode === "light" ? "white" : "var(--chakra-colors-gray-800)"
+          })`}
+          bgBlendMode={colorMode === "light" ? "normal" : "color"}
           bgRepeat="no-repeat"
-          bgSize="150%"
-          bgPosition="-100%"
-          transition="background-position 0.6s ease"
+          bgSize="400%"
+          transition="background-size 0.8s ease"
           _hover={{
-            bgPosition: "0",
-            transition: "background-position 0.4s ease",
+            bgSize: "100%",
+            transition: "background-size 0.24s ease",
           }}
         >
           <Stack
             position="relative"
             direction="row"
-            spacing="10"
+            spacing={{ base: 5, sm: 10 }}
             alignItems="center"
           >
             <Image src={`${community.imageUrl}`} boxSize="45px" alt="Level logo" />
             <Stack spacing="3">
               <Heading size="sm">{community.name}</Heading>
-              <Stack direction="row" spacing="3">
-                <Tag
-                  colorScheme="blackAlpha"
-                  textColor="blackAlpha.700"
-                >{`${membersCount} members`}</Tag>
-                <Tag colorScheme="blackAlpha" textColor="blackAlpha.700">
-                  {`${community.levels.length} levels`}
-                </Tag>
-                <Tag colorScheme="blackAlpha" textColor="blackAlpha.700">
+              <Wrap spacing="2" shouldWrapChildren>
+                <Tag colorScheme="alpha">{`${membersCount} members`}</Tag>
+                <Tag colorScheme="alpha">{`${community.levels.length} levels`}</Tag>
+                <Tag colorScheme="alpha">
                   {`min: ${community.levels[0].accessRequirement.amount} ${community.chainData.ropsten.token.symbol}`}
                 </Tag>
-              </Stack>
+              </Wrap>
             </Stack>
           </Stack>
         </Card>

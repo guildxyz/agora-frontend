@@ -1,6 +1,5 @@
 import {
   Button,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -13,6 +12,7 @@ import {
   useClipboard,
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
+import Modal from "components/common/Modal"
 import { useContext } from "react"
 import shortenHex from "utils/shortenHex"
 import { Web3Connection } from "../Web3ConnectionManager"
@@ -53,7 +53,7 @@ const AccountModal = ({ isOpen, onClose }) => {
         </ModalBody>
         <ModalFooter>
           <Stack direction="row" alignItems="center" justifyContent="space-between">
-            <Text fontSize="sm" fontWeight="medium" textColor="gray.500">
+            <Text colorScheme="gray" fontSize="sm" fontWeight="medium">
               Connected with MetaMask
             </Text>
             <Button size="sm" variant="outline" onClick={handleWalletProviderSwitch}>
