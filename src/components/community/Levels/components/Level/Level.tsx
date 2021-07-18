@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-// I disabled it manually, because the AccessIndicator works properly with the current dependency list, and the other dependencies shouldn't be added - KovJonas
 import {
   useColorMode,
   Button,
@@ -23,18 +21,25 @@ import type { Level as LevelType } from "temporaryData/types"
 import StakingModal from "../StakingModal"
 import AccessText from "./components/AccessText"
 import useLevelAccess from "./hooks/useLevelAccess"
+import useLevelDataMachine from "./hooks/useLevelDataMachine"
 
 type Props = {
   data: LevelType
   index?: number
-  onChangeHandler?: (levelData: LevelData) => void
+  onChangeHandler?: (levelData: FullLevelData) => void
 }
 
 type LevelData = {
   index: number
-  status: "idle" | "access" | "focus"
   isDisabled: boolean
   element: HTMLElement
+}
+
+type FullLevelData = {
+  index: number
+  isDisabled: boolean
+  element: HTMLElement
+  state: "idle" | "focus" | "pending" | "access"
 }
 
 const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
@@ -54,11 +59,60 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   const levelEl = useRef(null)
   const [levelData, setLevelData] = useState<LevelData>({
     index,
-    status: "idle",
     isDisabled: true,
     element: null,
   })
 
+  const [state, send] = useLevelDataMachine(index)
+
+  // Registering the eventListeners
+  useEffect(() => {
+    const ref = levelEl.current
+
+    const mouseEnterHandler = () => {
+      send("FOCUSIN", { data: levelData })
+    }
+
+    const mouseLeaveHandler = () => {
+      send("FOCUSOUT", { data: levelData })
+    }
+
+    ref.addEventListener("mouseenter", mouseEnterHandler)
+    ref.addEventListener("mouseleave", mouseLeaveHandler)
+
+    return () => {
+      ref.removeEventListener("mouseenter", mouseEnterHandler)
+      ref.removeEventListener("mouseleave", mouseLeaveHandler)
+    }
+  }, [])
+
+  // Setting up the elRef
+  useEffect(() => {
+    setLevelData((prevState) => ({
+      ...prevState,
+      element: levelEl.current,
+    }))
+  }, [levelEl])
+
+  // Update level
+  useEffect(() => {
+    setLevelData((prevState) => ({
+      ...prevState,
+      isDisabled: noAccessMessage.length > 0,
+    }))
+  }, [noAccessMessage])
+
+  // If the state changes, send up the level data
+  useEffect(() => {
+    console.log("STATE CHANGED!", { ...levelData, state: state.value })
+    if (onChangeHandler) {
+      onChangeHandler({ ...levelData, state: state.value })
+    }
+  }, [state])
+
+  //
+
+  /*
   useEffect(() => {
     const ref = levelEl.current
 
@@ -129,6 +183,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       onChangeHandler(levelData)
     }
   }, [hasAccess])
+  */
 
   return (
     <Stack
@@ -226,4 +281,4 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
 }
 
 export { Level }
-export type { LevelData }
+export type { FullLevelData }

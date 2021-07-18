@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Stack } from "@chakra-ui/react"
 import Card from "components/common/Card"
 import { useCommunity } from "components/community/Context"
-import { Level, LevelData } from "./components/Level"
+import { Level, FullLevelData } from "./components/Level"
 import AccessIndicator from "./components/AccessIndicator"
 
 const Levels = (): JSX.Element => {
@@ -10,7 +10,7 @@ const Levels = (): JSX.Element => {
 
   const [levelsState, setLevelsState] = useState({})
 
-  const onLevelChange = (levelData: LevelData) => {
+  const onLevelChange = (levelData: FullLevelData) => {
     setLevelsState((prevState) => ({ ...prevState, [levelData.index]: levelData }))
   }
 
