@@ -25,7 +25,9 @@ const fetchIsMember = async (
 const useIsMember = (platform: string): boolean => {
   const { account } = useWeb3React()
   const { id: communityId } = useCommunity()
+
   const shouldFetch = !!account && !!communityId
+
   const { data } = useSWR(
     shouldFetch
       ? [
@@ -35,9 +37,9 @@ const useIsMember = (platform: string): boolean => {
           communityId,
         ]
       : null,
-    fetchIsMember,
-    { initialData: false }
+    fetchIsMember
   )
+
   return data
 }
 

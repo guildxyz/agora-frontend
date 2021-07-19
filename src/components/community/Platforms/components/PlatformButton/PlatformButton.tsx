@@ -1,19 +1,28 @@
 import { Button, useDisclosure } from "@chakra-ui/react"
-import { useWeb3React } from "@web3-react/core"
+import { useEffect } from "react"
 import platformsContent from "../../platformsContent"
 import JoinModal from "../JoinModal"
+import useJoinSuccessToast from "../JoinModal/hooks/useJoinSuccessToast"
 import LeaveModal from "../LeaveModal"
 import useIsMember from "./hooks/useIsMember"
 
 type Props = {
   platform: string
+  disabled: boolean
 }
 
-const PlatformButton = ({ platform }: Props): JSX.Element => {
-  const { account } = useWeb3React()
+const PlatformButton = ({ platform, disabled }: Props): JSX.Element => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { logo: Logo } = platformsContent[platform]
+  const { title, logo: Logo } = platformsContent[platform]
   const isMember = useIsMember(platform)
+  // TODO: should be called from JoinModal or useJoinModalMachine, so it's only mounted when it's relevant.
+  // Problem right now is that it unmounts too early then, we should find a solution.
+  // Note: leave success toasts will be mounted from useLeaveModalMachine
+  useJoinSuccessToast(platform)
+
+  useEffect(() => {
+    onClose()
+  }, [isMember, onClose])
 
   return (
     <>
@@ -23,17 +32,16 @@ const PlatformButton = ({ platform }: Props): JSX.Element => {
         fontWeight="medium"
         leftIcon={<Logo />}
         variant={isMember ? "outline" : "solid"}
-        disabled={!account}
+        disabled={disabled}
       >
-        {`${isMember ? "Leave" : "Join"} ${
-          platform.charAt(0).toUpperCase() + platform.slice(1)
-        }`}
+        {`${isMember ? "Leave" : "Join"} ${title.split(" ")[0]}`}
       </Button>
-      {isMember ? (
-        <LeaveModal {...{ platform, isOpen, onClose }} />
-      ) : (
-        <JoinModal {...{ platform, isOpen, onClose }} />
-      )}
+      {!disabled &&
+        (isMember ? (
+          <LeaveModal {...{ platform, isOpen, onClose }} />
+        ) : (
+          <JoinModal {...{ platform, isOpen, onClose }} />
+        ))}
     </>
   )
 }
