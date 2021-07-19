@@ -1,19 +1,20 @@
 import {
+  Modal,
+  ModalBody,
   ModalCloseButton,
   ModalContent,
+  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
+  VStack,
 } from "@chakra-ui/react"
-import {
-  AllowanceModal,
-  AllowanceModalBody,
-  AllowanceModalFooter,
-} from "components/common/Allowance"
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
 import TransactionSubmitted from "components/common/TransactionSubmitted"
+import Allowance from "components/community/components/Allowance"
 import { useCommunity } from "components/community/Context"
+import useTokenAllowanceMachine from "components/community/hooks/useTokenAllowanceMachine"
 import useUnstakingModalMachine from "./hooks/useUnstakingMachine"
 import processUnstakingError from "./utils/processUnstakingError"
 
@@ -27,32 +28,37 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
     chainData: { stakeToken },
   } = useCommunity()
   const tokenSymbol = stakeToken.symbol
-  const [state, send] = useUnstakingModalMachine()
+  const [allowanceState, allowanceSend] = useTokenAllowanceMachine(stakeToken)
+  const [unstakeState, unstakeSend] = useUnstakingModalMachine()
 
   const closeModal = () => {
-    send("CLOSE_MODAL")
+    allowanceSend("CLOSE_MODAL")
+    unstakeSend("CLOSE_MODAL")
     onClose()
   }
 
   const startUnstaking = () => {
-    send("UNSTAKE")
+    allowanceSend("HIDE_NOTIFICATION")
+    unstakeSend("UNSTAKE")
   }
 
   return (
-    <AllowanceModal token={stakeToken} isOpen={isOpen} onClose={closeModal}>
+    <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          {state.value === "success" ? "Transaction submitted" : "Unstake tokens"}
+          {unstakeState.value === "success"
+            ? "Transaction submitted"
+            : "Unstake tokens"}
         </ModalHeader>
         <ModalCloseButton />
-        <AllowanceModalBody>
-          {state.value === "success" ? (
-            <TransactionSubmitted transaction={state.context.transaction} />
+        <ModalBody>
+          {unstakeState.value === "success" ? (
+            <TransactionSubmitted transaction={unstakeState.context.transaction} />
           ) : (
             <>
               <Error
-                error={state.context.error}
+                error={unstakeState.context.error || allowanceState.context.error}
                 processError={processUnstakingError}
               />
               <Text>
@@ -61,29 +67,50 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
               </Text>
             </>
           )}
-        </AllowanceModalBody>
-        <AllowanceModalFooter
-          successText={`You can now unstake ${tokenSymbol}`}
-          disabledText="Confirm unstake"
-          childState={state.value}
-        >
-          {(() => {
-            switch (state.value) {
-              case "idle":
-              case "error":
-              default:
-                return (
-                  <ModalButton onClick={startUnstaking}>Confirm unstake</ModalButton>
-                )
-              case "waitingConfirmation":
-                return <ModalButton isLoading loadingText="Waiting confirmation" />
-              case "success":
-                return <ModalButton onClick={closeModal}>Close</ModalButton>
-            }
-          })()}
-        </AllowanceModalFooter>
+        </ModalBody>
+        <ModalFooter>
+          <VStack spacing="0" alignItems="strech">
+            <Allowance
+              state={allowanceState}
+              send={allowanceSend}
+              successText={`You can now unstake ${tokenSymbol}`}
+            />
+
+            {["allowanceGranted", "successNotification"].includes(
+              allowanceState.value
+            ) ? (
+              (() => {
+                switch (unstakeState.value) {
+                  case "idle":
+                  case "error":
+                  default:
+                    return (
+                      <ModalButton onClick={startUnstaking}>
+                        Confirm unstake
+                      </ModalButton>
+                    )
+                  case "waitingConfirmation":
+                    return (
+                      <ModalButton isLoading loadingText="Waiting confirmation" />
+                    )
+                  case "success":
+                    return <ModalButton onClick={closeModal}>Close</ModalButton>
+                }
+              })()
+            ) : (
+              <ModalButton
+                disabled
+                colorScheme="gray"
+                bg="gray.200"
+                _hover={{ bg: "gray.200" }}
+              >
+                Confirm unstake
+              </ModalButton>
+            )}
+          </VStack>
+        </ModalFooter>
       </ModalContent>
-    </AllowanceModal>
+    </Modal>
   )
 }
 

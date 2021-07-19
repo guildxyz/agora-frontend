@@ -1,7 +1,7 @@
 import { useMachine } from "@xstate/react"
 import { useEffect } from "react"
 import type { Token } from "temporaryData/types"
-import { assign, createMachine, DoneInvokeEvent, EventData, State } from "xstate"
+import { assign, createMachine, DoneInvokeEvent } from "xstate"
 import useTokenAllowance from "./useTokenAllowance"
 
 type AllowanceCheckEvent =
@@ -94,9 +94,7 @@ const allowanceMachine = createMachine<
   }
 )
 
-const useTokenAllowanceMachine = (
-  token: Token
-): [State<any>, (event: any, payload?: EventData) => State<any>] => {
+const useTokenAllowanceMachine = (token: Token): any => {
   const [tokenAllowance, allowToken] = useTokenAllowance(token)
 
   const [state, send] = useMachine<any, any>(allowanceMachine, {

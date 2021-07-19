@@ -1,15 +1,15 @@
 import {
-  Box,
   Button,
-  chakra,
-  ScaleFade,
+  Box,
   Tooltip,
   useDisclosure,
+  ScaleFade,
+  chakra,
 } from "@chakra-ui/react"
 import ActionCard from "components/common/ActionCard"
 import msToReadableFormat from "utils/msToReadableFormat"
 import { useCommunity } from "../Context"
-import UnstakingModal from "./components/UnstakingModal"
+import UnstakingModal from "./components/UnstakingModal/UnstakingModal"
 import useStaked from "./hooks/useStaked"
 import formatDate from "./utils/formatDate"
 
