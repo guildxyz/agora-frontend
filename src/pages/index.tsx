@@ -2,11 +2,12 @@ import { Stack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import CategorySection from "components/allCommunities/CategorySection"
 import CommunityCard from "components/allCommunities/CommunityCard"
-import useCategorizeCommunities from "components/allCommunities/hooks/useCategorizeCommunities"
+import getJoinedCommunities from "components/allCommunities/utils/getJoinedCommunities"
 import { CommunityProvider } from "components/community/Context"
 import Layout from "components/Layout"
 import { GetStaticProps } from "next"
 import { useEffect, useMemo, useRef } from "react"
+import useSWR from "swr"
 import type { Community } from "temporaryData/communities"
 import { communities as communitiesJSON } from "temporaryData/communities"
 
@@ -19,8 +20,10 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
   const refYours = useRef<HTMLDivElement>(null)
   const refAccess = useRef<HTMLDivElement>(null)
   const refOther = useRef<HTMLDivElement>(null)
-
-  const isConnected = typeof account === "string" && !!library
+  const { data: joinedCommunitites } = useSWR(
+    ["joined_communities", account],
+    getJoinedCommunities
+  )
 
   return (
     <Layout
@@ -31,20 +34,19 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
         <Stack spacing={8}>
           <CategorySection
             title="Your communities"
+            showPlaceholder={!joinedCommunitites?.length}
             placeholder={"You're not part of any communities yet"}
             ref={refYours}
           />
           <CategorySection
             title="Communities you have access to"
+            showPlaceholder={!refAccess.current?.children.length}
             placeholder={"You don't have access to any communities"}
-            ref={(node) => {
-              console.log(node)
-              refAccess.current = node
-              return node
-            }}
+            ref={refAccess}
           />
           <CategorySection
             title="Other communities"
+            showPlaceholder={!refOther.current?.children.length}
             placeholder={"There aren't any other communities"}
             ref={refOther}
           />

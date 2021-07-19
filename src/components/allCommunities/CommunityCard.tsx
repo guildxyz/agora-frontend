@@ -5,8 +5,10 @@ import { Link } from "components/common/Link"
 import { CommunityProvider, useCommunity } from "components/community/Context"
 import { useLevelAccess } from "components/community/Levels/components/Level/hooks/useLevelAccess"
 import { Chains } from "connectors"
-import { MutableRefObject } from "react"
+import { MutableRefObject, useMemo, useRef } from "react"
+import useSWR from "swr"
 import type { Community } from "temporaryData/communities"
+import getJoinedCommunities from "./utils/getJoinedCommunities"
 
 type Props = {
   refYours: MutableRefObject<HTMLDivElement>
@@ -23,16 +25,28 @@ const CommunityCard = ({ refYours, refOther, refAccess }: Props): JSX.Element =>
     chainData: {
       token: { symbol: tokenSymbol },
     },
+    id,
   } = useCommunity()
+  const { account } = useWeb3React()
+  const [hasAccess] = useLevelAccess(levels[0].accessRequirement)
+  const { data: joinedCommunitites } = useSWR(
+    ["joined_communities", account],
+    getJoinedCommunities
+  )
+  const isMember = joinedCommunitites?.includes(id)
+
+  const containerRef = useMemo(() => {
+    if (isMember) return refYours
+    if (hasAccess) return refAccess
+    return refOther
+  }, [isMember, hasAccess, refYours, refAccess, refOther])
 
   const membersCount = levels
     .map((level) => level.membersCount)
     .reduce((accumulator, currentValue) => accumulator + currentValue)
 
-  const [hasAccess] = useLevelAccess(levels[0].accessRequirement)
-
   return (
-    <Portal containerRef={hasAccess ? refAccess : refOther}>
+    <Portal containerRef={containerRef}>
       <Link href={`/${urlName}`} _hover={{ textDecor: "none" }} borderRadius="2xl">
         <Card
           role="group"
