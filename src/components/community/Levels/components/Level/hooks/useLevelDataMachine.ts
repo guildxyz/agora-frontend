@@ -49,7 +49,6 @@ const levelDataMachine = createMachine<any, DoneInvokeEvent<any>>(
   }
 )
 
-// TODO: isModalOpen-t átadni + guard!
 const useLevelDataMachine = (hasAccess: boolean, isModalOpen: boolean): any => {
   const [state, send] = useMachine(levelDataMachine)
 
@@ -58,12 +57,14 @@ const useLevelDataMachine = (hasAccess: boolean, isModalOpen: boolean): any => {
     if (hasAccess) {
       send("ACCESS")
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasAccess])
 
   // If we close the modal, we can transition to idle state
   useEffect(() => {
     state.context.isModalOpen = isModalOpen
     send("FOCUSOUT")
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isModalOpen])
 
   return [state, send]

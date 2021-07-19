@@ -59,9 +59,14 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
 
   const [state, send] = useLevelDataMachine(hasAccess, isStakingModalOpen)
 
-  // Registering the eventListeners
+  // Setting up the elRef & registering the eventListeners
   useEffect(() => {
     const ref = levelEl.current
+
+    setLevelData((prevState) => ({
+      ...prevState,
+      element: ref,
+    }))
 
     const mouseEnterHandler = () => {
       send("FOCUSIN")
@@ -78,14 +83,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       ref.removeEventListener("mouseenter", mouseEnterHandler)
       ref.removeEventListener("mouseleave", mouseLeaveHandler)
     }
-  }, [])
-
-  // Setting up the elRef
-  useEffect(() => {
-    setLevelData((prevState) => ({
-      ...prevState,
-      element: levelEl.current,
-    }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [levelEl])
 
   // Update level
@@ -98,11 +96,11 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
 
   // If the state changes, send up the level data
   useEffect(() => {
-    // console.log("STATE CHANGED!", { ...levelData, state: state.value })
     if (onChangeHandler) {
       onChangeHandler({ ...levelData, state: state.value })
     }
-  }, [state])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [levelData, state])
 
   return (
     <Stack
