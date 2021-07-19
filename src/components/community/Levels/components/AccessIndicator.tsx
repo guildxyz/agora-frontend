@@ -15,19 +15,6 @@ const AccessIndicator = ({ levelsState }: Props) => {
   const [pendingHeight, setPendingHeight] = useState(0)
   const [focusHeight, setFocusHeight] = useState(0)
   const [focusColor, setFocusColor] = useState("var(--chakra-colors-primary-500)")
-  const [pendingColor, setPendingColor] = useState(
-    colorMode === "light"
-      ? "var(--chakra-colors-primary-700)"
-      : "var(--chakra-colors-primary-400)"
-  )
-
-  useEffect(() => {
-    setPendingColor(
-      colorMode === "light"
-        ? "var(--chakra-colors-primary-700)"
-        : "var(--chakra-colors-primary-400)"
-    )
-  }, [colorMode])
 
   useEffect(() => {
     const handleResize = () => {
@@ -122,7 +109,7 @@ const AccessIndicator = ({ levelsState }: Props) => {
           left: 0,
           height: 0,
           width: "6px",
-          opacity: colorMode === "light" ? 0.3 : 0.4,
+          opacity: 0.75,
           background: "var(--chakra-colors-primary-500)",
         }}
         transition={{ type: "just" }}
@@ -134,20 +121,23 @@ const AccessIndicator = ({ levelsState }: Props) => {
           <motion.div
             style={{
               position: "relative",
-              top: -100,
+              top: 0,
               left: 0,
-              width: "100%",
-              height: 50,
-              opacity: 1,
-              background: `linear-gradient(transparent 0, transparent 10%, ${pendingColor} 20%, ${pendingColor} 90%, transparent 100%)`,
+              width: "6px",
+              height: pendingHeight,
+              background: "trasparent",
+              backgroundRepeat: "repeat-y",
+              backgroundSize: "6px 6px",
+              backgroundImage:
+                "linear-gradient(-45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent)",
             }}
             transition={{
               repeat: Infinity,
-              duration: 0.8,
+              duration: 0.5,
+              type: "tween",
             }}
             animate={{
-              top: pendingHeight + 50,
-              opacity: 0.5,
+              backgroundPositionY: "6px",
             }}
           />
         </div>
