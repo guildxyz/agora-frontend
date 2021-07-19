@@ -11,7 +11,7 @@ const getEstimatedTransactionTime = async (
   const gasPrice = await library.estimateGas(transaction)
   const weiGasPrice = parseUnits(gasPrice.toString(), "gwei")
   return fetch(
-    `https://api-testnet.bscscan.io/api?module=gastracker&action=gasestimate&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}&gasprice=${weiGasPrice}`
+    `https://api-ropsten.etherscan.io/api?module=gastracker&action=gasestimate&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}&gasprice=${weiGasPrice}`
   )
     .then((response) => response.json())
     .then((body) => +body.result * 1000)
