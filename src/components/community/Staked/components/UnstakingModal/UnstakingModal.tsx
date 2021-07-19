@@ -12,9 +12,9 @@ import {
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
 import TransactionSubmitted from "components/common/TransactionSubmitted"
-import Allowance from "components/community/components/Allowance"
+import TokenAllowance from "components/community/common/TokenAllowance"
+import useTokenAllowanceMachine from "components/community/common/TokenAllowance/hooks/useTokenAllowanceMachine"
 import { useCommunity } from "components/community/Context"
-import useTokenAllowanceMachine from "components/community/hooks/useTokenAllowanceMachine"
 import useUnstakingModalMachine from "./hooks/useUnstakingMachine"
 import processUnstakingError from "./utils/processUnstakingError"
 
@@ -70,7 +70,7 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
         </ModalBody>
         <ModalFooter>
           <VStack spacing="0" alignItems="strech">
-            <Allowance
+            <TokenAllowance
               state={allowanceState}
               send={allowanceSend}
               tokenSymbol={tokenSymbol}

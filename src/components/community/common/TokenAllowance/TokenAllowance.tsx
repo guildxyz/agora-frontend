@@ -2,7 +2,7 @@ import { CloseButton, Collapse, Icon, Tooltip } from "@chakra-ui/react"
 import ModalButton from "components/common/ModalButton"
 import { Check, Info } from "phosphor-react"
 
-const Allowance = ({ state, send, tokenSymbol, successText }) => {
+const TokenAllowance = ({ state, send, tokenSymbol, successText }) => {
   switch (state.value) {
     case "noAllowance":
     case "error":
@@ -56,4 +56,4 @@ const Allowance = ({ state, send, tokenSymbol, successText }) => {
   }
 }
 
-export default Allowance
+export default TokenAllowance

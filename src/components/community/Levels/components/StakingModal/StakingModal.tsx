@@ -12,9 +12,9 @@ import {
 import { Error } from "components/common/Error"
 import ModalButton from "components/common/ModalButton"
 import TransactionSubmitted from "components/common/TransactionSubmitted"
-import Allowance from "components/community/components/Allowance"
+import TokenAllowance from "components/community/common/TokenAllowance"
+import useTokenAllowanceMachine from "components/community/common/TokenAllowance/hooks/useTokenAllowanceMachine"
 import { useCommunity } from "components/community/Context"
-import useTokenAllowanceMachine from "components/community/hooks/useTokenAllowanceMachine"
 import type { AccessRequirement } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
 import { processMetaMaskError } from "utils/processMetaMaskError"
@@ -93,7 +93,7 @@ const StakingModal = ({
           {/* margin is applied on the approve button,
               so there's no unwanted space when it's not shown */}
           <VStack spacing="0" alignItems="strech">
-            <Allowance
+            <TokenAllowance
               state={allowanceState}
               send={allowanceSend}
               tokenSymbol={token.symbol}
