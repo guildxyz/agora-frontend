@@ -6,7 +6,7 @@ import getJoinedCommunities from "components/allCommunities/utils/getJoinedCommu
 import { CommunityProvider } from "components/community/Context"
 import Layout from "components/Layout"
 import { GetStaticProps } from "next"
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import useSWR from "swr"
 import type { Community } from "temporaryData/communities"
 import { communities as communitiesJSON } from "temporaryData/communities"
@@ -20,10 +20,14 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
   const refYours = useRef<HTMLDivElement>(null)
   const refAccess = useRef<HTMLDivElement>(null)
   const refOther = useRef<HTMLDivElement>(null)
-  const { data: joinedCommunitites } = useSWR(
-    ["joined_communities", account],
-    getJoinedCommunities
-  )
+  const [showYoursPlaceholder, setShowYoursPlaceholder] = useState<boolean>(true)
+  const [showAccessPlaceholder, setShowAccessPlaceholder] = useState<boolean>(true)
+  const [showOtherPlaceholder, setShowOtherPlaceholder] = useState<boolean>(true)
+  const defaultPlaceholder = !account && !library ? "Wallet not connected" : null
+
+  const hideYoursPlaceholder = () => setShowYoursPlaceholder(false)
+  const hideAccessPlaceholder = () => setShowAccessPlaceholder(false)
+  const hideOtherPlaceholder = () => setShowOtherPlaceholder(false)
 
   return (
     <Layout
@@ -34,26 +38,39 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
         <Stack spacing={8}>
           <CategorySection
             title="Your communities"
-            showPlaceholder={!joinedCommunitites?.length}
-            placeholder={"You're not part of any communities yet"}
+            showPlaceholder={showYoursPlaceholder}
+            placeholder={
+              defaultPlaceholder ?? "You're not part of any communities yet"
+            }
             ref={refYours}
           />
           <CategorySection
             title="Communities you have access to"
-            showPlaceholder={!refAccess.current?.children.length}
-            placeholder={"You don't have access to any communities"}
+            showPlaceholder={showAccessPlaceholder}
+            placeholder={
+              defaultPlaceholder ?? "You don't have access to any communities"
+            }
             ref={refAccess}
           />
           <CategorySection
             title="Other communities"
-            showPlaceholder={!refOther.current?.children.length}
-            placeholder={"There aren't any other communities"}
+            showPlaceholder={showOtherPlaceholder}
+            placeholder={defaultPlaceholder ?? "There aren't any other communities"}
             ref={refOther}
           />
         </Stack>
         {communities.map((community) => (
           <CommunityProvider data={community} key={community.id}>
-            <CommunityCard {...{ refYours, refOther, refAccess }} />
+            <CommunityCard
+              {...{
+                refYours,
+                refOther,
+                refAccess,
+                hideYoursPlaceholder,
+                hideAccessPlaceholder,
+                hideOtherPlaceholder,
+              }}
+            />
           </CommunityProvider>
         ))}
       </>

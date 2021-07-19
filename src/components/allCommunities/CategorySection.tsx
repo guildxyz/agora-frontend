@@ -16,6 +16,7 @@ const CategorySection = forwardRef(
       <Heading size="md" as="h4">
         {title}
       </Heading>
+
       <SimpleGrid ref={ref} columns={{ base: 1, lg: 2 }} spacing={10} />
 
       {showPlaceholder && <Text>{placeholder}</Text>}
