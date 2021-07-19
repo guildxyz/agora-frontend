@@ -12,8 +12,22 @@ const AccessIndicator = ({ levelsState }: Props) => {
   })
   const { colorMode } = useColorMode()
   const [accessHeight, setAccessHeight] = useState(0)
+  const [pendingHeight, setPendingHeight] = useState(0)
   const [focusHeight, setFocusHeight] = useState(0)
   const [focusColor, setFocusColor] = useState("var(--chakra-colors-primary-500)")
+  const [pendingColor, setPendingColor] = useState(
+    colorMode === "light"
+      ? "var(--chakra-colors-primary-700)"
+      : "var(--chakra-colors-primary-400)"
+  )
+
+  useEffect(() => {
+    setPendingColor(
+      colorMode === "light"
+        ? "var(--chakra-colors-primary-700)"
+        : "var(--chakra-colors-primary-400)"
+    )
+  }, [colorMode])
 
   useEffect(() => {
     const handleResize = () => {
@@ -37,7 +51,14 @@ const AccessIndicator = ({ levelsState }: Props) => {
       return
     }
 
-    // Set the height of the first indicator
+    // TEMP - for testing
+    /*
+    if (levelsArray[1].element) {
+      levelsArray[1].state = "pending"
+    }
+    */
+
+    // Set the height of the access indicator
     const accessedLevels = levelsArray.filter(
       (level: LevelData) => level.state === "access"
     )
@@ -49,13 +70,24 @@ const AccessIndicator = ({ levelsState }: Props) => {
 
     setAccessHeight(newAccessHeight)
 
-    // Set the height of the second indicator
+    // Set the height of the pending indicator
+    let pendingLevel = null
+    pendingLevel = levelsArray.find((level: LevelData) => level.state === "pending")
+    const newPendingHeight =
+      pendingLevel?.element.getBoundingClientRect().bottom -
+        pendingLevel?.element.parentElement.getBoundingClientRect().top -
+        accessHeight || 0
+
+    setPendingHeight(newPendingHeight)
+
+    // Set the height of the focus indicator
     let focusLevel = null
     focusLevel = levelsArray.find((level: LevelData) => level.state === "focus")
     const newFocusHeight =
       focusLevel?.element.getBoundingClientRect().bottom -
         focusLevel?.element.parentElement.getBoundingClientRect().top -
-        accessHeight || 0
+        accessHeight -
+        pendingHeight || 0
 
     setFocusHeight(newFocusHeight)
 
@@ -71,7 +103,7 @@ const AccessIndicator = ({ levelsState }: Props) => {
       <motion.div
         style={{
           position: "absolute",
-          top: accessHeight,
+          top: accessHeight + pendingHeight,
           left: 0,
           height: 0,
           width: "6px",
@@ -83,6 +115,43 @@ const AccessIndicator = ({ levelsState }: Props) => {
           background: focusColor,
         }}
       />
+      <motion.div
+        style={{
+          position: "absolute",
+          top: accessHeight,
+          left: 0,
+          height: 0,
+          width: "6px",
+          opacity: colorMode === "light" ? 0.3 : 0.4,
+          background: "var(--chakra-colors-primary-500)",
+        }}
+        transition={{ type: "just" }}
+        animate={{
+          height: pendingHeight,
+        }}
+      >
+        <div style={{ position: "relative", height: "100%", overflow: "hidden" }}>
+          <motion.div
+            style={{
+              position: "relative",
+              top: -100,
+              left: 0,
+              width: "100%",
+              height: 50,
+              opacity: 1,
+              background: `linear-gradient(transparent 0, transparent 10%, ${pendingColor} 20%, ${pendingColor} 90%, transparent 100%)`,
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 1,
+            }}
+            animate={{
+              top: pendingHeight + 50,
+              opacity: 0.5,
+            }}
+          />
+        </div>
+      </motion.div>
       <motion.div
         style={{
           position: "absolute",
