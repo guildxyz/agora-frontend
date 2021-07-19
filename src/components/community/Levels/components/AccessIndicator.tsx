@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useColorMode } from "@chakra-ui/react"
-import { FullLevelData } from "./Level"
+import { LevelData } from "./Level"
 
-type Props = { levelsState: { [x: number]: FullLevelData } }
+type Props = { levelsState: { [x: number]: LevelData } }
 
 const AccessIndicator = ({ levelsState }: Props) => {
   const [windowSize, setWindowSize] = useState({
@@ -31,7 +31,7 @@ const AccessIndicator = ({ levelsState }: Props) => {
   }, [])
 
   useEffect(() => {
-    const levelsArray: FullLevelData[] = Object.values(levelsState)
+    const levelsArray: LevelData[] = Object.values(levelsState)
 
     if (levelsArray.length === 0) {
       return
@@ -39,11 +39,11 @@ const AccessIndicator = ({ levelsState }: Props) => {
 
     // Set the height of the first indicator
     const accessedLevels = levelsArray.filter(
-      (level: FullLevelData) => level.state === "access"
+      (level: LevelData) => level.state === "access"
     )
 
     let newAccessHeight = 0
-    accessedLevels.forEach((level: FullLevelData) => {
+    accessedLevels.forEach((level: LevelData) => {
       newAccessHeight += level.element.getBoundingClientRect().height
     })
 
@@ -51,10 +51,7 @@ const AccessIndicator = ({ levelsState }: Props) => {
 
     // Set the height of the second indicator
     let focusLevel = null
-    focusLevel = levelsArray.find(
-      (level: FullLevelData) =>
-        level.state === "focus" || level.state === "modalfocus"
-    )
+    focusLevel = levelsArray.find((level: LevelData) => level.state === "focus")
     const newFocusHeight =
       focusLevel?.element.getBoundingClientRect().bottom -
         focusLevel?.element.parentElement.getBoundingClientRect().top -

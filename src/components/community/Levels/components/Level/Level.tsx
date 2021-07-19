@@ -26,20 +26,14 @@ import useLevelDataMachine from "./hooks/useLevelDataMachine"
 type Props = {
   data: LevelType
   index?: number
-  onChangeHandler?: (levelData: FullLevelData) => void
+  onChangeHandler?: (levelData: LevelData) => void
 }
 
 type LevelData = {
   index: number
   isDisabled: boolean
   element: HTMLElement
-}
-
-type FullLevelData = {
-  index: number
-  isDisabled: boolean
-  element: HTMLElement
-  state: "idle" | "focus" | "modalfocus" | "pending" | "access"
+  state?: "idle" | "focus" | "modalfocus" | "pending" | "access"
 }
 
 const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
@@ -63,7 +57,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     element: null,
   })
 
-  const [state, send] = useLevelDataMachine(isStakingModalOpen)
+  const [state, send] = useLevelDataMachine(hasAccess, isStakingModalOpen)
 
   // Registering the eventListeners
   useEffect(() => {
@@ -102,21 +96,9 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     }))
   }, [noAccessMessage])
 
-  // Transition to the access state
-  useEffect(() => {
-    if (hasAccess) {
-      send("ACCESS")
-    }
-  }, [hasAccess])
-
-  // Transition to the modalfocus state
-  useEffect(() => {
-    send(isStakingModalOpen ? "MODALIN" : "MODALOUT")
-  }, [isStakingModalOpen])
-
   // If the state changes, send up the level data
   useEffect(() => {
-    console.log("STATE CHANGED!", { ...levelData, state: state.value })
+    // console.log("STATE CHANGED!", { ...levelData, state: state.value })
     if (onChangeHandler) {
       onChangeHandler({ ...levelData, state: state.value })
     }
@@ -218,4 +200,4 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
 }
 
 export { Level }
-export type { FullLevelData }
+export type { LevelData }

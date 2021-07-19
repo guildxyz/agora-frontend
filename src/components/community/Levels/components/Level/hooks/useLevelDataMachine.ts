@@ -1,54 +1,70 @@
 import { useMachine } from "@xstate/react"
 import { createMachine, DoneInvokeEvent } from "xstate"
+import { useEffect } from "react"
 
-const levelDataMachine = createMachine<any, DoneInvokeEvent<any>>({
-  id: "levelData",
-  initial: "idle",
-  states: {
-    idle: {
-      on: {
-        FOCUSIN: { target: "focus" },
-        PENDING: { target: "pending" },
-        ACCESS: { target: "access" },
+const levelDataMachine = createMachine<any, DoneInvokeEvent<any>>(
+  {
+    id: "levelData",
+    initial: "idle",
+    context: {
+      isModalOpen: false,
+    },
+    states: {
+      idle: {
+        on: {
+          FOCUSIN: { target: "focus" },
+          PENDING: { target: "pending" },
+          ACCESS: { target: "access" },
+        },
+      },
+      focus: {
+        on: {
+          PENDING: { target: "pending" },
+          ACCESS: { target: "access" },
+          FOCUSOUT: { target: "idle", cond: "modalIsNotOpened" },
+        },
+      },
+      pending: {
+        on: {
+          ACCESS: { target: "access" },
+          ERROR: { target: "idle" },
+        },
+      },
+      access: {
+        on: {
+          NOACCESS: "idle",
+        },
       },
     },
-    focus: {
-      on: {
-        PENDING: { target: "pending" },
-        ACCESS: { target: "access" },
-        FOCUSOUT: { target: "idle" },
-        MODALIN: { target: "modalfocus" },
-      },
-    },
-    modalfocus: {
-      on: {
-        MODALOUT: { target: "idle" },
-      },
-    },
-    pending: {
-      on: {
-        ACCESS: { target: "access" },
-        ERROR: { target: "idle" },
-      },
-    },
-    access: {
-      on: {
-        NOACCESS: "idle",
+    on: {
+      LOAD: {
+        target: "idle",
       },
     },
   },
-  on: {
-    LOAD: {
-      target: "idle",
+  {
+    guards: {
+      modalIsNotOpened: (context) => !context.isModalOpen,
     },
-  },
-})
+  }
+)
 
-// isModalOpen-t átadni + guard!
-const useLevelDataMachine = (isModalOpen: boolean): any => {
+// TODO: isModalOpen-t átadni + guard!
+const useLevelDataMachine = (hasAccess: boolean, isModalOpen: boolean): any => {
   const [state, send] = useMachine(levelDataMachine)
 
-  // TODO...
+  // Transition to the access state
+  useEffect(() => {
+    if (hasAccess) {
+      send("ACCESS")
+    }
+  }, [hasAccess])
+
+  // If we close the modal, we can transition to idle state
+  useEffect(() => {
+    state.context.isModalOpen = isModalOpen
+    send("FOCUSOUT")
+  }, [isModalOpen])
 
   return [state, send]
 }

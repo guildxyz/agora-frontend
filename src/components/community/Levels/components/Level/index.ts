@@ -1,4 +1,4 @@
-import { Level, FullLevelData } from "./Level"
+import { Level, LevelData } from "./Level"
 
 export { Level }
-export type { FullLevelData }
+export type { LevelData }
