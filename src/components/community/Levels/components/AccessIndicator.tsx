@@ -143,7 +143,7 @@ const AccessIndicator = ({ levelsState }: Props) => {
             }}
             transition={{
               repeat: Infinity,
-              duration: 1,
+              duration: 0.8,
             }}
             animate={{
               top: pendingHeight + 50,
