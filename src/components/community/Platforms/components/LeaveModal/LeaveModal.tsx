@@ -1,5 +1,4 @@
 import {
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -10,8 +9,8 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
+import Modal from "components/common/Modal"
 import ModalButton from "components/common/ModalButton"
-import { processMetaMaskError } from "utils/processMetaMaskError"
 import platformsContent from "../../platformsContent"
 import useLeaveModalMachine from "./hooks/useLeaveModalMachine"
 
@@ -23,7 +22,8 @@ type Props = {
 
 const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const {
-    leave: { title, membershipDescription, leaveDescription, buttonText },
+    title,
+    leave: { membershipDescription, leaveDescription },
   } = platformsContent[platform]
   const [state, send] = useLeaveModalMachine(platform)
 
@@ -31,14 +31,22 @@ const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
     send("CLOSE_MODAL")
     onClose()
   }
+
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{title}</ModalHeader>
+        <ModalHeader>Leave {title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Error error={state.context.error} processError={processMetaMaskError} />
+          <Error
+            error={state.context.error}
+            processError={() => ({
+              title: "Not implemented",
+              description:
+                "This feature is not implemented here yet. You can leave from the platform itself",
+            })}
+          />
           <VStack spacing={5}>
             <Text>{membershipDescription}</Text>
             <Text>{leaveDescription}</Text>
@@ -50,7 +58,7 @@ const LeaveModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
             loadingText="In progress"
             onClick={() => send("LEAVE")}
           >
-            {buttonText}
+            Leave
           </ModalButton>
         </ModalFooter>
       </ModalContent>

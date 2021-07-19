@@ -1,5 +1,4 @@
 import {
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -10,6 +9,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
+import Modal from "components/common/Modal"
 import ModalButton from "components/common/ModalButton"
 import TransactionSubmitted from "components/common/TransactionSubmitted"
 import TokenAllowance from "components/community/common/TokenAllowance"
@@ -99,12 +99,7 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
                 }
               })()
             ) : (
-              <ModalButton
-                disabled
-                colorScheme="gray"
-                bg="gray.200"
-                _hover={{ bg: "gray.200" }}
-              >
+              <ModalButton disabled colorScheme="gray">
                 Confirm unstake
               </ModalButton>
             )}
