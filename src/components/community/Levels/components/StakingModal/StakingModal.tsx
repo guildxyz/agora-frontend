@@ -96,6 +96,7 @@ const StakingModal = ({
             <Allowance
               state={allowanceState}
               send={allowanceSend}
+              tokenSymbol={token.symbol}
               successText={`You can now stake ${token.symbol}`}
             />
 

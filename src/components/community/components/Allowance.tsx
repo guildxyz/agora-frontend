@@ -1,13 +1,8 @@
 import { CloseButton, Collapse, Icon, Tooltip } from "@chakra-ui/react"
 import ModalButton from "components/common/ModalButton"
-import { useCommunity } from "components/community/Context"
 import { Check, Info } from "phosphor-react"
 
-const Allowance = ({ state, send, successText }) => {
-  const {
-    chainData: { token },
-  } = useCommunity()
-
+const Allowance = ({ state, send, tokenSymbol, successText }) => {
   switch (state.value) {
     case "noAllowance":
     case "error":
@@ -16,7 +11,7 @@ const Allowance = ({ state, send, successText }) => {
           mb="3"
           rightIcon={
             <Tooltip
-              label={`You have to give the Agora smart contracts permission to use your ${token.symbol}. You only have to do this once per token.`}
+              label={`You have to give the Agora smart contracts permission to use your ${tokenSymbol}. You only have to do this once per token.`}
               placement="top"
             >
               <Icon as={Info} tabIndex={0} />
@@ -27,7 +22,7 @@ const Allowance = ({ state, send, successText }) => {
           justifyContent="space-between"
           onClick={() => send("ALLOW")}
         >
-          {`Allow Agora to use ${token.symbol}`}
+          {`Allow Agora to use ${tokenSymbol}`}
         </ModalButton>
       )
     case "waitingConfirmation":

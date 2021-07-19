@@ -73,6 +73,7 @@ const UnstakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
             <Allowance
               state={allowanceState}
               send={allowanceSend}
+              tokenSymbol={tokenSymbol}
               successText={`You can now unstake ${tokenSymbol}`}
             />
 
