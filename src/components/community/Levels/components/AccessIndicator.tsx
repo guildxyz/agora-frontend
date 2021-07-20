@@ -83,7 +83,7 @@ const AccessIndicator = ({ levelsState }: Props) => {
     setFocusColor(
       disabled ? "var(--chakra-colors-gray-400)" : "var(--chakra-colors-primary-500)"
     )
-  }, [windowSize, levelsState, accessHeight, colorMode])
+  }, [windowSize, levelsState, focusHeight, pendingHeight, accessHeight, colorMode])
 
   return (
     <>
@@ -110,7 +110,7 @@ const AccessIndicator = ({ levelsState }: Props) => {
           height: 0,
           width: "6px",
           opacity: 0.75,
-          background: "var(--chakra-colors-primary-500)",
+          background: "transparent",
         }}
         transition={{ type: "just" }}
         animate={{
@@ -125,19 +125,16 @@ const AccessIndicator = ({ levelsState }: Props) => {
               left: 0,
               width: "6px",
               height: pendingHeight,
-              background: "trasparent",
-              backgroundRepeat: "repeat-y",
-              backgroundSize: "6px 6px",
-              backgroundImage:
-                "linear-gradient(-45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent)",
+              background: "var(--chakra-colors-primary-500)",
+              opacity: 0.75,
             }}
             transition={{
               repeat: Infinity,
-              duration: 0.5,
+              duration: 1,
               type: "tween",
             }}
             animate={{
-              backgroundPositionY: "6px",
+              opacity: [0.64, 1, 0.64],
             }}
           />
         </div>
