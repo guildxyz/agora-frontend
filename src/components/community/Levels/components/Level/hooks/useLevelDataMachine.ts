@@ -56,7 +56,9 @@ const useLevelDataMachine = (hasAccess: boolean, isModalOpen: boolean): any => {
   useEffect(() => {
     if (hasAccess) {
       send("ACCESS")
+      return
     }
+    send("NOACCESS")
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasAccess])
 

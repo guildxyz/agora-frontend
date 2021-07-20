@@ -68,20 +68,24 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       element: ref,
     }))
 
-    const mouseEnterHandler = () => {
+    const focusEnterHandler = () => {
       send("FOCUSIN")
     }
 
-    const mouseLeaveHandler = () => {
+    const focusLeaveHandler = () => {
       send("FOCUSOUT")
     }
 
-    ref.addEventListener("mouseenter", mouseEnterHandler)
-    ref.addEventListener("mouseleave", mouseLeaveHandler)
+    ref.addEventListener("mouseenter", focusEnterHandler)
+    ref.addEventListener("mouseleave", focusLeaveHandler)
+    ref.addEventListener("focusin", focusEnterHandler)
+    ref.addEventListener("focusout", focusLeaveHandler)
 
     return () => {
-      ref.removeEventListener("mouseenter", mouseEnterHandler)
-      ref.removeEventListener("mouseleave", mouseLeaveHandler)
+      ref.removeEventListener("mouseenter", focusEnterHandler)
+      ref.removeEventListener("mouseleave", focusLeaveHandler)
+      ref.removeEventListener("focusin", focusEnterHandler)
+      ref.removeEventListener("focusout", focusLeaveHandler)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [levelEl])
