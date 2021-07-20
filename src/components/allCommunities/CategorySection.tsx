@@ -1,12 +1,6 @@
 import { Heading, SimpleGrid, Stack, Text } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import {
-  MutableRefObject,
-  forwardRef,
-  useLayoutEffect,
-  useState,
-  useEffect,
-} from "react"
+import { MutableRefObject, forwardRef, useState, useEffect } from "react"
 
 type Props = {
   title: string
@@ -15,13 +9,18 @@ type Props = {
 
 const CategorySection = forwardRef(
   ({ title, placeholder }: Props, ref: MutableRefObject<HTMLDivElement>) => {
-    const [hasChildren, setHasChildren] = useState(false)
+    const [hasCommunities, setHasCommunities] = useState(false)
     const { account } = useWeb3React()
 
     useEffect(() => {
-      ref.current.addEventListener("DOMNodeInserted", () => {
-        if (!hasChildren) setHasChildren(true)
+      const observer = new MutationObserver((records) => {
+        // Removed this check since it shouldn't be necessary, since the observer shouldn't trigger if there was no MutationRecord
+        // if (records.length) {
+        setHasCommunities(!!records[0].target.childNodes.length)
+        // }
       })
+      observer.observe(ref.current, { childList: true })
+      return observer.disconnect
     }, [ref])
 
     return (
@@ -30,7 +29,7 @@ const CategorySection = forwardRef(
           {title}
         </Heading>
 
-        {!hasChildren &&
+        {!hasCommunities &&
           (!account ? (
             <Text>Wallet not connected</Text>
           ) : (

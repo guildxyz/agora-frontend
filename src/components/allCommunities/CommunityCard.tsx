@@ -2,12 +2,10 @@ import { Heading, Image, Portal, Stack, Tag } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import Card from "components/common/Card"
 import { Link } from "components/common/Link"
-import { CommunityProvider, useCommunity } from "components/community/Context"
+import { useCommunity } from "components/community/Context"
 import { useLevelAccess } from "components/community/Levels/components/Level/hooks/useLevelAccess"
-import { Chains } from "connectors"
-import { MutableRefObject, useMemo, useRef } from "react"
+import { MutableRefObject, useMemo } from "react"
 import useSWR from "swr"
-import type { Community } from "temporaryData/communities"
 import getJoinedCommunities from "./utils/getJoinedCommunities"
 
 type Props = {
@@ -36,12 +34,8 @@ const CommunityCard = ({ refYours, refOther, refAccess }: Props): JSX.Element =>
   const isMember = joinedCommunitites?.includes(id)
 
   const containerRef = useMemo(() => {
-    if (isMember) {
-      return refYours
-    }
-    if (hasAccess) {
-      return refAccess
-    }
+    if (isMember) return refYours
+    if (hasAccess) return refAccess
     return refOther
   }, [isMember, hasAccess])
 
