@@ -63,7 +63,9 @@ const useLevelDataMachine = (hasAccess: boolean, isModalOpen: boolean): any => {
   // If we close the modal, we can transition to idle state
   useEffect(() => {
     state.context.isModalOpen = isModalOpen
-    send("FOCUSOUT")
+    if (!isModalOpen) {
+      send("FOCUSOUT")
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isModalOpen])
 
