@@ -51,14 +51,15 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   const [hasAccess, noAccessMessage] = useLevelAccess(data.accessRequirement)
 
   const levelEl = useRef(null)
+
   const [levelData, setLevelData] = useState<LevelData>({
     index,
     isDisabled: true,
     element: null,
   })
-  const [isMouseOver, setIsMouseOver] = useState(false)
 
   const [state, send] = useLevelDataMachine(hasAccess, isStakingModalOpen)
+  const [latestEvent, setLatestEvent] = useState<"mouse" | "key">(null)
 
   // Setting up the elRef & registering the eventListeners
   useEffect(() => {
@@ -69,22 +70,34 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       element: ref,
     }))
 
+    const mouseEnterHandler = () => {
+      setLatestEvent("mouse")
+      send("FOCUSIN")
+    }
+
+    const mouseLeaveHandler = () => {
+      setLatestEvent("mouse")
+      send("FOCUSOUT")
+    }
+
     const focusEnterHandler = () => {
+      setLatestEvent("key")
       send("FOCUSIN")
     }
 
     const focusLeaveHandler = () => {
+      setLatestEvent("key")
       send("FOCUSOUT")
     }
 
-    ref.addEventListener("mouseenter", focusEnterHandler)
-    ref.addEventListener("mouseleave", focusLeaveHandler)
+    ref.addEventListener("mouseenter", mouseEnterHandler)
+    ref.addEventListener("mouseleave", mouseLeaveHandler)
     ref.addEventListener("focusin", focusEnterHandler)
     ref.addEventListener("focusout", focusLeaveHandler)
 
     return () => {
-      ref.removeEventListener("mouseenter", focusEnterHandler)
-      ref.removeEventListener("mouseleave", focusLeaveHandler)
+      ref.removeEventListener("mouseenter", mouseEnterHandler)
+      ref.removeEventListener("mouseleave", mouseLeaveHandler)
       ref.removeEventListener("focusin", focusEnterHandler)
       ref.removeEventListener("focusout", focusLeaveHandler)
     }
@@ -109,21 +122,6 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
 
   return (
     <Stack
-      /*
-      onMouseOver={() => setIsMouseOver(true)}
-      onMouseOut={() => setIsMouseOver(false)}
-      */
-      /*
-      onClickCapture={(e) => {
-        const ref = levelEl.current.getBoundingClientRect()
-        if (
-          (e.clientX < ref.left || e.clientX < ref.right) &&
-          (e.clientY < ref.top || e.clientY > ref.bottom)
-        ) {
-          setIsMouseOver(false)
-        }
-      }}
-      */
       direction={{ base: "column", md: "row" }}
       spacing={6}
       py={{ base: 8, md: 10 }}
@@ -208,6 +206,12 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
                   isOpen={isStakingModalOpen}
                   onClose={() => {
                     onStakingModalClose()
+
+                    if (latestEvent === "mouse") {
+                      console.log("latest event was a mouse event")
+                      // Should remove focus from the staking button here!
+                    }
+
                     send("FOCUSOUT")
                   }}
                 />

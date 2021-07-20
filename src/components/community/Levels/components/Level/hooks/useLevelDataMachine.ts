@@ -21,7 +21,7 @@ const levelDataMachine = createMachine<any, DoneInvokeEvent<any>>(
         on: {
           PENDING: { target: "pending" },
           ACCESS: { target: "access" },
-          FOCUSOUT: { target: "idle", cond: "modalIsNotOpened" },
+          FOCUSOUT: { target: "idle", cond: "safeToIdle" },
         },
       },
       pending: {
@@ -44,7 +44,7 @@ const levelDataMachine = createMachine<any, DoneInvokeEvent<any>>(
   },
   {
     guards: {
-      modalIsNotOpened: (context) => !context.isModalOpen,
+      safeToIdle: (context) => !context.isModalOpen,
     },
   }
 )
