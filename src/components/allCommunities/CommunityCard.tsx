@@ -6,13 +6,25 @@ import { useCommunity } from "components/community/Context"
 import { useLevelAccess } from "components/community/Levels/components/Level/hooks/useLevelAccess"
 import { MutableRefObject, useMemo } from "react"
 import useSWR from "swr"
-import getJoinedCommunities from "./utils/getJoinedCommunities"
 
 type Props = {
   refYours: MutableRefObject<HTMLDivElement>
   refAccess: MutableRefObject<HTMLDivElement>
   refOther: MutableRefObject<HTMLDivElement>
 }
+
+const getJoinedCommunities = async (
+  _: string,
+  address: string
+): Promise<Array<number>> =>
+  fetch(`${process.env.NEXT_PUBLIC_API}/getUserMembership/${address}`).then(
+    (response) => {
+      if (response.ok) {
+        return response.json().then((data) => data.communities)
+      }
+      return []
+    }
+  )
 
 const CommunityCard = ({ refYours, refOther, refAccess }: Props): JSX.Element => {
   const {

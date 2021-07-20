@@ -20,7 +20,7 @@ const CategorySection = forwardRef(
         // }
       })
       observer.observe(ref.current, { childList: true })
-      return observer.disconnect
+      return () => observer.disconnect()
     }, [ref])
 
     return (
