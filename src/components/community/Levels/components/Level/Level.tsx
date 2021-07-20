@@ -33,7 +33,7 @@ type LevelData = {
   index: number
   isDisabled: boolean
   element: HTMLElement
-  state?: "idle" | "focus" | "modalfocus" | "pending" | "access"
+  state?: "idle" | "focus" | "pending" | "access"
 }
 
 const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
@@ -56,6 +56,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     isDisabled: true,
     element: null,
   })
+  const [isMouseOver, setIsMouseOver] = useState(false)
 
   const [state, send] = useLevelDataMachine(hasAccess, isStakingModalOpen)
 
@@ -108,6 +109,21 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
 
   return (
     <Stack
+      /*
+      onMouseOver={() => setIsMouseOver(true)}
+      onMouseOut={() => setIsMouseOver(false)}
+      */
+      /*
+      onClickCapture={(e) => {
+        const ref = levelEl.current.getBoundingClientRect()
+        if (
+          (e.clientX < ref.left || e.clientX < ref.right) &&
+          (e.clientY < ref.top || e.clientY > ref.bottom)
+        ) {
+          setIsMouseOver(false)
+        }
+      }}
+      */
       direction={{ base: "column", md: "row" }}
       spacing={6}
       py={{ base: 8, md: 10 }}
@@ -190,7 +206,10 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
                   levelName={data.name}
                   accessRequirement={data.accessRequirement}
                   isOpen={isStakingModalOpen}
-                  onClose={onStakingModalClose}
+                  onClose={() => {
+                    onStakingModalClose()
+                    send("FOCUSOUT")
+                  }}
                 />
               )}
             </>
