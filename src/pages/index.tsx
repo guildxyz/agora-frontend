@@ -20,14 +20,8 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
   const refYours = useRef<HTMLDivElement>(null)
   const refAccess = useRef<HTMLDivElement>(null)
   const refOther = useRef<HTMLDivElement>(null)
-  const [showYoursPlaceholder, setShowYoursPlaceholder] = useState<boolean>(true)
-  const [showAccessPlaceholder, setShowAccessPlaceholder] = useState<boolean>(true)
-  const [showOtherPlaceholder, setShowOtherPlaceholder] = useState<boolean>(true)
-  const defaultPlaceholder = !account && !library ? "Wallet not connected" : null
 
-  const hideYoursPlaceholder = () => setShowYoursPlaceholder(false)
-  const hideAccessPlaceholder = () => setShowAccessPlaceholder(false)
-  const hideOtherPlaceholder = () => setShowOtherPlaceholder(false)
+  const defaultPlaceholder = !account && !library ? "Wallet not connected" : null
 
   return (
     <Layout
@@ -38,7 +32,6 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
         <Stack spacing={8}>
           <CategorySection
             title="Your communities"
-            showPlaceholder={showYoursPlaceholder}
             placeholder={
               defaultPlaceholder ?? "You're not part of any communities yet"
             }
@@ -46,7 +39,6 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
           />
           <CategorySection
             title="Communities you have access to"
-            showPlaceholder={showAccessPlaceholder}
             placeholder={
               defaultPlaceholder ?? "You don't have access to any communities"
             }
@@ -54,7 +46,6 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
           />
           <CategorySection
             title="Other communities"
-            showPlaceholder={showOtherPlaceholder}
             placeholder={defaultPlaceholder ?? "There aren't any other communities"}
             ref={refOther}
           />
@@ -66,9 +57,6 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
                 refYours,
                 refOther,
                 refAccess,
-                hideYoursPlaceholder,
-                hideAccessPlaceholder,
-                hideOtherPlaceholder,
               }}
             />
           </CommunityProvider>

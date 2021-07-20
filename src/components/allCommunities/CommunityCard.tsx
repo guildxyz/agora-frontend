@@ -14,19 +14,9 @@ type Props = {
   refYours: MutableRefObject<HTMLDivElement>
   refAccess: MutableRefObject<HTMLDivElement>
   refOther: MutableRefObject<HTMLDivElement>
-  hideYoursPlaceholder: () => void
-  hideAccessPlaceholder: () => void
-  hideOtherPlaceholder: () => void
 }
 
-const CommunityCard = ({
-  refYours,
-  refOther,
-  refAccess,
-  hideYoursPlaceholder,
-  hideAccessPlaceholder,
-  hideOtherPlaceholder,
-}: Props): JSX.Element => {
+const CommunityCard = ({ refYours, refOther, refAccess }: Props): JSX.Element => {
   const {
     levels,
     urlName,
@@ -47,14 +37,11 @@ const CommunityCard = ({
 
   const containerRef = useMemo(() => {
     if (isMember) {
-      hideYoursPlaceholder()
       return refYours
     }
     if (hasAccess) {
-      hideAccessPlaceholder()
       return refAccess
     }
-    hideOtherPlaceholder()
     return refOther
   }, [isMember, hasAccess])
 
