@@ -16,12 +16,9 @@ type Props = {
 }
 
 const AllCommunities = ({ communities }: Props): JSX.Element => {
-  const { account, library } = useWeb3React()
   const refYours = useRef<HTMLDivElement>(null)
   const refAccess = useRef<HTMLDivElement>(null)
   const refOther = useRef<HTMLDivElement>(null)
-
-  const defaultPlaceholder = !account && !library ? "Wallet not connected" : null
 
   return (
     <Layout
@@ -32,21 +29,17 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
         <Stack spacing={8}>
           <CategorySection
             title="Your communities"
-            placeholder={
-              defaultPlaceholder ?? "You're not part of any communities yet"
-            }
+            placeholder={"You're not part of any communities yet"}
             ref={refYours}
           />
           <CategorySection
             title="Communities you have access to"
-            placeholder={
-              defaultPlaceholder ?? "You don't have access to any communities"
-            }
+            placeholder={"You don't have access to any communities"}
             ref={refAccess}
           />
           <CategorySection
             title="Other communities"
-            placeholder={defaultPlaceholder ?? "There aren't any other communities"}
+            placeholder={"There aren't any other communities"}
             ref={refOther}
           />
         </Stack>

@@ -1,4 +1,5 @@
 import { Heading, SimpleGrid, Stack, Text } from "@chakra-ui/react"
+import { useWeb3React } from "@web3-react/core"
 import {
   MutableRefObject,
   forwardRef,
@@ -15,6 +16,7 @@ type Props = {
 const CategorySection = forwardRef(
   ({ title, placeholder }: Props, ref: MutableRefObject<HTMLDivElement>) => {
     const [hasChildren, setHasChildren] = useState(false)
+    const { account } = useWeb3React()
 
     useEffect(() => {
       ref.current.addEventListener("DOMNodeInserted", () => {
@@ -28,9 +30,14 @@ const CategorySection = forwardRef(
           {title}
         </Heading>
 
-        <SimpleGrid ref={ref} columns={{ base: 1, lg: 2 }} spacing={10} />
+        {!hasChildren &&
+          (!account ? (
+            <Text>Wallet not connected</Text>
+          ) : (
+            <Text>{placeholder}</Text>
+          ))}
 
-        {!hasChildren && <Text>{placeholder}</Text>}
+        <SimpleGrid ref={ref} columns={{ base: 1, lg: 2 }} spacing={10} />
       </Stack>
     )
   }
