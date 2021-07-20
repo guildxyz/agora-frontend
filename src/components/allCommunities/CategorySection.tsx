@@ -1,5 +1,11 @@
 import { Heading, SimpleGrid, Stack, Text } from "@chakra-ui/react"
-import { MutableRefObject, forwardRef, useLayoutEffect, useState } from "react"
+import {
+  MutableRefObject,
+  forwardRef,
+  useLayoutEffect,
+  useState,
+  useEffect,
+} from "react"
 
 type Props = {
   title: string
@@ -10,7 +16,7 @@ const CategorySection = forwardRef(
   ({ title, placeholder }: Props, ref: MutableRefObject<HTMLDivElement>) => {
     const [hasChildren, setHasChildren] = useState(false)
 
-    useLayoutEffect(() => {
+    useEffect(() => {
       ref.current.addEventListener("DOMNodeInserted", () => {
         if (!hasChildren) setHasChildren(true)
       })
