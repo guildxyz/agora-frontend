@@ -57,17 +57,16 @@ const useColorPalette = (
       [`--${prefix}-700`]: Color(colorCode)
         .lightness(60 - darknessStep * 1.2)
         .rotate(darkRotateStep * 1)
-        .saturate(darkSaturateStep * -0.5)
+        .saturate(darkSaturateStep * -1)
         .hex(),
       [`--${prefix}-800`]: Color(colorCode)
         .lightness(55 - darknessStep * 2.4)
         .rotate(darkRotateStep * 3)
-        .saturate(darkSaturateStep * 1)
         .hex(),
       [`--${prefix}-900`]: Color(colorCode)
         .lightness(55 - darknessStep * 3.4)
         .rotate(darkRotateStep * 4)
-        .saturate(darkSaturateStep * 3)
+        .saturate(darkSaturateStep * 1)
         .hex(),
     }
 
