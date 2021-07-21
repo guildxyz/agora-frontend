@@ -1,4 +1,4 @@
-import { Stack, Text } from "@chakra-ui/react"
+import { useColorMode, Stack, Text, Wrap } from "@chakra-ui/react"
 import { Lock, LockOpen, LockSimpleOpen, Tag, Users } from "phosphor-react"
 import type { AccessRequirement, Icon as IconType } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
@@ -20,15 +20,27 @@ type ChildProps = {
   label: string
 }
 
-const InfoTag = ({ icon: Icon, label }: ChildProps): JSX.Element => (
-  <Stack direction="row" spacing="2" textColor="gray.450" alignItems="center">
-    <Icon size="1.3em" />
-    <Text fontWeight="medium">{label}</Text>
-  </Stack>
-)
+const InfoTag = ({ icon: Icon, label }: ChildProps): JSX.Element => {
+  const { colorMode } = useColorMode()
+
+  return (
+    <Stack
+      as="li"
+      direction="row"
+      textColor={colorMode === "light" ? "gray.450" : "gray.350"}
+      alignItems="center"
+      fontSize={{ base: "sm", md: "md" }}
+      spacing={{ base: 1, sm: 2 }}
+      pr={{ base: "2", md: "3" }}
+    >
+      <Icon size="1.3em" />
+      <Text fontWeight="medium">{label}</Text>
+    </Stack>
+  )
+}
 
 const InfoTags = ({ data, membersCount, tokenSymbol }: Props): JSX.Element => (
-  <Stack direction="row" spacing="8">
+  <Wrap direction="row" spacing={{ base: 2, lg: 4 }}>
     <InfoTag
       icon={accessRequirementIcons[data.type]}
       label={`${data.type} ${
@@ -39,7 +51,7 @@ const InfoTags = ({ data, membersCount, tokenSymbol }: Props): JSX.Element => (
       <InfoTag icon={Tag} label={`${data.amount} ${tokenSymbol}`} />
     )}
     <InfoTag icon={Users} label={`${membersCount} members`} />
-  </Stack>
+  </Wrap>
 )
 
 export default InfoTags

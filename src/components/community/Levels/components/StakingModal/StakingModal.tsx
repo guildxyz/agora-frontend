@@ -1,8 +1,4 @@
 import {
-  CloseButton,
-  Collapse,
-  Icon,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -10,15 +6,15 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-  Tooltip,
   VStack,
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
+import Modal from "components/common/Modal"
 import ModalButton from "components/common/ModalButton"
 import TransactionSubmitted from "components/common/TransactionSubmitted"
+import TokenAllowance from "components/community/common/TokenAllowance"
+import useTokenAllowanceMachine from "components/community/common/TokenAllowance/hooks/useTokenAllowanceMachine"
 import { useCommunity } from "components/community/Context"
-import useTokenAllowanceMachine from "components/community/hooks/useTokenAllowanceMachine"
-import { Check, Info } from "phosphor-react"
 import type { AccessRequirement } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
 import { processMetaMaskError } from "utils/processMetaMaskError"
@@ -31,7 +27,6 @@ type Props = {
   isOpen: boolean
   onClose: () => void
 }
-
 const StakingModal = ({
   levelName,
   accessRequirement,
@@ -70,7 +65,7 @@ const StakingModal = ({
           {stakeState.value === "success" ? (
             <>
               <TransactionSubmitted transaction={stakeState.context.transaction} />
-              <Text textColor="gray" mt="4">
+              <Text colorScheme="gray" mt="4">
                 You’ll recieve {amount} {stakeToken.symbol} in return. Those mark
                 your position, so don’t sell or send them because you will lose
                 access to the community level and won’t be able to get your{" "}
@@ -83,7 +78,7 @@ const StakingModal = ({
                 error={stakeState.context.error || allowanceState.context.error}
                 processError={processMetaMaskError}
               />
-              <Text fontWeight="medium">
+              <Text>
                 Stake {amount} {token.symbol} to gain access to {levelName}. Your
                 tokens will be locked for{" "}
                 {msToReadableFormat(accessRequirement.timelockMs)}, after that you
@@ -97,72 +92,12 @@ const StakingModal = ({
           {/* margin is applied on the approve button,
               so there's no unwanted space when it's not shown */}
           <VStack spacing="0" alignItems="strech">
-            {(() => {
-              switch (allowanceState.value) {
-                case "noAllowance":
-                case "error":
-                  return (
-                    <ModalButton
-                      mb="3"
-                      rightIcon={
-                        <Tooltip
-                          label={`You have to give the Agora smart contracts permission to use your ${token.symbol}. You only have to do this once per token.`}
-                          placement="top"
-                        >
-                          <Icon as={Info} tabIndex={0} />
-                        </Tooltip>
-                      }
-                      // so the button label will be positioned to the center
-                      leftIcon={<span />}
-                      justifyContent="space-between"
-                      onClick={() => allowanceSend("ALLOW")}
-                    >
-                      {`Allow Agora to use ${token.symbol}`}
-                    </ModalButton>
-                  )
-                case "waitingConfirmation":
-                  return (
-                    <ModalButton
-                      mb="3"
-                      isLoading
-                      loadingText="Waiting confirmation"
-                    />
-                  )
-                case "waitingForTransaction":
-                  return (
-                    <ModalButton
-                      mb="3"
-                      isLoading
-                      loadingText="Waiting for transaction to succeed"
-                    />
-                  )
-                case "successNotification":
-                case "allowanceGranted":
-                default:
-                  return (
-                    <Collapse
-                      in={allowanceState.value === "successNotification"}
-                      unmountOnExit
-                    >
-                      <ModalButton
-                        as="div"
-                        colorScheme="gray"
-                        variant="solidStatic"
-                        rightIcon={
-                          <CloseButton
-                            onClick={() => allowanceSend("HIDE_NOTIFICATION")}
-                          />
-                        }
-                        leftIcon={<Check />}
-                        justifyContent="space-between"
-                        mb="3"
-                      >
-                        {`You can now stake ${token.symbol}`}
-                      </ModalButton>
-                    </Collapse>
-                  )
-              }
-            })()}
+            <TokenAllowance
+              state={allowanceState}
+              send={allowanceSend}
+              tokenSymbol={token.symbol}
+              successText={`You can now stake ${token.symbol}`}
+            />
 
             {["allowanceGranted", "successNotification"].includes(
               allowanceState.value.toString()
@@ -184,12 +119,7 @@ const StakingModal = ({
                 }
               })()
             ) : (
-              <ModalButton
-                disabled
-                colorScheme="gray"
-                bg="gray.200"
-                _hover={{ bg: "gray.200" }}
-              >
+              <ModalButton disabled colorScheme="gray">
                 Confirm stake
               </ModalButton>
             )}

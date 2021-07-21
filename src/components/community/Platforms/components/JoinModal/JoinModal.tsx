@@ -1,6 +1,5 @@
 import {
   Icon,
-  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -12,6 +11,7 @@ import {
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
 import { Link } from "components/common/Link"
+import Modal from "components/common/Modal"
 import ModalButton from "components/common/ModalButton"
 import { ArrowSquareOut } from "phosphor-react"
 import QRCode from "qrcode.react"
@@ -27,7 +27,8 @@ type Props = {
 
 const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const {
-    join: { title, description },
+    title,
+    join: { description },
   } = platformsContent[platform]
   const [state, send] = useJoinModalMachine(platform)
 
@@ -40,7 +41,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
     <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>{title}</ModalHeader>
+        <ModalHeader>Join {title}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Error
@@ -57,9 +58,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
               </Text>
               <Link
                 href={state.context.inviteData.inviteLink}
-                color="blue.600"
-                display="flex"
-                alignItems="center"
+                colorScheme="blue"
                 isExternal
               >
                 {state.context.inviteData.inviteLink}
