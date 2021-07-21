@@ -6,7 +6,7 @@ import ERC20_ABI from "constants/erc20abi.json"
 import useContract from "hooks/useContract"
 import useKeepSWRDataLiveAsBlocksArrive from "hooks/useKeepSWRDataLiveAsBlocksArrive"
 import useSWR from "swr"
-import type { Address, Token } from "temporaryData/types"
+import type { Token } from "temporaryData/types"
 
 type TokenAllowance = [boolean, () => Promise<TransactionResponse>]
 
@@ -17,8 +17,8 @@ const MAX_VALUE = BigInt(
 const getAllowance = async (
   _: string,
   tokenContract: Contract,
-  account: Address,
-  contractAddress: Address
+  account: string,
+  contractAddress: string
 ) => {
   const allowance = await tokenContract.allowance(account, contractAddress)
   return allowance >= MAX_VALUE / BigInt(4)
@@ -35,14 +35,14 @@ const useTokenAllowance = (token: Token): TokenAllowance => {
 
   const shouldFetch = typeof account === "string" && !!tokenContract
 
-  const result = useSWR(
+  const { data, mutate } = useSWR(
     shouldFetch
       ? [`${token.name}_allowance`, tokenContract, account, contractAddress]
       : null,
     getAllowance
   )
 
-  useKeepSWRDataLiveAsBlocksArrive(result.mutate)
+  useKeepSWRDataLiveAsBlocksArrive(mutate)
 
   const allowToken = async (): Promise<TransactionResponse> => {
     const tx: TransactionResponse = await tokenContract.approve(
@@ -52,7 +52,6 @@ const useTokenAllowance = (token: Token): TokenAllowance => {
     return tx
   }
 
-  const { data } = result
   return [data, allowToken]
 }
 

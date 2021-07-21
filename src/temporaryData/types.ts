@@ -82,8 +82,6 @@ type ProvidedCommunity = CommunityBase & {
   chainData: ChainData
 }
 
-type Address = `0x${string}`
-
 type MetaMaskError = { code: number; message: string }
 
 type Machine<Context> = [
@@ -103,7 +101,6 @@ export type {
   AccessRequirement,
   ChainData,
   ProvidedCommunity,
-  Address,
   MetaMaskError,
   Machine,
   Icon,
