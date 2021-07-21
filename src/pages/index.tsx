@@ -13,6 +13,16 @@ type Props = {
 }
 
 const AllCommunities = ({ communities }: Props): JSX.Element => {
+  /*
+    The community cards are wrapped in chakra Portals, which are getting one of these refs as a containerRef.
+    This causes the card to be inserted as a child of the element with the given ref.
+      (this only happens in the DOM, and doesn't change the ref itself, causing problems with detecting the change)
+    These three refs are being forwarded to the SimpleGrid components, so the communities will be inserted there.
+    By default every card would go to the "Other communities" section,
+      this is overridden if the user has access to, or is member of the community.
+    This method is needed so we can threat every community individually, meaning we can use our existing useLevelAccess hook
+      to decide if the user has access to the community.
+  */
   const refYours = useRef<HTMLDivElement>(null)
   const refAccess = useRef<HTMLDivElement>(null)
   const refOther = useRef<HTMLDivElement>(null)
@@ -41,6 +51,7 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
           />
         </Stack>
         {communities.map((community) => (
+          // Wrapping in CommunityProvider, so we can use useCommunity, and existing hooks, that use useCommunity
           <CommunityProvider data={community} key={community.id}>
             <CommunityCard
               {...{

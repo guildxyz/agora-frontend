@@ -1,30 +1,16 @@
 import { Heading, Image, Portal, Stack, Tag } from "@chakra-ui/react"
-import { useWeb3React } from "@web3-react/core"
 import Card from "components/common/Card"
 import { Link } from "components/common/Link"
 import { useCommunity } from "components/community/Context"
-import { useLevelAccess } from "components/community/Levels/components/Level/hooks/useLevelAccess"
+import useLevelAccess from "components/community/Levels/components/Level/hooks/useLevelAccess"
 import { MutableRefObject, useMemo } from "react"
-import useSWR from "swr"
+import useIsMemberOfCommunity from "./hooks/useIsMemberOfCommunity"
 
 type Props = {
   refYours: MutableRefObject<HTMLDivElement>
   refAccess: MutableRefObject<HTMLDivElement>
   refOther: MutableRefObject<HTMLDivElement>
 }
-
-const getJoinedCommunities = async (
-  _: string,
-  address: string
-): Promise<Array<number>> =>
-  fetch(`${process.env.NEXT_PUBLIC_API}/getUserMembership/${address}`).then(
-    (response) => {
-      if (response.ok) {
-        return response.json().then((data) => data.communities)
-      }
-      return []
-    }
-  )
 
 const CommunityCard = ({ refYours, refOther, refAccess }: Props): JSX.Element => {
   const {
@@ -35,21 +21,15 @@ const CommunityCard = ({ refYours, refOther, refAccess }: Props): JSX.Element =>
     chainData: {
       token: { symbol: tokenSymbol },
     },
-    id,
   } = useCommunity()
-  const { account } = useWeb3React()
   const [hasAccess] = useLevelAccess(levels[0].accessRequirement)
-  const { data: joinedCommunitites } = useSWR(
-    ["joined_communities", account],
-    getJoinedCommunities
-  )
-  const isMember = joinedCommunitites?.includes(id)
+  const isMember = useIsMemberOfCommunity()
 
   const containerRef = useMemo(() => {
     if (isMember) return refYours
     if (hasAccess) return refAccess
     return refOther
-  }, [isMember, hasAccess])
+  }, [isMember, hasAccess, refYours, refAccess, refOther])
 
   const membersCount = levels
     .map((level) => level.membersCount)

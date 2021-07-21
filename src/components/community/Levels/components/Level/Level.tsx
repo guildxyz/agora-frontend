@@ -14,7 +14,7 @@ import { CheckCircle } from "phosphor-react"
 import { useEffect, useRef, useState } from "react"
 import type { Level as LevelType } from "temporaryData/types"
 import StakingModal from "../StakingModal"
-import { useLevelAccess } from "./hooks/useLevelAccess"
+import useLevelAccess from "./hooks/useLevelAccess"
 
 type Props = {
   data: LevelType

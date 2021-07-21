@@ -4,27 +4,6 @@ import useBalance from "hooks/useBalance"
 import type { AccessRequirement } from "temporaryData/types"
 import useNeededAmount from "../../../hooks/useNeededAmount"
 
-const hasAccessToLevel = (
-  requirement: AccessRequirement,
-  stakeBalance: number,
-  tokenBalance: number,
-  _neededAmount: number | null = null
-): [boolean, string] => {
-  if (requirement.type === "open") return [true, ""]
-
-  if (stakeBalance >= requirement.amount) return [true, ""]
-
-  const neededAmount = _neededAmount ?? requirement.amount
-
-  if (tokenBalance < neededAmount) return [false, "Insufficient balance"]
-
-  if (requirement.type === "hold") return [true, ""]
-
-  if (requirement.type === "stake") return [false, ""]
-
-  return [false, ""]
-}
-
 const useLevelAccess = (accessRequirement: AccessRequirement): [boolean, string] => {
   const {
     chainData: { token, stakeToken },
@@ -36,12 +15,18 @@ const useLevelAccess = (accessRequirement: AccessRequirement): [boolean, string]
 
   if (!active) return [false, "Wallet not connected"]
 
-  return hasAccessToLevel(
-    accessRequirement,
-    stakeBalance,
-    tokenBalance,
-    neededAmount
-  )
+  // If we need open levels to be accessible without wallet, this one should be the first if
+  if (accessRequirement.type === "open") return [true, ""]
+
+  if (stakeBalance >= accessRequirement.amount) return [true, ""]
+
+  if (tokenBalance < neededAmount) return [false, "Insufficient balance"]
+
+  if (accessRequirement.type === "hold") return [true, ""]
+
+  if (accessRequirement.type === "stake") return [false, ""]
+
+  return [false, ""]
 }
 
-export { useLevelAccess, hasAccessToLevel }
+export default useLevelAccess
