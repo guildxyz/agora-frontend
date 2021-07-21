@@ -71,6 +71,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     }))
 
     const focusEnterHandler = () => {
+      // Only sending the machine to focus state if we have the "data-focus-visible-added" attribute on the button
       const btnFocusVisible = stakingBtn.current?.hasAttribute(
         "data-focus-visible-added"
       )
@@ -122,6 +123,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       onClickCapture={(e) => {
         const rect = levelEl.current?.getBoundingClientRect()
         if (
+          // 0 - keyboard event, 1 - mouse event
           e.detail === 1 &&
           (e.clientX <= rect?.left ||
             e.clientX >= rect?.right ||
