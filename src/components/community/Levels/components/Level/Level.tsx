@@ -118,21 +118,28 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [levelData, state])
 
+  const onClickCaptureHandler = (e) => {
+    if (!isStakingModalOpen) {
+      send("FOCUSIN")
+      return
+    }
+
+    const rect = levelEl.current?.getBoundingClientRect()
+    if (
+      // 0 - keyboard event, 1 - mouse event
+      e.detail === 1 &&
+      (e.clientX <= rect?.left ||
+        e.clientX >= rect?.right ||
+        e.clientY <= rect?.top ||
+        e.clientY >= rect.bottom)
+    ) {
+      send("FORCEFOCUSOUT")
+    }
+  }
+
   return (
     <Stack
-      onClickCapture={(e) => {
-        const rect = levelEl.current?.getBoundingClientRect()
-        if (
-          // 0 - keyboard event, 1 - mouse event
-          e.detail === 1 &&
-          (e.clientX <= rect?.left ||
-            e.clientX >= rect?.right ||
-            e.clientY <= rect?.top ||
-            e.clientY >= rect.bottom)
-        ) {
-          send("FORCEFOCUSOUT")
-        }
-      }}
+      onClickCapture={onClickCaptureHandler}
       direction={{ base: "column", md: "row" }}
       spacing={6}
       py={{ base: 8, md: 10 }}
