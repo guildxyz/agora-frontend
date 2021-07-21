@@ -10,9 +10,15 @@ const levelDataMachine = createMachine<any, DoneInvokeEvent<any>>(
       isModalOpen: false,
     },
     states: {
+      forcedidle: {
+        on: {
+          IDLE: { target: "idle" },
+        },
+      },
       idle: {
         on: {
           FOCUSIN: { target: "focus" },
+          MOUSEFOCUSIN: { target: "focus" },
           PENDING: { target: "pending" },
           ACCESS: { target: "access" },
         },
@@ -22,6 +28,7 @@ const levelDataMachine = createMachine<any, DoneInvokeEvent<any>>(
           PENDING: { target: "pending" },
           ACCESS: { target: "access" },
           FOCUSOUT: { target: "idle", cond: "safeToIdle" },
+          FORCEFOCUSOUT: { target: "forcedidle" },
         },
       },
       pending: {
@@ -66,6 +73,13 @@ const useLevelDataMachine = (hasAccess: boolean, isModalOpen: boolean): any => {
     state.context.isModalOpen = isModalOpen
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isModalOpen])
+
+  useEffect(() => {
+    if (state.value === "forcedidle") {
+      send("IDLE", { delay: 100 })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state])
 
   return [state, send]
 }
