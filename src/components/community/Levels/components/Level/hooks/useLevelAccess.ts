@@ -15,7 +15,6 @@ const useLevelAccess = (accessRequirement: AccessRequirement): [boolean, string]
 
   if (!active) return [false, "Wallet not connected"]
 
-  // If we need open levels to be accessible without wallet, this one should be the first if
   if (accessRequirement.type === "open") return [true, ""]
 
   if (stakeBalance >= accessRequirement.amount) return [true, ""]
@@ -23,8 +22,6 @@ const useLevelAccess = (accessRequirement: AccessRequirement): [boolean, string]
   if (tokenBalance < neededAmount) return [false, "Insufficient balance"]
 
   if (accessRequirement.type === "hold") return [true, ""]
-
-  if (accessRequirement.type === "stake") return [false, ""]
 
   return [false, ""]
 }

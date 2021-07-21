@@ -7,12 +7,12 @@ import { MutableRefObject, useMemo } from "react"
 import useIsMemberOfCommunity from "./hooks/useIsMemberOfCommunity"
 
 type Props = {
-  refYours: MutableRefObject<HTMLDivElement>
+  refMember: MutableRefObject<HTMLDivElement>
   refAccess: MutableRefObject<HTMLDivElement>
   refOther: MutableRefObject<HTMLDivElement>
 }
 
-const CommunityCard = ({ refYours, refOther, refAccess }: Props): JSX.Element => {
+const CommunityCard = ({ refMember, refOther, refAccess }: Props): JSX.Element => {
   const {
     levels,
     urlName,
@@ -22,14 +22,14 @@ const CommunityCard = ({ refYours, refOther, refAccess }: Props): JSX.Element =>
       token: { symbol: tokenSymbol },
     },
   } = useCommunity()
-  const [hasAccess] = useLevelAccess(levels[0].accessRequirement)
   const isMember = useIsMemberOfCommunity()
+  const [hasAccess] = useLevelAccess(levels[0].accessRequirement)
 
   const containerRef = useMemo(() => {
-    if (isMember) return refYours
+    if (isMember) return refMember
     if (hasAccess) return refAccess
     return refOther
-  }, [isMember, hasAccess, refYours, refAccess, refOther])
+  }, [isMember, hasAccess, refMember, refAccess, refOther])
 
   const membersCount = levels
     .map((level) => level.membersCount)

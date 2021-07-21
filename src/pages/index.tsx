@@ -12,18 +12,15 @@ type Props = {
   communities: Community[]
 }
 
+/**
+ * Instead of loopig through communities and building 3 arrays categorizing them then
+ * rendering CommunityCards of those arrys in the CategorySection components, we just
+ * render all CommunityCards here and mount them into the appropriate section via
+ * Portals, because this way we can use our existing hooks for the logic of where
+ * they belong to.
+ */
 const AllCommunities = ({ communities }: Props): JSX.Element => {
-  /*
-    The community cards are wrapped in chakra Portals, which are getting one of these refs as a containerRef.
-    This causes the card to be inserted as a child of the element with the given ref.
-      (this only happens in the DOM, and doesn't change the ref itself, causing problems with detecting the change)
-    These three refs are being forwarded to the SimpleGrid components, so the communities will be inserted there.
-    By default every card would go to the "Other communities" section,
-      this is overridden if the user has access to, or is member of the community.
-    This method is needed so we can threat every community individually, meaning we can use our existing useLevelAccess hook
-      to decide if the user has access to the community.
-  */
-  const refYours = useRef<HTMLDivElement>(null)
+  const refMember = useRef<HTMLDivElement>(null)
   const refAccess = useRef<HTMLDivElement>(null)
   const refOther = useRef<HTMLDivElement>(null)
 
@@ -37,7 +34,7 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
           <CategorySection
             title="Your communities"
             placeholder={"You're not part of any communities yet"}
-            ref={refYours}
+            ref={refMember}
           />
           <CategorySection
             title="Communities you have access to"
@@ -51,11 +48,14 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
           />
         </Stack>
         {communities.map((community) => (
-          // Wrapping in CommunityProvider, so we can use useCommunity, and existing hooks, that use useCommunity
+          /**
+           * Wrapping in CommunityProvider instead of just passing the data because
+           * it provides the color palette of the community and the current chain's data
+           */
           <CommunityProvider data={community} key={community.id}>
             <CommunityCard
               {...{
-                refYours,
+                refMember,
                 refOther,
                 refAccess,
               }}
