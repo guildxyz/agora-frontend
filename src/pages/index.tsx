@@ -25,25 +25,22 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
   const refOther = useRef<HTMLDivElement>(null)
 
   return (
-    <Layout
-      title="All communities on Agora"
-      bg="linear-gradient(white 0px, var(--chakra-colors-gray-100) 700px)"
-    >
+    <Layout title="All communities on Agora">
       <>
         <Stack spacing={8}>
           <CategorySection
             title="Your communities"
-            placeholder={"You're not part of any communities yet"}
+            placeholder="You're not part of any communities yet"
             ref={refMember}
           />
           <CategorySection
             title="Communities you have access to"
-            placeholder={"You don't have access to any communities"}
+            placeholder="You don't have access to any communities"
             ref={refAccess}
           />
           <CategorySection
             title="Other communities"
-            placeholder={"There aren't any other communities"}
+            placeholder="There aren't any other communities"
             ref={refOther}
           />
         </Stack>

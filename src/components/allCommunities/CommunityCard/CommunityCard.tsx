@@ -1,4 +1,12 @@
-import { Heading, Image, Portal, Stack, Tag } from "@chakra-ui/react"
+import {
+  Heading,
+  Image,
+  Portal,
+  Stack,
+  Tag,
+  useColorMode,
+  Wrap,
+} from "@chakra-ui/react"
 import Card from "components/common/Card"
 import { Link } from "components/common/Link"
 import { useCommunity } from "components/community/Context"
@@ -24,6 +32,7 @@ const CommunityCard = ({ refMember, refOther, refAccess }: Props): JSX.Element =
   } = useCommunity()
   const isMember = useIsMemberOfCommunity()
   const [hasAccess] = useLevelAccess(levels[0].accessRequirement)
+  const { colorMode } = useColorMode()
 
   const containerRef = useMemo(() => {
     if (isMember) return refMember
@@ -37,41 +46,45 @@ const CommunityCard = ({ refMember, refOther, refAccess }: Props): JSX.Element =
 
   return (
     <Portal containerRef={containerRef}>
-      <Link href={`/${urlName}`} _hover={{ textDecor: "none" }} borderRadius="2xl">
+      <Link
+        href={`/${urlName}`}
+        _hover={{ textDecor: "none" }}
+        borderRadius="2xl"
+        w="full"
+      >
         <Card
           role="group"
-          p="7"
-          bgGradient="linear(to-l, var(--chakra-colors-primary-50), white)"
+          px={{ base: 5, sm: 7 }}
+          py="7"
+          w="full"
+          bgGradient={`linear(to-l, var(--chakra-colors-primary-100), ${
+            colorMode === "light" ? "white" : "var(--chakra-colors-gray-800)"
+          })`}
+          bgBlendMode={colorMode === "light" ? "normal" : "color"}
           bgRepeat="no-repeat"
-          bgSize="150%"
-          bgPosition="-100%"
-          transition="background-position 0.6s ease"
+          bgSize="400%"
+          transition="background-size 0.8s ease"
           _hover={{
-            bgPosition: "0",
-            transition: "background-position 0.4s ease",
+            bgSize: "100%",
+            transition: "background-size 0.24s ease",
           }}
         >
           <Stack
             position="relative"
             direction="row"
-            spacing="10"
+            spacing={{ base: 5, sm: 10 }}
             alignItems="center"
           >
             <Image src={`${imageUrl}`} boxSize="45px" alt="Level logo" />
             <Stack spacing="3">
               <Heading size="sm">{communityName}</Heading>
-              <Stack direction="row" spacing="3">
-                <Tag
-                  colorScheme="blackAlpha"
-                  textColor="blackAlpha.700"
-                >{`${membersCount} members`}</Tag>
-                <Tag colorScheme="blackAlpha" textColor="blackAlpha.700">
-                  {`${levels.length} levels`}
-                </Tag>
-                <Tag colorScheme="blackAlpha" textColor="blackAlpha.700">
+              <Wrap spacing="2" shouldWrapChildren>
+                <Tag colorScheme="alpha">{`${membersCount} members`}</Tag>
+                <Tag colorScheme="alpha">{`${levels.length} levels`}</Tag>
+                <Tag colorScheme="alpha">
                   {`min: ${levels[0].accessRequirement.amount} ${tokenSymbol}`}
                 </Tag>
-              </Stack>
+              </Wrap>
             </Stack>
           </Stack>
         </Card>

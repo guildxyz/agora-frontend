@@ -1,7 +1,6 @@
-import { useEffect, useRef } from "react"
 import {
   Button,
-  Modal,
+  Icon,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -11,13 +10,16 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react"
-import { useWeb3React } from "@web3-react/core"
+import MetaMaskOnboarding from "@metamask/onboarding"
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { AbstractConnector } from "@web3-react/abstract-connector"
-import MetaMaskOnboarding from "@metamask/onboarding"
-import injected from "connectors"
-import { Link } from "components/common/Link"
+import { useWeb3React } from "@web3-react/core"
 import { Error } from "components/common/Error"
+import { Link } from "components/common/Link"
+import Modal from "components/common/Modal"
+import injected from "connectors"
+import { ArrowSquareOut } from "phosphor-react"
+import React, { useEffect, useRef } from "react"
 import ConnectorButton from "./components/ConnectorButton"
 import processConnectionError from "./utils/processConnectionError"
 
@@ -94,11 +96,12 @@ const Web3Modal = ({
           <Text textAlign="center">
             New to Ethereum wallets?{" "}
             <Link
-              color="primary.500"
-              target="_blank"
+              colorScheme="blue"
               href="https://ethereum.org/en/wallets/"
+              isExternal
             >
               Learn more
+              <Icon as={ArrowSquareOut} mx="1" />
             </Link>
           </Text>
         </ModalFooter>

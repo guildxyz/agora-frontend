@@ -1,6 +1,6 @@
 import { Heading, SimpleGrid, Stack, Text } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import { MutableRefObject, forwardRef, useState, useEffect } from "react"
+import { forwardRef, MutableRefObject, useEffect, useState } from "react"
 
 type Props = {
   title: string
@@ -29,13 +29,17 @@ const CategorySection = forwardRef(
 
     return (
       <Stack spacing={4}>
-        <Heading size="md" as="h4">
+        <Heading fontSize={{ base: "md", sm: "lg" }} as="h4">
           {title}
         </Heading>
 
         {isEmpty && <Text>{!account ? "Wallet not connected" : placeholder}</Text>}
 
-        <SimpleGrid ref={ref} columns={{ base: 1, lg: 2 }} spacing={10} />
+        <SimpleGrid
+          ref={ref}
+          columns={{ base: 1, md: 2 }}
+          spacing={{ base: 5, md: 10 }}
+        />
       </Stack>
     )
   }
