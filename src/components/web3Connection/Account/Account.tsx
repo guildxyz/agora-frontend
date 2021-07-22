@@ -77,14 +77,11 @@ const Account = (): JSX.Element => {
     <>
       <Card>
         <ButtonGroup isAttached variant="ghost">
-          {!!communityData && (
-            <>
-              <Button borderRadius="2xl" fontWeight="bold">
-                {Chains[chainId].charAt(0).toUpperCase() + Chains[chainId].slice(1)}
-              </Button>
-              <Divider orientation="vertical" h="var(--chakra-space-11)" />
-            </>
-          )}
+          <Button borderRadius="2xl" fontWeight="bold">
+            {Chains[chainId].charAt(0).toUpperCase() + Chains[chainId].slice(1)}
+          </Button>
+          <Divider orientation="vertical" h="var(--chakra-space-11)" />
+
           <Button borderRadius="2xl" onClick={onOpen}>
             <HStack>
               <VStack spacing={0} alignItems="flex-end">
