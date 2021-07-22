@@ -4,6 +4,7 @@ import {
   Divider,
   HStack,
   Text,
+  useBreakpointValue,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react"
@@ -17,7 +18,7 @@ import { useContext } from "react"
 import type { Token } from "temporaryData/types"
 import shortenHex from "utils/shortenHex"
 import AccountModal from "../AccountModal"
-import Identicon from "../AccountModal/components/Identicon" // TODO: move this component to a more logical place...
+import Identicon from "../components/Identicon"
 import useENSName from "./hooks/useENSName"
 
 type Props = {
@@ -30,7 +31,7 @@ const Account = (): JSX.Element => {
   const { openModal, triedEager } = useContext(Web3Connection)
   const ENSName = useENSName(account)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  // const shortenHexText = useBreakpointValue({ base: 2, sm: 3 })
+  const shortenHexText = useBreakpointValue({ base: 3, sm: 4 })
 
   if (typeof window === "undefined") {
     return (
@@ -83,15 +84,12 @@ const Account = (): JSX.Element => {
               <Divider orientation="vertical" h="var(--chakra-space-11)" />
             </>
           )}
-          {/* <Button leftIcon={<Wallet />} onClick={onOpen}>
-            {ENSName || `${shortenHex(account, shortenHexText)}`}
-          </Button> */}
           <Button borderRadius="2xl" onClick={onOpen}>
             <HStack>
               <VStack spacing={0} alignItems="flex-end">
                 <Balance token={communityData.chainData.token} />
                 <Text as="span" fontSize="xs" fontWeight="medium" colorScheme="gray">
-                  {ENSName || `${shortenHex(account, 3)}`}
+                  {ENSName || `${shortenHex(account, shortenHexText)}`}
                 </Text>
               </VStack>
               <Identicon address={account} size={28} />
@@ -104,20 +102,6 @@ const Account = (): JSX.Element => {
   )
 }
 
-/*
-// Old...
-const Balance = ({ token }: Props): JSX.Element => {
-  const balance = useBalance(token)
-
-  return (
-    <Button mr="-px" isLoading={!balance}>
-      {`${balance} ${token.name}`}
-    </Button>
-  )
-}
-*/
-
-// TODO: loading state!
 const Balance = ({ token }: Props): JSX.Element => {
   const balance = useBalance(token)
 
