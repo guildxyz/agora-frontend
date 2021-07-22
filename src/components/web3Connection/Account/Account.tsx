@@ -5,6 +5,7 @@ import {
   HStack,
   Text,
   useBreakpointValue,
+  useColorMode,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react"
@@ -33,6 +34,7 @@ const Account = (): JSX.Element => {
   const ENSName = useENSName(account)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const shortenHexText = useBreakpointValue({ base: 3, sm: 4 })
+  const { colorMode } = useColorMode()
 
   if (typeof window === "undefined") {
     return (
@@ -89,7 +91,12 @@ const Account = (): JSX.Element => {
             <HStack>
               <VStack spacing={0} alignItems="flex-end">
                 <Balance token={communityData.chainData.token} />
-                <Text as="span" fontSize="xs" fontWeight="medium" colorScheme="gray">
+                <Text
+                  as="span"
+                  fontSize="xs"
+                  fontWeight="medium"
+                  color={colorMode === "light" ? "gray.600" : "gray.400"}
+                >
                   {ENSName || `${shortenHex(account, shortenHexText)}`}
                 </Text>
               </VStack>
