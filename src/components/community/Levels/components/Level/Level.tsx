@@ -81,7 +81,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     }
 
     const mouseEnterHandler = () => {
-      send("MOUSEFOCUSIN")
+      send("FOCUSIN")
     }
 
     const focusLeaveHandler = () => {
