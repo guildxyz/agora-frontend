@@ -10,6 +10,7 @@ import {
 import Card from "components/common/Card"
 import { Link } from "components/common/Link"
 import { useCommunity } from "components/community/Context"
+import useColorPalette from "components/community/hooks/useColorPalette"
 import useLevelAccess from "components/community/Levels/components/Level/hooks/useLevelAccess"
 import { MutableRefObject, useMemo } from "react"
 import useIsMemberOfCommunity from "./hooks/useIsMemberOfCommunity"
@@ -29,10 +30,13 @@ const CommunityCard = ({ refMember, refOther, refAccess }: Props): JSX.Element =
     chainData: {
       token: { symbol: tokenSymbol },
     },
+    theme: { color },
   } = useCommunity()
   const isMember = useIsMemberOfCommunity()
   const [hasAccess] = useLevelAccess(levels[0].accessRequirement)
   const { colorMode } = useColorMode()
+
+  const generatedColors = useColorPalette("chakra-colors-primary", color)
 
   const containerRef = useMemo(() => {
     if (isMember) return refMember
@@ -51,6 +55,7 @@ const CommunityCard = ({ refMember, refOther, refAccess }: Props): JSX.Element =
         _hover={{ textDecor: "none" }}
         borderRadius="2xl"
         w="full"
+        sx={generatedColors}
       >
         <Card
           role="group"
