@@ -1,4 +1,4 @@
-import { useColorMode, IconButton, Icon } from "@chakra-ui/react"
+import { Icon, IconButton, useColorMode } from "@chakra-ui/react"
 import Card from "components/common/Card"
 import { Moon, Sun } from "phosphor-react"
 
@@ -6,7 +6,7 @@ const ColorModeSwitch = (): JSX.Element => {
   const { colorMode, toggleColorMode } = useColorMode()
 
   return (
-    <Card>
+    <Card type="modern">
       <IconButton
         aria-label="Switch color mode"
         variant="ghost"
