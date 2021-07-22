@@ -78,9 +78,12 @@ const Account = (): JSX.Element => {
               {!!communityData && <Balance token={communityData.chainData.token} />}
               <Text
                 as="span"
-                  fontSize="xs"
-                  fontWeight="medium"
-                  color={colorMode === "light" ? "gray.600" : "gray.400"}
+                fontSize={communityData ? "xs" : "md"}
+                fontWeight={communityData ? "medium" : "semibold"}
+                color={
+                  !!communityData &&
+                  (colorMode === "light" ? "gray.600" : "gray.400")
+                }
               >
                 {ENSName || `${shortenHex(account, 3)}`}
               </Text>
