@@ -9,7 +9,6 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
-import Card from "components/common/Card"
 import { useCommunity } from "components/community/Context"
 import { Web3Connection } from "components/web3Connection/Web3ConnectionManager"
 import { Chains } from "connectors"
@@ -36,72 +35,61 @@ const Account = (): JSX.Element => {
 
   if (typeof window === "undefined") {
     return (
-      <Card>
-        <Button variant="ghost" borderRadius="2xl" isLoading>
-          Connect to a wallet
-        </Button>
-      </Card>
+      <Button variant="ghost" isLoading>
+        Connect to a wallet
+      </Button>
     )
   }
   if (error instanceof UnsupportedChainIdError) {
     return (
-      <Card>
-        <Button
-          variant="ghost"
-          borderRadius="2xl"
-          leftIcon={<LinkBreak />}
-          colorScheme="red"
-          onClick={openModal}
-        >
-          Wrong Network
-        </Button>
-      </Card>
+      <Button
+        variant="ghost"
+        leftIcon={<LinkBreak />}
+        colorScheme="red"
+        onClick={openModal}
+      >
+        Wrong Network
+      </Button>
     )
   }
   if (typeof account !== "string") {
     return (
-      <Card>
-        <Button
-          variant="ghost"
-          borderRadius="2xl"
-          leftIcon={<SignIn />}
-          isLoading={!triedEager}
-          onClick={openModal}
-        >
-          Connect to a wallet
-        </Button>
-      </Card>
+      <Button
+        variant="ghost"
+        leftIcon={<SignIn />}
+        isLoading={!triedEager}
+        onClick={openModal}
+      >
+        Connect to a wallet
+      </Button>
     )
   }
   return (
     <>
-      <Card>
-        <ButtonGroup isAttached variant="ghost">
-          <Button borderRadius="2xl" fontWeight="bold">
-            {Chains[chainId].charAt(0).toUpperCase() + Chains[chainId].slice(1)}
-          </Button>
-          <Divider orientation="vertical" h="var(--chakra-space-11)" />
+      <ButtonGroup isAttached variant="ghost">
+        <Button>
+          {Chains[chainId].charAt(0).toUpperCase() + Chains[chainId].slice(1)}
+        </Button>
+        <Divider orientation="vertical" h="var(--chakra-space-11)" />
 
-          <Button borderRadius="2xl" onClick={onOpen}>
-            <HStack>
-              <VStack spacing={0} alignItems="flex-end">
-                {!!communityData && (
-                  <Balance token={communityData.chainData.token} />
-                )}
-                <Text
-                  as="span"
+        <Button onClick={onOpen}>
+          <HStack>
+            <VStack spacing={0} alignItems="flex-end">
+              {!!communityData && <Balance token={communityData.chainData.token} />}
+              <Text
+                as="span"
                   fontSize="xs"
                   fontWeight="medium"
                   color={colorMode === "light" ? "gray.600" : "gray.400"}
-                >
-                  {ENSName || `${shortenHex(account, 3)}`}
-                </Text>
-              </VStack>
-              <Identicon address={account} size={28} />
-            </HStack>
-          </Button>
-        </ButtonGroup>
-      </Card>
+              >
+                {ENSName || `${shortenHex(account, 3)}`}
+              </Text>
+            </VStack>
+            <Identicon address={account} size={28} />
+          </HStack>
+        </Button>
+      </ButtonGroup>
+
       <AccountModal {...{ isOpen, onClose }} />
     </>
   )

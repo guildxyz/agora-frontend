@@ -1,13 +1,14 @@
 import {
-  useColorMode,
   Box,
   Container,
   Heading,
-  Stack,
   HStack,
+  Stack,
+  useColorMode,
 } from "@chakra-ui/react"
-import Head from "next/head"
+import Card from "components/common/Card"
 import Account from "components/web3Connection/Account"
+import Head from "next/head"
 import ColorModeSwitch from "./components/ColorModeSwitch"
 
 type Props = {
@@ -53,8 +54,12 @@ const Layout = ({ title, children }: Props): JSX.Element => {
               {title}
             </Heading>
             <HStack justify="flex-end">
-              <ColorModeSwitch />
-              <Account />
+              <Card>
+                <ColorModeSwitch />
+              </Card>
+              <Card>
+                <Account />
+              </Card>
             </HStack>
           </Stack>
           {children}
