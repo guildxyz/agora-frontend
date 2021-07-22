@@ -15,12 +15,12 @@ const CategorySection = forwardRef(
      * doesn't cause a rerender, we need to sync in a state if the category has
      * communities or not, so we can show the placeholder in case of emptiness
      */
-    const [isEmpty, setIsEmpty] = useState(false)
+    const [isEmpty, setIsEmpty] = useState(true)
 
     useEffect(() => {
       // MutationObserver will fire the callback every time the element's childList changes
       const observer = new MutationObserver((records) => {
-        setIsEmpty(!records[0].target.childNodes.length)
+        setIsEmpty(records[0].target.childNodes.length === 0)
       })
       observer.observe(ref.current, { childList: true })
 
