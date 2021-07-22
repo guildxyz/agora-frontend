@@ -36,7 +36,7 @@ const Account = (): JSX.Element => {
 
   if (typeof window === "undefined") {
     return (
-      <Card type="modern">
+      <Card>
         <Button variant="ghost" borderRadius="2xl" isLoading>
           Connect to a wallet
         </Button>
@@ -45,7 +45,7 @@ const Account = (): JSX.Element => {
   }
   if (error instanceof UnsupportedChainIdError) {
     return (
-      <Card type="modern">
+      <Card>
         <Button
           variant="ghost"
           borderRadius="2xl"
@@ -60,7 +60,7 @@ const Account = (): JSX.Element => {
   }
   if (typeof account !== "string") {
     return (
-      <Card type="modern">
+      <Card>
         <Button
           variant="ghost"
           borderRadius="2xl"
@@ -75,12 +75,12 @@ const Account = (): JSX.Element => {
   }
   return (
     <>
-      <Card type="modern">
+      <Card>
         <ButtonGroup isAttached variant="ghost">
           {!!communityData && (
             <>
               <Button borderRadius="2xl" fontWeight="bold">
-                {Chains[chainId].toUpperCase()}
+                {Chains[chainId].charAt(0).toUpperCase() + Chains[chainId].slice(1)}
               </Button>
               <Divider orientation="vertical" h="var(--chakra-space-11)" />
             </>

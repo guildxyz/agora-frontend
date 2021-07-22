@@ -6,7 +6,7 @@ const ColorModeSwitch = (): JSX.Element => {
   const { colorMode, toggleColorMode } = useColorMode()
 
   return (
-    <Card type="modern">
+    <Card>
       <IconButton
         aria-label="Switch color mode"
         variant="ghost"
