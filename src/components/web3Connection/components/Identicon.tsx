@@ -15,7 +15,7 @@ const Identicon = ({ address, size = 40 }: Props): JSX.Element => {
       ref.current.innerHTML = ""
       ref.current.appendChild(Jazzicon(size, parseInt(address.slice(2, 10), 16)))
     }
-  }, [address])
+  }, [address, size])
 
   return <Center ref={ref} />
 }
