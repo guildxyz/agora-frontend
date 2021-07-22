@@ -12,6 +12,7 @@ import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 import Card from "components/common/Card"
 import { useCommunity } from "components/community/Context"
 import { Web3Connection } from "components/web3Connection/Web3ConnectionManager"
+import { Chains } from "connectors"
 import useBalance from "hooks/useBalance"
 import { LinkBreak, SignIn } from "phosphor-react"
 import { useContext } from "react"
@@ -27,7 +28,7 @@ type Props = {
 
 const Account = (): JSX.Element => {
   const communityData = useCommunity()
-  const { error, account } = useWeb3React()
+  const { error, account, chainId } = useWeb3React()
   const { openModal, triedEager } = useContext(Web3Connection)
   const ENSName = useENSName(account)
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -79,7 +80,7 @@ const Account = (): JSX.Element => {
           {!!communityData && (
             <>
               <Button borderRadius="2xl" fontWeight="bold">
-                ChainName
+                {Chains[chainId].toUpperCase()}
               </Button>
               <Divider orientation="vertical" h="var(--chakra-space-11)" />
             </>
@@ -105,9 +106,23 @@ const Account = (): JSX.Element => {
 const Balance = ({ token }: Props): JSX.Element => {
   const balance = useBalance(token)
 
+  const convertBalance = (): string => {
+    let decimals = 0
+
+    if (balance < 10) {
+      decimals = 3
+    } else if (balance < 100) {
+      decimals = 2
+    } else if (balance < 1000) {
+      decimals = 1
+    }
+
+    return Number(balance).toFixed(decimals)
+  }
+
   return (
     <Text as="span" fontWeight="bold" fontSize="sm">
-      {!balance ? "Loading..." : `${Number(balance).toFixed(0)} ${token.name}`}
+      {!balance ? "Loading..." : `${convertBalance()} ${token.name}`}
     </Text>
   )
 }
