@@ -9,25 +9,25 @@ const communities: Community[] = [
       "Create tokenized, private communities on multiple platforms and blockchains.",
     imageUrl: "temporaryCommunityLogos/agora3.png",
     theme: {
-      color: "#4F46E5",
+      color: "#3020A6",
     },
     ownerId: 0,
     chainData: {
-      ropsten: {
+      polygon: {
         token: {
-          address: "0xaD6D458402F60fD3Bd25163575031ACDce07538D",
-          name: "DAI",
-          symbol: "DAI",
+          address: "0xfF9bAaC24c68d810af1F98012d3D25B0Ea83902e",
+          name: "OWO",
+          symbol: "OWO",
           decimals: 18,
         },
         stakeToken: {
-          address: "0xc147106ea81F484132991bc1C961FF3fADE572E0",
-          name: "AGTDAI",
-          symbol: "AGTDAI",
+          address: "0x0e4E6DaAB4532F6d71FFA3A8a3A5E014f60C524b",
+          name: "AGTOWO",
+          symbol: "AGTOWO",
           decimals: 18,
         },
         contract: {
-          address: "0x60f6c257e5F52c403C1C3007D996E91B05231a9c",
+          address: "0x6bD3C2931eAB7b15fbA5c8a956171309949e4d4C",
         },
       },
     },
@@ -101,21 +101,21 @@ const communities: Community[] = [
     },
     ownerId: 0,
     chainData: {
-      ropsten: {
+      polygon: {
         token: {
-          address: "0xaD6D458402F60fD3Bd25163575031ACDce07538D",
-          name: "DAI",
-          symbol: "DAI",
+          address: "0xfF9bAaC24c68d810af1F98012d3D25B0Ea83902e",
+          name: "OWO",
+          symbol: "OWO",
           decimals: 18,
         },
         stakeToken: {
-          address: "0xc147106ea81F484132991bc1C961FF3fADE572E0",
-          name: "AGTDAI",
-          symbol: "AGTDAI",
+          address: "0x0e4E6DaAB4532F6d71FFA3A8a3A5E014f60C524b",
+          name: "AGTOWO",
+          symbol: "AGTOWO",
           decimals: 18,
         },
         contract: {
-          address: "0x60f6c257e5F52c403C1C3007D996E91B05231a9c",
+          address: "0x6bD3C2931eAB7b15fbA5c8a956171309949e4d4C",
         },
       },
     },
