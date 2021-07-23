@@ -26,30 +26,32 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
 
   return (
     <Layout title="All communities on Agora">
-      <>
-        <Stack spacing={8}>
-          <CategorySection
-            title="Your communities"
-            placeholder="You're not part of any communities yet"
-            ref={refMember}
-          />
-          <CategorySection
-            title="Communities you have access to"
-            placeholder="You don't have access to any communities"
-            ref={refAccess}
-          />
-          <CategorySection
-            title="Other communities"
-            placeholder="There aren't any other communities"
-            ref={refOther}
-          />
-        </Stack>
+      <Stack spacing={8}>
+        <CategorySection
+          title="Your communities"
+          placeholder="You're not part of any communities yet"
+          ref={refMember}
+        />
+        <CategorySection
+          title="Communities you have access to"
+          placeholder="You don't have access to any communities"
+          ref={refAccess}
+        />
+        <CategorySection
+          title="Other communities"
+          placeholder="There aren't any other communities"
+          ref={refOther}
+        />
         {communities.map((community) => (
           /**
            * Wrapping in CommunityProvider instead of just passing the data because
-           * it provides the color palette of the community and the current chain's data
+           * it provides the current chain's data for the useLevelAccess hook and tokenSymbol
            */
-          <CommunityProvider data={community} key={community.id}>
+          <CommunityProvider
+            data={community}
+            shouldRenderWrapper={false}
+            key={community.id}
+          >
             <CommunityCard
               {...{
                 refMember,
@@ -59,7 +61,7 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
             />
           </CommunityProvider>
         ))}
-      </>
+      </Stack>
     </Layout>
   )
 }
