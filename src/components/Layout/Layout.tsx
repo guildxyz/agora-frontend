@@ -5,7 +5,6 @@ import {
   Heading,
   HStack,
   IconButton,
-  Image,
   Link,
   Stack,
   useBreakpointValue,
@@ -15,6 +14,7 @@ import Card from "components/common/Card"
 import Account from "components/web3Connection/Account"
 import Head from "next/head"
 import ColorModeSwitch from "./components/ColorModeSwitch"
+import Logo from "./components/Logo"
 
 type Props = {
   title: string
@@ -46,7 +46,7 @@ const Layout = ({ title, children }: Props): JSX.Element => {
         <Flex w="full" justifyContent="space-between" alignItems="center" p="2">
           <Link href="/">
             <IconButton aria-label="Agora logo" variant="ghost" isRound>
-              <Image src="logo.svg" boxSize="1em" alt="Agora logo" />
+              <Logo width="1em" height="1em" />
             </IconButton>
           </Link>
           <ColorModeSwitch />
