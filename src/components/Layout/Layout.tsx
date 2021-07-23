@@ -8,6 +8,7 @@ import {
   Image,
   Link,
   Stack,
+  useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react"
 import Card from "components/common/Card"
@@ -22,6 +23,7 @@ type Props = {
 
 const Layout = ({ title, children }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
+  const isMobile = useBreakpointValue({ base: true, md: false })
 
   return (
     <>
@@ -31,6 +33,7 @@ const Layout = ({ title, children }: Props): JSX.Element => {
         {/* <link rel="icon" href="/favicon.ico" /> */}
       </Head>
       <Box
+        pb={{ base: 16, md: 0 }}
         bgColor={
           colorMode === "light" ? "gray.100" : "var(--chakra-colors-gray-800)"
         }
@@ -66,7 +69,7 @@ const Layout = ({ title, children }: Props): JSX.Element => {
               {title}
             </Heading>
             <HStack justify="flex-end">
-              <Card>
+              <Card docked={isMobile}>
                 <Account />
               </Card>
             </HStack>

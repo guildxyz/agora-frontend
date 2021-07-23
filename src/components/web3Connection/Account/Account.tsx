@@ -4,6 +4,7 @@ import {
   Divider,
   HStack,
   Text,
+  useBreakpointValue,
   useColorMode,
   useDisclosure,
   VStack,
@@ -32,6 +33,7 @@ const Account = (): JSX.Element => {
   const ENSName = useENSName(account)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { colorMode } = useColorMode()
+  const isMobile = useBreakpointValue({ base: true, md: false })
 
   if (typeof window === "undefined") {
     return (
@@ -67,12 +69,12 @@ const Account = (): JSX.Element => {
   return (
     <>
       <ButtonGroup isAttached variant="ghost">
-        <Button>
+        <Button width={isMobile && "40%"}>
           {Chains[chainId].charAt(0).toUpperCase() + Chains[chainId].slice(1)}
         </Button>
         <Divider orientation="vertical" h="var(--chakra-space-11)" />
 
-        <Button onClick={onOpen}>
+        <Button width={isMobile && "60%"} onClick={onOpen}>
           <HStack>
             <VStack spacing={0} alignItems="flex-end">
               {!!communityData && <Balance token={communityData.chainData.token} />}
