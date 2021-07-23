@@ -66,10 +66,16 @@ const Layout = ({ title, children }: Props): JSX.Element => {
               <Card
                 docked={isMobile}
                 background={
-                  colorMode === "light" ? "whiteAlpha.400" : "blackAlpha.200"
+                  (isMobile &&
+                    (colorMode === "light" ? "whiteAlpha.700" : "blackAlpha.400")) ||
+                  (colorMode === "light" ? "white" : "gray.700")
                 }
-                shadow="none"
-                style={{ backdropFilter: "blur(5px)" }}
+                borderTop={isMobile ? "1px" : "none"}
+                borderTopColor={colorMode === "light" ? "gray.100" : "gray.700"}
+                style={{
+                  backdropFilter:
+                    isMobile && (colorMode === "light" ? "blur(5px)" : "blur(10px)"),
+                }}
               >
                 <Account />
               </Card>

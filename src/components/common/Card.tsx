@@ -42,6 +42,7 @@ const Card = ({
           ? { base: "none", md: "2xl" }
           : { base: isFullWidthOnMobile ? "none" : "2xl", sm: "2xl" }
       }
+      /*
       shadow={
         (docked &&
           isMobile &&
@@ -52,6 +53,8 @@ const Card = ({
           }`) ||
         (variant === "modern" ? "none" : "md")
       }
+      */
+      shadow={variant === "modern" || isMobile ? "none" : "md"}
       {...rest}
     >
       {children}
