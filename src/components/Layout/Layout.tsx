@@ -63,7 +63,14 @@ const Layout = ({ title, children }: Props): JSX.Element => {
               {title}
             </Heading>
             <HStack justify="flex-end">
-              <Card docked={isMobile}>
+              <Card
+                docked={isMobile}
+                background={
+                  colorMode === "light" ? "whiteAlpha.400" : "blackAlpha.200"
+                }
+                shadow="none"
+                style={{ backdropFilter: "blur(5px)" }}
+              >
                 <Account />
               </Card>
             </HStack>
