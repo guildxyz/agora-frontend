@@ -8,7 +8,7 @@ const ColorModeSwitch = (): JSX.Element => {
     <IconButton
       aria-label="Switch color mode"
       variant="ghost"
-      borderRadius="2xl"
+      isRound
       icon={
         colorMode === "light" ? (
           <Icon as={Moon} weight="fill" />

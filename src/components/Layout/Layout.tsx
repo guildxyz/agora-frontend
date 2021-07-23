@@ -1,8 +1,12 @@
 import {
   Box,
   Container,
+  Flex,
   Heading,
   HStack,
+  IconButton,
+  Image,
+  Link,
   Stack,
   useColorMode,
 } from "@chakra-ui/react"
@@ -36,9 +40,17 @@ const Layout = ({ title, children }: Props): JSX.Element => {
         bgBlendMode={colorMode === "light" ? "normal" : "color"}
         minHeight="100vh"
       >
+        <Flex w="full" justifyContent="space-between" alignItems="center" p="2">
+          <Link href="/">
+            <IconButton aria-label="Agora logo" variant="ghost" isRound>
+              <Image src="logo.svg" boxSize="1em" alt="Agora logo" />
+            </IconButton>
+          </Link>
+          <ColorModeSwitch />
+        </Flex>
         <Container
           maxW="container.lg"
-          py={{ base: 4, md: 12, lg: 24 }}
+          py={{ base: 4, md: 12, lg: 9 }}
           px={{ base: 4, sm: 6, md: 8, lg: 10 }}
         >
           <Stack
@@ -54,9 +66,6 @@ const Layout = ({ title, children }: Props): JSX.Element => {
               {title}
             </Heading>
             <HStack justify="flex-end">
-              <Card>
-                <ColorModeSwitch />
-              </Card>
               <Card>
                 <Account />
               </Card>
