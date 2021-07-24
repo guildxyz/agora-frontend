@@ -22,12 +22,12 @@ const links = [
   },
   {
     text: "About",
-    href: "/",
+    href: "https://agora.space/",
     icon: Info,
   },
   {
     text: "Code",
-    href: "/",
+    href: "https://github.com/AgoraSpaceDAO",
     icon: Code,
   },
 ]
