@@ -5,7 +5,6 @@ import {
   Heading,
   HStack,
   Stack,
-  useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react"
 import Account from "components/web3Connection/Account"
@@ -20,7 +19,6 @@ type Props = {
 
 const Layout = ({ title, children }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
-  const isMobile = useBreakpointValue({ base: true, md: false })
 
   return (
     <>
