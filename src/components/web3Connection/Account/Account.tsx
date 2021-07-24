@@ -10,6 +10,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
+import Card from "components/common/Card"
 import { useCommunity } from "components/community/Context"
 import { Web3Connection } from "components/web3Connection/Web3ConnectionManager"
 import { Chains } from "connectors"
@@ -26,6 +27,35 @@ type Props = {
   token: Token
 }
 
+const AccountCard = ({ children }): JSX.Element => {
+  const { colorMode } = useColorMode()
+  const isMobile = useBreakpointValue({ base: true, md: false })
+
+  return (
+    <Card
+      position={{ base: "fixed", md: "relative" }}
+      left={0}
+      bottom={0}
+      py={isMobile && 2}
+      width={{ base: "full", md: "auto" }}
+      background={
+        (isMobile &&
+          (colorMode === "light" ? "whiteAlpha.700" : "blackAlpha.400")) ||
+        (colorMode === "light" ? "white" : "gray.700")
+      }
+      borderTop={isMobile ? "1px" : "none"}
+      borderTopColor={colorMode === "light" ? "gray.100" : "gray.600"}
+      borderRadius={isMobile ? "none" : "2xl"}
+      zIndex="docked"
+      style={{
+        backdropFilter: isMobile && "blur(10px)",
+      }}
+    >
+      {children}
+    </Card>
+  )
+}
+
 const Account = (): JSX.Element => {
   const communityData = useCommunity()
   const { error, account, chainId } = useWeb3React()
@@ -37,44 +67,54 @@ const Account = (): JSX.Element => {
 
   if (typeof window === "undefined") {
     return (
-      <Button variant="ghost" isLoading>
-        Connect to a wallet
-      </Button>
+      <AccountCard>
+        <Button variant={isMobile ? "glass" : "ghost"} isLoading>
+          Connect to a wallet
+        </Button>
+      </AccountCard>
     )
   }
   if (error instanceof UnsupportedChainIdError) {
     return (
-      <Button
-        variant="ghost"
-        leftIcon={<LinkBreak />}
-        colorScheme="red"
-        onClick={openModal}
-      >
-        Wrong Network
-      </Button>
+      <AccountCard>
+        <Button
+          variant={isMobile ? "glass" : "ghost"}
+          leftIcon={<LinkBreak />}
+          colorScheme="red"
+          onClick={openModal}
+        >
+          Wrong Network
+        </Button>
+      </AccountCard>
     )
   }
   if (typeof account !== "string") {
     return (
-      <Button
-        variant="ghost"
-        leftIcon={<SignIn />}
-        isLoading={!triedEager}
-        onClick={openModal}
-      >
-        Connect to a wallet
-      </Button>
+      <AccountCard>
+        <Button
+          variant={isMobile ? "glass" : "ghost"}
+          leftIcon={<SignIn />}
+          isLoading={!triedEager}
+          onClick={openModal}
+        >
+          Connect to a wallet
+        </Button>
+      </AccountCard>
     )
   }
   return (
-    <>
+    <AccountCard>
       <ButtonGroup isAttached variant="ghost">
-        <Button width={isMobile && "40%"}>
+        <Button variant={isMobile ? "glass" : "ghost"} width={isMobile && "40%"}>
           {Chains[chainId].charAt(0).toUpperCase() + Chains[chainId].slice(1)}
         </Button>
         <Divider orientation="vertical" h="var(--chakra-space-11)" />
 
-        <Button width={isMobile && "60%"} onClick={onOpen}>
+        <Button
+          variant={isMobile ? "glass" : "ghost"}
+          width={isMobile && "60%"}
+          onClick={onOpen}
+        >
           <HStack>
             <VStack spacing={0} alignItems="flex-end">
               {!!communityData && <Balance token={communityData.chainData.token} />}
@@ -96,7 +136,7 @@ const Account = (): JSX.Element => {
       </ButtonGroup>
 
       <AccountModal {...{ isOpen, onClose }} />
-    </>
+    </AccountCard>
   )
 }
 

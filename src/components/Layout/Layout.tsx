@@ -8,7 +8,6 @@ import {
   useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react"
-import Card from "components/common/Card"
 import Account from "components/web3Connection/Account"
 import Head from "next/head"
 import ColorModeSwitch from "./components/ColorModeSwitch"
@@ -63,22 +62,7 @@ const Layout = ({ title, children }: Props): JSX.Element => {
               {title}
             </Heading>
             <HStack justify="flex-end">
-              <Card
-                docked={isMobile}
-                background={
-                  (isMobile &&
-                    (colorMode === "light" ? "whiteAlpha.700" : "blackAlpha.400")) ||
-                  (colorMode === "light" ? "white" : "gray.700")
-                }
-                borderTop={isMobile ? "1px" : "none"}
-                borderTopColor={colorMode === "light" ? "gray.100" : "gray.700"}
-                style={{
-                  backdropFilter:
-                    isMobile && (colorMode === "light" ? "blur(5px)" : "blur(10px)"),
-                }}
-              >
-                <Account />
-              </Card>
+              <Account />
             </HStack>
           </Stack>
           {children}

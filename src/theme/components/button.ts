@@ -64,6 +64,12 @@ const variantOutline = (props: Dict) => {
   }
 }
 
+// TODO... - we should think about a great hover/focus/active design maybe
+const variantGlass = () => ({
+  _hover: { background: "transparent" },
+  _active: { background: "transparent" },
+})
+
 const styles = {
   baseStyle: {
     borderRadius: "xl",
@@ -82,6 +88,7 @@ const styles = {
     solid: variantSolid,
     solidStatic: variantSolidStatic,
     outline: variantOutline,
+    glass: variantGlass,
   },
 }
 
