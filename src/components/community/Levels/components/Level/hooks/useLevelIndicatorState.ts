@@ -1,17 +1,17 @@
 import { MutableRefObject, useEffect, useRef, useState } from "react"
 
-type LevelState = "idle" | "focus" | "pending" | "access"
+type LevelIndicatorState = "idle" | "focus" | "pending" | "access"
 
-const useLevelState = (
+const useLevelIndicatorState = (
   hasAccess: boolean,
   isModalOpen: boolean
-): [MutableRefObject<any>, MutableRefObject<any>, LevelState] => {
+): [MutableRefObject<any>, MutableRefObject<any>, LevelIndicatorState] => {
   const hoverElement = useRef(null)
   const focusElement = useRef(null)
   const [isHovered, setIsHovered] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
   const [isDelayedModalOpen, setIsDelayedModalOpen] = useState(false)
-  const [state, setState] = useState<LevelState>("idle")
+  const [state, setState] = useState<LevelIndicatorState>("idle")
 
   /**
    * Delaying update on modal close so we can accurately determine if the level
@@ -23,15 +23,15 @@ const useLevelState = (
     else
       setTimeout(() => {
         setIsDelayedModalOpen(false)
-      }, 150)
+      }, 120)
   }, [isModalOpen])
 
   useEffect(() => {
     const hoverEl = hoverElement.current
 
     /**
-     * Only sending the machine to focus state if the button got focused with
-     * keyboard (data-focus-visible-added is added by the focus-visible polyfill)
+     * We only want isFocused to be true if the user navigates with the keyboard
+     * (data-focus-visible-added is added by the focus-visible polyfill)
      */
     const focusEnterHandler = () =>
       focusElement.current.hasAttribute("data-focus-visible-added") &&
@@ -69,5 +69,5 @@ const useLevelState = (
   return [hoverElement, focusElement, state]
 }
 
-export default useLevelState
-export type { LevelState }
+export default useLevelIndicatorState
+export type { LevelIndicatorState }

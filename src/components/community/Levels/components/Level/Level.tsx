@@ -21,14 +21,14 @@ import type { Level as LevelType } from "temporaryData/types"
 import StakingModal from "../StakingModal"
 import AccessText from "./components/AccessText"
 import useLevelAccess from "./hooks/useLevelAccess"
-import useLevelState from "./hooks/useLevelState"
+import useLevelIndicatorState from "./hooks/useLevelIndicatorState"
 
 type Props = {
   data: LevelType
-  setLevelsStateForIndicator: any
+  setLevelsState: any
 }
 
-const Level = ({ data, setLevelsStateForIndicator }: Props): JSX.Element => {
+const Level = ({ data, setLevelsState }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
   const {
     chainData: {
@@ -41,14 +41,14 @@ const Level = ({ data, setLevelsStateForIndicator }: Props): JSX.Element => {
     onClose: onStakingModalClose,
   } = useDisclosure()
   const [hasAccess, noAccessMessage] = useLevelAccess(data.accessRequirement)
-  const [hoverElRef, focusElRef, state] = useLevelState(
+  const [hoverElRef, focusElRef, state] = useLevelIndicatorState(
     hasAccess,
     isStakingModalOpen
   )
 
   // If the state changes, send up the level data
   useEffect(() => {
-    setLevelsStateForIndicator((prevState) => ({
+    setLevelsState((prevState) => ({
       ...prevState,
       [data.name]: {
         isDisabled: noAccessMessage.length > 0,
@@ -56,7 +56,7 @@ const Level = ({ data, setLevelsStateForIndicator }: Props): JSX.Element => {
         state,
       },
     }))
-  }, [noAccessMessage, state, hoverElRef, setLevelsStateForIndicator, data])
+  }, [noAccessMessage, state, hoverElRef, setLevelsState, data])
 
   return (
     <Stack

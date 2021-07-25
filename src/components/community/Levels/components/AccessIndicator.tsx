@@ -1,15 +1,7 @@
 import { Box, BoxProps, useColorMode } from "@chakra-ui/react"
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
-import { LevelState } from "./Level/hooks/useLevelState"
-
-type LevelData = {
-  isDisabled: boolean
-  element: HTMLElement
-  state?: LevelState
-}
-
-type LevelsData = { [x: string]: LevelData }
+import { LevelIndicatorState } from "./Level/hooks/useLevelIndicatorState"
 
 const MotionBox = motion<BoxProps>(Box)
 
@@ -25,7 +17,17 @@ const Indicator = ({ ...rest }: { [x: string]: any }) => (
   />
 )
 
-const AccessIndicator = ({ levelsState }: { levelsState: LevelsData }) => {
+type LevelState = {
+  isDisabled: boolean
+  element: HTMLElement
+  state?: LevelIndicatorState
+}
+
+type Props = {
+  levelsState: { [x: string]: LevelState }
+}
+
+const AccessIndicator = ({ levelsState }: Props) => {
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -52,7 +54,7 @@ const AccessIndicator = ({ levelsState }: { levelsState: LevelsData }) => {
   }, [])
 
   useEffect(() => {
-    const levelsArray: LevelData[] = Object.values(levelsState)
+    const levelsArray: LevelState[] = Object.values(levelsState)
 
     if (levelsArray.length === 0) {
       return
@@ -60,11 +62,11 @@ const AccessIndicator = ({ levelsState }: { levelsState: LevelsData }) => {
 
     // Set the height of the access indicator
     const accessedLevels = levelsArray.filter(
-      (level: LevelData) => level.state === "access"
+      (level: LevelState) => level.state === "access"
     )
 
     let newAccessHeight = 0
-    accessedLevels.forEach((level: LevelData) => {
+    accessedLevels.forEach((level: LevelState) => {
       newAccessHeight += level.element.getBoundingClientRect().height
     })
 
@@ -72,7 +74,7 @@ const AccessIndicator = ({ levelsState }: { levelsState: LevelsData }) => {
 
     // Set the height of the pending indicator
     let pendingLevel = null
-    pendingLevel = levelsArray.find((level: LevelData) => level.state === "pending")
+    pendingLevel = levelsArray.find((level: LevelState) => level.state === "pending")
     const newPendingHeight =
       pendingLevel?.element.getBoundingClientRect().bottom -
         pendingLevel?.element.parentElement.getBoundingClientRect().top -
@@ -82,7 +84,7 @@ const AccessIndicator = ({ levelsState }: { levelsState: LevelsData }) => {
 
     // Set the height of the focus indicator
     let focusLevel = null
-    focusLevel = levelsArray.find((level: LevelData) => level.state === "focus")
+    focusLevel = levelsArray.find((level: LevelState) => level.state === "focus")
     const newFocusHeight =
       focusLevel?.element.getBoundingClientRect().bottom -
         focusLevel?.element.parentElement.getBoundingClientRect().top -
@@ -137,4 +139,4 @@ const AccessIndicator = ({ levelsState }: { levelsState: LevelsData }) => {
 }
 
 export default AccessIndicator
-export type { LevelsData as LevelsStateForIndicator }
+export type { LevelState }
