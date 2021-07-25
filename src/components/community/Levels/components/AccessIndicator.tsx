@@ -37,19 +37,6 @@ const AccessIndicator = ({ levelsState }: Props) => {
   const [pendingHeight, setPendingHeight] = useState(0)
   const [focusHeight, setFocusHeight] = useState(0)
   const [focusColor, setFocusColor] = useState("var(--chakra-colors-primary-500)")
-  const [pendingColor, setPendingColor] = useState(
-    colorMode === "light"
-      ? "var(--chakra-colors-primary-700)"
-      : "var(--chakra-colors-primary-400)"
-  )
-
-  useEffect(() => {
-    setPendingColor(
-      colorMode === "light"
-        ? "var(--chakra-colors-primary-700)"
-        : "var(--chakra-colors-primary-400)"
-    )
-  }, [colorMode])
 
   useEffect(() => {
     const handleResize = () => {
