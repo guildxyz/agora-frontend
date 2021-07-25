@@ -28,7 +28,6 @@ const Layout = ({ title, children }: Props): JSX.Element => {
         {/* <link rel="icon" href="/favicon.ico" /> */}
       </Head>
       <Box
-        pb={{ base: 16, md: 0 }}
         bgColor={
           colorMode === "light" ? "gray.100" : "var(--chakra-colors-gray-800)"
         }
@@ -44,7 +43,8 @@ const Layout = ({ title, children }: Props): JSX.Element => {
         </Flex>
         <Container
           maxW="container.lg"
-          py={{ base: 4, md: 12, lg: 9 }}
+          pt={{ base: 4, md: 9 }}
+          pb={{ base: 20, md: 14 }}
           px={{ base: 4, sm: 6, md: 8, lg: 10 }}
         >
           <Stack
