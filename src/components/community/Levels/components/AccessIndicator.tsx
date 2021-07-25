@@ -1,9 +1,31 @@
-import { useState, useEffect } from "react"
+import { Box, BoxProps, useColorMode } from "@chakra-ui/react"
 import { motion } from "framer-motion"
-import { useColorMode } from "@chakra-ui/react"
-import { LevelData } from "./Level"
+import { useEffect, useState } from "react"
+import { LevelIndicatorState } from "./Level/hooks/useLevelIndicatorState"
 
-type Props = { levelsState: { [x: number]: LevelData } }
+const MotionBox = motion<BoxProps>(Box)
+
+const Indicator = ({ ...rest }: { [x: string]: any }) => (
+  <MotionBox
+    pos="absolute"
+    left="0"
+    width="6px"
+    height="0"
+    transition={{ type: "just" }}
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    {...rest}
+  />
+)
+
+type LevelState = {
+  isDisabled: boolean
+  element: HTMLElement
+  state?: LevelIndicatorState
+}
+
+type Props = {
+  levelsState: { [x: string]: LevelState }
+}
 
 const AccessIndicator = ({ levelsState }: Props) => {
   const [windowSize, setWindowSize] = useState({
@@ -45,26 +67,19 @@ const AccessIndicator = ({ levelsState }: Props) => {
   }, [])
 
   useEffect(() => {
-    const levelsArray: LevelData[] = Object.values(levelsState)
+    const levelsArray: LevelState[] = Object.values(levelsState)
 
     if (levelsArray.length === 0) {
       return
     }
 
-    // TEMP - for testing
-    /*
-    if (levelsArray[1].element) {
-      levelsArray[1].state = "pending"
-    }
-    */
-
     // Set the height of the access indicator
     const accessedLevels = levelsArray.filter(
-      (level: LevelData) => level.state === "access"
+      (level: LevelState) => level.state === "access"
     )
 
     let newAccessHeight = 0
-    accessedLevels.forEach((level: LevelData) => {
+    accessedLevels.forEach((level: LevelState) => {
       newAccessHeight += level.element.getBoundingClientRect().height
     })
 
@@ -72,7 +87,7 @@ const AccessIndicator = ({ levelsState }: Props) => {
 
     // Set the height of the pending indicator
     let pendingLevel = null
-    pendingLevel = levelsArray.find((level: LevelData) => level.state === "pending")
+    pendingLevel = levelsArray.find((level: LevelState) => level.state === "pending")
     const newPendingHeight =
       pendingLevel?.element.getBoundingClientRect().bottom -
         pendingLevel?.element.parentElement.getBoundingClientRect().top -
@@ -82,7 +97,7 @@ const AccessIndicator = ({ levelsState }: Props) => {
 
     // Set the height of the focus indicator
     let focusLevel = null
-    focusLevel = levelsArray.find((level: LevelData) => level.state === "focus")
+    focusLevel = levelsArray.find((level: LevelState) => level.state === "focus")
     const newFocusHeight =
       focusLevel?.element.getBoundingClientRect().bottom -
         focusLevel?.element.parentElement.getBoundingClientRect().top -
@@ -96,72 +111,38 @@ const AccessIndicator = ({ levelsState }: Props) => {
     setFocusColor(
       disabled ? "var(--chakra-colors-gray-400)" : "var(--chakra-colors-primary-500)"
     )
-  }, [windowSize, levelsState, accessHeight, colorMode])
+  }, [windowSize, levelsState, focusHeight, pendingHeight, accessHeight, colorMode])
 
   return (
     <>
-      <motion.div
-        style={{
-          position: "absolute",
-          top: accessHeight + pendingHeight,
-          left: 0,
-          height: 0,
-          width: "6px",
-          opacity: colorMode === "light" ? 0.3 : 0.4,
-        }}
-        transition={{ type: "just" }}
+      <Indicator
+        top={accessHeight + pendingHeight}
+        opacity={colorMode === "light" ? 0.3 : 0.4}
         animate={{
           height: focusHeight,
           background: focusColor,
         }}
       />
-      <motion.div
-        style={{
-          position: "absolute",
-          top: accessHeight,
-          left: 0,
-          height: 0,
-          width: "6px",
-          opacity: colorMode === "light" ? 0.3 : 0.4,
-          background: "var(--chakra-colors-primary-500)",
-        }}
-        transition={{ type: "just" }}
+      <Indicator
+        top={accessHeight}
+        bg="primary.500"
+        opacity="0.7"
         animate={{
           height: pendingHeight,
+          opacity: [0.4, 0.7, 0.4],
         }}
-      >
-        <div style={{ position: "relative", height: "100%", overflow: "hidden" }}>
-          <motion.div
-            style={{
-              position: "relative",
-              top: -100,
-              left: 0,
-              width: "100%",
-              height: 50,
-              opacity: 1,
-              background: `linear-gradient(transparent 0, transparent 10%, ${pendingColor} 20%, ${pendingColor} 90%, transparent 100%)`,
-            }}
-            transition={{
-              repeat: Infinity,
-              duration: 0.8,
-            }}
-            animate={{
-              top: pendingHeight + 50,
-              opacity: 0.5,
-            }}
-          />
-        </div>
-      </motion.div>
-      <motion.div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          height: 0,
-          width: "6px",
-          background: "var(--chakra-colors-primary-500)",
+        transition={{
+          height: { type: "just" },
+          opacity: {
+            repeat: Infinity,
+            duration: 1,
+            type: "tween",
+          },
         }}
-        transition={{ type: "just" }}
+      />
+      <Indicator
+        top="0"
+        bg="primary.500"
         animate={{
           height: accessHeight,
         }}
@@ -171,3 +152,4 @@ const AccessIndicator = ({ levelsState }: Props) => {
 }
 
 export default AccessIndicator
+export type { LevelState }

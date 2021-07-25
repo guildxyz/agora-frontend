@@ -1,5 +1,4 @@
 import {
-  useColorMode,
   Button,
   Grid,
   GridItem,
@@ -11,32 +10,25 @@ import {
   TagLabel,
   TagLeftIcon,
   Text,
+  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react"
 import { useCommunity } from "components/community/Context"
 import InfoTags from "components/community/Levels/components/InfoTags"
 import { Check, CheckCircle } from "phosphor-react"
-import { useEffect, useRef, useState } from "react"
+import { useEffect } from "react"
 import type { Level as LevelType } from "temporaryData/types"
 import StakingModal from "../StakingModal"
 import AccessText from "./components/AccessText"
 import useLevelAccess from "./hooks/useLevelAccess"
-import useLevelDataMachine from "./hooks/useLevelDataMachine"
+import useLevelIndicatorState from "./hooks/useLevelIndicatorState"
 
 type Props = {
   data: LevelType
-  index?: number
-  onChangeHandler?: (levelData: LevelData) => void
+  setLevelsState: any
 }
 
-type LevelData = {
-  index: number
-  isDisabled: boolean
-  element: HTMLElement
-  state?: "idle" | "focus" | "modalfocus" | "pending" | "access"
-}
-
-const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
+const Level = ({ data, setLevelsState }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
   const {
     chainData: {
@@ -49,58 +41,22 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
     onClose: onStakingModalClose,
   } = useDisclosure()
   const [hasAccess, noAccessMessage] = useLevelAccess(data.accessRequirement)
-
-  const levelEl = useRef(null)
-  const [levelData, setLevelData] = useState<LevelData>({
-    index,
-    isDisabled: true,
-    element: null,
-  })
-
-  const [state, send] = useLevelDataMachine(hasAccess, isStakingModalOpen)
-
-  // Setting up the elRef & registering the eventListeners
-  useEffect(() => {
-    const ref = levelEl.current
-
-    setLevelData((prevState) => ({
-      ...prevState,
-      element: ref,
-    }))
-
-    const mouseEnterHandler = () => {
-      send("FOCUSIN")
-    }
-
-    const mouseLeaveHandler = () => {
-      send("FOCUSOUT")
-    }
-
-    ref.addEventListener("mouseenter", mouseEnterHandler)
-    ref.addEventListener("mouseleave", mouseLeaveHandler)
-
-    return () => {
-      ref.removeEventListener("mouseenter", mouseEnterHandler)
-      ref.removeEventListener("mouseleave", mouseLeaveHandler)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [levelEl])
-
-  // Update level
-  useEffect(() => {
-    setLevelData((prevState) => ({
-      ...prevState,
-      isDisabled: noAccessMessage.length > 0,
-    }))
-  }, [noAccessMessage])
+  const [hoverElRef, focusElRef, state] = useLevelIndicatorState(
+    hasAccess,
+    isStakingModalOpen
+  )
 
   // If the state changes, send up the level data
   useEffect(() => {
-    if (onChangeHandler) {
-      onChangeHandler({ ...levelData, state: state.value })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [levelData, state])
+    setLevelsState((prevState) => ({
+      ...prevState,
+      [data.name]: {
+        isDisabled: noAccessMessage.length > 0,
+        element: hoverElRef.current,
+        state,
+      },
+    }))
+  }, [noAccessMessage, state, hoverElRef, setLevelsState, data])
 
   return (
     <Stack
@@ -110,7 +66,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
       borderBottom="1px"
       borderBottomColor={colorMode === "light" ? "gray.200" : "gray.600"}
       _last={{ borderBottom: 0 }}
-      ref={levelEl}
+      ref={hoverElRef}
     >
       <Grid
         width="full"
@@ -173,6 +129,7 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
           !hasAccess && (
             <>
               <Button
+                ref={focusElRef}
                 colorScheme="primary"
                 fontWeight="medium"
                 ml="auto"
@@ -197,5 +154,4 @@ const Level = ({ data, index, onChangeHandler }: Props): JSX.Element => {
   )
 }
 
-export { Level }
-export type { LevelData }
+export default Level
