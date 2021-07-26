@@ -1,14 +1,8 @@
 import { Stack, Text, useColorMode, Wrap } from "@chakra-ui/react"
+import { useCommunity } from "components/community/Context"
 import { Lock, LockOpen, LockSimpleOpen, Tag, Users } from "phosphor-react"
 import msToReadableFormat from "utils/msToReadableFormat"
-
-type Props = {
-  requirementTimelockMs: number
-  requirementType: "OPEN" | "STAKE" | "HOLD"
-  requirementAmount: number
-  membersCount: number
-  tokenSymbol: string
-}
+import { useLevelData } from "./Level/Context"
 
 const accessRequirementIcons = {
   OPEN: LockSimpleOpen,
@@ -40,27 +34,31 @@ const InfoTag = ({ icon: Icon, label }: ChildProps): JSX.Element => {
   )
 }
 
-const InfoTags = ({
-  requirementTimelockMs,
-  requirementType,
-  requirementAmount,
-  membersCount,
-  tokenSymbol,
-}: Props): JSX.Element => (
-  <Wrap direction="row" spacing={{ base: 2, lg: 4 }}>
-    <InfoTag
-      icon={accessRequirementIcons[requirementType]}
-      label={`${requirementType} ${
-        requirementType === "STAKE"
-          ? `for ${msToReadableFormat(requirementTimelockMs)}`
-          : ``
-      }`}
-    />
-    {requirementType !== "OPEN" && (
-      <InfoTag icon={Tag} label={`${requirementAmount} ${tokenSymbol}`} />
-    )}
-    <InfoTag icon={Users} label={`${membersCount} members`} />
-  </Wrap>
-)
+const InfoTags = (): JSX.Element => {
+  const { requirementTimelockMs, requirementType, requirementAmount, membersCount } =
+    useLevelData()
+  const {
+    chainData: {
+      token: { symbol: tokenSymbol },
+    },
+  } = useCommunity()
+
+  return (
+    <Wrap direction="row" spacing={{ base: 2, lg: 4 }}>
+      <InfoTag
+        icon={accessRequirementIcons[requirementType]}
+        label={`${requirementType} ${
+          requirementType === "STAKE"
+            ? `for ${msToReadableFormat(requirementTimelockMs)}`
+            : ``
+        }`}
+      />
+      {requirementType !== "OPEN" && (
+        <InfoTag icon={Tag} label={`${requirementAmount} ${tokenSymbol}`} />
+      )}
+      <InfoTag icon={Users} label={`${membersCount} members`} />
+    </Wrap>
+  )
+}
 
 export default InfoTags

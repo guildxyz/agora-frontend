@@ -4,6 +4,7 @@ import { useCommunity } from "components/community/Context"
 import { useState } from "react"
 import AccessIndicator, { LevelState } from "./components/AccessIndicator"
 import Level from "./components/Level"
+import { LevelProvider } from "./components/Level/Context"
 
 const Levels = (): JSX.Element => {
   const { levels } = useCommunity()
@@ -20,7 +21,9 @@ const Levels = (): JSX.Element => {
     >
       <Stack spacing="0">
         {levels.map((level) => (
-          <Level key={level.name} data={level} setLevelsState={setLevelsState} />
+          <LevelProvider key={level.name} data={level}>
+            <Level setLevelsState={setLevelsState} />
+          </LevelProvider>
         ))}
       </Stack>
 

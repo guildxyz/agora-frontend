@@ -18,25 +18,23 @@ import { useCommunity } from "components/community/Context"
 import msToReadableFormat from "utils/msToReadableFormat"
 import { processMetaMaskError } from "utils/processMetaMaskError"
 import useNeededAmount from "../../hooks/useNeededAmount"
+import { useLevelData } from "../Level/Context"
 import useStakingModalMachine from "./hooks/useStakingMachine"
 
 type Props = {
-  levelName: string
-  requirementAmount: number
-  requirementTimelockMs: number
   isOpen: boolean
   onClose: () => void
 }
-const StakingModal = ({
-  levelName,
-  requirementAmount,
-  requirementTimelockMs,
-  isOpen,
-  onClose,
-}: Props): JSX.Element => {
+
+const StakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
   const {
     chainData: { token, stakeToken },
   } = useCommunity()
+  const {
+    requirementAmount,
+    requirementTimelockMs,
+    name: levelName,
+  } = useLevelData()
   const amount = useNeededAmount(requirementAmount)
   const [allowanceState, allowanceSend] = useTokenAllowanceMachine(token)
   const [stakeState, stakeSend] = useStakingModalMachine(amount)
