@@ -27,7 +27,10 @@ const CommunityProvider = ({
   const { chainId } = useWeb3React()
   const [communityData, setCommunityData] = useState<ProvidedCommunity>({
     ...data,
-    chainData: data.chainData[Object.keys(data.chainData)[0]],
+    chainData: {
+      ...data.chainData[Object.keys(data.chainData)[0]],
+      name: Object.keys(data.chainData)[0],
+    },
   })
   const generatedColors = useColorPalette(
     "chakra-colors-primary",
@@ -39,7 +42,7 @@ const CommunityProvider = ({
     if (chainId) {
       setCommunityData({
         ...data,
-        chainData: data.chainData[Chains[chainId]],
+        chainData: { ...data.chainData[Chains[chainId]], name: Chains[chainId] },
       })
     }
   }, [chainId, data])

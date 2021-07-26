@@ -8,9 +8,24 @@ enum Chains {
   polygon = 137,
 }
 
+const addToWalletData = {
+  polygon: {
+    chainId: "0x89",
+    chainName: "Matic Mainnet",
+    nativeCurrency: {
+      name: "Polygon",
+      symbol: "MATIC",
+      decimals: 18,
+    },
+    rpcUrls: ["https://rpc-mainnet.maticvigil.com/"],
+    blockExplorerUrls: ["https://polygonscan.com/"],
+    // iconUrls: string[] // Currently ignored.
+  },
+}
+
 const injected = new InjectedConnector({
   supportedChainIds: [Chains.polygon],
 })
 
-export { Chains }
+export { Chains, addToWalletData }
 export default injected
