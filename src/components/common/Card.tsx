@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import { Box, useColorMode } from "@chakra-ui/react"
 
 type Props = {
@@ -29,6 +28,7 @@ const Card = ({
       shadow={variant === "modern" ? "none" : "md"}
       display="flex"
       flexDirection="column"
+      overflow="hidden"
       {...rest}
     >
       {children}

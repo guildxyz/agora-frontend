@@ -29,27 +29,46 @@ type Props = {
 
 const AccountCard = ({ children }): JSX.Element => {
   const { colorMode } = useColorMode()
+  const isMobile = useBreakpointValue({ base: true, md: false })
 
-  return (
-    <Card
-      position={{ base: "fixed", md: "relative" }}
-      left={0}
-      bottom={0}
-      py={2}
-      width={{ base: "full", md: "auto" }}
-      background={colorMode === "light" ? "whiteAlpha.700" : "blackAlpha.400"}
-      borderTop="1px"
-      borderTopColor={colorMode === "light" ? "gray.100" : "gray.600"}
-      borderRadius="none"
-      zIndex="docked"
-      style={{
-        backdropFilter: "blur(10px)",
-      }}
-    >
-      {children}
-    </Card>
-  )
+  if (isMobile) {
+    return (
+      <Card
+        position="fixed"
+        left={0}
+        bottom={0}
+        width="100vw"
+        background={colorMode === "light" ? "whiteAlpha.700" : "blackAlpha.400"}
+        borderTop="1px"
+        borderTopColor={colorMode === "light" ? "gray.100" : "gray.600"}
+        borderRadius="none"
+        zIndex="docked"
+        style={{
+          backdropFilter: "blur(10px)",
+        }}
+      >
+        {children}
+      </Card>
+    )
+  }
+  return <Card>{children}</Card>
 }
+
+const AccountButton = ({ children, ...rest }): JSX.Element => (
+  <Button
+    variant="ghost"
+    flexGrow={1}
+    /**
+     * Space 11 is added to the theme by us and Chakra doesn't recognize it just by
+     * "11" for some reason
+     */
+    h={{ base: 14, md: "var(--chakra-space-11)" }}
+    borderRadius="0"
+    {...rest}
+  >
+    {children}
+  </Button>
+)
 
 const Account = (): JSX.Element => {
   const communityData = useCommunity()
@@ -58,60 +77,55 @@ const Account = (): JSX.Element => {
   const ENSName = useENSName(account)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { colorMode } = useColorMode()
-  const isMobile = useBreakpointValue({ base: true, md: false })
-
-  const Wrapper = isMobile ? AccountCard : Card
 
   if (typeof window === "undefined") {
     return (
-      <Wrapper>
-        <Button variant={isMobile ? "glass" : "ghost"} isLoading>
-          Connect to a wallet
-        </Button>
-      </Wrapper>
+      <AccountCard>
+        <AccountButton isLoading>Connect to a wallet</AccountButton>
+      </AccountCard>
     )
   }
   if (error instanceof UnsupportedChainIdError) {
     return (
-      <Wrapper>
-        <Button
-          variant={isMobile ? "glass" : "ghost"}
+      <AccountCard>
+        <AccountButton
           leftIcon={<LinkBreak />}
           colorScheme="red"
           onClick={openModal}
         >
           Wrong Network
-        </Button>
-      </Wrapper>
+        </AccountButton>
+      </AccountCard>
     )
   }
   if (typeof account !== "string") {
     return (
-      <Wrapper>
-        <Button
-          variant={isMobile ? "glass" : "ghost"}
+      <AccountCard>
+        <AccountButton
           leftIcon={<SignIn />}
           isLoading={!triedEager}
           onClick={openModal}
         >
           Connect to a wallet
-        </Button>
-      </Wrapper>
+        </AccountButton>
+      </AccountCard>
     )
   }
   return (
-    <Wrapper>
-      <ButtonGroup isAttached variant="ghost">
-        <Button variant={isMobile ? "glass" : "ghost"} width={isMobile && "40%"}>
+    <AccountCard>
+      <ButtonGroup isAttached variant="ghost" alignItems="center">
+        <AccountButton>
           {Chains[chainId].charAt(0).toUpperCase() + Chains[chainId].slice(1)}
-        </Button>
-        <Divider orientation="vertical" h="var(--chakra-space-11)" />
-
-        <Button
-          variant={isMobile ? "glass" : "ghost"}
-          width={isMobile && "60%"}
-          onClick={onOpen}
-        >
+        </AccountButton>
+        <Divider
+          orientation="vertical"
+          /**
+           * Space 11 is added to the theme by us and Chakra doesn't recognize it
+           * just by "11" for some reason
+           */
+          h={{ base: 14, md: "var(--chakra-space-11)" }}
+        />
+        <AccountButton onClick={onOpen}>
           <HStack>
             <VStack spacing={0} alignItems="flex-end">
               {!!communityData && <Balance token={communityData.chainData.token} />}
@@ -129,11 +143,11 @@ const Account = (): JSX.Element => {
             </VStack>
             <Identicon address={account} size={28} />
           </HStack>
-        </Button>
+        </AccountButton>
       </ButtonGroup>
 
       <AccountModal {...{ isOpen, onClose }} />
-    </Wrapper>
+    </AccountCard>
   )
 }
 

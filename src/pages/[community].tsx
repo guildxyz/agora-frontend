@@ -27,10 +27,6 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => (
         <Box>
           <Levels />
         </Box>
-        {/* 
-        <Link href="/" pt={2}>
-          Powered by agora.space
-        </Link> */}
       </Stack>
     </Layout>
   </CommunityProvider>

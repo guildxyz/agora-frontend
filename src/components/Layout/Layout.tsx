@@ -4,7 +4,6 @@ import {
   Flex,
   Heading,
   HStack,
-  Stack,
   useColorMode,
 } from "@chakra-ui/react"
 import Account from "components/web3Connection/Account"
@@ -47,9 +46,8 @@ const Layout = ({ title, children }: Props): JSX.Element => {
           pb={{ base: 20, md: 14 }}
           px={{ base: 4, sm: 6, md: 8, lg: 10 }}
         >
-          <Stack
-            direction={{ base: "column-reverse", md: "row" }}
-            spacing={8}
+          <HStack
+            spacing={{ md: 8 }}
             justify="space-between"
             pb={{ base: 8, md: 16 }}
           >
@@ -59,10 +57,8 @@ const Layout = ({ title, children }: Props): JSX.Element => {
             >
               {title}
             </Heading>
-            <HStack justify="flex-end">
-              <Account />
-            </HStack>
-          </Stack>
+            <Account />
+          </HStack>
           {children}
         </Container>
       </Box>
