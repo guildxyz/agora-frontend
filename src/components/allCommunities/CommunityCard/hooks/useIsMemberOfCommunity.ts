@@ -2,17 +2,10 @@ import { useWeb3React } from "@web3-react/core"
 import { useCommunity } from "components/community/Context"
 import useSWR from "swr"
 
-const getJoinedCommunities = async (
-  _: string,
-  address: string
-): Promise<Array<number>> =>
+const getJoinedCommunities = async (_: string, address: string): Promise<number[]> =>
   fetch(`${process.env.NEXT_PUBLIC_API}/getUserMembership/${address}`).then(
-    (response) => {
-      if (response.ok) {
-        return response.json().then((data) => data.communities)
-      }
-      return []
-    }
+    (response) =>
+      response.ok ? response.json().then((data) => data.communities) : []
   )
 
 const useIsMemberOfCommunity = (): boolean => {
