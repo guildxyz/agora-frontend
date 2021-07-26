@@ -1,12 +1,10 @@
 import { useColorMode } from "@chakra-ui/react"
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import LevelState from "../types"
 import useWindowSize from "./useWindowSize"
 
-const useIndicatorHeight = (
-  levelsState: { [x: string]: LevelState },
-  setFocusColor: Dispatch<SetStateAction<string>>
-) => {
+const useIndicatorData = (levelsState: { [x: string]: LevelState }) => {
+  const [focusColor, setFocusColor] = useState("var(--chakra-colors-primary-500)")
   const [accessHeight, setAccessHeight] = useState(0)
   const [pendingHeight, setPendingHeight] = useState(0)
   const [focusHeight, setFocusHeight] = useState(0)
@@ -64,7 +62,8 @@ const useIndicatorHeight = (
     accessHeight,
     focusHeight,
     pendingHeight,
+    focusColor,
   }
 }
 
-export default useIndicatorHeight
+export default useIndicatorData
