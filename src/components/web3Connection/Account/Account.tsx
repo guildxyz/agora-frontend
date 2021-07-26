@@ -29,26 +29,21 @@ type Props = {
 
 const AccountCard = ({ children }): JSX.Element => {
   const { colorMode } = useColorMode()
-  const isMobile = useBreakpointValue({ base: true, md: false })
 
   return (
     <Card
       position={{ base: "fixed", md: "relative" }}
       left={0}
       bottom={0}
-      py={isMobile && 2}
+      py={2}
       width={{ base: "full", md: "auto" }}
-      background={
-        (isMobile &&
-          (colorMode === "light" ? "whiteAlpha.700" : "blackAlpha.400")) ||
-        (colorMode === "light" ? "white" : "gray.700")
-      }
-      borderTop={isMobile ? "1px" : "none"}
+      background={colorMode === "light" ? "whiteAlpha.700" : "blackAlpha.400"}
+      borderTop="1px"
       borderTopColor={colorMode === "light" ? "gray.100" : "gray.600"}
-      borderRadius={isMobile ? "none" : "2xl"}
+      borderRadius="none"
       zIndex="docked"
       style={{
-        backdropFilter: isMobile && "blur(10px)",
+        backdropFilter: "blur(10px)",
       }}
     >
       {children}
@@ -65,18 +60,20 @@ const Account = (): JSX.Element => {
   const { colorMode } = useColorMode()
   const isMobile = useBreakpointValue({ base: true, md: false })
 
+  const Wrapper = isMobile ? AccountCard : Card
+
   if (typeof window === "undefined") {
     return (
-      <AccountCard>
+      <Wrapper>
         <Button variant={isMobile ? "glass" : "ghost"} isLoading>
           Connect to a wallet
         </Button>
-      </AccountCard>
+      </Wrapper>
     )
   }
   if (error instanceof UnsupportedChainIdError) {
     return (
-      <AccountCard>
+      <Wrapper>
         <Button
           variant={isMobile ? "glass" : "ghost"}
           leftIcon={<LinkBreak />}
@@ -85,12 +82,12 @@ const Account = (): JSX.Element => {
         >
           Wrong Network
         </Button>
-      </AccountCard>
+      </Wrapper>
     )
   }
   if (typeof account !== "string") {
     return (
-      <AccountCard>
+      <Wrapper>
         <Button
           variant={isMobile ? "glass" : "ghost"}
           leftIcon={<SignIn />}
@@ -99,11 +96,11 @@ const Account = (): JSX.Element => {
         >
           Connect to a wallet
         </Button>
-      </AccountCard>
+      </Wrapper>
     )
   }
   return (
-    <AccountCard>
+    <Wrapper>
       <ButtonGroup isAttached variant="ghost">
         <Button variant={isMobile ? "glass" : "ghost"} width={isMobile && "40%"}>
           {Chains[chainId].charAt(0).toUpperCase() + Chains[chainId].slice(1)}
@@ -136,7 +133,7 @@ const Account = (): JSX.Element => {
       </ButtonGroup>
 
       <AccountModal {...{ isOpen, onClose }} />
-    </AccountCard>
+    </Wrapper>
   )
 }
 

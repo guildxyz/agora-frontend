@@ -10,7 +10,7 @@ import {
 import Account from "components/web3Connection/Account"
 import Head from "next/head"
 import ColorModeSwitch from "./components/ColorModeSwitch"
-import LogoWithPopover from "./components/LogoWithPopover"
+import LogoWithMenu from "./components/LogoWithMenu"
 
 type Props = {
   title: string
@@ -38,7 +38,7 @@ const Layout = ({ title, children }: Props): JSX.Element => {
         minHeight="100vh"
       >
         <Flex w="full" justifyContent="space-between" alignItems="center" p="2">
-          <LogoWithPopover />
+          <LogoWithMenu />
           <ColorModeSwitch />
         </Flex>
         <Container

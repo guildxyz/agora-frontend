@@ -16,6 +16,8 @@ const ColorModeSwitch = (): JSX.Element => {
           <Icon as={Sun} weight="fill" />
         )
       }
+      width={10}
+      height={10}
       onClick={toggleColorMode}
     />
   )
