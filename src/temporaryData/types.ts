@@ -74,7 +74,7 @@ type CommunityBase = {
 
 type Community = CommunityBase & {
   chainData: {
-    bsctest: ChainData
+    polygon: ChainData
   }
 }
 
