@@ -93,6 +93,10 @@ type Icon = React.ForwardRefExoticComponent<
   IconProps & React.RefAttributes<SVGSVGElement>
 >
 
+type Rest = {
+  [x: string]: any
+}
+
 export type {
   Community,
   Token,
@@ -104,4 +108,5 @@ export type {
   MetaMaskError,
   Machine,
   Icon,
+  Rest,
 }
