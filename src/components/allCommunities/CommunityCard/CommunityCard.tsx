@@ -44,9 +44,10 @@ const CommunityCard = ({ refMember, refOther, refAccess }: Props): JSX.Element =
     return refOther
   }, [isMember, hasAccess, refMember, refAccess, refOther])
 
-  const membersCount = levels
-    .map((level) => level.membersCount)
-    .reduce((accumulator, currentValue) => accumulator + currentValue)
+  const membersCount = levels.reduce(
+    (accumulator, currentValue) => accumulator + currentValue.membersCount,
+    0
+  )
 
   return (
     <Portal containerRef={containerRef}>
