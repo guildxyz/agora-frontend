@@ -33,15 +33,8 @@ const Level = ({ setLevelsState }: Props): JSX.Element => {
     onOpen: onStakingModalOpen,
     onClose: onStakingModalClose,
   } = useDisclosure()
-  const {
-    requirementAmount,
-    requirementType,
-    requirementTimelockMs,
-    name,
-    membersCount,
-    imageUrl,
-    description,
-  } = useLevelData()
+  const { requirementAmount, requirementType, name, imageUrl, description } =
+    useLevelData()
 
   const [hasAccess, noAccessMessage] = useLevelAccess(
     requirementType,

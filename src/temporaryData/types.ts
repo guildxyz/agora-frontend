@@ -11,13 +11,6 @@ type AccessRequirement = {
   timelockMs: number
 }
 
-type TelegramGroup = {
-  id: number
-}
-type DiscordChannel = {
-  id: number
-}
-
 type Level = {
   name: string
   description: string
@@ -25,26 +18,17 @@ type Level = {
   membersCount: number
   requirementType: "OPEN" | "STAKE" | "HOLD"
   requirementAmount: number
-  requirementTimelockMs: number
-  platforms: {
-    telegramGroups: [] | TelegramGroup[]
-    discordChannels: [] | DiscordChannel[]
-  }
+  stakeTimelockMs: number
+  telegramGroupId: string
+  discordRole: string
 }
 
-type PlatformType = "TELEGRAM" | "DISCORD"
-type PlatformName = "Discord" | `Telegram-${string}`
+type PlatformName = "TELEGRAM" | "DISCORD"
 
-type PlatformFromBackend = {
+type Platform = {
   name: PlatformName
+  active: boolean
   platformId: string
-  type: PlatformType
-  active: boolean
-}
-
-type ProvidedPlatform = {
-  type: PlatformType
-  active: boolean
 }
 
 type ChainData = {
@@ -61,18 +45,23 @@ type CommunityBase = {
   description: string
   imageUrl: string
   themeColor: string
-  ownerId: number
   levels: Level[]
+  communityPlatforms: Platform[]
+  owner: {
+    id: number
+    address: string
+    telegramId: string
+    discordId: string
+  }
+  capacity: number
 }
 
 type Community = CommunityBase & {
   chainData: ChainData[]
-  communityPlatforms: PlatformFromBackend[]
 }
 
 type ProvidedCommunity = CommunityBase & {
   chainData: ChainData
-  communityPlatforms: ProvidedPlatform[]
 }
 
 export type {
@@ -82,5 +71,6 @@ export type {
   AccessRequirement,
   ChainData,
   ProvidedCommunity,
-  ProvidedPlatform,
+  Platform,
+  PlatformName,
 }

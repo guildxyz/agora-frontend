@@ -30,11 +30,7 @@ const StakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
   const {
     chainData: { token, stakeToken },
   } = useCommunity()
-  const {
-    requirementAmount,
-    requirementTimelockMs,
-    name: levelName,
-  } = useLevelData()
+  const { requirementAmount, stakeTimelockMs, name: levelName } = useLevelData()
   const amount = useNeededAmount(requirementAmount)
   const [allowanceState, allowanceSend] = useTokenAllowanceMachine(token)
   const [stakeState, stakeSend] = useStakingModalMachine(amount)
@@ -79,9 +75,9 @@ const StakingModal = ({ isOpen, onClose }: Props): JSX.Element => {
               />
               <Text>
                 Stake {amount} {token.symbol} to gain access to {levelName}. Your
-                tokens will be locked for {msToReadableFormat(requirementTimelockMs)}
-                , after that you can unstake them anytime. You can always stake more
-                to upgrade to higher levels.
+                tokens will be locked for {msToReadableFormat(stakeTimelockMs)},
+                after that you can unstake them anytime. You can always stake more to
+                upgrade to higher levels.
               </Text>
             </>
           )}

@@ -35,7 +35,7 @@ const InfoTag = ({ icon: Icon, label }: ChildProps): JSX.Element => {
 }
 
 const InfoTags = (): JSX.Element => {
-  const { requirementTimelockMs, requirementType, requirementAmount, membersCount } =
+  const { stakeTimelockMs, requirementType, requirementAmount, membersCount } =
     useLevelData()
   const {
     chainData: {
@@ -49,7 +49,7 @@ const InfoTags = (): JSX.Element => {
         icon={accessRequirementIcons[requirementType]}
         label={`${requirementType} ${
           requirementType === "STAKE"
-            ? `for ${msToReadableFormat(requirementTimelockMs)}`
+            ? `for ${msToReadableFormat(stakeTimelockMs)}`
             : ``
         }`}
       />
