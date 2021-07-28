@@ -1,25 +1,13 @@
-import { IconButton, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react"
+import {
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuGroup,
+  MenuItem,
+  MenuList,
+} from "@chakra-ui/react"
 import { Code, Info, MagnifyingGlass } from "phosphor-react"
 import Logo from "./Logo"
-
-// Maybe I should add types to this array later..
-const links = [
-  {
-    text: "Explorer",
-    href: "/",
-    icon: <MagnifyingGlass />,
-  },
-  {
-    text: "About",
-    href: "https://agora.space/",
-    icon: <Info />,
-  },
-  {
-    text: "Code",
-    href: "https://github.com/AgoraSpaceDAO",
-    icon: <Code />,
-  },
-]
 
 const LogoWithMenu = () => (
   <Menu>
@@ -34,11 +22,29 @@ const LogoWithMenu = () => (
       <Logo width="1m" height="1em" />
     </MenuButton>
     <MenuList border="none" shadow="md">
-      {links.map((link) => (
-        <MenuItem as="a" key={link.href} href={link.href} icon={link.icon}>
-          {link.text}
+      <MenuGroup title="Powered by agora.space" pb="2">
+        <MenuItem py="2" as="a" href="/" icon={<MagnifyingGlass />}>
+          Explorer
         </MenuItem>
-      ))}
+        <MenuItem
+          py="2"
+          as="a"
+          target="_blank"
+          href="https://agora.space/"
+          icon={<Info />}
+        >
+          About
+        </MenuItem>
+        <MenuItem
+          py="2"
+          as="a"
+          target="_blank"
+          href="https://github.com/AgoraSpaceDAO"
+          icon={<Code />}
+        >
+          Code
+        </MenuItem>
+      </MenuGroup>
     </MenuList>
   </Menu>
 )
