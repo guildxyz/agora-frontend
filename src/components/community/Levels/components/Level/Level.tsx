@@ -91,7 +91,12 @@ const Level = ({ data, setLevelsState }: Props): JSX.Element => {
           />
         </GridItem>
         <GridItem order={{ md: 0 }}>
-          <Image src={`${data.imageUrl}`} boxSize="45px" alt="Level logo" />
+          <Image
+            src={`${data.imageUrl}`}
+            boxSize="45px"
+            alt="Level logo"
+            borderRadius="full"
+          />
         </GridItem>
         {data.description && (
           <GridItem colSpan={{ base: 2, md: 1 }} colStart={{ md: 2 }} order={2}>
