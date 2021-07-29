@@ -90,7 +90,7 @@ const CommunityCard = ({ refMember, refOther, refAccess }: Props): JSX.Element =
                 <Tag colorScheme="alpha">{`${membersCount} members`}</Tag>
                 <Tag colorScheme="alpha">{`${levels.length} levels`}</Tag>
                 <Tag colorScheme="alpha">
-                  {`min: ${levels[0].requirementAmount} ${tokenSymbol}`}
+                  {`min: ${levels[0].requirementAmount ?? 0} ${tokenSymbol}`}
                 </Tag>
               </Wrap>
             </Stack>
