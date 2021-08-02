@@ -19,16 +19,25 @@ import Identicon from "../components/Identicon"
 import AccountButton from "./components/AccountButton"
 import AccountCard from "./components/AccountCard"
 import Balance from "./components/Balance"
+import NetworkChangeModal from "./components/NetworkChangeModal"
 import useENSName from "./hooks/useENSName"
-import useRequestNetworkChange from "./hooks/useRequestNetworkChange"
 
 const Account = (): JSX.Element => {
   const communityData = useCommunity()
   const { error, account, chainId } = useWeb3React()
   const { openModal, triedEager } = useContext(Web3Connection)
   const ENSName = useENSName(account)
-  const { isOpen, onOpen, onClose } = useDisclosure()
-  const requestNetworkChange = useRequestNetworkChange()
+  const {
+    isOpen: isAccountModalOpen,
+    onOpen: onAccountModalOpen,
+    onClose: onAccountModalClose,
+  } = useDisclosure()
+  const {
+    isOpen: isNetworkChangeModalOpen,
+    onOpen: onNetworkChangeModalOpen,
+    onClose: onNetworkChangeModalClose,
+  } = useDisclosure()
+  // const requestNetworkChange = useRequestNetworkChange()
   const { colorMode } = useColorMode()
 
   if (typeof window === "undefined") {
@@ -50,10 +59,14 @@ const Account = (): JSX.Element => {
         <AccountButton
           leftIcon={<LinkBreak />}
           colorScheme="red"
-          onClick={requestNetworkChange}
+          onClick={onNetworkChangeModalOpen}
         >
           Wrong Network
         </AccountButton>
+        <NetworkChangeModal
+          isOpen={isNetworkChangeModalOpen}
+          onClose={onNetworkChangeModalClose}
+        />
       </AccountCard>
     )
   }
@@ -73,7 +86,7 @@ const Account = (): JSX.Element => {
   return (
     <AccountCard>
       <ButtonGroup isAttached variant="ghost" alignItems="center">
-        <AccountButton>
+        <AccountButton onClick={onNetworkChangeModalOpen}>
           {Chains[chainId].charAt(0).toUpperCase() + Chains[chainId].slice(1)}
         </AccountButton>
         <Divider
@@ -84,7 +97,7 @@ const Account = (): JSX.Element => {
            */
           h={{ base: 14, md: "var(--chakra-space-11)" }}
         />
-        <AccountButton onClick={onOpen}>
+        <AccountButton onClick={onAccountModalOpen}>
           <HStack>
             <VStack spacing={0} alignItems="flex-end">
               {!!communityData && <Balance token={communityData.chainData.token} />}
@@ -105,7 +118,11 @@ const Account = (): JSX.Element => {
         </AccountButton>
       </ButtonGroup>
 
-      <AccountModal {...{ isOpen, onClose }} />
+      <AccountModal isOpen={isAccountModalOpen} onClose={onAccountModalClose} />
+      <NetworkChangeModal
+        isOpen={isNetworkChangeModalOpen}
+        onClose={onNetworkChangeModalClose}
+      />
     </AccountCard>
   )
 }
