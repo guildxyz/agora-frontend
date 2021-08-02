@@ -24,7 +24,7 @@ const RPC = {
 }
 
 const injected = new InjectedConnector({
-  supportedChainIds: [Chains.polygon],
+  supportedChainIds: [Chains.polygon, Chains.bsc, Chains.ethereum],
 })
 
 export { Chains, RPC }
