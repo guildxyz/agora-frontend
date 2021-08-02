@@ -31,9 +31,7 @@ const Platforms = (): JSX.Element => {
             key={platform.name}
             isDisabled={hasAccess}
             label={
-              ["Wallet not connected", "Connect to the correct chain"].includes(
-                noAccessMessage
-              )
+              ["Wallet not connected", "Wrong network"].includes(noAccessMessage)
                 ? noAccessMessage
                 : "You don't have access to any of the levels"
             }

@@ -18,7 +18,7 @@ const useLevelAccess = (
 
   if (!active) return [false, "Wallet not connected"]
 
-  if (!isOnRightChain) return [false, "Connect to the correct chain"]
+  if (!isOnRightChain) return [false, "Wrong network"]
 
   if (type === "HOLD" && amount < 0) return [tokenBalance > 0, ""]
 
