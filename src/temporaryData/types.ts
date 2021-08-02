@@ -62,7 +62,7 @@ type Community = CommunityBase & {
 }
 
 type ProvidedCommunity = CommunityBase & {
-  chainData: ChainData & { name: string }
+  chainData: ChainData
 }
 
 export type {
