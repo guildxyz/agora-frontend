@@ -21,11 +21,36 @@ const RPC = {
     blockExplorerUrls: ["https://polygonscan.com/"],
     // iconUrls: string[] // Currently ignored.
   },
+  ethereum: {
+    chainId: "0x01",
+    chainName: "Ethereum Mainnet",
+    nativeCurrency: {
+      name: "Ether",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    rpcUrls: [],
+    blockExplorerUrls: [],
+    // iconUrls: string[] // Currently ignored.
+  },
+  bsc: {
+    chainId: "0x38",
+    chainName: "BSC Mainnet",
+    nativeCurrency: {
+      name: "Binance Coin",
+      symbol: "BNB",
+      decimals: 18,
+    },
+    rpcUrls: ["https://bsc-dataseed.binance.org/"],
+    blockExplorerUrls: ["https://bscscan.com/"],
+    // iconUrls: string[] // Currently ignored.
+  },
 }
 
-const injected = new InjectedConnector({
-  supportedChainIds: [Chains.polygon, Chains.bsc, Chains.ethereum],
-})
+const supportedChains = ["polygon", "bsc", "ethereum"]
+const supportedChainIds = supportedChains.map((_) => Chains[_])
 
-export { Chains, RPC }
+const injected = new InjectedConnector({ supportedChainIds })
+
+export { Chains, RPC, supportedChains }
 export default injected
