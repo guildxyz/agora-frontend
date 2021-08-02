@@ -42,7 +42,8 @@ const Account = (): JSX.Element => {
   if (
     error instanceof UnsupportedChainIdError ||
     (typeof chainId === "number" &&
-      chainId !== Chains[communityData?.chainData.name.toLowerCase() ?? "polygon"])
+      !!communityData &&
+      chainId !== Chains[communityData.chainData.name.toLowerCase()])
   ) {
     return (
       <AccountCard>
