@@ -11,6 +11,7 @@ import { useWeb3React } from "@web3-react/core"
 import Card from "components/common/Card"
 import { Link } from "components/common/Link"
 import useColorPalette from "components/community/hooks/useColorPalette"
+import useMemberCount from "components/community/hooks/useMemberCount"
 import useLevelAccess from "components/community/Levels/components/Level/hooks/useLevelAccess"
 import { Chains } from "connectors"
 import React, { MutableRefObject } from "react"
@@ -46,7 +47,16 @@ const WrappedCard = ({ community, refAccess }: Props): JSX.Element => {
 }
 
 const CommunityCard = ({
-  community: { themeColor, levels, urlName, imageUrl, name, marketcap, chainData },
+  community: {
+    themeColor,
+    levels,
+    urlName,
+    imageUrl,
+    name,
+    marketcap,
+    chainData,
+    id,
+  },
   currentChainData: _currentChainData,
 }: {
   community: Community
@@ -56,11 +66,7 @@ const CommunityCard = ({
   const currentChainData = _currentChainData ?? chainData[0]
 
   const generatedColors = useColorPalette("chakra-colors-primary", themeColor)
-
-  const membersCount = levels.reduce(
-    (accumulator, currentValue) => accumulator + currentValue.membersCount,
-    0
-  )
+  const { sum: membersCount } = useMemberCount(id)
 
   return (
     <Link
