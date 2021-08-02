@@ -8,7 +8,7 @@ enum Chains {
   polygon = 137,
 }
 
-const addToWalletData = {
+const RPC = {
   polygon: {
     chainId: "0x89",
     chainName: "Matic Mainnet",
@@ -27,5 +27,5 @@ const injected = new InjectedConnector({
   supportedChainIds: [Chains.polygon],
 })
 
-export { Chains, addToWalletData }
+export { Chains, RPC }
 export default injected

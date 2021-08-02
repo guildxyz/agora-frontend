@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber"
 import { ExternalProvider } from "@ethersproject/providers"
 import { useCommunity } from "components/community/Context"
-import { addToWalletData, Chains } from "connectors"
+import { Chains, RPC } from "connectors"
 
 const useRequestNetworkChange = () => {
   const communityData = useCommunity()
@@ -26,11 +26,11 @@ const useRequestNetworkChange = () => {
       // This error code indicates that the chain has not been added to MetaMask.
       if (e.code === 4902) {
         try {
-          if (!addToWalletData[chainName]) throw Error()
+          if (!RPC[chainName]) throw Error()
 
           await ethereum.request({
             method: "wallet_addEthereumChain",
-            params: [addToWalletData[chainName]],
+            params: [RPC[chainName]],
           })
         } catch (addError) {
           console.error("Failed to add network to MetaMask")
