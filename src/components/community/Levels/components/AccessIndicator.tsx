@@ -13,7 +13,6 @@ const Indicator = ({ ...rest }: Rest) => (
     width="6px"
     height="0"
     transition={{ type: "just" }}
-    // eslint-disable-next-line react/jsx-props-no-spreading
     {...rest}
   />
 )

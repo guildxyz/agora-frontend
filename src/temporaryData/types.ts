@@ -14,48 +14,31 @@ type AccessRequirement = {
   timelockMs: number
 }
 
-type TelegramGroup = {
-  id: number
-}
-type DiscordChannel = {
-  id: number
-}
-
 type Level = {
   name: string
-  desc: string
+  description: string
   imageUrl: string
-  accessRequirement: AccessRequirement
   membersCount: number
-  platforms: {
-    telegramGroups: [] | TelegramGroup[]
-    discordChannels: [] | DiscordChannel[]
-  }
+  requirementType: "OPEN" | "STAKE" | "HOLD"
+  requirementAmount: number
+  stakeTimelockMs: number
+  telegramGroupId: string
+  discordRole: string
 }
 
-/* type Platforms = {
-  [_ in PlatformName]: {
-    active: boolean
-    serverId?: number
-  }
-} */
+type PlatformName = "TELEGRAM" | "DISCORD"
 
-type Platforms = {
-  telegram: {
-    active: boolean
-  }
-  discord: {
-    active: boolean
-    serverId: number
-  }
+type Platform = {
+  name: PlatformName
+  active: boolean
+  platformId: string
 }
 
 type ChainData = {
   token: Token
-  stakeToken: Token
-  contract: {
-    address: string
-  }
+  stakeToken?: Token
+  contractAddress?: string
+  name: string
 }
 
 type CommunityBase = {
@@ -64,18 +47,21 @@ type CommunityBase = {
   name: string
   description: string
   imageUrl: string
-  theme: {
-    color: string
-  }
-  ownerId: number
-  platforms: Platforms
+  themeColor: string
+  marketcap?: number
   levels: Level[]
+  communityPlatforms: Platform[]
+  owner?: {
+    id: number
+    address: string
+    telegramId: string
+    discordId: string
+  }
+  capacity: number
 }
 
 type Community = CommunityBase & {
-  chainData: {
-    polygon: ChainData
-  }
+  chainData: ChainData[]
 }
 
 type ProvidedCommunity = CommunityBase & {
@@ -101,7 +87,6 @@ export type {
   Community,
   Token,
   Level,
-  Platforms,
   AccessRequirement,
   ChainData,
   ProvidedCommunity,
@@ -109,4 +94,6 @@ export type {
   Machine,
   Icon,
   Rest,
+  Platform,
+  PlatformName,
 }

@@ -1,12 +1,22 @@
-import { Stack } from "@chakra-ui/react"
+import {
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Stack,
+  useColorMode,
+} from "@chakra-ui/react"
 import CategorySection from "components/allCommunities/CategorySection"
 import CommunityCard from "components/allCommunities/CommunityCard"
-import { CommunityProvider } from "components/community/Context"
 import Layout from "components/Layout"
 import { GetStaticProps } from "next"
-import { useRef } from "react"
+import { MagnifyingGlass } from "phosphor-react"
+import React, { useMemo, useRef, useState } from "react"
 import type { Community } from "temporaryData/communities"
 import { communities as communitiesJSON } from "temporaryData/communities"
+import tokens from "temporaryData/tokens"
+
+// Set this to true if you don't want the data to be fetched from backend
+const DEBUG = false
 
 type Props = {
   communities: Community[]
@@ -20,54 +30,76 @@ type Props = {
  * they belong to.
  */
 const AllCommunities = ({ communities }: Props): JSX.Element => {
-  const refMember = useRef<HTMLDivElement>(null)
   const refAccess = useRef<HTMLDivElement>(null)
-  const refOther = useRef<HTMLDivElement>(null)
+  const [searchInput, setSearchInput] = useState("")
+  const inputTimeout = useRef(null)
+  const filteredCommunities = useMemo(
+    () =>
+      communities.filter(({ name }) =>
+        name.toLowerCase().includes(searchInput.toLowerCase())
+      ),
+    [communities, searchInput]
+  )
+
+  const { colorMode } = useColorMode()
+
+  const handleOnChange = async ({ target: { value } }) => {
+    window.clearTimeout(inputTimeout.current)
+    inputTimeout.current = setTimeout(() => setSearchInput(value), 300)
+  }
 
   return (
-    <Layout title="All communities on Agora">
-      <Stack spacing={8}>
-        <CategorySection
-          title="Your communities"
-          placeholder="You're not part of any communities yet"
-          ref={refMember}
-        />
-        <CategorySection
-          title="Communities you have access to"
-          placeholder="You don't have access to any communities"
-          ref={refAccess}
-        />
-        <CategorySection
-          title="Other communities"
-          placeholder="There aren't any other communities"
-          ref={refOther}
-        />
-        {communities.map((community) => (
-          /**
-           * Wrapping in CommunityProvider instead of just passing the data because
-           * it provides the current chain's data for the useLevelAccess hook and tokenSymbol
-           */
-          <CommunityProvider
-            data={community}
-            shouldRenderWrapper={false}
-            key={community.id}
+    <Layout title="Social token explorer">
+      <>
+        <InputGroup size="lg" mb={16} maxW="600px">
+          <InputLeftElement>
+            <MagnifyingGlass color="#858585" size={20} />
+          </InputLeftElement>
+          <Input
+            placeholder="Search for communities, DAOs or creators"
+            overflow="hidden"
+            whiteSpace="nowrap"
+            textOverflow="ellipsis"
+            colorScheme="primary"
+            borderRadius="15px"
+            bg={colorMode === "light" ? "white" : "gray.900"}
+            onChange={handleOnChange}
+          />
+        </InputGroup>
+
+        <Stack spacing={12}>
+          <CategorySection
+            title="Your communities"
+            placeholder="You don't have access to any communities"
+            ref={refAccess}
+          />
+          <CategorySection
+            title="Other tokenized communities"
+            placeholder="There aren't any other communities"
           >
-            <CommunityCard
-              {...{
-                refMember,
-                refOther,
-                refAccess,
-              }}
-            />
-          </CommunityProvider>
-        ))}
-      </Stack>
+            {filteredCommunities.map((community) => (
+              <CommunityCard
+                community={community}
+                key={community.id}
+                refAccess={refAccess}
+              />
+            ))}
+          </CategorySection>
+        </Stack>
+      </>
     </Layout>
   )
 }
 
-export const getStaticProps: GetStaticProps = async () => ({
-  props: { communities: communitiesJSON },
-})
+export const getStaticProps: GetStaticProps = async () => {
+  const communities =
+    DEBUG && process.env.NODE_ENV !== "production"
+      ? communitiesJSON
+      : await fetch(`${process.env.NEXT_PUBLIC_API}/community`).then((response) =>
+          response.ok ? response.json() : communitiesJSON
+        )
+
+  return { props: { communities: [...communities, ...tokens] } }
+}
 
 export default AllCommunities

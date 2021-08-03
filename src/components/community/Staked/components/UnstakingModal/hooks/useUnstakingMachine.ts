@@ -72,11 +72,9 @@ const unstakingMachine = createMachine<Context, Event>(
 
 const useUnstakingModalMachine = (): Machine<Context> => {
   const {
-    chainData: {
-      contract: { address },
-    },
+    chainData: { contractAddress },
   } = useCommunity()
-  const contract = useContract(address, AGORA_SPACE_ABI, true)
+  const contract = useContract(contractAddress, AGORA_SPACE_ABI, true)
   const { account, chainId } = useWeb3React()
   const { unlockedAmount } = useStaked()
   const [state, send] = useMachine(unstakingMachine, {

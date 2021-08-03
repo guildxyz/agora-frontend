@@ -1,8 +1,7 @@
-/* eslint-disable react/jsx-props-no-spreading */
-import { PropsWithChildren } from "react"
-import NextLink from "next/link"
-import { LinkProps as NextLinkProps } from "next/dist/client/link"
 import { Link as ChakraLink, LinkProps as ChakraLinkProps } from "@chakra-ui/react"
+import { LinkProps as NextLinkProps } from "next/dist/client/link"
+import NextLink from "next/link"
+import { PropsWithChildren } from "react"
 
 export type Props = PropsWithChildren<NextLinkProps & Omit<ChakraLinkProps, "as">>
 

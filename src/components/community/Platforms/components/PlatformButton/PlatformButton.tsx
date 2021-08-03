@@ -1,6 +1,6 @@
 import { Button, useDisclosure } from "@chakra-ui/react"
 import { useEffect } from "react"
-import type { PlatformName } from "../../platformsContent"
+import { PlatformName } from "temporaryData/types"
 import platformsContent from "../../platformsContent"
 import JoinModal from "../JoinModal"
 import useJoinSuccessToast from "../JoinModal/hooks/useJoinSuccessToast"

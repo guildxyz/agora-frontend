@@ -71,9 +71,7 @@ const stakingMachine = createMachine<Context, Event>(
 
 const useStakingMachine = (amount: number): Machine<Context> => {
   const {
-    chainData: {
-      contract: { address: contractAddress },
-    },
+    chainData: { contractAddress },
   } = useCommunity()
   const { account, chainId } = useWeb3React()
   const contract = useContract(contractAddress, AGORA_SPACE_ABI, true)

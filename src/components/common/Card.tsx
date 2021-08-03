@@ -17,11 +17,12 @@ const Card = ({
   return (
     <Box
       mx={isFullWidthOnMobile && { base: -4, sm: 0 }}
+      bg={colorMode === "light" ? "white" : "gray.700"}
       shadow="md"
       borderRadius={{ base: isFullWidthOnMobile ? "none" : "2xl", sm: "2xl" }}
-      bg={colorMode === "light" ? "white" : "gray.700"}
       display="flex"
       flexDirection="column"
+      overflow="hidden"
       {...rest}
     >
       {children}
