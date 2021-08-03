@@ -1,3 +1,6 @@
+import { IconProps } from "phosphor-react"
+import { EventData, State } from "xstate"
+
 type Token = {
   address: string
   name: string
@@ -48,6 +51,7 @@ type CommunityBase = {
   marketcap?: number
   levels: Level[]
   communityPlatforms: Platform[]
+  holdersCount?: number
   owner?: {
     id: number
     address: string
@@ -66,6 +70,21 @@ type ProvidedCommunity = CommunityBase & {
   availableChains: string[]
 }
 
+type MetaMaskError = { code: number; message: string }
+
+type Machine<Context> = [
+  State<Context>,
+  (event: string, payload?: EventData) => State<Context>
+]
+
+type Icon = React.ForwardRefExoticComponent<
+  IconProps & React.RefAttributes<SVGSVGElement>
+>
+
+type Rest = {
+  [x: string]: any
+}
+
 export type {
   Community,
   Token,
@@ -73,6 +92,10 @@ export type {
   AccessRequirement,
   ChainData,
   ProvidedCommunity,
+  MetaMaskError,
+  Machine,
+  Icon,
+  Rest,
   Platform,
   PlatformName,
 }

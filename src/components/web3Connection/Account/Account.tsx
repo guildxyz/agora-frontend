@@ -37,7 +37,6 @@ const Account = (): JSX.Element => {
     onOpen: onNetworkChangeModalOpen,
     onClose: onNetworkChangeModalClose,
   } = useDisclosure()
-  // const requestNetworkChange = useRequestNetworkChange()
   const { colorMode } = useColorMode()
 
   if (typeof window === "undefined") {
