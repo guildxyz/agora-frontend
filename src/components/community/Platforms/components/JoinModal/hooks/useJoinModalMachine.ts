@@ -64,7 +64,7 @@ const joinModalMachine = createMachine<Context, Event>(
       error: {
         on: { SIGN: "signing", CLOSE_MODAL: "idle" },
         entry: "setError",
-        exit: "removeeError",
+        exit: "removeError",
       },
       success: {
         entry: "setInvite",

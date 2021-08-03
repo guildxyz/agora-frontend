@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-// I disabled it manually, because the AccessIndicator works properly with the current dependency list, and the other dependencies shouldn't be added - KovJonas
 import {
   Button,
   Grid,
