@@ -35,21 +35,26 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
       idle: {
         on: {
           AUTH: "auth",
-          AUTHDONE: "fetchingUserData",
+          // AUTHDONE: "fetchingUserData",
+          "": {
+            target: "fetchingUserData",
+            cond: "areHashParamsSet",
+          },
         },
       },
       auth: {
         on: {
           CLOSE_MODAL: "idle",
         },
-        entry: "auth",
       },
       fetchingUserData: {
+        entry: "saveHashParams",
         invoke: {
           src: "fetchUserData",
           onDone: "signIdle",
           onError: "authError",
         },
+        exit: "removeHashParams",
       },
       signIdle: {
         on: {
@@ -64,7 +69,7 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
         },
       },
       signError: {
-        on: { SIGN: "signing", CLOSE_MODAL: "idle" },
+        on: { SIGN: "signing", CLOSE_MODAL: "signIdle" },
         entry: "setError",
         exit: "removeError",
       },
@@ -103,16 +108,50 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
       removeError: assign({
         error: () => null,
       }),
+      removeHashParams: () =>
+        window.history.pushState(
+          "",
+          document.title,
+          window.location.pathname + window.location.search
+        ),
+    },
+    guards: {
+      areHashParamsSet: () => {
+        if (window.location.hash) {
+          const fragment = new URLSearchParams(window.location.hash.slice(1))
+          const [accessToken, tokenType] = [
+            fragment.get("access_token"),
+            fragment.get("token_type"),
+          ]
+          return !!accessToken && !!tokenType
+        }
+        return false
+      },
     },
   }
 )
 
-const useJoinModalMachine = (): any => {
+const useJoinModalMachine = (onOpen: () => void): any => {
   const { id: communityId } = useCommunity()
   const { account } = useWeb3React()
   const sign = usePersonalSign()
 
   const [state, send] = useMachine(joinModalMachine, {
+    actions: {
+      saveHashParams: assign((context) => {
+        onOpen()
+        const fragment = new URLSearchParams(window.location.hash.slice(1))
+        const [accessToken, tokenType] = [
+          fragment.get("access_token"),
+          fragment.get("token_type"),
+        ]
+        return {
+          ...context,
+          accessToken,
+          tokenType,
+        }
+      }),
+    },
     services: {
       sign: () => sign("Please sign this message to generate your invite link"),
       fetchUserData: async (context) =>

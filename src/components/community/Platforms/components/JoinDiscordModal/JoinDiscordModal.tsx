@@ -16,7 +16,6 @@ import ModalButton from "components/common/ModalButton"
 import { useCommunity } from "components/community/Context"
 import { ArrowSquareOut } from "phosphor-react"
 import QRCode from "qrcode.react"
-import { useEffect } from "react"
 import platformsContent from "../../platformsContent"
 import useJoinDiscordMachine from "./hooks/useJoinDiscordMachine"
 import processJoinPlatformError from "./utils/processJoinPlatformError"
@@ -38,29 +37,13 @@ const JoinDiscordModal = ({
     title,
     join: { description },
   } = platformsContent[platform]
-  const [state, send] = useJoinDiscordMachine()
+  const [state, send] = useJoinDiscordMachine(onOpen)
   const { urlName } = useCommunity()
 
   const closeModal = () => {
     send("CLOSE_MODAL")
     onClose()
   }
-
-  useEffect(() => {
-    if (window.location.hash) {
-      const fragment = new URLSearchParams(window.location.hash.slice(1))
-      const [accessToken, tokenType] = [
-        fragment.get("access_token"),
-        fragment.get("token_type"),
-      ]
-      if (!!accessToken && !!tokenType) {
-        state.context.accessToken = accessToken
-        state.context.tokenType = tokenType
-        send("AUTHDONE")
-        onOpen()
-      }
-    }
-  }, [onOpen, send, state.context])
 
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
