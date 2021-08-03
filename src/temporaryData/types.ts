@@ -63,6 +63,7 @@ type Community = CommunityBase & {
 
 type ProvidedCommunity = CommunityBase & {
   chainData: ChainData
+  availableChains: string[]
 }
 
 export type {

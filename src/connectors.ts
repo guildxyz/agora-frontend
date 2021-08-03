@@ -21,6 +21,7 @@ const RPC = {
     blockExplorerUrls: ["https://polygonscan.com/"],
     // iconUrls: string[] // Currently ignored.
   },
+  // Ethereum mainned cannot be removed from MetaMask, so this shouldn't be needed, but the chainName is displayed
   ethereum: {
     chainId: "0x01",
     chainName: "Ethereum Mainnet",
@@ -29,8 +30,8 @@ const RPC = {
       symbol: "ETH",
       decimals: 18,
     },
-    rpcUrls: [],
-    blockExplorerUrls: [],
+    rpcUrls: ["https://main-light.eth.linkpool.io/"],
+    blockExplorerUrls: ["https://etherscan.io/"],
     // iconUrls: string[] // Currently ignored.
   },
   bsc: {
