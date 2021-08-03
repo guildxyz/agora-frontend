@@ -1,4 +1,5 @@
 import {
+  Icon,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -13,6 +14,8 @@ import { Link } from "components/common/Link"
 import Modal from "components/common/Modal"
 import ModalButton from "components/common/ModalButton"
 import { useCommunity } from "components/community/Context"
+import { ArrowSquareOut } from "phosphor-react"
+import QRCode from "qrcode.react"
 import { useEffect } from "react"
 import platformsContent from "../../platformsContent"
 import useJoinDiscordMachine from "./hooks/useJoinDiscordMachine"
@@ -74,24 +77,30 @@ const JoinDiscordModal = ({
             <Text>{description}</Text>
           ) : (
             <VStack spacing="6">
-              <Text>
-                TODO: display the link and QR code if it is neede (if the user is not
-                in the channel)
-              </Text>
-              {/* <Text>
-                Here’s your link. It’s only active for 15 minutes and is only usable
-                once:
-              </Text>
-              <Link
-                href={state.context.inviteData.inviteLink}
-                colorScheme="blue"
-                isExternal
-              >
-                {state.context.inviteData.inviteLink}
-                <Icon as={ArrowSquareOut} mx="2" />
-              </Link>
-              <QRCode size={150} value={state.context.inviteData.inviteLink} />
-              {!!state.context.inviteData.joinCode && (
+              {state.context.alreadyJoined ? (
+                <Text>
+                  Seems like you are already joined the discord server, you should
+                  get access to the correct channels soon!
+                </Text>
+              ) : (
+                <>
+                  <Text>
+                    Here’s your link. It’s only active for 15 minutes and is only
+                    usable once:
+                  </Text>
+                  <Link
+                    href={state.context.inviteData.inviteLink}
+                    colorScheme="blue"
+                    isExternal
+                  >
+                    {state.context.inviteData.inviteLink}
+                    <Icon as={ArrowSquareOut} mx="2" />
+                  </Link>
+                  <QRCode size={150} value={state.context.inviteData.inviteLink} />
+                </>
+              )}
+
+              {/* !!state.context.inviteData.joinCode && (
                 <>
                   <Text>
                     If there’s lot of traffic right now, the bot might ask you for a
@@ -102,7 +111,7 @@ const JoinDiscordModal = ({
                     {state.context.inviteData.joinCode}
                   </Text>
                 </>
-              )} */}
+              ) */}
             </VStack>
           )}
         </ModalBody>
@@ -111,9 +120,12 @@ const JoinDiscordModal = ({
             switch (state.value) {
               case "signing":
                 return <ModalButton isLoading loadingText="Waiting confirmation" />
-              case "fetching":
+              case "registering":
                 return (
-                  <ModalButton isLoading loadingText="Generating your invite link" />
+                  <ModalButton
+                    isLoading
+                    loadingText="Conneting your Discord account"
+                  />
                 )
               case "fetchingUserData":
                 return <ModalButton isLoading loadingText="Fetching Discord data" />

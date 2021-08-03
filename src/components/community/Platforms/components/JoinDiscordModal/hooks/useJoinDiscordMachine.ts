@@ -1,5 +1,6 @@
 import { useWeb3React } from "@web3-react/core"
 import { useMachine } from "@xstate/react"
+import { useCommunity } from "components/community/Context"
 import { useEffect } from "react"
 import { MetaMaskError } from "utils/processMetaMaskError"
 import { assign, createMachine, DoneInvokeEvent } from "xstate"
@@ -58,7 +59,7 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
       signing: {
         invoke: {
           src: "sign",
-          onDone: "success",
+          onDone: "registering",
           onError: "signError",
         },
       },
@@ -72,10 +73,20 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
         entry: "setError",
         exit: "removeError",
       },
-      success: {
-        entry: (context, event) => {
-          console.log(context.id, event.data)
+      registering: {
+        invoke: {
+          src: "register",
+          onDone: "success",
+          onError: "signError",
         },
+      },
+      success: {
+        entry: assign({
+          inviteData: (_, event) => event.data,
+        }),
+        exit: assign({
+          inviteData: () => initialInviteData,
+        }),
       },
     },
     on: {
@@ -97,6 +108,7 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
 )
 
 const useJoinModalMachine = (): any => {
+  const { id: communityId } = useCommunity()
   const { account } = useWeb3React()
   const sign = usePersonalSign()
 
@@ -113,6 +125,21 @@ const useJoinModalMachine = (): any => {
           .then((response) => {
             state.context.id = response.id
           }),
+      register: (context, event) =>
+        fetch(`${process.env.NEXT_PUBLIC_API}/user/joinPlatform`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            platform: "DISCORD",
+            platformUserId: context.id,
+            communityId,
+            addressSignedMessage: event.data,
+          }),
+        }).then((response) =>
+          response.ok ? response.json() : Promise.reject(response)
+        ),
     },
   })
 
