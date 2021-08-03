@@ -10,7 +10,7 @@ import {
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 import { useCommunity } from "components/community/Context"
 import { Web3Connection } from "components/web3Connection/Web3ConnectionManager"
-import { Chains } from "connectors"
+import { Chains, RPC } from "connectors"
 import { LinkBreak, SignIn } from "phosphor-react"
 import { useContext } from "react"
 import shortenHex from "utils/shortenHex"
@@ -19,7 +19,7 @@ import Identicon from "../components/Identicon"
 import AccountButton from "./components/AccountButton"
 import AccountCard from "./components/AccountCard"
 import Balance from "./components/Balance"
-import NetworkChangeModal from "./components/NetworkChangeModal"
+import NetworkModal from "./components/NetworkModal"
 import useENSName from "./hooks/useENSName"
 
 const Account = (): JSX.Element => {
@@ -33,9 +33,9 @@ const Account = (): JSX.Element => {
     onClose: onAccountModalClose,
   } = useDisclosure()
   const {
-    isOpen: isNetworkChangeModalOpen,
-    onOpen: onNetworkChangeModalOpen,
-    onClose: onNetworkChangeModalClose,
+    isOpen: isNetworkModalOpen,
+    onOpen: onNetworkModalOpen,
+    onClose: onNetworkModalClose,
   } = useDisclosure()
   const { colorMode } = useColorMode()
 
@@ -58,14 +58,11 @@ const Account = (): JSX.Element => {
         <AccountButton
           leftIcon={<LinkBreak />}
           colorScheme="red"
-          onClick={onNetworkChangeModalOpen}
+          onClick={onNetworkModalOpen}
         >
           Wrong Network
         </AccountButton>
-        <NetworkChangeModal
-          isOpen={isNetworkChangeModalOpen}
-          onClose={onNetworkChangeModalClose}
-        />
+        <NetworkModal isOpen={isNetworkModalOpen} onClose={onNetworkModalClose} />
       </AccountCard>
     )
   }
@@ -85,8 +82,8 @@ const Account = (): JSX.Element => {
   return (
     <AccountCard>
       <ButtonGroup isAttached variant="ghost" alignItems="center">
-        <AccountButton onClick={onNetworkChangeModalOpen}>
-          {Chains[chainId].charAt(0).toUpperCase() + Chains[chainId].slice(1)}
+        <AccountButton onClick={onNetworkModalOpen}>
+          {RPC[Chains[chainId]].chainName}
         </AccountButton>
         <Divider
           orientation="vertical"
@@ -118,10 +115,7 @@ const Account = (): JSX.Element => {
       </ButtonGroup>
 
       <AccountModal isOpen={isAccountModalOpen} onClose={onAccountModalClose} />
-      <NetworkChangeModal
-        isOpen={isNetworkChangeModalOpen}
-        onClose={onNetworkChangeModalClose}
-      />
+      <NetworkModal isOpen={isNetworkModalOpen} onClose={onNetworkModalClose} />
     </AccountCard>
   )
 }

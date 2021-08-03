@@ -36,7 +36,8 @@ const NetworkButton = ({ chain }: Props) => {
               alt={`${RPC[chain].chainName} logo`}
             />
           }
-          variant={isCurrentChain ? "outline" : "solid"}
+          border={isCurrentChain && "2px"}
+          borderColor="primary.500"
           disabled={!isCommunityAvailable || isCurrentChain}
           onClick={requestNetworkChange}
           isFullWidth

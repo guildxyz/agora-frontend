@@ -11,7 +11,7 @@ enum Chains {
 const RPC = {
   polygon: {
     chainId: "0x89",
-    chainName: "Matic Mainnet",
+    chainName: "Matic",
     nativeCurrency: {
       name: "Polygon",
       symbol: "MATIC",
@@ -24,7 +24,7 @@ const RPC = {
   // Ethereum mainned cannot be removed from MetaMask, so this shouldn't be needed, but the chainName is displayed
   ethereum: {
     chainId: "0x01",
-    chainName: "Ethereum Mainnet",
+    chainName: "Ethereum",
     nativeCurrency: {
       name: "Ether",
       symbol: "ETH",
@@ -36,7 +36,7 @@ const RPC = {
   },
   bsc: {
     chainId: "0x38",
-    chainName: "BSC Mainnet",
+    chainName: "BSC",
     nativeCurrency: {
       name: "Binance Coin",
       symbol: "BNB",
