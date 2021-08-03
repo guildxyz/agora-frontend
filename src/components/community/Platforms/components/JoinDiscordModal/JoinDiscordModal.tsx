@@ -77,7 +77,7 @@ const JoinDiscordModal = ({
             <Text>{description}</Text>
           ) : (
             <VStack spacing="6">
-              {state.context.alreadyJoined ? (
+              {state.context.inviteData.alreadyJoined ? (
                 <Text>
                   Seems like you are already joined the discord server, you should
                   get access to the correct channels soon!
