@@ -1,35 +1,43 @@
-import ActionCard from "components/common/ActionCard"
 import { Box, Tooltip } from "@chakra-ui/react"
+import ActionCard from "components/common/ActionCard"
 import { useCommunity } from "components/community/Context"
-import PlatformButton from "./components/PlatformButton"
+import { Chains } from "connectors"
 import useLevelAccess from "../Levels/components/Level/hooks/useLevelAccess"
+import PlatformButton from "./components/PlatformButton"
 
 const Platforms = (): JSX.Element => {
   const {
-    platforms,
-    levels: [firstLevel],
+    communityPlatforms,
+    levels: [{ requirementType, requirementAmount }],
+    chainData,
   } = useCommunity()
-  const [hasAccess, noAccessMessage] = useLevelAccess(firstLevel.accessRequirement)
+  const [hasAccess, noAccessMessage] = useLevelAccess(
+    requirementType,
+    requirementAmount,
+    chainData.token,
+    chainData.stakeToken,
+    Chains[chainData.name.toLowerCase()]
+  )
 
   return (
     <ActionCard
       title="Platforms"
       description="All platforms are bridged together so you’ll see the same messages everywhere."
     >
-      {Object.keys(platforms)
-        .filter((platform) => platforms[platform].active)
+      {communityPlatforms
+        .filter((platform) => platform.active)
         .map((platform) => (
           <Tooltip
-            key={platform}
+            key={platform.name}
             isDisabled={hasAccess}
             label={
-              noAccessMessage === "Wallet not connected"
+              ["Wallet not connected", "Wrong network"].includes(noAccessMessage)
                 ? noAccessMessage
                 : "You don't have access to any of the levels"
             }
           >
             <Box>
-              <PlatformButton platform={platform} disabled={!hasAccess} />
+              <PlatformButton platform={platform.name} disabled={!hasAccess} />
             </Box>
           </Tooltip>
         ))}

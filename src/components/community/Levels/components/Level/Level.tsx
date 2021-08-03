@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react"
 import { useCommunity } from "components/community/Context"
 import InfoTags from "components/community/Levels/components/InfoTags"
+import { Chains } from "connectors"
 import { Check, CheckCircle } from "phosphor-react"
 import { useEffect } from "react"
 import type { Level as LevelType } from "temporaryData/types"
@@ -28,19 +29,32 @@ type Props = {
   setLevelsState: any
 }
 
-const Level = ({ data, setLevelsState }: Props): JSX.Element => {
+const Level = ({
+  data: {
+    requirementAmount,
+    requirementType,
+    name,
+    stakeTimelockMs,
+    imageUrl,
+    description,
+    membersCount,
+  },
+  setLevelsState,
+}: Props): JSX.Element => {
   const { colorMode } = useColorMode()
-  const {
-    chainData: {
-      token: { symbol: tokenSymbol },
-    },
-  } = useCommunity()
+  const { chainData } = useCommunity()
   const {
     isOpen: isStakingModalOpen,
     onOpen: onStakingModalOpen,
     onClose: onStakingModalClose,
   } = useDisclosure()
-  const [hasAccess, noAccessMessage] = useLevelAccess(data.accessRequirement)
+  const [hasAccess, noAccessMessage] = useLevelAccess(
+    requirementType,
+    requirementAmount,
+    chainData.token,
+    chainData.stakeToken,
+    Chains[chainData.name.toLowerCase()]
+  )
   const [hoverElRef, focusElRef, state] = useLevelIndicatorState(
     hasAccess,
     isStakingModalOpen
@@ -50,13 +64,13 @@ const Level = ({ data, setLevelsState }: Props): JSX.Element => {
   useEffect(() => {
     setLevelsState((prevState) => ({
       ...prevState,
-      [data.name]: {
+      [name]: {
         isDisabled: noAccessMessage.length > 0,
         element: hoverElRef.current,
         state,
       },
     }))
-  }, [noAccessMessage, state, hoverElRef, setLevelsState, data])
+  }, [noAccessMessage, state, hoverElRef, setLevelsState, name])
 
   return (
     <Stack
@@ -77,20 +91,22 @@ const Level = ({ data, setLevelsState }: Props): JSX.Element => {
       >
         <GridItem order={{ md: 1 }}>
           <Heading size="sm" mb="3">
-            {data.name}
+            {name}
           </Heading>
           <InfoTags
-            data={data.accessRequirement}
-            membersCount={data.membersCount}
-            tokenSymbol={tokenSymbol}
+            requirementAmount={requirementAmount}
+            stakeTimelockMs={stakeTimelockMs}
+            requirementType={requirementType}
+            membersCount={membersCount}
+            tokenSymbol={chainData.token.symbol}
           />
         </GridItem>
         <GridItem order={{ md: 0 }}>
-          <Image src={`${data.imageUrl}`} boxSize="45px" alt="Level logo" />
+          <Image src={`${imageUrl}`} boxSize="45px" alt="Level logo" />
         </GridItem>
-        {data.desc && (
+        {description && (
           <GridItem colSpan={{ base: 2, md: 1 }} colStart={{ md: 2 }} order={2}>
-            <Text fontSize="md">{data.desc}</Text>
+            <Text fontSize="md">{description}</Text>
           </GridItem>
         )}
       </Grid>
@@ -125,7 +141,7 @@ const Level = ({ data, setLevelsState }: Props): JSX.Element => {
           />
         )}
         {(() =>
-          data.accessRequirement.type === "stake" &&
+          requirementType === "STAKE" &&
           !hasAccess && (
             <>
               <Button
@@ -140,8 +156,9 @@ const Level = ({ data, setLevelsState }: Props): JSX.Element => {
               </Button>
               {!noAccessMessage && (
                 <StakingModal
-                  levelName={data.name}
-                  accessRequirement={data.accessRequirement}
+                  levelName={name}
+                  requirementAmount={requirementAmount}
+                  stakeTimelockMs={stakeTimelockMs}
                   isOpen={isStakingModalOpen}
                   onClose={onStakingModalClose}
                 />
