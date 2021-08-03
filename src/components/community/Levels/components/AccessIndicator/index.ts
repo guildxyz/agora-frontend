@@ -1,3 +1,3 @@
-import AccessIndecator from "./AccessIndicator"
+import AccessIndicator from "./AccessIndicator"
 
-export default AccessIndecator
+export default AccessIndicator

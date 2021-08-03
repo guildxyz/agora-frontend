@@ -1,18 +1,18 @@
 import { Box, BoxProps, useColorMode } from "@chakra-ui/react"
 import { motion } from "framer-motion"
+import { Rest } from "temporaryData/types"
 import useIndicatorData from "./hooks/useIndicatorData"
 import LevelState from "./types"
 
 const MotionBox = motion<BoxProps>(Box)
 
-const Indicator = ({ ...rest }: { [x: string]: any }) => (
+const Indicator = ({ ...rest }: Rest) => (
   <MotionBox
     pos="absolute"
     left="0"
     width="6px"
     height="0"
     transition={{ type: "just" }}
-    // eslint-disable-next-line react/jsx-props-no-spreading
     {...rest}
   />
 )
