@@ -37,7 +37,8 @@ const useIsMember = (platform: string): boolean => {
           communityId,
         ]
       : null,
-    fetchIsMember
+    fetchIsMember,
+    { initialData: false }
   )
 
   return data
