@@ -58,7 +58,6 @@ const CommunityProvider = ({
         chainData,
         availableChains,
         levels,
-        membersCount: 0,
       }}
     >
       {shouldRenderWrapper ? (

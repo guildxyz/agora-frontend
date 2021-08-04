@@ -20,13 +20,9 @@ const getMemberCount = (_: string, id: number): Promise<MemberCountResponse[]> =
   )
 
 const useMemberCount = (communityId: number) => {
-  const { data, mutate } = useSWR(
-    [`${communityId}_membercount`, communityId],
-    getMemberCount,
-    {
-      initialData: [],
-    }
-  )
+  const { data, mutate } = useSWR(["membercount", communityId], getMemberCount, {
+    initialData: [],
+  })
 
   const memberCountData = useMemo(() => {
     const levelsData: MemberCount = {}
