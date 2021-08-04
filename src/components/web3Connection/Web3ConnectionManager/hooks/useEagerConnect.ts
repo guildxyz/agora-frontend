@@ -11,6 +11,7 @@ const useEagerConnect = (): boolean => {
     injected
       .isAuthorized()
       .then((isAuthirozed) => isAuthirozed && activate(injected, undefined, true))
+      .catch(() => setTried(true))
       .finally(() => setTried(true))
   }, [activate])
 
