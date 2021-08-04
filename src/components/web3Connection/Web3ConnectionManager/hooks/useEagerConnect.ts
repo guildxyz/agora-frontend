@@ -10,11 +10,7 @@ const useEagerConnect = (): boolean => {
   useEffect(() => {
     injected
       .isAuthorized()
-      .then((isAuthorized) =>
-        isAuthorized
-          ? activate(injected, undefined, true)
-          : Promise.reject(new Error("not authorized"))
-      )
+      .then((isAuthirozed) => isAuthirozed && activate(injected, undefined, true))
       .finally(() => setTried(true))
   }, [activate])
 
