@@ -62,8 +62,8 @@ const JoinDiscordModal = ({
             <VStack spacing="6">
               {state.context.inviteData.alreadyJoined ? (
                 <Text>
-                  Seems like you are already joined the discord server, you should
-                  get access to the correct channels soon!
+                  Seems like you already joined the discord server, you should get
+                  access to the correct channels soon!
                 </Text>
               ) : (
                 <>
@@ -115,9 +115,11 @@ const JoinDiscordModal = ({
               case "success":
                 return <ModalButton onClick={onClose}>Done</ModalButton>
               case "signIdle":
+              case "signError":
                 return <ModalButton onClick={() => send("SIGN")}>Sign</ModalButton>
               default:
               case "idle":
+              case "authError":
                 return (
                   <Link
                     _hover={{ textDecoration: "none" }}

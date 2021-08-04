@@ -36,10 +36,10 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
         on: {
           AUTH: "auth",
           // AUTHDONE: "fetchingUserData",
-          "": {
-            target: "fetchingUserData",
-            cond: "areHashParamsSet",
-          },
+        },
+        always: {
+          target: "fetchingUserData",
+          cond: "areHashParamsSet",
         },
       },
       auth: {
