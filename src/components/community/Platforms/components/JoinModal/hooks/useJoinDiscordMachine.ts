@@ -4,7 +4,7 @@ import { useCommunity } from "components/community/Context"
 import { useEffect } from "react"
 import { MetaMaskError } from "utils/processMetaMaskError"
 import { assign, createMachine, DoneInvokeEvent } from "xstate"
-import usePersonalSign from "../../JoinModal/hooks/usePersonalSign"
+import usePersonalSign from "./usePersonalSign"
 
 type InviteData = {
   inviteLink: string
