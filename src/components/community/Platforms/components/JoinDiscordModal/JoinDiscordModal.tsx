@@ -9,7 +9,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { Error } from "components/common/Error"
-import { Link } from "components/common/Link"
+import Link from "components/common/Link"
 import Modal from "components/common/Modal"
 import ModalButton from "components/common/ModalButton"
 import { useCommunity } from "components/community/Context"

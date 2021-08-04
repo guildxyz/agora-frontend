@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import Card from "components/common/Card"
-import { Link } from "components/common/Link"
+import Link from "components/common/Link"
 import useColorPalette from "components/community/hooks/useColorPalette"
 import useLevelAccess from "components/community/Levels/components/Level/hooks/useLevelAccess"
 import { Chains } from "connectors"
