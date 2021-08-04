@@ -10,7 +10,7 @@ import {
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 import { useCommunity } from "components/community/Context"
 import { Web3Connection } from "components/web3Connection/Web3ConnectionManager"
-import { Chains } from "connectors"
+import { Chains, RPC } from "connectors"
 import { LinkBreak, SignIn } from "phosphor-react"
 import { useContext } from "react"
 import shortenHex from "utils/shortenHex"
@@ -19,6 +19,7 @@ import Identicon from "../components/Identicon"
 import AccountButton from "./components/AccountButton"
 import AccountCard from "./components/AccountCard"
 import Balance from "./components/Balance"
+import NetworkModal from "./components/NetworkModal"
 import useENSName from "./hooks/useENSName"
 
 const Account = (): JSX.Element => {
@@ -26,7 +27,16 @@ const Account = (): JSX.Element => {
   const { error, account, chainId } = useWeb3React()
   const { openModal, triedEager } = useContext(Web3Connection)
   const ENSName = useENSName(account)
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const {
+    isOpen: isAccountModalOpen,
+    onOpen: onAccountModalOpen,
+    onClose: onAccountModalClose,
+  } = useDisclosure()
+  const {
+    isOpen: isNetworkModalOpen,
+    onOpen: onNetworkModalOpen,
+    onClose: onNetworkModalClose,
+  } = useDisclosure()
   const { colorMode } = useColorMode()
 
   if (typeof window === "undefined") {
@@ -36,16 +46,23 @@ const Account = (): JSX.Element => {
       </AccountCard>
     )
   }
-  if (error instanceof UnsupportedChainIdError) {
+
+  if (
+    error instanceof UnsupportedChainIdError ||
+    (typeof chainId === "number" &&
+      !!communityData &&
+      chainId !== Chains[communityData.chainData.name.toLowerCase()])
+  ) {
     return (
       <AccountCard>
         <AccountButton
           leftIcon={<LinkBreak />}
           colorScheme="red"
-          onClick={openModal}
+          onClick={onNetworkModalOpen}
         >
           Wrong Network
         </AccountButton>
+        <NetworkModal isOpen={isNetworkModalOpen} onClose={onNetworkModalClose} />
       </AccountCard>
     )
   }
@@ -65,8 +82,8 @@ const Account = (): JSX.Element => {
   return (
     <AccountCard>
       <ButtonGroup isAttached variant="ghost" alignItems="center">
-        <AccountButton>
-          {Chains[chainId].charAt(0).toUpperCase() + Chains[chainId].slice(1)}
+        <AccountButton onClick={onNetworkModalOpen}>
+          {RPC[Chains[chainId]].chainName}
         </AccountButton>
         <Divider
           orientation="vertical"
@@ -76,7 +93,7 @@ const Account = (): JSX.Element => {
            */
           h={{ base: 14, md: "var(--chakra-space-11)" }}
         />
-        <AccountButton onClick={onOpen}>
+        <AccountButton onClick={onAccountModalOpen}>
           <HStack>
             <VStack spacing={0} alignItems="flex-end">
               {!!communityData && <Balance token={communityData.chainData.token} />}
@@ -97,7 +114,8 @@ const Account = (): JSX.Element => {
         </AccountButton>
       </ButtonGroup>
 
-      <AccountModal {...{ isOpen, onClose }} />
+      <AccountModal isOpen={isAccountModalOpen} onClose={onAccountModalClose} />
+      <NetworkModal isOpen={isNetworkModalOpen} onClose={onNetworkModalClose} />
     </AccountCard>
   )
 }

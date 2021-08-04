@@ -33,7 +33,8 @@ const WrappedCard = ({ community, refAccess }: Props): JSX.Element => {
     community.levels.length ? community.levels[0].requirementType : "HOLD",
     community.levels.length ? community.levels[0].requirementAmount : -1,
     currentChainData?.token,
-    currentChainData?.stakeToken
+    currentChainData?.stakeToken,
+    Chains.polygon
   )
 
   if (hasAccess)
@@ -56,6 +57,7 @@ const CommunityCard = ({
     marketcap,
     chainData,
     id,
+    holdersCount,
   },
   currentChainData: _currentChainData,
 }: {
@@ -115,6 +117,7 @@ const CommunityCard = ({
             ) : (
               <Wrap shouldWrapChildren>
                 <Tag colorScheme="alpha">{`$${marketcap.toLocaleString()} market cap`}</Tag>
+                <Tag colorScheme="alpha">{`${holdersCount} holders`}</Tag>
               </Wrap>
             )}
           </Stack>

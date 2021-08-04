@@ -1,6 +1,23 @@
 import { DiscordLogo, TelegramLogo } from "phosphor-react"
+import type { Icon, PlatformName } from "temporaryData/types"
 
-const platformsContent = {
+type PlatformData = {
+  logo: Icon
+  title: string
+  join: {
+    description: string
+  }
+  leave: {
+    membershipDescription: string
+    leaveDescription: string
+  }
+}
+
+type Platforms = {
+  [_ in PlatformName]: PlatformData
+}
+
+const platformsContent: Platforms = {
   TELEGRAM: {
     logo: TelegramLogo,
     title: "Telegram",
@@ -20,7 +37,7 @@ const platformsContent = {
     title: "Discord server",
     join: {
       description:
-        "Once you’re in, Agora’s bot will manage your role so you always have access to the channels corresponding to your current level. To generate your invite link, you have to sign a message with your wallet first.",
+        "Once you’re in, Agora’s bot will manage your role so you always have access to the channels corresponding to your current level. For this connection between your wallet and the Agora channel, first we need to authenticate you through discord, then you have to sign a message with your wallet.",
     },
     leave: {
       membershipDescription:
@@ -32,3 +49,4 @@ const platformsContent = {
 }
 
 export default platformsContent
+export type { PlatformName, PlatformData }

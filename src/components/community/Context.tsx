@@ -46,6 +46,8 @@ const CommunityProvider = ({
     [data.levels, membersCount]
   )
 
+  const availableChains = data.chainData.map((_) => _.name.toLowerCase())
+
   const generatedColors = useColorPalette("chakra-colors-primary", data.themeColor)
   const colorPaletteProviderElementRef = useRef(null)
 
@@ -54,6 +56,7 @@ const CommunityProvider = ({
       value={{
         ...data,
         chainData,
+        availableChains,
         levels,
         membersCount: 0,
       }}
