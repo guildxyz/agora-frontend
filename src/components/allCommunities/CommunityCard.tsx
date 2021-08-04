@@ -25,7 +25,7 @@ const WrappedCard = ({ community, refAccess }: Props): JSX.Element => {
   const { chainId } = useWeb3React()
 
   const currentChainData = community.chainData.find(
-    (_) => _.name === Chains[chainId]
+    (_) => Chains[_.name.toLowerCase()] === chainId
   )
 
   const [hasAccess] = useLevelAccess(
@@ -33,7 +33,7 @@ const WrappedCard = ({ community, refAccess }: Props): JSX.Element => {
     community.levels.length ? community.levels[0].requirementAmount : -1,
     currentChainData?.token,
     currentChainData?.stakeToken,
-    Chains.polygon
+    Chains[currentChainData?.name.toLowerCase()]
   )
 
   if (hasAccess)
