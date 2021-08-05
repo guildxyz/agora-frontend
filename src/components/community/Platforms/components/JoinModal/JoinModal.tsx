@@ -1,4 +1,5 @@
 import {
+  Icon,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -12,6 +13,7 @@ import { Error } from "components/common/Error"
 import Link from "components/common/Link"
 import Modal from "components/common/Modal"
 import ModalButton from "components/common/ModalButton"
+import { ArrowSquareOut } from "phosphor-react"
 import QRCode from "qrcode.react"
 import platformsContent from "../../platformsContent"
 import useJoinModalMachine from "./hooks/useJoinModalMachine"
@@ -49,11 +51,20 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
           {state.value !== "success" ? (
             <Text>{description}</Text>
           ) : (
-            <VStack spacing="6">
+            /** Negative margin bottom to offset the Footer's padding that's there anyway */
+            <VStack spacing="6" mb="-8">
               <Text>
-                The generated link is only active for 15 minutes and is only usable
-                once.
+                Here’s your link. It’s only active for 15 minutes and is only usable
+                once:
               </Text>
+              <Link
+                href={state.context.inviteData.inviteLink}
+                colorScheme="blue"
+                isExternal
+              >
+                {state.context.inviteData.inviteLink}
+                <Icon as={ArrowSquareOut} mx="2" />
+              </Link>
               <QRCode size={150} value={state.context.inviteData.inviteLink} />
             </VStack>
           )}
@@ -70,15 +81,7 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
                   <ModalButton isLoading loadingText="Generating your invite link" />
                 )
               case "success":
-                return (
-                  <Link
-                    _hover={{ textDecoration: "none" }}
-                    href={state.context.inviteData.inviteLink}
-                    isExternal
-                  >
-                    <ModalButton onClick={onClose}>Join</ModalButton>
-                  </Link>
-                )
+                return null
             }
           })()}
         </ModalFooter>

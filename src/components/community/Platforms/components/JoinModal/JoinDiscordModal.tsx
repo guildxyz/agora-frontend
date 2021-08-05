@@ -1,4 +1,5 @@
 import {
+  Icon,
   ModalBody,
   ModalCloseButton,
   ModalContent,
@@ -13,7 +14,9 @@ import Link from "components/common/Link"
 import Modal from "components/common/Modal"
 import ModalButton from "components/common/ModalButton"
 import { useCommunity } from "components/community/Context"
+import { ArrowSquareOut } from "phosphor-react"
 import QRCode from "qrcode.react"
+import React from "react"
 import platformsContent from "../../platformsContent"
 import useJoinDiscordMachine from "./hooks/useJoinDiscordMachine"
 import processJoinPlatformError from "./utils/processJoinPlatformError"
@@ -57,18 +60,27 @@ const JoinDiscordModal = ({
           {state.value !== "success" ? (
             <Text>{description}</Text>
           ) : (
-            <VStack spacing="6">
+            /** Negative margin bottom to offset the Footer's padding that's there anyway */
+            <VStack spacing="6" mb="-8">
               {state.context.inviteData.alreadyJoined ? (
                 <Text>
-                  Seems like you already joined the discord server, you should get
+                  Seems like you've already joined the discord server, you should get
                   access to the correct channels soon!
                 </Text>
               ) : (
                 <>
                   <Text>
-                    The generated link is only active for 15 minutes and is only
-                    usable once.
+                    Here’s your link. It’s only active for 15 minutes and is only
+                    usable once:
                   </Text>
+                  <Link
+                    href={state.context.inviteData.inviteLink}
+                    colorScheme="blue"
+                    isExternal
+                  >
+                    {state.context.inviteData.inviteLink}
+                    <Icon as={ArrowSquareOut} mx="2" />
+                  </Link>
                   <QRCode size={150} value={state.context.inviteData.inviteLink} />
                 </>
               )}
@@ -90,15 +102,7 @@ const JoinDiscordModal = ({
               case "fetchingUserData":
                 return <ModalButton isLoading loadingText="Fetching Discord data" />
               case "success":
-                return (
-                  <Link
-                    _hover={{ textDecoration: "none" }}
-                    href={state.context.inviteData.inviteLink}
-                    isExternal
-                  >
-                    <ModalButton onClick={onClose}>Join</ModalButton>
-                  </Link>
-                )
+                return null
               case "signIdle":
               case "signError":
                 return <ModalButton onClick={() => send("SIGN")}>Sign</ModalButton>
