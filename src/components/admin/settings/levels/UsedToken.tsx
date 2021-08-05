@@ -1,4 +1,12 @@
-import { Text } from "@chakra-ui/react"
+import {
+  FormControl,
+  FormLabel,
+  Grid,
+  GridItem,
+  Input,
+  InputGroup,
+  InputRightAddon,
+} from "@chakra-ui/react"
 import Section from "components/admin/Section"
 
 const UsedToken = (): JSX.Element => (
@@ -7,7 +15,17 @@ const UsedToken = (): JSX.Element => (
     description="The token that members will have to stake or hold to access non-open levels"
     cardType
   >
-    <Text>Content</Text>
+    <Grid templateColumns="repeat(2, 1fr)" gap={12}>
+      <GridItem>
+        <FormControl id="token_name_address">
+          <FormLabel>Token name or address</FormLabel>
+          <InputGroup>
+            <Input />
+            <InputRightAddon>ETHANE</InputRightAddon>
+          </InputGroup>
+        </FormControl>
+      </GridItem>
+    </Grid>
   </Section>
 )
 
