@@ -18,12 +18,12 @@ const AdminLayout = ({ title, sideNavItems = [], children }: Props): JSX.Element
     </Head>
     <Box bgColor="gray.100" minHeight="100vh">
       <Header />
-      <Container maxW="container.lg" py={16} px={{ base: 4, sm: 6, md: 8, lg: 10 }}>
-        <Grid templateColumns="repeat(4, 1fr)" gap={16}>
+      <Container maxW="container.xl" py={16} px={{ base: 4, sm: 6, md: 8, lg: 10 }}>
+        <Grid templateColumns="repeat(5, 1fr)" gap={16}>
           <GridItem as="aside" colSpan={1}>
             <SideNav sideNavItems={sideNavItems} />
           </GridItem>
-          <GridItem colSpan={3}>{children}</GridItem>
+          <GridItem colSpan={4}>{children}</GridItem>
         </Grid>
       </Container>
     </Box>

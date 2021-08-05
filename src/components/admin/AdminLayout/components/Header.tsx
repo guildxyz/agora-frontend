@@ -41,8 +41,8 @@ const Header = (): JSX.Element => {
 
   return (
     <Box as="header" bgColor="white" boxShadow="base">
-      <Container maxW="container.lg" px={{ base: 4, sm: 6, md: 8, lg: 10 }}>
-        <Grid templateColumns="repeat(4, 1fr)" gap={16}>
+      <Container maxW="container.xl" px={{ base: 4, sm: 6, md: 8, lg: 10 }}>
+        <Grid templateColumns="repeat(5, 1fr)" gap={16}>
           <GridItem colSpan={1}>
             <Link href="/" _hover={{ textDecorarion: "none" }}>
               <HStack>
@@ -61,7 +61,7 @@ const Header = (): JSX.Element => {
               </HStack>
             </Link>
           </GridItem>
-          <GridItem colSpan={3}>
+          <GridItem colSpan={4}>
             <HStack h={20} alignItems="center" justifyContent="space-between">
               <HStack as="nav" spacing={2}>
                 {headerNavItems.map((link) => (
