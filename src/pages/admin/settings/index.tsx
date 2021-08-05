@@ -20,7 +20,7 @@ export const settingsSideNavItems: SideNavItem[] = [
   },
 ]
 
-const Settings = () => <></>
+const Settings = (): JSX.Element => <></>
 
 const getServerSideProps: GetServerSideProps = async () => ({
   redirect: {

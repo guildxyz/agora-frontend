@@ -1,10 +1,10 @@
 import { GetServerSideProps } from "next"
 
-const Admin = () => <></>
+const Admin = (): JSX.Element => <></>
 
 const getServerSideProps: GetServerSideProps = async () => ({
   redirect: {
-    destination: "/admin/settings/general",
+    destination: "/admin/settings",
   },
   props: {},
 })

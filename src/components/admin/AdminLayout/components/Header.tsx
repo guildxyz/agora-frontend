@@ -11,10 +11,32 @@ import {
 import { useWeb3React } from "@web3-react/core"
 import Logo from "components/common/Layout/components/LogoWithMenu/components/Logo"
 import Link from "components/common/Link"
+import { useRouter } from "next/router"
 import { Wallet } from "phosphor-react"
 import shortenHex from "utils/shortenHex"
 
+type HeaderNavItem = {
+  name: string
+  path: string
+}
+
+export const headerNavItems: HeaderNavItem[] = [
+  {
+    name: "Bank",
+    path: "/admin/bank",
+  },
+  {
+    name: "Analytics",
+    path: "/admin/analytics",
+  },
+  {
+    name: "Settings",
+    path: "/admin/settings",
+  },
+]
+
 const Header = (): JSX.Element => {
+  const router = useRouter()
   const { account } = useWeb3React()
 
   return (
@@ -41,22 +63,34 @@ const Header = (): JSX.Element => {
           </GridItem>
           <GridItem colSpan={3}>
             <HStack h={20} alignItems="center" justifyContent="space-between">
-              <nav>
-                <Link
-                  href="/admin"
-                  px={4}
-                  // bgColor="gray.100"
-                  bgColor="indigo.50"
-                  height={10}
-                  borderRadius="md"
-                  // textColor="gray.800"
-                  textColor="indigo.600"
-                  fontWeight="semibold"
-                  _hover={{ textDecoration: "none" }}
-                >
-                  Settings
-                </Link>
-              </nav>
+              <HStack as="nav" spacing={2}>
+                {headerNavItems.map((link) => (
+                  <Link
+                    key={link.name.toLowerCase()}
+                    href={link.path}
+                    px={4}
+                    bgColor={
+                      router.pathname.includes(link.path)
+                        ? "indigo.50"
+                        : "transparent"
+                    }
+                    height={10}
+                    borderRadius="md"
+                    textColor={
+                      router.pathname.includes(link.path) ? "indigo.600" : "gray.800"
+                    }
+                    fontWeight="semibold"
+                    _hover={{
+                      textDecoration: "none",
+                      bgColor: router.pathname.includes(link.path)
+                        ? "indigo.50"
+                        : "gray.100",
+                    }}
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </HStack>
 
               <HStack spacing={4}>
                 <Icon as={Wallet} />
