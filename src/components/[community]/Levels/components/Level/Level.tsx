@@ -31,7 +31,7 @@ type Props = {
 
 const Level = ({
   data: {
-    requirementAmount,
+    requirement,
     requirementType,
     name,
     stakeTimelockMs,
@@ -50,7 +50,7 @@ const Level = ({
   } = useDisclosure()
   const [hasAccess, noAccessMessage] = useLevelAccess(
     requirementType,
-    requirementAmount,
+    requirement,
     chainData.token,
     chainData.stakeToken,
     Chains[chainData.name.toLowerCase()]
@@ -94,7 +94,7 @@ const Level = ({
             {name}
           </Heading>
           <InfoTags
-            requirementAmount={requirementAmount}
+            requirement={requirement}
             stakeTimelockMs={stakeTimelockMs}
             requirementType={requirementType}
             membersCount={membersCount}
@@ -157,7 +157,7 @@ const Level = ({
               {!noAccessMessage && (
                 <StakingModal
                   levelName={name}
-                  requirementAmount={requirementAmount}
+                  requirement={requirement}
                   stakeTimelockMs={stakeTimelockMs}
                   isOpen={isStakingModalOpen}
                   onClose={onStakingModalClose}

@@ -1,12 +1,12 @@
 import { Stack, Text, useColorMode, Wrap } from "@chakra-ui/react"
 import { Lock, LockOpen, LockSimpleOpen, Tag, Users } from "phosphor-react"
-import type { Icon as IconType } from "temporaryData/types"
+import type { Icon as IconType, RequirementType } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
 
 type Props = {
   stakeTimelockMs: number
-  requirementType: "OPEN" | "STAKE" | "HOLD"
-  requirementAmount: number
+  requirementType: RequirementType
+  requirement: number
   membersCount: number
   tokenSymbol: string
 }
@@ -44,7 +44,7 @@ const InfoTag = ({ icon: Icon, label }: ChildProps): JSX.Element => {
 const InfoTags = ({
   stakeTimelockMs,
   requirementType,
-  requirementAmount,
+  requirement,
   membersCount,
   tokenSymbol,
 }: Props): JSX.Element => (
@@ -58,7 +58,7 @@ const InfoTags = ({
       }`}
     />
     {requirementType !== "OPEN" && (
-      <InfoTag icon={Tag} label={`${requirementAmount} ${tokenSymbol}`} />
+      <InfoTag icon={Tag} label={`${requirement} ${tokenSymbol}`} />
     )}
     <InfoTag icon={Users} label={`${membersCount} members`} />
   </Wrap>
