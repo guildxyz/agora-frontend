@@ -14,7 +14,7 @@ import Link from "components/common/Link"
 import { Wallet } from "phosphor-react"
 import shortenHex from "utils/shortenHex"
 
-const Header = () => {
+const Header = (): JSX.Element => {
   const { account } = useWeb3React()
 
   return (

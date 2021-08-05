@@ -1,9 +1,13 @@
-import AdminLayout from "components/admin/AdminLayout/AdminLayout"
+import { GetServerSideProps } from "next"
 
-const Admin = () => (
-  <AdminLayout title="Admin page">
-    <div>Admin page</div>
-  </AdminLayout>
-)
+const Admin = () => <></>
+
+const getServerSideProps: GetServerSideProps = async () => ({
+  redirect: {
+    destination: "/admin/settings/general",
+  },
+  props: {},
+})
 
 export default Admin
+export { getServerSideProps }
