@@ -1,23 +1,25 @@
 /* eslint-disable react/destructuring-assignment */
 import { Box, useRadio } from "@chakra-ui/react"
 
-const CustomRadio = (props) => {
+const RadioCard = (props) => {
   const { getInputProps, getCheckboxProps } = useRadio(props)
 
   const input = getInputProps()
   const checkbox = getCheckboxProps()
 
   return (
-    <Box width="full" as="label">
+    <Box as="label" width="full">
       <input {...input} />
       <Box
         {...checkbox}
         cursor="pointer"
-        bgColor="gray.50"
         borderRadius="md"
+        bgColor="gray.50"
+        fontWeight="medium"
+        color="gray.700"
         _checked={{
-          bg: "ingido.50",
-          color: "idigo.500",
+          bgColor: "indigo.50",
+          color: "indigo.600",
         }}
         _focus={{
           boxShadow: "outline",
@@ -31,4 +33,4 @@ const CustomRadio = (props) => {
   )
 }
 
-export default CustomRadio
+export default RadioCard

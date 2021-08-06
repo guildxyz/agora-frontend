@@ -21,25 +21,40 @@ import {
 import Card from "components/common/Card"
 import Image from "next/image"
 import { Lock, LockOpen, LockSimpleOpen } from "phosphor-react"
-import { useState } from "react"
+import { Icon as IconType } from "temporaryData/types"
 import placeholderPic from "../../../../../../../public/temporaryCommunityLogos/agora.png"
-import CustomRadio from "./CustomRadio"
+import RadioCard from "./RadioCard"
 
-const MemberShipIcons = { open: LockSimpleOpen, hold: LockOpen, stake: Lock }
+type MembershipData = {
+  name: string
+  icon: IconType
+}
+
+const membershipsData: { [key: string]: MembershipData } = {
+  open: {
+    name: "Open",
+    icon: LockSimpleOpen,
+  },
+  hold: {
+    name: "Hold",
+    icon: LockOpen,
+  },
+  stake: {
+    name: "Stake",
+    icon: Lock,
+  },
+}
 
 const AddLevel = () => {
-  // Well need a cleaner solution for these radio buttons & values
-  const memberships = ["open", "hold", "stake"]
-
-  const [selectedMembership, setSelectedMembership] = useState(0)
+  const options = ["open", "hold", "stake"]
 
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "membership",
     defaultValue: "open",
-    onChange: (selected) => setSelectedMembership(+selected),
+    onChange: console.log,
   })
 
-  const radioGroup = getRootProps()
+  const group = getRootProps()
 
   return (
     <Card width="full" padding={8}>
@@ -94,17 +109,16 @@ const AddLevel = () => {
           <GridItem colSpan={2}>
             <FormControl id="membership">
               <FormLabel>Membership</FormLabel>
-              <HStack {...radioGroup}>
-                {memberships.map((value) => {
+              <HStack {...group}>
+                {options.map((value) => {
                   const radio = getRadioProps({ value })
-                  radio.checked = +value === selectedMembership
                   return (
-                    <CustomRadio key={value} {...radio}>
-                      <HStack justify="center">
-                        <Icon as={MemberShipIcons[value]} />
-                        <Text>{value.charAt(0).toUpperCase() + value.slice(1)}</Text>
+                    <RadioCard key={value} {...radio}>
+                      <HStack spacing={2} justify="center">
+                        <Icon as={membershipsData[value].icon} />
+                        <Text as="span">{membershipsData[value].name}</Text>
                       </HStack>
-                    </CustomRadio>
+                    </RadioCard>
                   )
                 })}
               </HStack>
