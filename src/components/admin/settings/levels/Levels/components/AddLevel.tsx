@@ -8,7 +8,7 @@ import {
   Icon,
   Input,
   InputGroup,
-  InputLeftElement,
+  InputLeftAddon,
   InputRightAddon,
   Tag,
   TagCloseButton,
@@ -154,31 +154,33 @@ const AddLevel = () => {
           <FormControl id="tg_groups">
             <FormLabel>Telegram group(s)</FormLabel>
             <InputGroup>
-              {/* Should fix the width of this element! */}
-              <InputLeftElement width="max-content">
-                <HStack px={2} spacing={2}>
+              <InputLeftAddon px={2} bgColor="transparent">
+                <HStack spacing={2}>
                   <Tag>
                     <TagLabel>Ethane insiders</TagLabel>
                     <TagCloseButton />
                   </Tag>
                 </HStack>
-              </InputLeftElement>
+              </InputLeftAddon>
               <Input width="full" />
             </InputGroup>
           </FormControl>
 
           <FormControl id="tg_groups">
-            <FormLabel>Telegram group(s)</FormLabel>
+            <FormLabel>Discord channel(s)</FormLabel>
             <InputGroup>
-              {/* Should fix the width of this element! */}
-              <InputLeftElement width="max-content">
-                <HStack px={2} spacing={2}>
+              <InputLeftAddon px={2} bgColor="transparent">
+                <HStack spacing={2}>
                   <Tag>
-                    <TagLabel>Ethane insiders</TagLabel>
+                    <TagLabel>general</TagLabel>
+                    <TagCloseButton />
+                  </Tag>
+                  <Tag>
+                    <TagLabel>help</TagLabel>
                     <TagCloseButton />
                   </Tag>
                 </HStack>
-              </InputLeftElement>
+              </InputLeftAddon>
               <Input width="full" />
             </InputGroup>
           </FormControl>
