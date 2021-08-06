@@ -32,9 +32,8 @@ const useLevelAccess = (
 
   if (type === "HOLD") return [true, ""]
 
-  if (type === "NFT_HOLD") {
-    return [true, ""]
-  }
+  if (type === "NFT_HOLD")
+    return ownedNfts?.includes(requirement) ? [true, ""] : [false, "NFT not owned"]
 
   return [false, ""]
 }

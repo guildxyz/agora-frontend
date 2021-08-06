@@ -83,13 +83,14 @@ const communities: Community[] = [
         telegramGroupId: "-1001552642571",
       },
     ],
+    paralellLevels: false,
     communityPlatforms: [
       { name: "DISCORD", platformId: "842030939332804679", active: true },
       { name: "TELEGRAM", platformId: null, active: true },
     ],
   },
   {
-    id: 1,
+    id: 3,
     name: "Mutagen",
     owner: {
       id: 1,
@@ -151,6 +152,7 @@ const communities: Community[] = [
         telegramGroupId: null,
       },
     ],
+    paralellLevels: true,
     communityPlatforms: [
       { name: "DISCORD", platformId: null, active: true },
       { name: "TELEGRAM", platformId: null, active: true },

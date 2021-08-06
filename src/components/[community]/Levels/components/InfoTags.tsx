@@ -78,7 +78,7 @@ const InfoTags = ({
     />
     {requirementType !== "OPEN" &&
       (requirementType === "NFT_HOLD" ? (
-        <InfoTag icon={Tag} label={`${mutagenNftNames[requirement]}`} />
+        <InfoTag icon={Tag} label={`1 ${mutagenNftNames[requirement]}`} />
       ) : (
         <InfoTag icon={Tag} label={`${requirement} ${tokenSymbol}`} />
       ))}
