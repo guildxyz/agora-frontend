@@ -47,7 +47,7 @@ type CommunityBase = {
   themeColor: string
   marketcap?: number
   levels: Level[]
-  paralellLevels: boolean
+  parallelLevels: boolean
   membersCount?: number
   communityPlatforms: Platform[]
   holdersCount?: number

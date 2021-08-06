@@ -31,7 +31,7 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => (
               <Staked />
             </SimpleGrid>
             <SimpleGrid gap="4">
-              {communityData.paralellLevels ? (
+              {communityData.parallelLevels ? (
                 communityData.levels.map((level) => (
                   <Levels key={level.id} levels={[level]} />
                 ))

@@ -83,7 +83,7 @@ const communities: Community[] = [
         telegramGroupId: "-1001552642571",
       },
     ],
-    paralellLevels: false,
+    parallelLevels: false,
     communityPlatforms: [
       { name: "DISCORD", platformId: "842030939332804679", active: true },
       { name: "TELEGRAM", platformId: null, active: true },
@@ -152,7 +152,7 @@ const communities: Community[] = [
         telegramGroupId: null,
       },
     ],
-    paralellLevels: true,
+    parallelLevels: true,
     communityPlatforms: [
       { name: "DISCORD", platformId: null, active: true },
       { name: "TELEGRAM", platformId: null, active: true },
