@@ -11,10 +11,29 @@ type Props = {
   tokenSymbol: string
 }
 
-const accessRequirementIcons = {
-  OPEN: LockSimpleOpen,
-  HOLD: LockOpen,
-  STAKE: Lock,
+const accessRequirementInfo = {
+  OPEN: {
+    label: "open",
+    icon: LockSimpleOpen,
+  },
+  HOLD: {
+    label: "hold",
+    icon: LockOpen,
+  },
+  NFT_HOLD: {
+    label: "hold NFT",
+    icon: LockOpen,
+  },
+  STAKE: {
+    label: "stake",
+    icon: Lock,
+  },
+}
+
+const mutagenNftNames = {
+  1: "Prints",
+  2: "Mutagens",
+  0: "Geneses",
 }
 
 type ChildProps = {
@@ -50,16 +69,19 @@ const InfoTags = ({
 }: Props): JSX.Element => (
   <Wrap direction="row" spacing={{ base: 2, lg: 4 }}>
     <InfoTag
-      icon={accessRequirementIcons[requirementType]}
-      label={`${requirementType.toLowerCase()} ${
+      icon={accessRequirementInfo[requirementType].icon}
+      label={`${accessRequirementInfo[requirementType].label} ${
         requirementType === "STAKE"
           ? `for ${msToReadableFormat(stakeTimelockMs)}`
           : ``
       }`}
     />
-    {requirementType !== "OPEN" && (
-      <InfoTag icon={Tag} label={`${requirement} ${tokenSymbol}`} />
-    )}
+    {requirementType !== "OPEN" &&
+      (requirementType === "NFT_HOLD" ? (
+        <InfoTag icon={Tag} label={`${mutagenNftNames[requirement]}`} />
+      ) : (
+        <InfoTag icon={Tag} label={`${requirement} ${tokenSymbol}`} />
+      ))}
     <InfoTag icon={Users} label={`${membersCount} members`} />
   </Wrap>
 )

@@ -103,13 +103,13 @@ const communities: Community[] = [
     themeColor: "#000000",
     chainData: [
       {
-        name: "Ethereum",
+        name: "Goerli",
         contractAddress: null,
         token: {
           name: "Mutagen",
           symbol: "Mutagen",
-          decimals: null,
-          address: "0xdf9e0684f15e60cfcc646acffb02d97d2d5a1a67",
+          decimals: 0,
+          address: "0x1e0410daf22ff7182ed7bf30ebd880efdb99d2ca",
         },
       },
     ],
