@@ -16,7 +16,7 @@ import { communities as communitiesJSON } from "temporaryData/communities"
 import tokens from "temporaryData/tokens"
 
 // Set this to true if you don't want the data to be fetched from backend
-const DEBUG = true
+const DEBUG = false
 
 type Props = {
   communities: Community[]

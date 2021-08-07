@@ -20,6 +20,7 @@ const getMemberCount = (_: string, id: number): Promise<MemberCountResponse[]> =
   )
 
 const useMemberCount = (communityId: number) => {
+  // the mocked communities from tokens.json have negative ids
   const shouldFetch = communityId >= 0
 
   const { data, mutate } = useSWR(
