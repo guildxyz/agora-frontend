@@ -1,4 +1,4 @@
-import Layout from "components/common/Layout"
+import { Box, Heading, Text } from "@chakra-ui/react"
 import { useRouter } from "next/dist/client/router"
 import { useEffect } from "react"
 
@@ -120,7 +120,14 @@ const DCAuth = () => {
       .catch(({ name, message }) => sendError(name, message))
   }, [router])
 
-  return <Layout title="Authentication successful">{null}</Layout>
+  return (
+    <Box p="6">
+      <Heading size="md">You're being redirected</Heading>
+      <Text>
+        Closing the authentication window and taking you back to the site...
+      </Text>
+    </Box>
+  )
 }
 
 export default DCAuth
