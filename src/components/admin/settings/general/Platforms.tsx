@@ -1,4 +1,5 @@
 import {
+  Badge,
   Divider,
   FormControl,
   FormLabel,
@@ -8,7 +9,6 @@ import {
   InputGroup,
   InputLeftAddon,
   Switch,
-  Tag,
   Text,
   VStack,
 } from "@chakra-ui/react"
@@ -56,7 +56,7 @@ const Platforms = (): JSX.Element => (
         </GridItem>
 
         <GridItem colSpan={2} mb={-8}>
-          <Tag>Coming soon</Tag>
+          <Badge>Coming soon</Badge>
         </GridItem>
 
         <GridItem colSpan={1}>

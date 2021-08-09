@@ -1,11 +1,11 @@
 import {
+  CloseButton,
   FormControl,
   FormLabel,
   Grid,
   GridItem,
   HStack,
   Icon,
-  IconButton,
   Input,
   InputGroup,
   InputLeftAddon,
@@ -18,9 +18,10 @@ import {
   useRadioGroup,
   VStack,
 } from "@chakra-ui/react"
+import Hint from "components/admin/Hint"
 import PhotoUploader from "components/admin/settings/common/PhotoUploader"
 import Card from "components/common/Card"
-import { Lock, LockOpen, LockSimpleOpen, X } from "phosphor-react"
+import { Lock, LockOpen, LockSimpleOpen } from "phosphor-react"
 import { useState } from "react"
 import { Icon as IconType } from "temporaryData/types"
 import RadioCard from "./RadioCard"
@@ -87,15 +88,15 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
 
   return (
     <Card position="relative" width="full" padding={8}>
-      <IconButton
+      <CloseButton
         position="absolute"
         top={4}
         right={4}
         width={10}
         height={10}
-        isRound
+        rounded="full"
+        zIndex="docked"
         aria-label="Remove level"
-        icon={<Icon as={X} />}
         onClick={onRemove}
       />
 
@@ -176,7 +177,10 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
           </Text>
 
           <FormControl id="tg_groups">
-            <FormLabel>Telegram group(s)</FormLabel>
+            <FormLabel>
+              <Text as="span">Telegram group(s)</Text>
+              <Hint header="Where can I find the TG group ID?" body="TODO..." />
+            </FormLabel>
             <InputGroup>
               {platformLinking.tg.length > 0 && (
                 <InputLeftAddon px={2} bgColor="transparent">
@@ -195,7 +199,10 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
           </FormControl>
 
           <FormControl id="dc_roles">
-            <FormLabel>Discord channel(s)</FormLabel>
+            <FormLabel>
+              <Text as="span">Discord channel(s)</Text>
+              <Hint header="Where can I find the DC channel ID?" body="TODO..." />
+            </FormLabel>
             <InputGroup>
               {platformLinking.dc.length > 0 && (
                 <InputLeftAddon px={2} bgColor="transparent">
