@@ -8,6 +8,7 @@ import {
   InputGroup,
   InputLeftAddon,
   Switch,
+  Tag,
   Text,
   VStack,
 } from "@chakra-ui/react"
@@ -54,9 +55,13 @@ const Platforms = (): JSX.Element => (
           <Divider />
         </GridItem>
 
+        <GridItem colSpan={2} mb={-8}>
+          <Tag>Coming soon</Tag>
+        </GridItem>
+
         <GridItem colSpan={1}>
-          <FormControl display="flex" height="full" alignItems="center">
-            <Switch colorScheme="primary" mr={4} />
+          <FormControl display="flex" height="full" alignItems="center" isDisabled>
+            <Switch colorScheme="primary" mr={4} isDisabled />
             <FormLabel width="max-content" margin={0}>
               Bridge platforms
             </FormLabel>
