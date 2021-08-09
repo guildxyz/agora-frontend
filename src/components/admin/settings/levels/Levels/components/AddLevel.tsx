@@ -5,6 +5,7 @@ import {
   GridItem,
   HStack,
   Icon,
+  IconButton,
   Input,
   InputGroup,
   InputLeftAddon,
@@ -19,7 +20,7 @@ import {
 } from "@chakra-ui/react"
 import PhotoUploader from "components/admin/settings/common/PhotoUploader"
 import Card from "components/common/Card"
-import { Lock, LockOpen, LockSimpleOpen } from "phosphor-react"
+import { Lock, LockOpen, LockSimpleOpen, X } from "phosphor-react"
 import { useState } from "react"
 import { Icon as IconType } from "temporaryData/types"
 import RadioCard from "./RadioCard"
@@ -44,7 +45,11 @@ const membershipsData: { [key: string]: MembershipData } = {
   },
 }
 
-const AddLevel = () => {
+type Props = {
+  onRemove: () => void
+}
+
+const AddLevel = ({ onRemove }) => {
   const options = ["open", "hold", "stake"]
 
   const { getRootProps, getRadioProps } = useRadioGroup({
@@ -55,7 +60,7 @@ const AddLevel = () => {
 
   const group = getRootProps()
 
-  // Platform linking logic (temp)
+  // Platform linking logic (temporary - we'Ll need to use some type of form management library, and store these values together with the other form control values)
   const [platformLinking, setPlatformLinking] = useState({
     tg: [],
     dc: [],
@@ -73,7 +78,7 @@ const AddLevel = () => {
     }
   }
 
-  const removeTag = (item, type: "tg" | "dc") => {
+  const removeTag = (item: string, type: "tg" | "dc") => {
     const oldList = [...platformLinking[type]]
     const newList = oldList.filter((i) => i !== item)
 
@@ -81,7 +86,19 @@ const AddLevel = () => {
   }
 
   return (
-    <Card width="full" padding={8}>
+    <Card position="relative" width="full" padding={8}>
+      <IconButton
+        position="absolute"
+        top={4}
+        right={4}
+        width={10}
+        height={10}
+        isRound
+        aria-label="Remove level"
+        icon={<Icon as={X} />}
+        onClick={onRemove}
+      />
+
       <VStack spacing={12}>
         <Grid width="full" templateColumns="repeat(2, 1fr)" gap={12}>
           <GridItem>
