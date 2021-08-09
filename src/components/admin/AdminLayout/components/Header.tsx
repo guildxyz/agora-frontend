@@ -53,7 +53,7 @@ const Header = (): JSX.Element => {
                     marginLeft={4}
                     as="span"
                     fontFamily="display"
-                    fontWeight="semibold"
+                    fontWeight="bold"
                     fontSize={20}
                   >
                     Agora Space
