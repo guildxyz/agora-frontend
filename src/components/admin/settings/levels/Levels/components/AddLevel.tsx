@@ -20,6 +20,7 @@ import {
 import PhotoUploader from "components/admin/settings/common/PhotoUploader"
 import Card from "components/common/Card"
 import { Lock, LockOpen, LockSimpleOpen } from "phosphor-react"
+import { useState } from "react"
 import { Icon as IconType } from "temporaryData/types"
 import RadioCard from "./RadioCard"
 
@@ -53,6 +54,31 @@ const AddLevel = () => {
   })
 
   const group = getRootProps()
+
+  // Platform linking logic (temp)
+  const [platformLinking, setPlatformLinking] = useState({
+    tg: [],
+    dc: [],
+  })
+
+  const tagsChange = (e, type: "tg" | "dc") => {
+    if (e.code === "Comma" || e.code === "Enter") {
+      const newItem = e.target.value.split(",")[0]
+
+      if (newItem && !platformLinking[type].find((item) => item === newItem)) {
+        const newList = [...platformLinking[type], newItem]
+        setPlatformLinking({ ...platformLinking, [type]: newList })
+        e.target.value = ""
+      }
+    }
+  }
+
+  const removeTag = (item, type: "tg" | "dc") => {
+    const oldList = [...platformLinking[type]]
+    const newList = oldList.filter((i) => i !== item)
+
+    setPlatformLinking({ ...platformLinking, [type]: newList })
+  }
 
   return (
     <Card width="full" padding={8}>
@@ -135,34 +161,38 @@ const AddLevel = () => {
           <FormControl id="tg_groups">
             <FormLabel>Telegram group(s)</FormLabel>
             <InputGroup>
-              <InputLeftAddon px={2} bgColor="transparent">
-                <HStack spacing={2}>
-                  <Tag>
-                    <TagLabel>Ethane insiders</TagLabel>
-                    <TagCloseButton />
-                  </Tag>
-                </HStack>
-              </InputLeftAddon>
-              <Input width="full" />
+              {platformLinking.tg.length > 0 && (
+                <InputLeftAddon px={2} bgColor="transparent">
+                  <HStack spacing={2}>
+                    {platformLinking.tg.map((item) => (
+                      <Tag key={item}>
+                        <TagLabel>{item}</TagLabel>
+                        <TagCloseButton onClick={() => removeTag(item, "tg")} />
+                      </Tag>
+                    ))}
+                  </HStack>
+                </InputLeftAddon>
+              )}
+              <Input width="full" onKeyUp={(e) => tagsChange(e, "tg")} />
             </InputGroup>
           </FormControl>
 
-          <FormControl id="tg_groups">
+          <FormControl id="dc_roles">
             <FormLabel>Discord channel(s)</FormLabel>
             <InputGroup>
-              <InputLeftAddon px={2} bgColor="transparent">
-                <HStack spacing={2}>
-                  <Tag>
-                    <TagLabel>general</TagLabel>
-                    <TagCloseButton />
-                  </Tag>
-                  <Tag>
-                    <TagLabel>help</TagLabel>
-                    <TagCloseButton />
-                  </Tag>
-                </HStack>
-              </InputLeftAddon>
-              <Input width="full" />
+              {platformLinking.dc.length > 0 && (
+                <InputLeftAddon px={2} bgColor="transparent">
+                  <HStack spacing={2}>
+                    {platformLinking.dc.map((item) => (
+                      <Tag key={item}>
+                        <TagLabel>{item}</TagLabel>
+                        <TagCloseButton onClick={() => removeTag(item, "dc")} />
+                      </Tag>
+                    ))}
+                  </HStack>
+                </InputLeftAddon>
+              )}
+              <Input width="full" onKeyUp={(e) => tagsChange(e, "dc")} />
             </InputGroup>
           </FormControl>
         </VStack>
