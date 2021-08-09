@@ -24,20 +24,14 @@ type Props = {
   platform: string
   isOpen: boolean
   onClose: () => void
-  onOpen: () => void
 }
 
-const JoinDiscordModal = ({
-  platform,
-  isOpen,
-  onClose,
-  onOpen,
-}: Props): JSX.Element => {
+const JoinDiscordModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const {
     title,
     join: { description },
   } = platformsContent[platform]
-  const [state, send] = useJoinDiscordMachine(onOpen)
+  const [state, send] = useJoinDiscordMachine()
 
   const closeModal = () => {
     send("CLOSE_MODAL")
@@ -90,6 +84,10 @@ const JoinDiscordModal = ({
             switch (state.value) {
               case "signing":
                 return <ModalButton isLoading loadingText="Waiting confirmation" />
+              case "authenticating":
+                return (
+                  <ModalButton isLoading loadingText="Waiting for authentication" />
+                )
               case "registering":
                 return (
                   <ModalButton
@@ -101,17 +99,17 @@ const JoinDiscordModal = ({
                 return <ModalButton isLoading loadingText="Fetching Discord data" />
               case "success":
                 return null
-              case "signIdle":
-              case "signError":
-                return <ModalButton onClick={() => send("SIGN")}>Sign</ModalButton>
-              default:
-              case "idle":
+              case "authIdle":
               case "authError":
                 return (
                   <ModalButton onClick={() => send("AUTH")}>
                     Authenticate
                   </ModalButton>
                 )
+              case "idle":
+              case "signError":
+              default:
+                return <ModalButton onClick={() => send("SIGN")}>Sign</ModalButton>
             }
           })()}
         </ModalFooter>
