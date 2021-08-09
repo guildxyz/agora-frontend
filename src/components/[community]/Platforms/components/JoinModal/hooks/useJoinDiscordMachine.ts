@@ -1,7 +1,8 @@
 import { useWeb3React } from "@web3-react/core"
 import { useMachine } from "@xstate/react"
 import { useCommunity } from "components/[community]/Context"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
+import { DiscordError } from "temporaryData/types"
 import { MetaMaskError } from "utils/processMetaMaskError"
 import { assign, createMachine, DoneInvokeEvent } from "xstate"
 import usePersonalSign from "./usePersonalSign"
@@ -14,7 +15,7 @@ type InviteData = {
 const initialInviteData: InviteData = { inviteLink: "", joinCode: null }
 
 type ContextType = {
-  error: MetaMaskError | Response | Error | null
+  error: MetaMaskError | Response | Error | DiscordError | null
   inviteData: InviteData
   accessToken?: string
   tokenType?: string
@@ -35,7 +36,6 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
       idle: {
         on: {
           AUTH: "auth",
-          // AUTHDONE: "fetchingUserData",
         },
         always: {
           target: "fetchingUserData",
@@ -43,6 +43,12 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
         },
       },
       auth: {
+        entry: "openDiscordAuthWindow",
+        invoke: {
+          src: "dcAuth",
+          onDone: "fetchingUserData",
+          onError: "authError",
+        },
         on: {
           CLOSE_MODAL: "idle",
         },
@@ -136,9 +142,42 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
 )
 
 const useJoinModalMachine = (onOpen: () => void): any => {
-  const { id: communityId } = useCommunity()
+  const { id: communityId, urlName } = useCommunity()
   const { account } = useWeb3React()
   const sign = usePersonalSign()
+  const dcAuthWindow = useRef<Window>(null)
+
+  const handleMessage =
+    (resolve: (value?: any) => void, reject: (value: any) => void) =>
+    (event: MessageEvent) => {
+      // Conditions are for security and to make sure, the expected messages are being handled
+      // (extensions are also communicating with message events)
+      if (
+        event.isTrusted &&
+        event.origin === window.location.origin &&
+        "type" in event.data &&
+        "data" in event.data
+      ) {
+        const { data, type } = event.data
+
+        switch (type) {
+          case "DC_AUTH_SUCCESS":
+            state.context.tokenType = data.tokenType
+            state.context.accessToken = data.accessToken
+            resolve()
+            break
+          case "DC_AUTH_ERROR":
+            reject(data)
+            break
+          default:
+            // Should never happen, since we are only proessing events that are originating from us
+            console.error("Unable to process this message")
+        }
+
+        dcAuthWindow.current.close()
+        window.removeEventListener("message", handleMessage(resolve, reject))
+      }
+    }
 
   const [state, send] = useMachine(joinModalMachine, {
     actions: {
@@ -155,6 +194,13 @@ const useJoinModalMachine = (onOpen: () => void): any => {
           tokenType,
         }
       }),
+      openDiscordAuthWindow: () => {
+        dcAuthWindow.current = window.open(
+          `https://discord.com/api/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID}&response_type=token&scope=identify&redirect_uri=${process.env.NEXT_PUBLIC_DISCORD_REDIRECT_URI}&state=${urlName}`,
+          "dc_auth",
+          `height=750,width=600,scrollbars`
+        )
+      },
     },
     services: {
       sign: () => sign("Please sign this message to generate your invite link"),
@@ -181,6 +227,10 @@ const useJoinModalMachine = (onOpen: () => void): any => {
         }).then((response) =>
           response.ok ? response.json() : Promise.reject(response)
         ),
+      dcAuth: () =>
+        new Promise((resolve, reject) => {
+          window.addEventListener("message", handleMessage(resolve, reject))
+        }),
     },
   })
 

@@ -13,7 +13,6 @@ import { Error } from "components/common/Error"
 import Link from "components/common/Link"
 import Modal from "components/common/Modal"
 import ModalButton from "components/common/ModalButton"
-import { useCommunity } from "components/[community]/Context"
 import { ArrowSquareOut } from "phosphor-react"
 import QRCode from "qrcode.react"
 import React from "react"
@@ -39,7 +38,6 @@ const JoinDiscordModal = ({
     join: { description },
   } = platformsContent[platform]
   const [state, send] = useJoinDiscordMachine(onOpen)
-  const { urlName } = useCommunity()
 
   const closeModal = () => {
     send("CLOSE_MODAL")
@@ -110,12 +108,9 @@ const JoinDiscordModal = ({
               case "idle":
               case "authError":
                 return (
-                  <Link
-                    _hover={{ textDecoration: "none" }}
-                    href={`https://discord.com/api/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID}&response_type=token&scope=identify&redirect_uri=${process.env.NEXT_PUBLIC_DISCORD_REDIRECT_URI}&state=${urlName}`}
-                  >
-                    <ModalButton>Authenticate</ModalButton>
-                  </Link>
+                  <ModalButton onClick={() => send("AUTH")}>
+                    Authenticate
+                  </ModalButton>
                 )
             }
           })()}
