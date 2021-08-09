@@ -22,16 +22,8 @@ type HeaderNavItem = {
 
 export const headerNavItems: HeaderNavItem[] = [
   {
-    name: "Bank",
-    path: "/admin/bank",
-  },
-  {
-    name: "Analytics",
-    path: "/admin/analytics",
-  },
-  {
     name: "Settings",
-    path: "/admin/settings",
+    path: "/admin/general",
   },
 ]
 
