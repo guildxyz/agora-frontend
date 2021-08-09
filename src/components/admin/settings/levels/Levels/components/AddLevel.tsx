@@ -134,7 +134,7 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
           <GridItem colSpan={2}>
             <FormControl id="membership">
               <FormLabel>Membership</FormLabel>
-              <HStack {...group}>
+              <HStack spacing={6} {...group}>
                 {options.map((value) => {
                   const radio = getRadioProps({ value })
                   return (
@@ -200,8 +200,8 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
 
           <FormControl id="dc_roles">
             <FormLabel>
-              <Text as="span">Discord channel(s)</Text>
-              <Hint header="Where can I find the DC channel ID?" body="TODO..." />
+              <Text as="span">Discord role(s)</Text>
+              <Hint header="Where can I find the DC role ID?" body="TODO..." />
             </FormLabel>
             <InputGroup>
               {platformLinking.dc.length > 0 && (
