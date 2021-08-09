@@ -45,7 +45,7 @@ const Platforms = (): JSX.Element => (
         </GridItem>
 
         <GridItem colSpan={1}>
-          <Text color="gray.500">
+          <Text colorScheme="gray">
             You'll have to set the group IDs for every level
           </Text>
         </GridItem>
@@ -63,7 +63,7 @@ const Platforms = (): JSX.Element => (
           </FormControl>
         </GridItem>
         <GridItem colSpan={1}>
-          <Text color="gray.500">
+          <Text colorScheme="gray">
             All messages will be forwarded to every platform, so the community is
             unified
           </Text>

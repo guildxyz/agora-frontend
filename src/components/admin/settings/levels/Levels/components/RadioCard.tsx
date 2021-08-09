@@ -1,7 +1,9 @@
 /* eslint-disable react/destructuring-assignment */
-import { Box, useRadio } from "@chakra-ui/react"
+import { Box, useColorMode, useRadio } from "@chakra-ui/react"
 
 const RadioCard = (props) => {
+  const { colorMode } = useColorMode()
+
   const { getInputProps, getCheckboxProps } = useRadio(props)
 
   const input = getInputProps()
@@ -14,12 +16,12 @@ const RadioCard = (props) => {
         {...checkbox}
         cursor="pointer"
         borderRadius="md"
-        bgColor="gray.50"
+        bgColor={colorMode === "light" ? "blackAlpha.100" : "whiteAlpha.100"}
         fontWeight="medium"
-        color="gray.700"
+        color={colorMode === "light" ? "gray.700" : "white"}
         _checked={{
-          bgColor: "indigo.50",
-          color: "indigo.600",
+          bgColor: "primary.50",
+          color: "primary.600",
         }}
         _focus={{
           boxShadow: "outline",

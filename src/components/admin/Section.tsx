@@ -20,7 +20,7 @@ const Section = ({
         {title}
       </Text>
       {description && (
-        <Text fontSize="sm" fontWeight="medium" color="gray.700">
+        <Text fontSize="sm" fontWeight="medium" colorScheme="gray">
           {description}
         </Text>
       )}

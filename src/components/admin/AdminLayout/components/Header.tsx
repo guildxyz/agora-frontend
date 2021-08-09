@@ -7,8 +7,10 @@ import {
   HStack,
   Icon,
   Text,
+  useColorMode,
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
+import ColorModeSwitch from "components/common/Layout/components/ColorModeSwitch"
 import Logo from "components/common/Layout/components/LogoWithMenu/components/Logo"
 import Link from "components/common/Link"
 import { useRouter } from "next/router"
@@ -21,18 +23,25 @@ type HeaderNavItem = {
 }
 
 export const headerNavItems: HeaderNavItem[] = [
+  /*
   {
     name: "Settings",
     path: "/admin/general",
   },
+  */
 ]
 
 const Header = (): JSX.Element => {
+  const { colorMode } = useColorMode()
   const router = useRouter()
   const { account } = useWeb3React()
 
   return (
-    <Box as="header" bgColor="white" boxShadow="base">
+    <Box
+      as="header"
+      bgColor={colorMode === "light" ? "white" : "gray.700"}
+      boxShadow="base"
+    >
       <Container maxW="container.xl" px={{ base: 4, sm: 6, md: 8, lg: 10 }}>
         <Grid templateColumns="repeat(5, 1fr)" gap={16}>
           <GridItem colSpan={1}>
@@ -54,8 +63,8 @@ const Header = (): JSX.Element => {
             </Link>
           </GridItem>
           <GridItem colSpan={4}>
-            <HStack h={20} alignItems="center" justifyContent="space-between">
-              <HStack as="nav" spacing={2}>
+            <HStack h={20} alignItems="center" justifyContent="flex-end">
+              <HStack as="nav" spacing={2} mr="auto">
                 {headerNavItems.map((link) => (
                   <Link
                     key={link.name.toLowerCase()}
@@ -83,6 +92,8 @@ const Header = (): JSX.Element => {
                   </Link>
                 ))}
               </HStack>
+
+              <ColorModeSwitch />
 
               <HStack spacing={4}>
                 <Icon as={Wallet} />

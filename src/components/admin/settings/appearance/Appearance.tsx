@@ -35,7 +35,7 @@ const Appearance = (): JSX.Element => (
           </InputRightAddon>
         </InputGroup>
       </HStack>
-      <Text color="gray.600" fontSize="sm">
+      <Text colorScheme="gray" fontSize="sm">
         Generated from your image
       </Text>
     </VStack>
