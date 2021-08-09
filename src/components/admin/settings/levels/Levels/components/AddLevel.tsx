@@ -1,5 +1,4 @@
 import {
-  Button,
   FormControl,
   FormLabel,
   Grid,
@@ -18,11 +17,10 @@ import {
   useRadioGroup,
   VStack,
 } from "@chakra-ui/react"
+import PhotoUploader from "components/admin/settings/common/PhotoUploader"
 import Card from "components/common/Card"
-import Image from "next/image"
 import { Lock, LockOpen, LockSimpleOpen } from "phosphor-react"
 import { Icon as IconType } from "temporaryData/types"
-import placeholderPic from "../../../../../../../public/temporaryCommunityLogos/agora.png"
 import RadioCard from "./RadioCard"
 
 type MembershipData = {
@@ -70,24 +68,7 @@ const AddLevel = () => {
           <GridItem>
             <FormControl id="level_image">
               <FormLabel>Image</FormLabel>
-              <HStack spacing={4}>
-                <Image
-                  src={placeholderPic}
-                  alt="Placeholder"
-                  width={40}
-                  height={40}
-                />
-                <Button
-                  variant="outline"
-                  borderWidth={1}
-                  rounded="md"
-                  size="sm"
-                  px={6}
-                  height={10}
-                >
-                  Change image...
-                </Button>
-              </HStack>
+              <PhotoUploader buttonText="Change image..." />
             </FormControl>
           </GridItem>
 
