@@ -2,15 +2,69 @@ import Layout from "components/common/Layout"
 import { useRouter } from "next/dist/client/router"
 import { useEffect } from "react"
 
+const newNamedError = (name: string, message: string) => {
+  const error = new Error(message)
+  error.name = name
+  return error
+}
+
+const fetchUserID = async (tokenType: string, accessToken: string) => {
+  const response = await fetch("https://discord.com/api/users/@me", {
+    headers: {
+      authorization: `${tokenType} ${accessToken}`,
+    },
+  }).catch(() => {
+    throw newNamedError("Network error", "Unable to connect to Discord server")
+  })
+
+  if (!response.ok)
+    throw newNamedError(
+      "Discord error",
+      "There was an error, while fetching the user data"
+    )
+
+  const { id } = await response.json()
+  return id
+}
+
+const fetchJoinPlatform = async (
+  platformUserId: string,
+  communityId: string,
+  addressSignedMessage: string
+) => {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API}/user/joinPlatform`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      platform: "DISCORD",
+      platformUserId,
+      communityId,
+      addressSignedMessage,
+    }),
+  }).catch(() => {
+    throw newNamedError("Network error", "Unable to connect to server")
+  })
+
+  if (!response.ok)
+    throw newNamedError(
+      "Failed to get invite link",
+      "Couldn't fetch the invite link from from the backend"
+    )
+
+  const inviteData = await response.json()
+  return inviteData
+}
+
 const DCAuth = () => {
   const router = useRouter()
 
   useEffect(() => {
     // We navigate to the index page if the dcauth page is used incorrectly
+    // For example if someone just manually goes to /dcauth
     if (!window.location.hash) router.push("/")
-
     const fragment = new URLSearchParams(window.location.hash.slice(1))
-
     if (!fragment.has("state")) router.push("/")
 
     let state = null
@@ -55,46 +109,15 @@ const DCAuth = () => {
 
     if (error) sendError(error, errorDescription)
 
-    fetch("https://discord.com/api/users/@me", {
-      headers: {
-        authorization: `${tokenType} ${accessToken}`,
-      },
-    })
-      .then((response) => {
-        if (response.ok) return response.json()
-        sendError(
-          "Failed to fetch user id",
-          "There was an error, while fetching the user data"
+    fetchUserID(tokenType, accessToken)
+      .then((id) => {
+        fetchJoinPlatform(id, communityId, addressSignedMessage).then(
+          (data) =>
+            window.opener &&
+            window.opener.postMessage({ type: "DC_AUTH_SUCCESS", data }, target)
         )
       })
-      .then(({ id }) => {
-        fetch(`${process.env.NEXT_PUBLIC_API}/user/joinPlatform`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            platform: "DISCORD",
-            platformUserId: id,
-            communityId,
-            addressSignedMessage,
-          }),
-        })
-          .then((res) => {
-            if (res.ok) return res.json()
-            sendError(
-              "Failed to get invite link",
-              "Couldn't fetch the invite link from from the backend"
-            )
-          })
-          .then(
-            (data) =>
-              window.opener &&
-              window.opener.postMessage({ type: "DC_AUTH_SUCCESS", data }, target)
-          )
-          .catch(() => sendError("Network error", "Unable to connect to server"))
-      })
-      .catch(() => sendError("Network error", "Unable to connect to Discord server"))
+      .catch(({ name, message }) => sendError(name, message))
   }, [router])
 
   return <Layout title="Authentication successful">{null}</Layout>
