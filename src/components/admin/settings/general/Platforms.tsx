@@ -23,7 +23,7 @@ const Platforms = (): JSX.Element => (
       <Grid width="full" templateColumns="auto 100%" gap={12}>
         <GridItem colSpan={1}>
           <FormControl display="flex" height="full" alignItems="center">
-            <Switch mr={4} />
+            <Switch colorScheme="primary" mr={4} />
             <FormLabel margin={0}>Discord</FormLabel>
           </FormControl>
         </GridItem>
@@ -39,7 +39,7 @@ const Platforms = (): JSX.Element => (
 
         <GridItem colSpan={1}>
           <FormControl display="flex" height="full" alignItems="center">
-            <Switch mr={4} />
+            <Switch colorScheme="primary" mr={4} />
             <FormLabel margin={0}>Telegram</FormLabel>
           </FormControl>
         </GridItem>
@@ -56,7 +56,7 @@ const Platforms = (): JSX.Element => (
 
         <GridItem colSpan={1}>
           <FormControl display="flex" height="full" alignItems="center">
-            <Switch mr={4} />
+            <Switch colorScheme="primary" mr={4} />
             <FormLabel width="max-content" margin={0}>
               Bridge platforms
             </FormLabel>
