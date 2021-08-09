@@ -60,31 +60,17 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
         entry: "openDiscordAuthWindow",
         invoke: {
           src: "dcAuth",
-          onDone: "fetchingUserData",
+          onDone: "success",
           onError: "authError",
         },
         on: {
           CLOSE_MODAL: "authIdle",
         },
       },
-      fetchingUserData: {
-        invoke: {
-          src: "fetchUserData",
-          onDone: "registering",
-          onError: "authError",
-        },
-      },
       authError: {
         on: { AUTH: "authenticating", CLOSE_MODAL: "authIdle" },
         entry: "setError",
         exit: "removeError",
-      },
-      registering: {
-        invoke: {
-          src: "register",
-          onDone: "success",
-          onError: "authError",
-        },
       },
       success: {
         entry: assign({
@@ -143,7 +129,7 @@ const useJoinModalMachine = (): any => {
             reject(data)
             break
           default:
-            // Should never happen, since we are only proessing events that are originating from us
+            // Should never happen, since we are only processing events that are originating from us
             reject({
               error: "Invalid message",
               errorDescription:
@@ -158,9 +144,17 @@ const useJoinModalMachine = (): any => {
 
   const [state, send] = useMachine(joinModalMachine, {
     actions: {
-      openDiscordAuthWindow: () => {
+      openDiscordAuthWindow: (context) => {
         dcAuthWindow.current = window.open(
-          `https://discord.com/api/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID}&response_type=token&scope=identify&redirect_uri=${process.env.NEXT_PUBLIC_DISCORD_REDIRECT_URI}&state=${urlName}`,
+          `https://discord.com/api/oauth2/authorize?client_id=${
+            process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID
+          }&response_type=token&scope=identify&redirect_uri=${
+            process.env.NEXT_PUBLIC_DISCORD_REDIRECT_URI
+          }&state=${JSON.stringify({
+            urlName,
+            addressSignedMessage: context.signedMessage,
+            communityId,
+          })}`,
           "dc_auth",
           `height=750,width=600,scrollbars`
         )
@@ -168,29 +162,6 @@ const useJoinModalMachine = (): any => {
     },
     services: {
       sign: () => sign("Please sign this message to generate your invite link"),
-      fetchUserData: async (_, event) =>
-        fetch("https://discord.com/api/users/@me", {
-          headers: {
-            authorization: `${event.data.tokenType} ${event.data.accessToken}`,
-          },
-        })
-          .then((result) => result.json())
-          .then((response) => response.id),
-      register: (context, event) =>
-        fetch(`${process.env.NEXT_PUBLIC_API}/user/joinPlatform`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            platform: "DISCORD",
-            platformUserId: event.data,
-            communityId,
-            addressSignedMessage: context.signedMessage,
-          }),
-        }).then((response) =>
-          response.ok ? response.json() : Promise.reject(response)
-        ),
       dcAuth: () =>
         new Promise((resolve, reject) => {
           window.addEventListener("message", handleMessage(resolve, reject))
