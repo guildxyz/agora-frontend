@@ -8,7 +8,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react"
-import Section from "components/admin/Section"
+import Section from "components/admin/common/Section"
 
 const Appearance = (): JSX.Element => (
   <Section

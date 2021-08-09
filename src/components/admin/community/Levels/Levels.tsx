@@ -1,5 +1,5 @@
 import { Button, Divider, HStack, Icon, Text, VStack } from "@chakra-ui/react"
-import Section from "components/admin/Section"
+import Section from "components/admin/common/Section"
 import { Plus } from "phosphor-react"
 import { useState } from "react"
 import AddLevel from "./components/AddLevel"

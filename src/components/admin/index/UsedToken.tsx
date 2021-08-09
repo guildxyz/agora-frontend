@@ -7,7 +7,7 @@ import {
   InputGroup,
   InputRightAddon,
 } from "@chakra-ui/react"
-import Section from "components/admin/Section"
+import Section from "components/admin/common/Section"
 
 const UsedToken = (): JSX.Element => (
   <Section

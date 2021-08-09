@@ -8,7 +8,7 @@ import {
   InputRightAddon,
   Textarea,
 } from "@chakra-ui/react"
-import Section from "components/admin/Section"
+import Section from "components/admin/common/Section"
 import { UploadSimple } from "phosphor-react"
 import PhotoUploader from "../common/PhotoUploader"
 

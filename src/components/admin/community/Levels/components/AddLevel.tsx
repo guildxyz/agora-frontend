@@ -18,8 +18,8 @@ import {
   useRadioGroup,
   VStack,
 } from "@chakra-ui/react"
-import Hint from "components/admin/Hint"
-import PhotoUploader from "components/admin/settings/common/PhotoUploader"
+import Hint from "components/admin/common/Hint"
+import PhotoUploader from "components/admin/common/PhotoUploader"
 import Card from "components/common/Card"
 import { Lock, LockOpen, LockSimpleOpen } from "phosphor-react"
 import { useState } from "react"

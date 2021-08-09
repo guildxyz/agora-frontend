@@ -7,7 +7,7 @@ import {
   Icon,
   Input,
 } from "@chakra-ui/react"
-import Section from "components/admin/Section"
+import Section from "components/admin/common/Section"
 import { Plus } from "phosphor-react"
 
 const Links = (): JSX.Element => (
