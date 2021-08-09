@@ -49,7 +49,7 @@ type Props = {
   onRemove: () => void
 }
 
-const AddLevel = ({ onRemove }) => {
+const AddLevel = ({ onRemove }: Props): JSX.Element => {
   const options = ["open", "hold", "stake"]
 
   const { getRootProps, getRadioProps } = useRadioGroup({
