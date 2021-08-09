@@ -4,7 +4,7 @@ import {
   GridItem,
   Heading,
   Icon,
-  Image,
+  Img,
   Stack,
   Tag,
   TagLabel,
@@ -31,7 +31,7 @@ type Props = {
 
 const Level = ({
   data: {
-    requirementAmount,
+    requirement,
     requirementType,
     name,
     stakeTimelockMs,
@@ -50,10 +50,10 @@ const Level = ({
   } = useDisclosure()
   const [hasAccess, noAccessMessage] = useLevelAccess(
     requirementType,
-    requirementAmount,
+    requirement,
     chainData.token,
     chainData.stakeToken,
-    Chains[chainData.name.toLowerCase()]
+    Chains[chainData.name]
   )
   const [hoverElRef, focusElRef, state] = useLevelIndicatorState(
     hasAccess,
@@ -94,7 +94,7 @@ const Level = ({
             {name}
           </Heading>
           <InfoTags
-            requirementAmount={requirementAmount}
+            requirement={requirement}
             stakeTimelockMs={stakeTimelockMs}
             requirementType={requirementType}
             membersCount={membersCount}
@@ -102,7 +102,12 @@ const Level = ({
           />
         </GridItem>
         <GridItem order={{ md: 0 }}>
-          <Image src={`${imageUrl}`} boxSize="45px" alt="Level logo" />
+          <Img
+            src={`${imageUrl}`}
+            boxSize="45px"
+            alt={`${name} image`}
+            borderRadius="full"
+          />
         </GridItem>
         {description && (
           <GridItem colSpan={{ base: 2, md: 1 }} colStart={{ md: 2 }} order={2}>
@@ -157,7 +162,7 @@ const Level = ({
               {!noAccessMessage && (
                 <StakingModal
                   levelName={name}
-                  requirementAmount={requirementAmount}
+                  requirement={requirement}
                   stakeTimelockMs={stakeTimelockMs}
                   isOpen={isStakingModalOpen}
                   onClose={onStakingModalClose}
