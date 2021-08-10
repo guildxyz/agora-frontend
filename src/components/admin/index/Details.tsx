@@ -10,11 +10,12 @@ import {
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
 import { UploadSimple } from "phosphor-react"
-import { useFormContext } from "react-hook-form"
+import { Controller, useFormContext } from "react-hook-form"
 import PhotoUploader from "../common/PhotoUploader"
 
 const Details = (): JSX.Element => {
   const {
+    control,
     register,
     formState: { errors },
   } = useFormContext()
@@ -62,10 +63,19 @@ const Details = (): JSX.Element => {
         <GridItem colSpan={2}>
           <FormControl>
             <FormLabel>Image</FormLabel>
-            <PhotoUploader
-              isInvalid={false} // TODO...
-              buttonIcon={UploadSimple}
-              buttonText="Change image"
+            <Controller
+              render={({ field, fieldState }) => (
+                <PhotoUploader
+                  isInvalid={fieldState.invalid}
+                  buttonIcon={UploadSimple}
+                  buttonText="Change image"
+                  onPhotoChange={(newPhoto: File) => field.onChange(newPhoto)}
+                  {...field}
+                />
+              )}
+              name="photo"
+              control={control}
+              rules={{ required: true }}
             />
           </FormControl>
         </GridItem>

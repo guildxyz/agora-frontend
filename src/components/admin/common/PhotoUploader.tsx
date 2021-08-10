@@ -8,6 +8,7 @@ type Props = {
   buttonIcon?: IconType
   buttonText?: string
   currentImage?: string
+  onPhotoChange?: (newPhoto: File) => void
 }
 
 const PhotoUploader = ({
@@ -15,6 +16,7 @@ const PhotoUploader = ({
   buttonIcon,
   buttonText,
   currentImage,
+  onPhotoChange,
 }: Props): JSX.Element => {
   const fileInputRef = useRef()
   const { colorMode } = useColorMode()
@@ -33,10 +35,13 @@ const PhotoUploader = ({
     setPickedPhoto(e.target.files[0])
   }
 
-  // Set up the preview image
+  // Set up the preview image & send the new file to the parent component
   useEffect(() => {
     if (pickedPhoto) {
       setPhotoPreview(URL.createObjectURL(pickedPhoto))
+      if (onPhotoChange) {
+        onPhotoChange(pickedPhoto)
+      }
     }
   }, [pickedPhoto])
 
