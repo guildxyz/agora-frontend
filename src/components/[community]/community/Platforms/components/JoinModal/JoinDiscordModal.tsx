@@ -88,6 +88,8 @@ const JoinDiscordModal = ({ platform, isOpen, onClose }: Props): JSX.Element => 
                 return (
                   <ModalButton isLoading loadingText="Waiting for authentication" />
                 )
+              case "fetching":
+                return <ModalButton isLoading loadingText="Generating invite link" />
               case "success":
                 return null
               case "authIdle":

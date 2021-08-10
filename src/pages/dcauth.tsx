@@ -110,13 +110,14 @@ const DCAuth = () => {
     if (error) sendError(error, errorDescription)
 
     fetchUserID(tokenType, accessToken)
-      .then((id) => {
-        fetchJoinPlatform(id, communityId, addressSignedMessage).then(
-          (data) =>
-            window.opener &&
-            window.opener.postMessage({ type: "DC_AUTH_SUCCESS", data }, target)
-        )
-      })
+      .then((id) =>
+        window.opener === null || window.opener.closed
+          ? fetchJoinPlatform(id, communityId, addressSignedMessage)
+          : window.opener.postMessage(
+              { type: "DC_AUTH_SUCCESS", data: { id } },
+              target
+            )
+      )
       .catch(({ name, message }) => sendError(name, message))
   }, [router])
 

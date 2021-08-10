@@ -60,11 +60,15 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
         entry: "openDiscordAuthWindow",
         invoke: {
           src: "dcAuth",
-          onDone: "success",
+          onDone: "fetching",
           onError: "authError",
         },
-        on: {
-          CLOSE_MODAL: "authIdle",
+      },
+      fetching: {
+        invoke: {
+          src: "fetchJoinPlatform",
+          onDone: "success",
+          onError: "authError",
         },
       },
       authError: {
@@ -166,6 +170,21 @@ const useJoinModalMachine = (): any => {
         new Promise((resolve, reject) => {
           window.addEventListener("message", handleMessage(resolve, reject))
         }),
+      fetchJoinPlatform: (context, event) =>
+        fetch(`${process.env.NEXT_PUBLIC_API}/user/joinPlatform`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            platform: "DISCORD",
+            platformUserId: event.data.id,
+            communityId,
+            addressSignedMessage: context.signedMessage,
+          }),
+        }).then((response) =>
+          response.ok ? response.json() : Promise.reject(response)
+        ),
     },
   })
 
