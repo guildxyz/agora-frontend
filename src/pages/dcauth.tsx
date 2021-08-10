@@ -112,7 +112,9 @@ const DCAuth = () => {
     fetchUserID(tokenType, accessToken)
       .then((id) =>
         window.opener === null || window.opener.closed
-          ? fetchJoinPlatform(id, communityId, addressSignedMessage)
+          ? fetchJoinPlatform(id, communityId, addressSignedMessage).finally(() =>
+              window.close()
+            )
           : window.opener.postMessage(
               { type: "DC_AUTH_SUCCESS", data: { id } },
               target
