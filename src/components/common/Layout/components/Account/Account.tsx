@@ -8,7 +8,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
-import { useCommunity } from "components/[community]/Context"
+import { useCommunity } from "components/[community]/common/Context"
 import { Web3Connection } from "components/_app/Web3ConnectionManager"
 import { Chains, RPC } from "connectors"
 import { LinkBreak, SignIn } from "phosphor-react"
@@ -51,7 +51,7 @@ const Account = (): JSX.Element => {
     error instanceof UnsupportedChainIdError ||
     (typeof chainId === "number" &&
       !!communityData &&
-      chainId !== Chains[communityData.chainData.name.toLowerCase()])
+      chainId !== Chains[communityData.chainData.name])
   ) {
     return (
       <AccountCard>

@@ -1,6 +1,6 @@
 import {
   Heading,
-  Image,
+  Img,
   Portal,
   Stack,
   Tag,
@@ -10,9 +10,9 @@ import {
 import { useWeb3React } from "@web3-react/core"
 import Card from "components/common/Card"
 import Link from "components/common/Link"
+import useLevelAccess from "components/[community]/community/Levels/components/Level/hooks/useLevelAccess"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import useMemberCount from "components/[community]/hooks/useMemberCount"
-import useLevelAccess from "components/[community]/Levels/components/Level/hooks/useLevelAccess"
 import { Chains } from "connectors"
 import React, { MutableRefObject } from "react"
 import { ChainData, Community } from "temporaryData/types"
@@ -26,15 +26,15 @@ const WrappedCard = ({ community, refAccess }: Props): JSX.Element => {
   const { chainId } = useWeb3React()
 
   const currentChainData = community.chainData.find(
-    (_) => Chains[_.name.toLowerCase()] === chainId
+    (_) => Chains[_.name] === chainId
   )
 
   const [hasAccess] = useLevelAccess(
     community.levels.length ? community.levels[0].requirementType : "HOLD",
-    community.levels.length ? community.levels[0].requirementAmount : -1,
+    community.levels.length ? community.levels[0].requirement : -1,
     currentChainData?.token,
     currentChainData?.stakeToken,
-    Chains[currentChainData?.name.toLowerCase()]
+    Chains[currentChainData?.name]
   )
 
   if (hasAccess)
@@ -101,7 +101,12 @@ const CommunityCard = ({
           spacing={{ base: 5, sm: 10 }}
           alignItems="center"
         >
-          <Image src={`${imageUrl}`} boxSize="45px" alt="Level logo" />
+          <Img
+            src={`${imageUrl}`}
+            boxSize="45px"
+            alt={`${name} logo`}
+            borderRadius="full"
+          />
           <Stack spacing="3">
             <Heading size="sm">{name}</Heading>
             {levels.length ? (
@@ -109,7 +114,7 @@ const CommunityCard = ({
                 <Tag colorScheme="alpha">{`${membersCount} members`}</Tag>
                 <Tag colorScheme="alpha">{`${levels.length} levels`}</Tag>
                 <Tag colorScheme="alpha">
-                  {`min: ${levels[0]?.requirementAmount ?? 0} ${
+                  {`min: ${levels[0]?.requirement ?? 0} ${
                     currentChainData.token.symbol
                   }`}
                 </Tag>

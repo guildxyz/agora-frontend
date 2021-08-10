@@ -1,6 +1,6 @@
-import { Box, Button, Image, Tooltip } from "@chakra-ui/react"
+import { Box, Button, Img, Tooltip } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import { useCommunity } from "components/[community]/Context"
+import { useCommunity } from "components/[community]/common/Context"
 import { Chains, RPC } from "connectors"
 
 type Props = {
@@ -28,10 +28,9 @@ const NetworkButton = ({ chain, requestNetworkChange }: Props) => {
       <Box>
         <Button
           rightIcon={
-            <Image
-              src={`networkLogos/${chain}.svg`}
-              h="6"
-              w="6"
+            <Img
+              src={RPC[chain].iconUrl}
+              boxSize="6"
               alt={`${RPC[chain].chainName} logo`}
             />
           }
