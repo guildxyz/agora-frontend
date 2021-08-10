@@ -194,7 +194,11 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
                   </HStack>
                 </InputLeftAddon>
               )}
-              <Input width="full" onKeyUp={(e) => tagsChange(e, "tg")} />
+              <Input
+                width="full"
+                placeholder="+ paste group ID"
+                onKeyUp={(e) => tagsChange(e, "tg")}
+              />
             </InputGroup>
           </FormControl>
 
@@ -216,7 +220,11 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
                   </HStack>
                 </InputLeftAddon>
               )}
-              <Input width="full" onKeyUp={(e) => tagsChange(e, "dc")} />
+              <Input
+                width="full"
+                placeholder="+ paste Discord role ID"
+                onKeyUp={(e) => tagsChange(e, "dc")}
+              />
             </InputGroup>
           </FormControl>
         </VStack>
