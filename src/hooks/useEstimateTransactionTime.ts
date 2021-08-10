@@ -35,7 +35,7 @@ const getEstimatedTransactionTime = async (
     const time = await getEthereumEstimatedTransactionTime(weiGasPrice, network)
     return time
   }
-  if (network === "POLYGON") return 2000
+  if (network === "POLYGON") return 5000
   if (network === "BSC") return 10000
   return 30000
 }
