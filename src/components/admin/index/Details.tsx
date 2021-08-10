@@ -66,6 +66,7 @@ const Details = (): JSX.Element => {
             <Controller
               render={({ field, fieldState }) => (
                 <PhotoUploader
+                  ref={field.ref}
                   isInvalid={fieldState.invalid}
                   buttonIcon={UploadSimple}
                   buttonText="Change image"
