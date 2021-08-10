@@ -9,13 +9,17 @@ const getEthereumEstimatedTransactionTime = async (
   gasPrice: BigNumber,
   network: "ETHEREUM" | "GOERLI"
 ): Promise<number> =>
-  fetch(
-    `https://api${
-      network === "ETHEREUM" ? "" : `-${network.toLowerCase()}`
-    }.etherscan.io/api?module=gastracker&action=gasestimate&apikey=${
-      process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY
-    }&gasprice=${gasPrice}`
-  )
+  fetch("/api/etherscan", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      url: `https://api${
+        network === "ETHEREUM" ? "" : `-${network.toLowerCase()}`
+      }.etherscan.io/api?module=gastracker&action=gasestimate&gasprice=${gasPrice}`,
+    }),
+  })
     .then((response) => response.json())
     .then((body) => +body.result * 1000)
 
