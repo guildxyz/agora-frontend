@@ -13,18 +13,25 @@ import Color from "color"
 import Section from "components/admin/common/Section"
 import { useState } from "react"
 
-const Appearance = (): JSX.Element => {
+type Props = {
+  onColorChange: (color: string) => void
+}
+
+const Appearance = ({ onColorChange }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
   const [pickedColor, setPickedColor] = useState("var(--chakra-colors-gray-200)")
   const [error, setError] = useState("")
 
   const pickColor = (e) => {
     try {
-      setPickedColor(Color(e.target.value).hex())
+      const newColor = Color(e.target.value).hex()
+      setPickedColor(newColor)
       setError("")
+      onColorChange(newColor)
     } catch (err) {
       setPickedColor("var(--chakra-colors-gray-200)")
       setError("Invalid color code!")
+      onColorChange(null)
     }
   }
 
