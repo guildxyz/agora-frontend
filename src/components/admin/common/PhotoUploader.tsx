@@ -33,7 +33,6 @@ const PhotoUploader = ({
   // Set up the preview image
   useEffect(() => {
     if (pickedPhoto) {
-      console.log(URL.createObjectURL(pickedPhoto))
       setPhotoPreview(URL.createObjectURL(pickedPhoto))
     }
   }, [pickedPhoto])
