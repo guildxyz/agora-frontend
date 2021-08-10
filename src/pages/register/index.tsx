@@ -1,4 +1,4 @@
-import { Box, Stack, VStack } from "@chakra-ui/react"
+import { Box, Button, Stack, VStack } from "@chakra-ui/react"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
 import UsedToken from "components/admin/index/UsedToken"
@@ -6,29 +6,39 @@ import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import React, { useState } from "react"
+import { FormProvider, useForm } from "react-hook-form"
 
 const Page = (): JSX.Element => {
   const [colorCode, setColorCode] = useState<string>(null)
+
   const generatedColors = useColorPalette(
     "chakra-colors-primary",
     colorCode || "#71717a"
   )
 
+  const methods = useForm()
+  const onSubmit = (data) => console.log(data)
+
   return (
-    <Box sx={{ ...generatedColors, transition: "0.5s ease" }}>
-      <Layout title="Integrate token">
-        <Stack spacing={{ base: 7, xl: 9 }}>
-          <Pagination />
-          <VStack spacing={12}>
-            <Details />
-            <UsedToken />
-            <Appearance
-              onColorChange={(newColor: string) => setColorCode(newColor)}
-            />
-          </VStack>
-        </Stack>
-      </Layout>
-    </Box>
+    <FormProvider {...methods}>
+      <Box sx={{ ...generatedColors, transition: "0.5s ease" }}>
+        <Layout title="Integrate token">
+          <Stack spacing={{ base: 7, xl: 9 }}>
+            <Pagination />
+            <VStack spacing={12}>
+              <Details />
+              <UsedToken />
+              <Appearance
+                onColorChange={(newColor: string) => setColorCode(newColor)}
+              />
+              <Button onClick={methods.handleSubmit(onSubmit)}>
+                Integrate token
+              </Button>
+            </VStack>
+          </Stack>
+        </Layout>
+      </Box>
+    </FormProvider>
   )
 }
 

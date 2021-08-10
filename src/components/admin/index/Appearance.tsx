@@ -12,6 +12,7 @@ import {
 import Color from "color"
 import Section from "components/admin/common/Section"
 import { useState } from "react"
+import { useFormContext } from "react-hook-form"
 
 type Props = {
   onColorChange: (color: string) => void
@@ -35,6 +36,11 @@ const Appearance = ({ onColorChange }: Props): JSX.Element => {
     }
   }
 
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext()
+
   return (
     <Section
       title="Appearance"
@@ -52,7 +58,11 @@ const Appearance = ({ onColorChange }: Props): JSX.Element => {
             style={{ backgroundColor: pickedColor }}
           />
           <InputGroup maxWidth={60}>
-            <Input onChange={pickColor} />
+            <Input
+              onChange={pickColor}
+              {...register("color")}
+              isInvalid={!!errors.color}
+            />
             <InputRightAddon px={0}>
               <Button
                 width="full"

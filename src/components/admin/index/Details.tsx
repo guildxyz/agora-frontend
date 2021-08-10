@@ -10,47 +10,68 @@ import {
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
 import { UploadSimple } from "phosphor-react"
+import { useFormContext } from "react-hook-form"
 import PhotoUploader from "../common/PhotoUploader"
 
-const Details = (): JSX.Element => (
-  <Section
-    title="Details"
-    description="General information about your community"
-    cardType
-  >
-    <Grid templateColumns="repeat(2, 1fr)" gap={12}>
-      <GridItem>
-        <FormControl id="community_name">
-          <FormLabel>Name</FormLabel>
-          <Input />
-        </FormControl>
-      </GridItem>
+const Details = (): JSX.Element => {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext()
 
-      <GridItem>
-        <FormControl id="community_url">
-          <FormLabel>URL</FormLabel>
-          <InputGroup>
-            <Input />
-            <InputRightAddon>.agora.space</InputRightAddon>
-          </InputGroup>
-        </FormControl>
-      </GridItem>
+  return (
+    <Section
+      title="Details"
+      description="General information about your community"
+      cardType
+    >
+      <Grid templateColumns="repeat(2, 1fr)" gap={12}>
+        <GridItem>
+          <FormControl>
+            <FormLabel>Name</FormLabel>
+            <Input
+              {...register("name", { required: true })}
+              isInvalid={!!errors.name}
+            />
+          </FormControl>
+        </GridItem>
 
-      <GridItem colSpan={2}>
-        <FormControl id="community_description">
-          <FormLabel>Description</FormLabel>
-          <Textarea />
-        </FormControl>
-      </GridItem>
+        <GridItem>
+          <FormControl>
+            <FormLabel>URL</FormLabel>
+            <InputGroup>
+              <Input
+                {...register("url", { required: true })}
+                isInvalid={!!errors.url}
+              />
+              <InputRightAddon>.agora.space</InputRightAddon>
+            </InputGroup>
+          </FormControl>
+        </GridItem>
 
-      <GridItem colSpan={2}>
-        <FormControl id="community_image">
-          <FormLabel>Image</FormLabel>
-          <PhotoUploader buttonIcon={UploadSimple} buttonText="Change image" />
-        </FormControl>
-      </GridItem>
-    </Grid>
-  </Section>
-)
+        <GridItem colSpan={2}>
+          <FormControl>
+            <FormLabel>Description</FormLabel>
+            <Textarea
+              {...register("description", { required: true })}
+              isInvalid={!!errors.description}
+            />
+          </FormControl>
+        </GridItem>
+
+        <GridItem colSpan={2}>
+          <FormControl>
+            <FormLabel>Image</FormLabel>
+            <PhotoUploader
+              isInvalid={false} // TODO...
+              buttonIcon={UploadSimple}
+              buttonText="Change image"
+            />
+          </FormControl>
+        </GridItem>
+      </Grid>
+    </Section>
+  )
+}
 
 export default Details

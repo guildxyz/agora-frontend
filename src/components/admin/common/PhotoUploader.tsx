@@ -1,20 +1,23 @@
-import { Box, Button, HStack, Icon } from "@chakra-ui/react"
+import { Box, Button, HStack, Icon, useColorMode } from "@chakra-ui/react"
 import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import type { Icon as IconType } from "temporaryData/types"
 
 type Props = {
+  isInvalid?: boolean
   buttonIcon?: IconType
   buttonText?: string
   currentImage?: string
 }
 
 const PhotoUploader = ({
+  isInvalid,
   buttonIcon,
   buttonText,
   currentImage,
 }: Props): JSX.Element => {
   const fileInputRef = useRef()
+  const { colorMode } = useColorMode()
   const [pickedPhoto, setPickedPhoto] = useState<File>()
   const [photoPreview, setPhotoPreview] = useState(currentImage)
 
@@ -66,6 +69,9 @@ const PhotoUploader = ({
         size="sm"
         px={6}
         height={10}
+        textColor={
+          (isInvalid && (colorMode === "light" ? "red.500" : "red.200")) || "current"
+        }
         onClick={fileInputClick}
       >
         {buttonText || "Upload image"}
