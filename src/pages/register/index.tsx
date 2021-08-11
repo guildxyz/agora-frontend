@@ -21,7 +21,7 @@ const Page = (): JSX.Element => {
 
   return (
     <FormProvider {...methods}>
-      <Box sx={{ ...generatedColors, transition: "0.5s ease" }}>
+      <Box sx={generatedColors}>
         <Layout title="Integrate token">
           <Stack spacing={{ base: 7, xl: 9 }}>
             <Pagination />

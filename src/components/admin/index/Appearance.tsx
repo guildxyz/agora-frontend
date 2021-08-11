@@ -47,41 +47,42 @@ const Appearance = ({ onColorChange }: Props): JSX.Element => {
       description="Make your community page as coherent with your brand as you can, so the members will feel familiar"
       cardType
     >
-      <VStack spacing={2} alignItems="start">
-        <Text>Main color</Text>
-        <HStack spacing={4}>
-          <Box
-            w={10}
-            h={10}
-            rounded="full"
-            transition="background 0.5s ease"
-            style={{ backgroundColor: pickedColor }}
-          />
-          <InputGroup maxWidth={60}>
-            <Input
-              onChange={pickColor}
-              {...register("color")}
-              isInvalid={!!errors.color}
+      <>
+        <VStack spacing={2} alignItems="start">
+          <Text>Main color</Text>
+          <HStack spacing={4}>
+            <Box
+              w={10}
+              h={10}
+              rounded="full"
+              transition="background 0.5s ease"
+              style={{ backgroundColor: pickedColor }}
             />
-            <InputRightAddon px={0}>
-              <Button
-                width="full"
-                height="full"
-                rounded="none"
-                fontSize="sm"
-                fontWeight="normal"
-              >
-                Pick another
-              </Button>
-            </InputRightAddon>
-          </InputGroup>
-        </HStack>
-        {error.length > 0 && (
-          <Text color={colorMode === "light" ? "red.500" : "red.400"} fontSize="sm">
-            {error}
-          </Text>
-        )}
-      </VStack>
+            <InputGroup maxWidth={60} onChange={pickColor}>
+              <Input {...register("themeColor")} isInvalid={!!errors.themeColor} />
+              <InputRightAddon px={0}>
+                <Button
+                  width="full"
+                  height="full"
+                  rounded="none"
+                  fontSize="sm"
+                  fontWeight="normal"
+                >
+                  Pick another
+                </Button>
+              </InputRightAddon>
+            </InputGroup>
+          </HStack>
+          {error.length > 0 && (
+            <Text
+              color={colorMode === "light" ? "red.500" : "red.400"}
+              fontSize="sm"
+            >
+              {error}
+            </Text>
+          )}
+        </VStack>
+      </>
     </Section>
   )
 }
