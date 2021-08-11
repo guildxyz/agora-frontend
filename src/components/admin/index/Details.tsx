@@ -5,7 +5,7 @@ import {
   GridItem,
   Input,
   InputGroup,
-  InputRightAddon,
+  InputLeftAddon,
   Textarea,
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
@@ -13,13 +13,8 @@ import { UploadSimple } from "phosphor-react"
 import { Controller, useFormContext } from "react-hook-form"
 import PhotoUploader from "../common/PhotoUploader"
 
-const Details = (): JSX.Element => {
-  const {
-    control,
-    watch,
-    register,
-    formState: { errors },
-  } = useFormContext()
+const Details = ({ errors }): JSX.Element => {
+  const { control, watch, register } = useFormContext()
 
   return (
     <Section
@@ -42,12 +37,12 @@ const Details = (): JSX.Element => {
           <FormControl>
             <FormLabel>URL</FormLabel>
             <InputGroup>
+              <InputLeftAddon>app.agora.space/</InputLeftAddon>
               <Input
                 {...register("urlName")}
                 isInvalid={!!errors.urlName}
                 placeholder={watch("name")?.toLowerCase().replace(/ /g, "-") || ""}
               />
-              <InputRightAddon>.agora.space</InputRightAddon>
             </InputGroup>
           </FormControl>
         </GridItem>
