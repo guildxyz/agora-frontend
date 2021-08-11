@@ -32,8 +32,8 @@ const Details = (): JSX.Element => {
           <FormControl isRequired>
             <FormLabel>Name</FormLabel>
             <Input
-              {...register("communityName", { required: true })}
-              isInvalid={!!errors.communityName}
+              {...register("name", { required: true })}
+              isInvalid={!!errors.name}
             />
           </FormControl>
         </GridItem>
@@ -45,9 +45,7 @@ const Details = (): JSX.Element => {
               <Input
                 {...register("urlName")}
                 isInvalid={!!errors.urlName}
-                placeholder={
-                  watch("communityName")?.toLowerCase().replace(/ /g, "-") || ""
-                }
+                placeholder={watch("name")?.toLowerCase().replace(/ /g, "-") || ""}
               />
               <InputRightAddon>.agora.space</InputRightAddon>
             </InputGroup>

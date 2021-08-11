@@ -21,8 +21,16 @@ const Page = (): JSX.Element => {
   )
 
   const methods = useForm()
+
+  /**
+   * TODO: Upload image, and get its URL, then put it in a field called "imageUrl"
+   * tokenAddress??? contractAddress???
+   */
   const onSubmit = (data) =>
-    console.log({ ...data, chainName: RPC[Chains[chainId]].chainName.toUpperCase() })
+    console.log({
+      ...data,
+      chainName: chainId ? RPC[Chains[chainId]].chainName.toUpperCase() : null,
+    })
 
   return (
     <FormProvider {...methods}>
