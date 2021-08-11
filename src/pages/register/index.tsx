@@ -1,4 +1,12 @@
-import { Box, Button, Stack, VStack } from "@chakra-ui/react"
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  Box,
+  Button,
+  Stack,
+  VStack,
+} from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
@@ -26,11 +34,29 @@ const Page = (): JSX.Element => {
    * TODO: Upload image, and get its URL, then put it in a field called "imageUrl"
    * tokenAddress??? contractAddress???
    */
-  const onSubmit = (data) =>
+  const onSubmit = (data) => {
     console.log({
       ...data,
       chainName: chainId ? RPC[Chains[chainId]].chainName.toUpperCase() : null,
     })
+  }
+
+  if (!chainId) {
+    return (
+      <Box>
+        <Layout title="Integrate token">
+          <Alert status="error" mb="6">
+            <AlertIcon />
+            <Stack>
+              <AlertDescription position="relative" top={1}>
+                Please connect your wallet in order to continue!
+              </AlertDescription>
+            </Stack>
+          </Alert>
+        </Layout>
+      </Box>
+    )
+  }
 
   return (
     <FormProvider {...methods}>
