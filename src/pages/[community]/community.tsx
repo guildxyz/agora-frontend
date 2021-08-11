@@ -14,45 +14,43 @@ type Props = {
 }
 
 const CommunityPage = ({ communityData }: Props): JSX.Element => (
-  <CommunityProvider data={communityData}>
-    <Layout title={communityData.name} imageUrl={communityData.imageUrl}>
-      <Stack spacing={{ base: 7, xl: 9 }}>
-        <Pagination />
-        {communityData.levels.length ? (
-          <>
-            <SimpleGrid
-              templateColumns={{ base: "100%", md: "3fr 2fr" }}
-              gap={{ base: 5, md: 7, xl: 9 }}
-            >
-              <Platforms />
-              <Staked />
-            </SimpleGrid>
-            <SimpleGrid gap="4">
-              {communityData.parallelLevels ? (
-                communityData.levels.map((level) => (
-                  <Levels key={level.id} levels={[level]} />
-                ))
-              ) : (
-                <Levels levels={communityData.levels} />
-              )}
-            </SimpleGrid>
-          </>
-        ) : (
-          <Card p="6" isFullWidthOnMobile>
-            <Text
-              fontWeight="medium"
-              colorScheme="gray"
-              display="flex"
-              alignItems="center"
-            >
-              <Icon as={Info} mr="2" />
-              This community is not using Agora Space yet. Let them know they should!
-            </Text>
-          </Card>
-        )}
-      </Stack>
-    </Layout>
-  </CommunityProvider>
+  <Layout title={communityData.name} imageUrl={communityData.imageUrl}>
+    <Stack spacing={{ base: 7, xl: 9 }}>
+      <Pagination />
+      {communityData.levels.length ? (
+        <CommunityProvider data={communityData} shouldRenderWrapper={false}>
+          <SimpleGrid
+            templateColumns={{ base: "100%", md: "3fr 2fr" }}
+            gap={{ base: 5, md: 7, xl: 9 }}
+          >
+            <Platforms />
+            <Staked />
+          </SimpleGrid>
+          <SimpleGrid gap="4">
+            {communityData.parallelLevels ? (
+              communityData.levels.map((level) => (
+                <Levels key={level.id} levels={[level]} />
+              ))
+            ) : (
+              <Levels levels={communityData.levels} />
+            )}
+          </SimpleGrid>
+        </CommunityProvider>
+      ) : (
+        <Card p="6" isFullWidthOnMobile>
+          <Text
+            fontWeight="medium"
+            colorScheme="gray"
+            display="flex"
+            alignItems="center"
+          >
+            <Icon as={Info} mr="2" />
+            This community is not using Agora Space yet. Let them know they should!
+          </Text>
+        </Card>
+      )}
+    </Stack>
+  </Layout>
 )
 
 export {

@@ -1,6 +1,7 @@
 import useKeepSWRDataLiveAsBlocksArrive from "hooks/useKeepSWRDataLiveAsBlocksArrive"
 import { useMemo } from "react"
 import useSWR from "swr"
+import { Level } from "temporaryData/types"
 
 type MemberCountResponse = {
   id: number
@@ -19,7 +20,7 @@ const getMemberCount = (_: string, id: number): Promise<MemberCountResponse[]> =
       : Promise.reject(new Error(`Unable to fetch member count of community ${id}`))
   )
 
-const useMemberCount = (communityId: number) => {
+const useMemberCount = (communityId: number, initialLevels: Level[]) => {
   // the mocked communities from tokens.json have negative ids
   const shouldFetch = communityId >= 0
 
@@ -27,7 +28,10 @@ const useMemberCount = (communityId: number) => {
     shouldFetch ? ["membercount", communityId] : null,
     getMemberCount,
     {
-      initialData: [],
+      initialData: initialLevels.map(({ id, membersCount }) => ({
+        id,
+        membersCount,
+      })),
     }
   )
 

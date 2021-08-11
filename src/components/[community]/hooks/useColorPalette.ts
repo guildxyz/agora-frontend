@@ -1,13 +1,12 @@
 import Color from "color"
-import { useEffect, useState } from "react"
+import { useMemo } from "react"
 
 const useColorPalette = (
   prefix: string,
   colorCode: string
-): { [x: string]: string } => {
-  const [generatedColors, setGeneratedColors] = useState({})
-
-  useEffect(() => {
+): { [x: string]: string } =>
+  useMemo(() => {
+    // Shouldn't calculate constant values here
     const lightness = 95
     const darkness = 10
     const darkSteps = 4
@@ -70,10 +69,7 @@ const useColorPalette = (
         .hex(),
     }
 
-    setGeneratedColors(swatches)
+    return swatches
   }, [prefix, colorCode])
-
-  return generatedColors
-}
 
 export default useColorPalette

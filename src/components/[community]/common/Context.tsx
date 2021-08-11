@@ -1,12 +1,18 @@
 import { Box, Portal } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { Chains } from "connectors"
-import React, { createContext, useContext, useMemo, useRef } from "react"
+import React, {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useMemo,
+  useRef,
+} from "react"
 import { Community, ProvidedCommunity } from "temporaryData/types"
 import useColorPalette from "../hooks/useColorPalette"
 import useMemberCount from "../hooks/useMemberCount"
 
-type Props = {
+type Props = PropsWithChildren<{
   data: Community
   /**
    * This is needed because we're using it for the CommunityCard components too and
@@ -15,8 +21,7 @@ type Props = {
    * it was just an easier solution for now
    */
   shouldRenderWrapper?: boolean
-  children: JSX.Element
-}
+}>
 
 const CommunityContext = createContext<ProvidedCommunity | null>(null)
 
@@ -27,7 +32,7 @@ const CommunityProvider = ({
 }: Props): JSX.Element => {
   const { chainId } = useWeb3React()
 
-  const membersCount = useMemberCount(data.id)
+  const membersCount = useMemberCount(data.id, data.levels)
 
   const chainData = useMemo(
     () =>
@@ -40,7 +45,7 @@ const CommunityProvider = ({
     () =>
       data.levels.map((_level) => {
         const level = _level
-        level.membersCount = membersCount[_level.id] ?? level.membersCount
+        level.membersCount = membersCount[_level.id]
         return level
       }),
     [data.levels, membersCount]
@@ -60,7 +65,7 @@ const CommunityProvider = ({
         levels,
       }}
     >
-      {shouldRenderWrapper ? (
+      {typeof window !== "undefined" && shouldRenderWrapper ? (
         <Box ref={colorPaletteProviderElementRef} sx={generatedColors}>
           {/* using Portal with it's parent's ref so it mounts children as they would normally be,
             but ensures that modals, popovers, etc are mounted inside instead at the end of the
