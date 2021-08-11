@@ -65,7 +65,7 @@ const Page = (): JSX.Element => {
           <Stack spacing={{ base: 7, xl: 9 }}>
             <Pagination />
             <VStack spacing={12}>
-              <Details errors={methods.formState.errors} />
+              <Details />
               <UsedToken />
               <Appearance
                 onColorChange={(newColor: string) => setColorCode(newColor)}

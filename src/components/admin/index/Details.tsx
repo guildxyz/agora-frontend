@@ -15,8 +15,13 @@ import { UploadSimple } from "phosphor-react"
 import { Controller, useFormContext } from "react-hook-form"
 import PhotoUploader from "../common/PhotoUploader"
 
-const Details = ({ errors }): JSX.Element => {
-  const { control, watch, register } = useFormContext()
+const Details = (): JSX.Element => {
+  const {
+    control,
+    watch,
+    register,
+    formState: { errors },
+  } = useFormContext()
 
   return (
     <Section
