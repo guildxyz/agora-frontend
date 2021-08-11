@@ -152,6 +152,24 @@ const useJoinModalMachine = (): any => {
           "dc_auth",
           `height=750,width=600,scrollbars`
         )
+
+        // Could only capture a "beforeunload" event if the popup and the opener would be on the same domain
+        const timer = setInterval(() => {
+          if (dcAuthWindow.current.closed) {
+            clearInterval(timer)
+            window.postMessage(
+              {
+                type: "DC_AUTH_ERROR",
+                data: {
+                  error: "Access denied",
+                  errorDescription:
+                    "The resource owner or authorization server denied the request",
+                },
+              },
+              window.origin
+            )
+          }
+        }, 500)
       },
     },
     services: {

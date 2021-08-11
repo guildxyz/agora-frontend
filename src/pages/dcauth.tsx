@@ -51,7 +51,7 @@ const DCAuth = () => {
       fragment.get("state"),
     ]
 
-    const target = `${window.location.origin}/${urlName}`
+    const target = `${window.location.origin}/${urlName}/community`
 
     const sendError = (e: string, d: string) =>
       window.opener &&
