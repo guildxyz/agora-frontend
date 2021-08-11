@@ -27,7 +27,7 @@ const Details = (): JSX.Element => {
       description="General information about your community"
       cardType
     >
-      <Grid templateColumns="repeat(2, 1fr)" gap={12}>
+      <Grid templateColumns={{ base: "100%", md: "repeat(2, 1fr)" }} gap={12}>
         <GridItem>
           <FormControl isRequired>
             <FormLabel>Name</FormLabel>
@@ -52,7 +52,7 @@ const Details = (): JSX.Element => {
           </FormControl>
         </GridItem>
 
-        <GridItem colSpan={2}>
+        <GridItem colSpan={{ base: 1, md: 2 }}>
           <FormControl>
             <FormLabel>Description</FormLabel>
             <Textarea
@@ -62,7 +62,7 @@ const Details = (): JSX.Element => {
           </FormControl>
         </GridItem>
 
-        <GridItem colSpan={2}>
+        <GridItem colSpan={{ base: 1, md: 2 }}>
           <FormControl>
             <FormLabel>Image</FormLabel>
             <Controller

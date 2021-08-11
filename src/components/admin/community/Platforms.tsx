@@ -21,15 +21,19 @@ const Platforms = (): JSX.Element => (
     cardType
   >
     <VStack>
-      <Grid width="full" templateColumns="auto 100%" gap={12}>
-        <GridItem colSpan={1}>
+      <Grid
+        width="full"
+        templateColumns={{ base: "100%", md: "auto 100%" }}
+        gap={{ base: 8, md: 12 }}
+      >
+        <GridItem>
           <FormControl display="flex" height="full" alignItems="center">
             <Switch colorScheme="primary" mr={4} />
             <FormLabel margin={0}>Discord</FormLabel>
           </FormControl>
         </GridItem>
 
-        <GridItem colSpan={1}>
+        <GridItem>
           <FormControl>
             <InputGroup>
               <InputLeftAddon>Server ID</InputLeftAddon>
@@ -38,28 +42,28 @@ const Platforms = (): JSX.Element => (
           </FormControl>
         </GridItem>
 
-        <GridItem colSpan={1}>
+        <GridItem>
           <FormControl display="flex" height="full" alignItems="center">
             <Switch colorScheme="primary" mr={4} />
             <FormLabel margin={0}>Telegram</FormLabel>
           </FormControl>
         </GridItem>
 
-        <GridItem colSpan={1}>
+        <GridItem>
           <Text colorScheme="gray">
             You'll have to set the group IDs for every level
           </Text>
         </GridItem>
 
-        <GridItem colSpan={2}>
+        <GridItem colSpan={{ base: 1, md: 2 }}>
           <Divider />
         </GridItem>
 
-        <GridItem colSpan={2} mb={-8}>
+        <GridItem colSpan={{ base: 1, md: 2 }} mb={-8}>
           <Badge>Coming soon</Badge>
         </GridItem>
 
-        <GridItem colSpan={1}>
+        <GridItem>
           <FormControl display="flex" height="full" alignItems="center" isDisabled>
             <Switch colorScheme="primary" mr={4} isDisabled />
             <FormLabel width="max-content" margin={0}>
@@ -67,7 +71,7 @@ const Platforms = (): JSX.Element => (
             </FormLabel>
           </FormControl>
         </GridItem>
-        <GridItem colSpan={1}>
+        <GridItem>
           <Text colorScheme="gray">
             All messages will be forwarded to every platform, so the community is
             unified

@@ -10,6 +10,7 @@ import {
   InputGroup,
   InputLeftAddon,
   InputRightAddon,
+  Stack,
   Tag,
   TagCloseButton,
   TagLabel,
@@ -101,7 +102,11 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
       />
 
       <VStack spacing={12}>
-        <Grid width="full" templateColumns="repeat(2, 1fr)" gap={12}>
+        <Grid
+          width="full"
+          templateColumns={{ base: "100%", md: "repeat(2, 1fr)" }}
+          gap={12}
+        >
           <GridItem>
             <FormControl id="level_name">
               <FormLabel>Name</FormLabel>
@@ -116,7 +121,7 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
             </FormControl>
           </GridItem>
 
-          <GridItem colSpan={2}>
+          <GridItem colSpan={{ base: 1, md: 2 }}>
             <FormControl id="community_description">
               <FormLabel>Description</FormLabel>
               <Textarea />
@@ -124,17 +129,25 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
           </GridItem>
         </Grid>
 
-        <Grid width="full" templateColumns="repeat(2, 1fr)" gap={12}>
-          <GridItem mb={-8} colSpan={2}>
+        <Grid
+          width="full"
+          templateColumns={{ base: "100%", md: "repeat(2, 1fr)" }}
+          gap={12}
+        >
+          <GridItem mb={-8} colSpan={{ base: 1, md: 2 }}>
             <Text as="h2" fontWeight="bold" fontSize="lg">
               Membership requirements
             </Text>
           </GridItem>
 
-          <GridItem colSpan={2}>
+          <GridItem colSpan={{ base: 1, md: 2 }}>
             <FormControl id="membership">
               <FormLabel>Membership</FormLabel>
-              <HStack spacing={6} {...group}>
+              <Stack
+                direction={{ base: "column", md: "row" }}
+                spacing={6}
+                {...group}
+              >
                 {options.map((value) => {
                   const radio = getRadioProps({ value })
                   return (
@@ -146,7 +159,7 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
                     </RadioCard>
                   )
                 })}
-              </HStack>
+              </Stack>
             </FormControl>
           </GridItem>
 

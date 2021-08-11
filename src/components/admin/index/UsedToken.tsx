@@ -22,7 +22,7 @@ const UsedToken = (): JSX.Element => {
       description="The token that members will have to stake or hold to access non-open levels"
       cardType
     >
-      <Grid templateColumns="repeat(2, 1fr)" gap={12}>
+      <Grid templateColumns={{ base: "100%", md: "repeat(2, 1fr)" }} gap={12}>
         <GridItem>
           <FormControl isRequired>
             <FormLabel>Token address</FormLabel>
