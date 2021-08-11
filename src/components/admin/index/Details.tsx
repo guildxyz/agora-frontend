@@ -6,9 +6,11 @@ import {
   Input,
   InputGroup,
   InputLeftAddon,
+  Select,
   Textarea,
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
+import { Chains } from "connectors"
 import { UploadSimple } from "phosphor-react"
 import { Controller, useFormContext } from "react-hook-form"
 import PhotoUploader from "../common/PhotoUploader"
@@ -54,6 +56,26 @@ const Details = ({ errors }): JSX.Element => {
               {...register("description")}
               isInvalid={!!errors.description}
             />
+          </FormControl>
+        </GridItem>
+
+        <GridItem colSpan={{ base: 1, md: 2 }}>
+          <FormControl isRequired>
+            <FormLabel>Chain</FormLabel>
+            <Select
+              placeholder="Select chain"
+              {...register("chainName", { required: true })}
+              isInvalid={!!errors.chainName}
+            >
+              {Object.keys(Chains)
+                .map((key) => Chains[key])
+                .filter((member) => typeof member === "number")
+                .map((key) => (
+                  <option key={key} value={Chains[key]}>
+                    {Chains[key]}
+                  </option>
+                ))}
+            </Select>
           </FormControl>
         </GridItem>
 
