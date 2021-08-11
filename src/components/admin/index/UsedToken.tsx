@@ -24,7 +24,7 @@ const UsedToken = (): JSX.Element => {
     >
       <Grid templateColumns="repeat(2, 1fr)" gap={12}>
         <GridItem>
-          <FormControl>
+          <FormControl isRequired>
             <FormLabel>Token address</FormLabel>
             <InputGroup>
               <Input

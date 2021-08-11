@@ -16,6 +16,7 @@ import PhotoUploader from "../common/PhotoUploader"
 const Details = (): JSX.Element => {
   const {
     control,
+    watch,
     register,
     formState: { errors },
   } = useFormContext()
@@ -28,11 +29,11 @@ const Details = (): JSX.Element => {
     >
       <Grid templateColumns="repeat(2, 1fr)" gap={12}>
         <GridItem>
-          <FormControl>
+          <FormControl isRequired>
             <FormLabel>Name</FormLabel>
             <Input
-              {...register("name", { required: true })}
-              isInvalid={!!errors.name}
+              {...register("communityName", { required: true })}
+              isInvalid={!!errors.communityName}
             />
           </FormControl>
         </GridItem>
@@ -42,8 +43,11 @@ const Details = (): JSX.Element => {
             <FormLabel>URL</FormLabel>
             <InputGroup>
               <Input
-                {...register("urlName", { required: true })}
+                {...register("urlName")}
                 isInvalid={!!errors.urlName}
+                placeholder={
+                  watch("communityName")?.toLowerCase().replace(/ /g, "-") || ""
+                }
               />
               <InputRightAddon>.agora.space</InputRightAddon>
             </InputGroup>
@@ -54,7 +58,7 @@ const Details = (): JSX.Element => {
           <FormControl>
             <FormLabel>Description</FormLabel>
             <Textarea
-              {...register("description", { required: true })}
+              {...register("description")}
               isInvalid={!!errors.description}
             />
           </FormControl>
@@ -76,7 +80,6 @@ const Details = (): JSX.Element => {
               )}
               name="image"
               control={control}
-              rules={{ required: true }}
             />
           </FormControl>
         </GridItem>

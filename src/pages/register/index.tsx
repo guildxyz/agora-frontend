@@ -1,14 +1,18 @@
 import { Box, Button, Stack, VStack } from "@chakra-ui/react"
+import { useWeb3React } from "@web3-react/core"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
 import UsedToken from "components/admin/index/UsedToken"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
+import { Chains, RPC } from "connectors"
 import React, { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 const Page = (): JSX.Element => {
+  const { chainId } = useWeb3React()
+
   const [colorCode, setColorCode] = useState<string>(null)
 
   const generatedColors = useColorPalette(
@@ -17,7 +21,8 @@ const Page = (): JSX.Element => {
   )
 
   const methods = useForm()
-  const onSubmit = (data) => console.log(data)
+  const onSubmit = (data) =>
+    console.log({ ...data, chainName: RPC[Chains[chainId]].chainName.toUpperCase() })
 
   return (
     <FormProvider {...methods}>
