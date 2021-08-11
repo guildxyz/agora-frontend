@@ -65,12 +65,16 @@ const CommunityProvider = ({
         levels,
       }}
     >
-      {typeof window !== "undefined" && shouldRenderWrapper ? (
+      {shouldRenderWrapper ? (
         <Box ref={colorPaletteProviderElementRef} sx={generatedColors}>
           {/* using Portal with it's parent's ref so it mounts children as they would normally be,
             but ensures that modals, popovers, etc are mounted inside instead at the end of the
             body so they'll use the provided css variables */}
-          <Portal containerRef={colorPaletteProviderElementRef}>{children}</Portal>
+          {typeof window === "undefined" ? (
+            children
+          ) : (
+            <Portal containerRef={colorPaletteProviderElementRef}>{children}</Portal>
+          )}
         </Box>
       ) : (
         children
