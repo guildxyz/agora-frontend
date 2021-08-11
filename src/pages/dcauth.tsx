@@ -27,36 +27,6 @@ const fetchUserID = async (tokenType: string, accessToken: string) => {
   return id
 }
 
-const fetchJoinPlatform = async (
-  platformUserId: string,
-  communityId: string,
-  addressSignedMessage: string
-) => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API}/user/joinPlatform`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      platform: "DISCORD",
-      platformUserId,
-      communityId,
-      addressSignedMessage,
-    }),
-  }).catch(() => {
-    throw newNamedError("Network error", "Unable to connect to server")
-  })
-
-  if (!response.ok)
-    throw newNamedError(
-      "Failed to get invite link",
-      "Couldn't fetch the invite link from from the backend"
-    )
-
-  const inviteData = await response.json()
-  return inviteData
-}
-
 const DCAuth = () => {
   const router = useRouter()
 
@@ -65,32 +35,21 @@ const DCAuth = () => {
     // For example if someone just manually goes to /dcauth
     if (!window.location.hash) router.push("/")
     const fragment = new URLSearchParams(window.location.hash.slice(1))
-    if (!fragment.has("state")) router.push("/")
-
-    let state = null
-    try {
-      state = JSON.parse(fragment.get("state"))
-    } catch (_) {
-      router.push("/")
-    }
 
     if (
-      !("urlName" in state) ||
-      !("addressSignedMessage" in state) ||
-      !("communityId" in state) ||
+      !fragment.has("state") ||
       ((!fragment.has("access_token") || !fragment.has("token_type")) &&
         (!fragment.has("error") || !fragment.has("error_description")))
     )
       router.push("/")
 
-    const [accessToken, tokenType, error, errorDescription] = [
+    const [accessToken, tokenType, error, errorDescription, urlName] = [
       fragment.get("access_token"),
       fragment.get("token_type"),
       fragment.get("error"),
       fragment.get("error_description"),
+      fragment.get("state"),
     ]
-
-    const { urlName, addressSignedMessage, communityId } = state
 
     const target = `${window.location.origin}/${urlName}`
 
@@ -107,19 +66,20 @@ const DCAuth = () => {
         target
       )
 
+    // Error from authentication
     if (error) sendError(error, errorDescription)
 
     fetchUserID(tokenType, accessToken)
-      .then((id) =>
-        window.opener === null || window.opener.closed
-          ? fetchJoinPlatform(id, communityId, addressSignedMessage).finally(() =>
-              window.close()
-            )
-          : window.opener.postMessage(
-              { type: "DC_AUTH_SUCCESS", data: { id } },
-              target
-            )
+      .then(
+        (id) =>
+          // Later maybe add an endpoint that can just store an id. Fetch it here if opener is closed
+          window.opener &&
+          window.opener.postMessage(
+            { type: "DC_AUTH_SUCCESS", data: { id } },
+            target
+          )
       )
+      // Error from discord api fetching
       .catch(({ name, message }) => sendError(name, message))
   }, [router])
 

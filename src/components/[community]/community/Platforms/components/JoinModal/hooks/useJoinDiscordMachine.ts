@@ -28,8 +28,6 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
     context: {
       error: null,
       inviteData: initialInviteData,
-      accessToken: null,
-      tokenType: null,
       signedMessage: null,
     },
     states: {
@@ -148,17 +146,9 @@ const useJoinModalMachine = (): any => {
 
   const [state, send] = useMachine(joinModalMachine, {
     actions: {
-      openDiscordAuthWindow: (context) => {
+      openDiscordAuthWindow: () => {
         dcAuthWindow.current = window.open(
-          `https://discord.com/api/oauth2/authorize?client_id=${
-            process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID
-          }&response_type=token&scope=identify&redirect_uri=${
-            process.env.NEXT_PUBLIC_DISCORD_REDIRECT_URI
-          }&state=${JSON.stringify({
-            urlName,
-            addressSignedMessage: context.signedMessage,
-            communityId,
-          })}`,
+          `https://discord.com/api/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID}&response_type=token&scope=identify&redirect_uri=${process.env.NEXT_PUBLIC_DISCORD_REDIRECT_URI}&state=${urlName}`,
           "dc_auth",
           `height=750,width=600,scrollbars`
         )
