@@ -42,8 +42,8 @@ const Details = (): JSX.Element => {
             <FormLabel>URL</FormLabel>
             <InputGroup>
               <Input
-                {...register("url", { required: true })}
-                isInvalid={!!errors.url}
+                {...register("urlName", { required: true })}
+                isInvalid={!!errors.urlName}
               />
               <InputRightAddon>.agora.space</InputRightAddon>
             </InputGroup>
@@ -74,7 +74,7 @@ const Details = (): JSX.Element => {
                   {...field}
                 />
               )}
-              name="photo"
+              name="image"
               control={control}
               rules={{ required: true }}
             />

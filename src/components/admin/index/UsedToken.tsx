@@ -25,13 +25,13 @@ const UsedToken = (): JSX.Element => {
       <Grid templateColumns="repeat(2, 1fr)" gap={12}>
         <GridItem>
           <FormControl>
-            <FormLabel>Token name or address</FormLabel>
+            <FormLabel>Token address</FormLabel>
             <InputGroup>
               <Input
-                {...register("token", { required: true })}
-                isInvalid={!!errors.token}
+                {...register("tokenAddress", { required: true })}
+                isInvalid={!!errors.tokenAddress}
               />
-              <InputRightAddon>ETHANE</InputRightAddon>
+              <InputRightAddon>TOKEN_NAME</InputRightAddon>
             </InputGroup>
           </FormControl>
         </GridItem>
