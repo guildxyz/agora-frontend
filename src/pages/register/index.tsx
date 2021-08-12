@@ -30,10 +30,7 @@ const Page = (): JSX.Element => {
 
   const methods = useForm({ mode: "all" })
 
-  /**
-   * TODO: Upload image, and get its URL, then put it in a field called "imageUrl"
-   * tokenAddress??? contractAddress???
-   */
+  /** TODO: tokenAddress??? contractAddress??? */
   const onSubmit = (data) => {
     console.log({
       ...data,
