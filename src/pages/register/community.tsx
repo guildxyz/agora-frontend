@@ -33,18 +33,15 @@ const Page = (): JSX.Element => {
 
     // Converting timeLock to ms for every level
     editedData.levels = editedData.levels?.map((level) => {
-      const timeLock = level.membershipRequirement?.tokenTimeLock
+      const timeLock = level.stakeTimelockMs
 
       if (!timeLock) {
-        return clearUndefinedData(level)
+        return level
       }
 
       return clearUndefinedData({
         ...level,
-        membershipRequirement: {
-          ...level.membershipRequirement,
-          tokenTimeLock: convertMonthsToMs(+timeLock),
-        },
+        stakeTimelockMs: convertMonthsToMs(timeLock),
       })
     })
 

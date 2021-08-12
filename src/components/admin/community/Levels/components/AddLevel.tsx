@@ -28,18 +28,18 @@ type MembershipData = {
   icon: IconType
 }
 
-type MembershipTypes = "open" | "hold" | "stake"
+type MembershipTypes = "OPEN" | "HOLD" | "STAKE"
 
 const membershipsData: { [key: string]: MembershipData } = {
-  open: {
+  OPEN: {
     name: "Open",
     icon: LockSimpleOpen,
   },
-  hold: {
+  HOLD: {
     name: "Hold",
     icon: LockOpen,
   },
-  stake: {
+  STAKE: {
     name: "Stake",
     icon: Lock,
   },
@@ -59,12 +59,12 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
     formState: { errors },
   } = useFormContext()
 
-  const options = ["open", "hold", "stake"]
+  const options = ["OPEN", "HOLD", "STAKE"]
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "membership",
     defaultValue: options[0],
     onChange: (newValue: MembershipTypes) =>
-      setValue(`levels.${index}.membershipRequirement.type`, newValue, {}),
+      setValue(`levels.${index}.requirementType`, newValue, {}),
   })
 
   const radioGroup = getRootProps()
@@ -159,7 +159,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
               </Stack>
               <Input
                 type="hidden"
-                {...register(`levels.${index}.membershipRequirement.type`, {
+                {...register(`levels.${index}.requirementType`, {
                   required: true,
                 })}
                 defaultValue={options[0]}
@@ -173,13 +173,11 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
               <InputGroup>
                 <Input
                   type="number"
-                  {...register(`levels.${index}.membershipRequirement.tokenAmount`, {
-                    required:
-                      watch(`levels.${index}.membershipRequirement.type`) !== "open",
+                  {...register(`levels.${index}.requirement`, {
+                    valueAsNumber: true,
+                    required: watch(`levels.${index}.requirementType`) !== "OPEN",
                   })}
-                  isDisabled={
-                    watch(`levels.${index}.membershipRequirement.type`) === "open"
-                  }
+                  isDisabled={watch(`levels.${index}.requirementType`) === "OPEN"}
                   isInvalid={
                     errors.levels &&
                     !!errors.levels[index]?.membershipRequirement?.tokenAmount
@@ -196,17 +194,11 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
               <InputGroup>
                 <Input
                   type="number"
-                  {...register(
-                    `levels.${index}.membershipRequirement.tokenTimeLock`,
-                    {
-                      required:
-                        watch(`levels.${index}.membershipRequirement.type`) ===
-                        "stake",
-                    }
-                  )}
-                  isDisabled={
-                    watch(`levels.${index}.membershipRequirement.type`) !== "stake"
-                  }
+                  {...register(`levels.${index}.stakeTimelockMs`, {
+                    valueAsNumber: true,
+                    required: watch(`levels.${index}.requirementType`) === "STAKE",
+                  })}
+                  isDisabled={watch(`levels.${index}.requirementType`) !== "STAKE"}
                   isInvalid={
                     errors.levels &&
                     !!errors.levels[index]?.membershipRequirement?.tokenTimeLock
