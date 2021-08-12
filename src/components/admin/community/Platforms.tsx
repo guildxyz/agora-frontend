@@ -17,7 +17,6 @@ import { useFormContext } from "react-hook-form"
 
 const Platforms = (): JSX.Element => {
   const {
-    control,
     watch,
     register,
     formState: { errors },

@@ -24,6 +24,7 @@ import PhotoUploader from "components/admin/common/PhotoUploader"
 import Card from "components/common/Card"
 import { Lock, LockOpen, LockSimpleOpen } from "phosphor-react"
 import { useState } from "react"
+import { useFormContext } from "react-hook-form"
 import { Icon as IconType } from "temporaryData/types"
 import RadioCard from "./RadioCard"
 
@@ -31,6 +32,8 @@ type MembershipData = {
   name: string
   icon: IconType
 }
+
+type MembershipTypes = "open" | "hold" | "stake"
 
 const membershipsData: { [key: string]: MembershipData } = {
   open: {
@@ -48,16 +51,24 @@ const membershipsData: { [key: string]: MembershipData } = {
 }
 
 type Props = {
+  index: number // index is (and should be) only used for managing the form state / removing a level form the form!
   onRemove: () => void
 }
 
-const AddLevel = ({ onRemove }: Props): JSX.Element => {
-  const options = ["open", "hold", "stake"]
+const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
+  const {
+    register,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useFormContext()
 
+  const options = ["open", "hold", "stake"]
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "membership",
-    defaultValue: "open",
-    onChange: console.log,
+    defaultValue: options[0],
+    onChange: (newValue: MembershipTypes) =>
+      setValue(`levels.${index}.membershipRequirements.type`, newValue, {}),
   })
 
   const group = getRootProps()
@@ -108,9 +119,12 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
           gap={12}
         >
           <GridItem>
-            <FormControl id="level_name">
+            <FormControl isRequired>
               <FormLabel>Name</FormLabel>
-              <Input />
+              <Input
+                {...register(`levels.${index}.name`, { required: true })}
+                isInvalid={errors.levels && !!errors.levels[index].name}
+              />
             </FormControl>
           </GridItem>
 
@@ -124,7 +138,7 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
           <GridItem colSpan={{ base: 1, md: 2 }}>
             <FormControl id="community_description">
               <FormLabel>Description</FormLabel>
-              <Textarea />
+              <Textarea {...register(`levels.${index}.description`)} />
             </FormControl>
           </GridItem>
         </Grid>
@@ -160,6 +174,13 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
                   )
                 })}
               </Stack>
+              <Input
+                type="hidden"
+                {...register(`levels.${index}.membershipRequirements.type`, {
+                  required: true,
+                })}
+                defaultValue={options[0]}
+              />
             </FormControl>
           </GridItem>
 
@@ -167,7 +188,24 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
             <FormControl id="amount">
               <FormLabel>Amount</FormLabel>
               <InputGroup>
-                <Input />
+                <Input
+                  type="number"
+                  {...register(
+                    `levels.${index}.membershipRequirements.tokenAmount`,
+                    {
+                      required:
+                        watch(`levels.${index}.membershipRequirements.type`) !==
+                        "open",
+                    }
+                  )}
+                  isDisabled={
+                    watch(`levels.${index}.membershipRequirements.type`) === "open"
+                  }
+                  isInvalid={
+                    errors.levels &&
+                    !!errors.levels[index].membershipRequirements.tokenAmount
+                  }
+                />
                 <InputRightAddon>TKN</InputRightAddon>
               </InputGroup>
             </FormControl>
@@ -177,8 +215,25 @@ const AddLevel = ({ onRemove }: Props): JSX.Element => {
             <FormControl id="timelock">
               <FormLabel>Timelock</FormLabel>
               <InputGroup>
-                <Input />
-                <InputRightAddon>month</InputRightAddon>
+                <Input
+                  type="number"
+                  {...register(
+                    `levels.${index}.membershipRequirements.tokenTimeLock`,
+                    {
+                      required:
+                        watch(`levels.${index}.membershipRequirements.type`) ===
+                        "stake",
+                    }
+                  )}
+                  isDisabled={
+                    watch(`levels.${index}.membershipRequirements.type`) !== "stake"
+                  }
+                  isInvalid={
+                    errors.levels &&
+                    !!errors.levels[index].membershipRequirements.tokenTimeLock
+                  }
+                />
+                <InputRightAddon>month(s)</InputRightAddon>
               </InputGroup>
             </FormControl>
           </GridItem>
