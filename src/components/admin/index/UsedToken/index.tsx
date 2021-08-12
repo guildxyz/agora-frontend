@@ -3,9 +3,11 @@ import {
   FormLabel,
   Grid,
   GridItem,
+  HStack,
   Input,
   InputGroup,
   InputRightAddon,
+  Spinner,
   Text,
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
@@ -53,9 +55,13 @@ const UsedToken = (): JSX.Element => {
               {((!error && tokenSymbol !== undefined) ||
                 isTokenSymbolValidating) && (
                 <InputRightAddon>
-                  {tokenSymbol === undefined && isTokenSymbolValidating
-                    ? "[loading...]"
-                    : tokenSymbol}
+                  {tokenSymbol === undefined && isTokenSymbolValidating ? (
+                    <HStack px={4} alignContent="center">
+                      <Spinner size="sm" color="blackAlpha.400" />
+                    </HStack>
+                  ) : (
+                    tokenSymbol
+                  )}
                 </InputRightAddon>
               )}
             </InputGroup>
