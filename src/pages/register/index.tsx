@@ -13,8 +13,8 @@ import Details from "components/admin/index/Details"
 import UsedToken from "components/admin/index/UsedToken"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
+import usePersonalSign from "components/[community]/community/Platforms/components/JoinModal/hooks/usePersonalSign"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
-import { Chains, RPC } from "connectors"
 import React, { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
@@ -30,12 +30,20 @@ const Page = (): JSX.Element => {
 
   const methods = useForm({ mode: "all" })
 
-  /** TODO: tokenAddress??? contractAddress??? */
+  const sign = usePersonalSign()
+
+  /**
+   * TODO: Upload image, and get its URL, then put it in a field called "imageUrl"
+   * tokenAddress??? contractAddress???
+   */
   const onSubmit = (data) => {
-    console.log({
-      ...data,
-      chainName: chainId ? RPC[Chains[chainId]].chainName.toUpperCase() : null,
-    })
+    sign(
+      "Please sign this message, so we can verify that you are the owner of the token"
+    )
+      .then((ownerSignedMessage) => {
+        console.log({ ...data, ownerSignedMessage })
+      })
+      .catch(console.error)
   }
 
   if (!chainId) {
