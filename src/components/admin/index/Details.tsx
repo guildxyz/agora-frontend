@@ -9,9 +9,12 @@ import {
   Select,
   Textarea,
 } from "@chakra-ui/react"
+import { useWeb3React } from "@web3-react/core"
 import Section from "components/admin/common/Section"
+import requestNetworkChange from "components/common/Layout/components/Account/components/NetworkModal/utils/requestNetworkChange"
 import { Chains, supportedChains } from "connectors"
 import { UploadSimple } from "phosphor-react"
+import { useEffect } from "react"
 import { Controller, useFormContext } from "react-hook-form"
 import PhotoUploader from "../common/PhotoUploader"
 
@@ -21,7 +24,13 @@ const Details = (): JSX.Element => {
     watch,
     register,
     formState: { errors },
+    setValue,
   } = useFormContext()
+  const { chainId } = useWeb3React()
+
+  useEffect(() => {
+    setValue("chainName", Chains[chainId])
+  }, [chainId, setValue])
 
   return (
     <Section
@@ -71,6 +80,7 @@ const Details = (): JSX.Element => {
               placeholder="Select chain"
               {...register("chainName", { required: true })}
               isInvalid={!!errors.chainName}
+              onChange={(event) => requestNetworkChange(event.target.value)()}
             >
               {supportedChains.map((chainName) => (
                 <option key={Chains[chainName]} value={chainName}>

@@ -45,9 +45,12 @@ const UsedToken = (): JSX.Element => {
                 })}
                 isInvalid={!!errors.tokenAddress}
               />
-              {(tokenSymbol !== undefined || isTokenSymbolValidating) && (
+              {((!error && tokenSymbol !== undefined) ||
+                isTokenSymbolValidating) && (
                 <InputRightAddon>
-                  {isTokenSymbolValidating ? "[loading...]" : tokenSymbol}
+                  {tokenSymbol === undefined && isTokenSymbolValidating
+                    ? "[loading...]"
+                    : tokenSymbol}
                 </InputRightAddon>
               )}
             </InputGroup>
