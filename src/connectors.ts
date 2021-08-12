@@ -26,11 +26,13 @@ const RPC = {
     chainName: "Ethereum",
     blockExplorerUrls: ["https://etherscan.io/"],
     iconUrl: "/networkLogos/ethereum.svg",
+    rpcUrls: ["https://main-light.eth.linkpool.io/"],
   },
   GOERLI: {
     chainName: "Goerli",
     blockExplorerUrls: ["https://goerli.etherscan.io/"],
     iconUrl: "/networkLogos/ethereum.svg",
+    rpcUrls: ["https://goerli-light.eth.linkpool.io/"],
   },
   BSC: {
     chainId: "0x38",
