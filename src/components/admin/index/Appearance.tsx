@@ -1,7 +1,6 @@
 import { Box, HStack, Input, Text, useColorMode, VStack } from "@chakra-ui/react"
-import Color from "color"
 import Section from "components/admin/common/Section"
-import { useState } from "react"
+import { useEffect } from "react"
 import { useFormContext } from "react-hook-form"
 
 type Props = {
@@ -10,26 +9,18 @@ type Props = {
 
 const Appearance = ({ onColorChange }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
-  const [pickedColor, setPickedColor] = useState("var(--chakra-colors-gray-200)")
-  const [error, setError] = useState("")
-
-  const pickColor = (e) => {
-    try {
-      const newColor = Color(e.target.value).hex()
-      setPickedColor(newColor)
-      setError("")
-      onColorChange(newColor)
-    } catch (err) {
-      setPickedColor("var(--chakra-colors-gray-200)")
-      setError("Invalid color code!")
-      onColorChange(null)
-    }
-  }
 
   const {
     register,
     formState: { errors },
+    watch,
   } = useFormContext()
+
+  const pickedColor = watch("themeColor")
+
+  useEffect(() => {
+    if (!errors.themeColor) onColorChange(pickedColor)
+  }, [pickedColor, onColorChange, errors.themeColor])
 
   return (
     <Section
@@ -47,22 +38,24 @@ const Appearance = ({ onColorChange }: Props): JSX.Element => {
               minW={10}
               rounded="full"
               transition="background 0.5s ease"
-              style={{ backgroundColor: pickedColor }}
+              bgColor={!!pickedColor && !errors.themeColor ? pickedColor : "#e4e4e7"}
             />
             <Input
               maxWidth={60}
-              onChange={pickColor}
               placeholder="#4F46E5"
-              {...register("themeColor")}
+              {...register("themeColor", {
+                required: false,
+                pattern: /^#[0-9a-f]{3}([0-9a-f]{3})?$/i,
+              })}
               isInvalid={!!errors.themeColor}
             />
           </HStack>
-          {error.length > 0 && (
+          {!!errors.themeColor && (
             <Text
               color={colorMode === "light" ? "red.500" : "red.400"}
               fontSize="sm"
             >
-              {error}
+              Please input a valid hexadecimal color code
             </Text>
           )}
         </VStack>

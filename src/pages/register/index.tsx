@@ -75,7 +75,7 @@ const Page = (): JSX.Element => {
               <Appearance
                 onColorChange={(newColor: string) => setColorCode(newColor)}
               />
-              <Button onClick={methods.handleSubmit(onSubmit)}>
+              <Button onClick={methods.handleSubmit(onSubmit)} colorScheme="primary">
                 Integrate token
               </Button>
             </VStack>
