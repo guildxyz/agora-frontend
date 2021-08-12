@@ -1,7 +1,7 @@
 import { Box, HStack, Input, Text, useColorMode, VStack } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
 import { useEffect } from "react"
-import { useFormContext } from "react-hook-form"
+import { useFormContext, useWatch } from "react-hook-form"
 
 type Props = {
   onColorChange: (color: string) => void
@@ -13,10 +13,9 @@ const Appearance = ({ onColorChange }: Props): JSX.Element => {
   const {
     register,
     formState: { errors },
-    watch,
   } = useFormContext()
 
-  const pickedColor = watch("themeColor")
+  const pickedColor = useWatch({ name: "themeColor", defaultValue: "#e4e4e7" })
 
   useEffect(() => {
     if (!errors.themeColor) onColorChange(pickedColor)

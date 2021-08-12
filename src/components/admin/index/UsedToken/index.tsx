@@ -8,18 +8,23 @@ import {
   InputRightAddon,
   Text,
 } from "@chakra-ui/react"
+import { useWeb3React } from "@web3-react/core"
 import Section from "components/admin/common/Section"
-import { useFormContext } from "react-hook-form"
+import { Chains } from "connectors"
+import { useFormContext, useWatch } from "react-hook-form"
 import useTokenSymbol from "./hooks/useTokenSymbol"
 
 const UsedToken = (): JSX.Element => {
   const {
     register,
     formState: { errors },
-    watch,
   } = useFormContext()
-  const tokenAddress = watch("tokenAddress")
-  const selectedChain = watch("chainName")
+  const { chainId } = useWeb3React()
+  const tokenAddress = useWatch({ name: "tokenAddress", defaultValue: "" })
+  const selectedChain = useWatch({
+    name: "chainName",
+    defaultValue: Chains[chainId],
+  })
 
   const {
     data: tokenSymbol,

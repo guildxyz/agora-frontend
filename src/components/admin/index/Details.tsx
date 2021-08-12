@@ -28,9 +28,7 @@ const Details = (): JSX.Element => {
   } = useFormContext()
   const { chainId } = useWeb3React()
 
-  useEffect(() => {
-    setValue("chainName", Chains[chainId])
-  }, [chainId, setValue])
+  useEffect(() => setValue("chainName", Chains[chainId]), [chainId, setValue])
 
   return (
     <Section
@@ -77,6 +75,7 @@ const Details = (): JSX.Element => {
           <FormControl isRequired>
             <FormLabel>Chain</FormLabel>
             <Select
+              defaultValue={Chains[chainId]}
               placeholder="Select chain"
               {...register("chainName", { required: true })}
               isInvalid={!!errors.chainName}
