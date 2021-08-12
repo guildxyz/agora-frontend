@@ -8,12 +8,8 @@ import {
   Icon,
   Input,
   InputGroup,
-  InputLeftAddon,
   InputRightAddon,
   Stack,
-  Tag,
-  TagCloseButton,
-  TagLabel,
   Text,
   Textarea,
   useRadioGroup,
@@ -23,7 +19,6 @@ import Hint from "components/admin/common/Hint"
 import PhotoUploader from "components/admin/common/PhotoUploader"
 import Card from "components/common/Card"
 import { Lock, LockOpen, LockSimpleOpen } from "phosphor-react"
-import { useState } from "react"
 import { Controller, useFormContext } from "react-hook-form"
 import { Icon as IconType } from "temporaryData/types"
 import RadioCard from "./RadioCard"
@@ -73,31 +68,6 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
   })
 
   const radioGroup = getRootProps()
-
-  // Platform linking logic (temporary - we'Ll need to use some type of form management library, and store these values together with the other form control values)
-  const [platformLinking, setPlatformLinking] = useState({
-    tg: [],
-    dc: [],
-  })
-
-  const tagsChange = (e, type: "tg" | "dc") => {
-    if (e.code === "Comma" || e.code === "Enter") {
-      const newItem = e.target.value.split(",")[0]
-
-      if (newItem && !platformLinking[type].find((item) => item === newItem)) {
-        const newList = [...platformLinking[type], newItem]
-        setPlatformLinking({ ...platformLinking, [type]: newList })
-        e.target.value = ""
-      }
-    }
-  }
-
-  const removeTag = (item: string, type: "tg" | "dc") => {
-    const oldList = [...platformLinking[type]]
-    const newList = oldList.filter((i) => i !== item)
-
-    setPlatformLinking({ ...platformLinking, [type]: newList })
-  }
 
   return (
     <Card position="relative" width="full" padding={8}>
@@ -253,56 +223,30 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
             Platform linking
           </Text>
 
-          <FormControl id="tg_groups">
+          <FormControl>
             <FormLabel>
-              <Text as="span">Telegram group(s)</Text>
+              <Text as="span">Telegram group</Text>
               <Hint header="Where can I find the TG group ID?" body="TODO..." />
             </FormLabel>
             <InputGroup>
-              {platformLinking.tg.length > 0 && (
-                <InputLeftAddon px={2} bgColor="transparent">
-                  <HStack spacing={2}>
-                    {platformLinking.tg.map((item) => (
-                      <Tag key={item}>
-                        <TagLabel>{item}</TagLabel>
-                        <TagCloseButton onClick={() => removeTag(item, "tg")} />
-                      </Tag>
-                    ))}
-                  </HStack>
-                </InputLeftAddon>
-              )}
               <Input
                 width="full"
                 placeholder="+ paste group ID"
-                onKeyUp={(e) => tagsChange(e, "tg")}
+                {...register(`levels.${index}.telegramGroupId`, {
+                  required: watch("isTGEnabled"),
+                })}
+                isInvalid={errors.levels && !!errors.levels[index].telegramGroupId}
               />
             </InputGroup>
           </FormControl>
 
-          <FormControl id="dc_roles">
+          <FormControl>
             <FormLabel>
               <Text as="span">Discord role(s)</Text>
-              <Hint header="Where can I find the DC role ID?" body="TODO..." />
             </FormLabel>
-            <InputGroup>
-              {platformLinking.dc.length > 0 && (
-                <InputLeftAddon px={2} bgColor="transparent">
-                  <HStack spacing={2}>
-                    {platformLinking.dc.map((item) => (
-                      <Tag key={item}>
-                        <TagLabel>{item}</TagLabel>
-                        <TagCloseButton onClick={() => removeTag(item, "dc")} />
-                      </Tag>
-                    ))}
-                  </HStack>
-                </InputLeftAddon>
-              )}
-              <Input
-                width="full"
-                placeholder="+ paste Discord role ID"
-                onKeyUp={(e) => tagsChange(e, "dc")}
-              />
-            </InputGroup>
+            <Text colorScheme="gray">
+              Medousa will generate roles on your Discord server for every level
+            </Text>
           </FormControl>
         </VStack>
       </VStack>
