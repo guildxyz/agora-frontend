@@ -10,7 +10,7 @@ import {
   Textarea,
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
-import { Chains } from "connectors"
+import { Chains, supportedChains } from "connectors"
 import { UploadSimple } from "phosphor-react"
 import { Controller, useFormContext } from "react-hook-form"
 import PhotoUploader from "../common/PhotoUploader"
@@ -72,14 +72,11 @@ const Details = (): JSX.Element => {
               {...register("chainName", { required: true })}
               isInvalid={!!errors.chainName}
             >
-              {Object.keys(Chains)
-                .map((key) => Chains[key])
-                .filter((member) => typeof member === "number")
-                .map((key) => (
-                  <option key={key} value={Chains[key]}>
-                    {Chains[key]}
-                  </option>
-                ))}
+              {supportedChains.map((chainName) => (
+                <option key={Chains[chainName]} value={chainName}>
+                  {chainName}
+                </option>
+              ))}
             </Select>
           </FormControl>
         </GridItem>
