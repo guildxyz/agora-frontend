@@ -9,32 +9,23 @@ import {
   Text,
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
-import { useEffect } from "react"
 import { useFormContext } from "react-hook-form"
-import useTokenInfo from "./hooks/useTokenInfo"
+import useTokenSymbol from "./hooks/useTokenSymbol"
 
 const UsedToken = (): JSX.Element => {
   const {
     register,
     formState: { errors },
     watch,
-    setValue,
-    getValues,
   } = useFormContext()
-  const tokenAddress = watch("token.address")
+  const tokenAddress = watch("tokenAddress")
   const selectedChain = watch("chainName")
 
-  const { tokenInfo, isValidating, error } = useTokenInfo(
-    tokenAddress,
-    selectedChain
-  )
-
-  useEffect(() => {
-    setValue("token", {
-      address: getValues("token.address"),
-      ...tokenInfo,
-    })
-  }, [tokenInfo, setValue, getValues])
+  const {
+    data: tokenSymbol,
+    isValidating: isTokenSymbolValidating,
+    error,
+  } = useTokenSymbol(tokenAddress, selectedChain)
 
   return (
     <Section
@@ -48,20 +39,19 @@ const UsedToken = (): JSX.Element => {
             <FormLabel>Token address</FormLabel>
             <InputGroup>
               <Input
-                {...register("token.address", {
+                {...register("tokenAddress", {
                   required: true,
-                  maxLength: 42,
                   pattern: /^0x[A-F0-9]{40}$/i,
                 })}
-                isInvalid={!!errors.token?.address}
+                isInvalid={!!errors.tokenAddress}
               />
-              {(tokenInfo || isValidating) && (
+              {(tokenSymbol !== undefined || isTokenSymbolValidating) && (
                 <InputRightAddon>
-                  {isValidating ? "[loading...]" : tokenInfo.symbol}
+                  {isTokenSymbolValidating ? "[loading...]" : tokenSymbol}
                 </InputRightAddon>
               )}
             </InputGroup>
-            {!isValidating && (!!errors.token?.address || !!error) && (
+            {!isTokenSymbolValidating && (!!errors.tokenAddress || !!error) && (
               <Text color="red" fontSize={12} mt={2}>
                 {error
                   ? "Failed to fetch token data, is the correct chain selected?"
