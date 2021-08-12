@@ -10,6 +10,7 @@ import {
 import { useWeb3React } from "@web3-react/core"
 import Levels from "components/admin/community/Levels"
 import Platforms from "components/admin/community/Platforms"
+import clearUndefinedData from "components/admin/utils/clearUndefinedData"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import React from "react"
@@ -35,20 +36,22 @@ const Page = (): JSX.Element => {
       const timeLock = level.membershipRequirement?.tokenTimeLock
 
       if (!timeLock) {
-        return level
+        return clearUndefinedData(level)
       }
 
-      return {
+      return clearUndefinedData({
         ...level,
         membershipRequirement: {
           ...level.membershipRequirement,
           tokenTimeLock: convertMonthsToMs(+timeLock),
         },
-      }
+      })
     })
 
+    const finalData = clearUndefinedData(editedData)
+
     // TODO...
-    console.log(editedData)
+    console.log(finalData)
   }
 
   if (!chainId) {
