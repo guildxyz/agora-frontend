@@ -68,10 +68,10 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
     name: "membership",
     defaultValue: options[0],
     onChange: (newValue: MembershipTypes) =>
-      setValue(`levels.${index}.membershipRequirements.type`, newValue, {}),
+      setValue(`levels.${index}.membershipRequirement.type`, newValue, {}),
   })
 
-  const group = getRootProps()
+  const radioGroup = getRootProps()
 
   // Platform linking logic (temporary - we'Ll need to use some type of form management library, and store these values together with the other form control values)
   const [platformLinking, setPlatformLinking] = useState({
@@ -123,20 +123,20 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
               <FormLabel>Name</FormLabel>
               <Input
                 {...register(`levels.${index}.name`, { required: true })}
-                isInvalid={errors.levels && !!errors.levels[index].name}
+                isInvalid={errors.levels && !!errors.levels[index]?.name}
               />
             </FormControl>
           </GridItem>
 
           <GridItem>
-            <FormControl id="level_image">
+            <FormControl>
               <FormLabel>Image</FormLabel>
               <PhotoUploader buttonText="Change image..." />
             </FormControl>
           </GridItem>
 
           <GridItem colSpan={{ base: 1, md: 2 }}>
-            <FormControl id="community_description">
+            <FormControl>
               <FormLabel>Description</FormLabel>
               <Textarea {...register(`levels.${index}.description`)} />
             </FormControl>
@@ -155,12 +155,12 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
           </GridItem>
 
           <GridItem colSpan={{ base: 1, md: 2 }}>
-            <FormControl id="membership">
+            <FormControl>
               <FormLabel>Membership</FormLabel>
               <Stack
                 direction={{ base: "column", md: "row" }}
                 spacing={6}
-                {...group}
+                {...radioGroup}
               >
                 {options.map((value) => {
                   const radio = getRadioProps({ value })
@@ -176,7 +176,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
               </Stack>
               <Input
                 type="hidden"
-                {...register(`levels.${index}.membershipRequirements.type`, {
+                {...register(`levels.${index}.membershipRequirement.type`, {
                   required: true,
                 })}
                 defaultValue={options[0]}
@@ -185,25 +185,21 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
           </GridItem>
 
           <GridItem>
-            <FormControl id="amount">
+            <FormControl>
               <FormLabel>Amount</FormLabel>
               <InputGroup>
                 <Input
                   type="number"
-                  {...register(
-                    `levels.${index}.membershipRequirements.tokenAmount`,
-                    {
-                      required:
-                        watch(`levels.${index}.membershipRequirements.type`) !==
-                        "open",
-                    }
-                  )}
+                  {...register(`levels.${index}.membershipRequirement.tokenAmount`, {
+                    required:
+                      watch(`levels.${index}.membershipRequirement.type`) !== "open",
+                  })}
                   isDisabled={
-                    watch(`levels.${index}.membershipRequirements.type`) === "open"
+                    watch(`levels.${index}.membershipRequirement.type`) === "open"
                   }
                   isInvalid={
                     errors.levels &&
-                    !!errors.levels[index].membershipRequirements.tokenAmount
+                    !!errors.levels[index]?.membershipRequirement?.tokenAmount
                   }
                 />
                 <InputRightAddon>TKN</InputRightAddon>
@@ -212,25 +208,25 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
           </GridItem>
 
           <GridItem>
-            <FormControl id="timelock">
+            <FormControl>
               <FormLabel>Timelock</FormLabel>
               <InputGroup>
                 <Input
                   type="number"
                   {...register(
-                    `levels.${index}.membershipRequirements.tokenTimeLock`,
+                    `levels.${index}.membershipRequirement.tokenTimeLock`,
                     {
                       required:
-                        watch(`levels.${index}.membershipRequirements.type`) ===
+                        watch(`levels.${index}.membershipRequirement.type`) ===
                         "stake",
                     }
                   )}
                   isDisabled={
-                    watch(`levels.${index}.membershipRequirements.type`) !== "stake"
+                    watch(`levels.${index}.membershipRequirement.type`) !== "stake"
                   }
                   isInvalid={
                     errors.levels &&
-                    !!errors.levels[index].membershipRequirements.tokenTimeLock
+                    !!errors.levels[index]?.membershipRequirement?.tokenTimeLock
                   }
                 />
                 <InputRightAddon>month(s)</InputRightAddon>
