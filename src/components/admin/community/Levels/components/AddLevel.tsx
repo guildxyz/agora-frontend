@@ -24,7 +24,7 @@ import PhotoUploader from "components/admin/common/PhotoUploader"
 import Card from "components/common/Card"
 import { Lock, LockOpen, LockSimpleOpen } from "phosphor-react"
 import { useState } from "react"
-import { useFormContext } from "react-hook-form"
+import { Controller, useFormContext } from "react-hook-form"
 import { Icon as IconType } from "temporaryData/types"
 import RadioCard from "./RadioCard"
 
@@ -57,6 +57,7 @@ type Props = {
 
 const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
   const {
+    control,
     register,
     setValue,
     watch,
@@ -131,7 +132,19 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
           <GridItem>
             <FormControl>
               <FormLabel>Image</FormLabel>
-              <PhotoUploader buttonText="Change image..." />
+              <Controller
+                render={({ field, fieldState }) => (
+                  <PhotoUploader
+                    ref={field.ref}
+                    isInvalid={fieldState.invalid}
+                    buttonText="Change image..."
+                    onPhotoChange={(newPhoto: File) => field.onChange(newPhoto)}
+                    {...field}
+                  />
+                )}
+                name={`levels.${index}.image`}
+                control={control}
+              />
             </FormControl>
           </GridItem>
 
