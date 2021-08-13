@@ -39,7 +39,11 @@ const Page = (): JSX.Element => {
     )
       .then((ownerSignedMessage) => {
         const finalData = clearUndefinedData(data)
-        console.log({ ...finalData, ownerSignedMessage })
+        fetch(`${process.env.NEXT_PUBLIC_API}/community`, {
+          method: "POST",
+          headers: { "Contetn-Type": "application/json" },
+          body: JSON.stringify({ ...finalData, ownerSignedMessage }),
+        })
       })
       .catch(console.error)
   }
