@@ -215,7 +215,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
             Platform linking
           </Text>
 
-          <FormControl>
+          <FormControl isDisabled={!watch("isTGEnabled")}>
             <FormLabel>
               <Text as="span">Telegram group</Text>
               <Hint header="Where can I find the TG group ID?" body="TODO..." />
@@ -232,7 +232,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
             </InputGroup>
           </FormControl>
 
-          <FormControl>
+          <FormControl isDisabled={!watch("isDCEnabled")}>
             <FormLabel>
               <Text as="span">Discord role(s)</Text>
             </FormLabel>
