@@ -29,7 +29,17 @@ const Page = (): JSX.Element => {
     colorCode || "#71717a"
   )
 
-  const methods = useForm({ mode: "all" })
+  const methods = useForm({
+    mode: "all",
+    defaultValues: {
+      name: "",
+      urlName: "",
+      description: "",
+      chainName: "",
+      themeColor: "",
+      tokenAddress: "",
+    },
+  })
 
   const sign = usePersonalSign()
 

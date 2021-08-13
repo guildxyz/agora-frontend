@@ -22,9 +22,11 @@ const UsedToken = (): JSX.Element => {
     formState: { errors },
   } = useFormContext()
   const { chainId } = useWeb3React()
-  const tokenAddress = useWatch({ name: "tokenAddress", defaultValue: "" })
+
+  const tokenAddress = useWatch({ name: "tokenAddress" })
   const selectedChain = useWatch({
     name: "chainName",
+    // We cannot set this default value in the useForm, since the chainId id undefned on first render
     defaultValue: Chains[chainId],
   })
 

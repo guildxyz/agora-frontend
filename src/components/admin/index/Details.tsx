@@ -15,20 +15,32 @@ import requestNetworkChange from "components/common/Layout/components/Account/co
 import { Chains, supportedChains } from "connectors"
 import { UploadSimple } from "phosphor-react"
 import { useEffect } from "react"
-import { Controller, useFormContext } from "react-hook-form"
+import { Controller, useFormContext, useWatch } from "react-hook-form"
+import slugify from "slugify"
 import PhotoUploader from "../common/PhotoUploader"
 
 const Details = (): JSX.Element => {
   const {
     control,
-    watch,
     register,
     formState: { errors },
     setValue,
   } = useFormContext()
   const { chainId } = useWeb3React()
 
+  const nameInput = useWatch({ name: "name" })
+  const urlNameInput = useWatch({ name: "urlName" })
+
+  const generatedUrlName = slugify(nameInput, {
+    replacement: "-",
+    lower: true,
+    strict: true,
+  })
+
   useEffect(() => setValue("chainName", Chains[chainId]), [chainId, setValue])
+
+  const fillUrlName = () =>
+    urlNameInput.length > 0 || setValue("urlName", generatedUrlName)
 
   return (
     <Section
@@ -43,6 +55,7 @@ const Details = (): JSX.Element => {
             <Input
               {...register("name", { required: true })}
               isInvalid={!!errors.name}
+              onBlur={fillUrlName}
             />
           </FormControl>
         </GridItem>
@@ -55,7 +68,7 @@ const Details = (): JSX.Element => {
               <Input
                 {...register("urlName")}
                 isInvalid={!!errors.urlName}
-                placeholder={watch("name")?.toLowerCase().replace(/ /g, "-") || ""}
+                placeholder={generatedUrlName}
               />
             </InputGroup>
           </FormControl>
@@ -75,7 +88,6 @@ const Details = (): JSX.Element => {
           <FormControl isRequired>
             <FormLabel>Chain</FormLabel>
             <Select
-              defaultValue={Chains[chainId]}
               placeholder="Select chain"
               {...register("chainName", { required: true })}
               isInvalid={!!errors.chainName}
