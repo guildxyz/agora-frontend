@@ -14,6 +14,7 @@ import UsedToken from "components/admin/index/UsedToken"
 import clearUndefinedData from "components/admin/utils/clearUndefinedData"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
+import usePersonalSign from "components/[community]/community/Platforms/components/JoinModal/hooks/usePersonalSign"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import React, { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
@@ -30,23 +31,21 @@ const Page = (): JSX.Element => {
 
   const methods = useForm({ mode: "all" })
 
-  // const sign = usePersonalSign()
-
-  const { account } = useWeb3React()
+  const sign = usePersonalSign()
 
   const onSubmit = (data) => {
-    /* sign(
+    sign(
       "Please sign this message, so we can verify that you are the owner of the token"
     )
-      .then((ownerSignedMessage) => { */
-    const finalData = clearUndefinedData(data)
-    fetch(`${process.env.NEXT_PUBLIC_API}/community`, {
-      method: "POST",
-      headers: { "Contetn-Type": "application/json" },
-      body: JSON.stringify({ ...finalData, ownerSignedMessage: account }),
-    })
-    /* })
-      .catch(console.error) */
+      .then((ownerSignedMessage) => {
+        const finalData = clearUndefinedData(data)
+        fetch(`${process.env.NEXT_PUBLIC_API}/community`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...finalData, ownerSignedMessage }),
+        })
+      })
+      .catch(console.error)
   }
 
   if (!chainId) {
