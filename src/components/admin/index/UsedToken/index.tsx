@@ -1,4 +1,5 @@
 import {
+  Button,
   FormControl,
   FormLabel,
   Grid,
@@ -9,10 +10,14 @@ import {
   InputRightAddon,
   Spinner,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import Section from "components/admin/common/Section"
-import { Chains } from "connectors"
+import NetworkChangeModal from "components/common/Layout/components/Account/components/NetworkModal/NetworkModal"
+import { Chains, RPC } from "connectors"
+import Image from "next/image"
+import React from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 import useTokenSymbol from "./hooks/useTokenSymbol"
 
@@ -36,47 +41,68 @@ const UsedToken = (): JSX.Element => {
     error,
   } = useTokenSymbol(tokenAddress, selectedChain)
 
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
   return (
     <Section
       title="Used token"
       description="The token that members will have to stake or hold to access non-open levels"
       cardType
     >
-      <Grid templateColumns={{ base: "100%", md: "repeat(2, 1fr)" }} gap={12}>
-        <GridItem>
-          <FormControl isRequired>
-            <FormLabel>Token address</FormLabel>
-            <InputGroup>
-              <Input
-                {...register("tokenAddress", {
-                  required: true,
-                  pattern: /^0x[A-F0-9]{40}$/i,
-                })}
-                isInvalid={!!errors.tokenAddress}
-              />
-              {((!error && tokenSymbol !== undefined) ||
-                isTokenSymbolValidating) && (
-                <InputRightAddon>
-                  {tokenSymbol === undefined && isTokenSymbolValidating ? (
-                    <HStack px={4} alignContent="center">
-                      <Spinner size="sm" color="blackAlpha.400" />
-                    </HStack>
-                  ) : (
-                    tokenSymbol
+      <>
+        <Grid templateColumns={{ base: "100%" }} gap={12}>
+          <GridItem>
+            <FormControl isRequired>
+              <FormLabel>Token address</FormLabel>
+              <HStack spacing={3}>
+                <Button
+                  p={0}
+                  width="6%"
+                  onClick={onOpen}
+                  borderWidth="1px"
+                  borderColor="primary.200"
+                >
+                  <Image
+                    alt={`${RPC[Chains[chainId]].chainName} icon`}
+                    src={RPC[Chains[chainId]].iconUrl}
+                    width={25}
+                    height={25}
+                  />
+                </Button>
+                <InputGroup>
+                  <Input
+                    {...register("tokenAddress", {
+                      required: true,
+                      pattern: /^0x[A-F0-9]{40}$/i,
+                    })}
+                    isInvalid={!!errors.tokenAddress}
+                  />
+                  {((!error && tokenSymbol !== undefined) ||
+                    isTokenSymbolValidating) && (
+                    <InputRightAddon>
+                      {tokenSymbol === undefined && isTokenSymbolValidating ? (
+                        <HStack px={4} alignContent="center">
+                          <Spinner size="sm" color="blackAlpha.400" />
+                        </HStack>
+                      ) : (
+                        tokenSymbol
+                      )}
+                    </InputRightAddon>
                   )}
-                </InputRightAddon>
+                </InputGroup>
+              </HStack>
+              {!isTokenSymbolValidating && (!!errors.tokenAddress || !!error) && (
+                <Text color="red" fontSize={12} mt={2}>
+                  {error
+                    ? "Failed to fetch token data, is the correct chain selected?"
+                    : "Please input a 42 characters length, 0x-prefixed hexadecimal address."}
+                </Text>
               )}
-            </InputGroup>
-            {!isTokenSymbolValidating && (!!errors.tokenAddress || !!error) && (
-              <Text color="red" fontSize={12} mt={2}>
-                {error
-                  ? "Failed to fetch token data, is the correct chain selected?"
-                  : "Please input a 42 characters length, 0x-prefixed hexadecimal address."}
-              </Text>
-            )}
-          </FormControl>
-        </GridItem>
-      </Grid>
+            </FormControl>
+          </GridItem>
+        </Grid>
+        <NetworkChangeModal isOpen={isOpen} onClose={onClose} />
+      </>
     </Section>
   )
 }
