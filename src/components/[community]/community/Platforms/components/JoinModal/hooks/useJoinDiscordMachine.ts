@@ -109,6 +109,7 @@ const useJoinModalMachine = (): any => {
   const { account } = useWeb3React()
   const sign = usePersonalSign()
   const dcAuthWindow = useRef<Window>(null)
+  const listener = useRef<(event: MessageEvent) => void>()
 
   const handleMessage =
     (resolve: (value?: any) => void, reject: (value: any) => void) =>
@@ -118,6 +119,7 @@ const useJoinModalMachine = (): any => {
       if (
         event.isTrusted &&
         event.origin === window.location.origin &&
+        typeof event.data === "object" &&
         "type" in event.data &&
         "data" in event.data
       ) {
@@ -139,8 +141,9 @@ const useJoinModalMachine = (): any => {
             })
         }
 
+        window.removeEventListener("message", listener.current)
+        listener.current = null
         dcAuthWindow.current.close()
-        window.removeEventListener("message", handleMessage(resolve, reject))
       }
     }
 
@@ -176,7 +179,8 @@ const useJoinModalMachine = (): any => {
       sign: () => sign("Please sign this message to generate your invite link"),
       dcAuth: () =>
         new Promise((resolve, reject) => {
-          window.addEventListener("message", handleMessage(resolve, reject))
+          listener.current = handleMessage(resolve, reject)
+          window.addEventListener("message", listener.current)
         }),
       fetchJoinPlatform: (context, event) =>
         fetch(`${process.env.NEXT_PUBLIC_API}/user/joinPlatform`, {
