@@ -8,6 +8,7 @@ import {
   Input,
   InputGroup,
   InputLeftAddon,
+  Select,
   Switch,
   Text,
   VStack,
@@ -42,18 +43,36 @@ const Platforms = (): JSX.Element => {
           </GridItem>
 
           <GridItem>
-            <FormControl isDisabled={!watch("isDCEnabled")}>
-              <InputGroup>
-                <InputLeftAddon>Server ID</InputLeftAddon>
-                <Input
-                  width={64}
-                  {...register("discordServerId", {
-                    required: watch("isDCEnabled"),
-                  })}
-                  isInvalid={!!errors.discordServerId}
-                />
-              </InputGroup>
-            </FormControl>
+            <VStack spacing={4}>
+              <FormControl isDisabled={!watch("isDCEnabled")}>
+                <InputGroup>
+                  <InputLeftAddon>Server ID</InputLeftAddon>
+                  <Input
+                    width={64}
+                    {...register("discordServerId", {
+                      required: watch("isDCEnabled"),
+                    })}
+                    isInvalid={!!errors.discordServerId}
+                  />
+                </InputGroup>
+              </FormControl>
+
+              <FormControl isDisabled={!watch("isDCEnabled")}>
+                <FormLabel>Invite channel</FormLabel>
+                <InputGroup>
+                  <Select
+                    width={64}
+                    placeholder="Select one"
+                    {...register("discordInviteChannelId", {
+                      required: watch("isDCEnabled"),
+                    })}
+                    isInvalid={!!errors.discordInviteChannelId}
+                  >
+                    <option value="1">Welcome</option>
+                  </Select>
+                </InputGroup>
+              </FormControl>
+            </VStack>
           </GridItem>
 
           <GridItem>

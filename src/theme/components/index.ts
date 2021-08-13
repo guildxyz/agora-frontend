@@ -4,6 +4,7 @@ import Input from "./input"
 import Link from "./link"
 import Menu from "./menu"
 import Modal from "./modal"
+import Select from "./select"
 import Tag from "./tag"
 import Text from "./text"
 import Textarea from "./textarea"
@@ -16,6 +17,7 @@ const components = {
   Link,
   Menu,
   Modal,
+  Select,
   Tag,
   Text,
   Textarea,
