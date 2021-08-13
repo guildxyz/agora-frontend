@@ -61,6 +61,7 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
           onDone: "fetching",
           onError: "authError",
         },
+        exit: "closeDiscordAuthWindow",
       },
       fetching: {
         invoke: {
@@ -140,10 +141,6 @@ const useJoinModalMachine = (): any => {
                 "Recieved invalid message from authentication window",
             })
         }
-
-        window.removeEventListener("message", listener.current)
-        listener.current = null
-        dcAuthWindow.current.close()
       }
     }
 
@@ -173,6 +170,11 @@ const useJoinModalMachine = (): any => {
             )
           }
         }, 500)
+      },
+      closeDiscordAuthWindow: () => {
+        window.removeEventListener("message", listener.current)
+        listener.current = null
+        dcAuthWindow.current.close()
       },
     },
     services: {
