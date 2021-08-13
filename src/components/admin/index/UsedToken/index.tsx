@@ -56,11 +56,13 @@ const UsedToken = (): JSX.Element => {
               <FormLabel>Token address</FormLabel>
               <HStack spacing={3}>
                 <Button
+                  colorScheme="primary"
+                  variant="outline"
+                  bgColor="primary.100"
+                  borderWidth="1px"
                   p={0}
                   width="6%"
                   onClick={onOpen}
-                  borderWidth="1px"
-                  borderColor="primary.200"
                 >
                   <Image
                     alt={`${RPC[Chains[chainId]].chainName} icon`}
