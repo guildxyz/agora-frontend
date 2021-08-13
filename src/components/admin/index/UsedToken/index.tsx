@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   FormControl,
   FormLabel,
@@ -10,6 +11,7 @@ import {
   InputRightAddon,
   Spinner,
   Text,
+  useColorMode,
   useDisclosure,
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
@@ -41,6 +43,8 @@ const UsedToken = (): JSX.Element => {
     error,
   } = useTokenSymbol(tokenAddress, selectedChain)
 
+  const { colorMode } = useColorMode()
+
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
@@ -54,22 +58,28 @@ const UsedToken = (): JSX.Element => {
           <GridItem>
             <FormControl isRequired>
               <FormLabel>Token address</FormLabel>
-              <HStack spacing={3}>
+              <HStack mt={4} spacing={2}>
                 <Button
-                  colorScheme="primary"
-                  variant="outline"
-                  bgColor="primary.100"
-                  borderWidth="1px"
-                  p={0}
-                  width="6%"
+                  variant="ghost"
+                  colorScheme="gray"
+                  px={6}
+                  height={10}
+                  bgColor={colorMode === "light" ? "gray.100" : "whiteAlpha.200"}
+                  width="max-content"
                   onClick={onOpen}
                 >
-                  <Image
-                    alt={`${RPC[Chains[chainId]].chainName} icon`}
-                    src={RPC[Chains[chainId]].iconUrl}
-                    width={25}
-                    height={25}
-                  />
+                  <HStack>
+                    <Box position="relative" width={4} height={4}>
+                      <Image
+                        alt={`${RPC[Chains[chainId]].chainName} icon`}
+                        src={RPC[Chains[chainId]].iconUrl}
+                        layout="fill"
+                      />
+                    </Box>
+                    <Text as="span" fontSize="sm">
+                      {RPC[Chains[chainId]].chainName}
+                    </Text>
+                  </HStack>
                 </Button>
                 <InputGroup>
                   <Input
