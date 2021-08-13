@@ -37,12 +37,12 @@ const Page = (): JSX.Element => {
     sign(
       "Please sign this message, so we can verify that you are the owner of the token"
     )
-      .then((ownerSignedMessage) => {
+      .then((addressSignedMessage) => {
         const finalData = clearUndefinedData(data)
         fetch(`${process.env.NEXT_PUBLIC_API}/community`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...finalData, ownerSignedMessage }),
+          body: JSON.stringify({ ...finalData, addressSignedMessage }),
         })
       })
       .catch(console.error)
