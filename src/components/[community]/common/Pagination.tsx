@@ -3,7 +3,7 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import { useMemo } from "react"
 
-const LinkButton = ({ href, disabled = false, children }) => {
+const LinkButton = ({ href, disabled = false, isAdminPage = false, children }) => {
   const router = useRouter()
   // Disabling ESLint rules cause it cries about the underscore variable incorrectly
   /* eslint-disable @typescript-eslint/naming-convention */
@@ -17,7 +17,13 @@ const LinkButton = ({ href, disabled = false, children }) => {
   )
 
   return (
-    <Link key="href" passHref href={`/${communityUrl}/${href}`}>
+    <Link
+      key="href"
+      passHref
+      href={
+        isAdminPage ? `/${communityUrl}/admin/${href}` : `/${communityUrl}/${href}`
+      }
+    >
       <Button
         as="a"
         colorScheme="primary"
@@ -31,10 +37,14 @@ const LinkButton = ({ href, disabled = false, children }) => {
   )
 }
 
-const Pagination = () => (
+const Pagination = ({ isAdminPage = false }) => (
   <ButtonGroup variant="ghost">
-    <LinkButton href="">Info</LinkButton>
-    <LinkButton href="community">Community</LinkButton>
+    <LinkButton href="" isAdminPage={isAdminPage}>
+      Info
+    </LinkButton>
+    <LinkButton href="community" isAdminPage={isAdminPage}>
+      Community
+    </LinkButton>
     {/* <LinkButton href="twitter-bounty" disabled>
       Twitter bounty
     </LinkButton> */}

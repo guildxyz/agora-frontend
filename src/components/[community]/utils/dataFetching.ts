@@ -45,7 +45,7 @@ const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths: [...paths, ...tokenPaths],
-    fallback: false,
+    fallback: "blocking",
   }
 }
 
