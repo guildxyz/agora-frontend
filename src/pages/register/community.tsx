@@ -3,53 +3,20 @@ import {
   AlertDescription,
   AlertIcon,
   Box,
-  Button,
   Stack,
   VStack,
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import Levels from "components/admin/community/Levels"
 import Platforms from "components/admin/community/Platforms"
-import clearUndefinedData from "components/admin/utils/clearUndefinedData"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import React from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
-// Helper method for converting month(s) to ms
-const convertMonthsToMs = (months: number) =>
-  Math.round(months / 3.8026486208174e-10)
-
 const Page = (): JSX.Element => {
   const { chainId } = useWeb3React()
   const methods = useForm({ mode: "all" })
-
-  const onSubmit = (data) => {
-    const editedData = { ...data }
-
-    // Won't send these to the backend
-    delete editedData.isDCEnabled
-    delete editedData.isTGEnabled
-
-    // Converting timeLock to ms for every level
-    editedData.levels = editedData.levels?.map((level) => {
-      const timeLock = level.stakeTimelockMs
-
-      if (!timeLock) {
-        return level
-      }
-
-      return clearUndefinedData({
-        ...level,
-        stakeTimelockMs: convertMonthsToMs(timeLock),
-      })
-    })
-
-    const finalData = clearUndefinedData(editedData)
-
-    // TODO...
-    console.log(finalData)
-  }
 
   if (!chainId) {
     return (
@@ -76,8 +43,6 @@ const Page = (): JSX.Element => {
           <VStack spacing={12}>
             <Platforms />
             <Levels />
-
-            <Button onClick={methods.handleSubmit(onSubmit)}>Submit</Button>
           </VStack>
         </Stack>
       </Layout>
