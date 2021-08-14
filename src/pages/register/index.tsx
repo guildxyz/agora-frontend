@@ -54,6 +54,8 @@ const Page = (): JSX.Element => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...finalData, addressSignedMessage }),
         })
+
+        // TODO: on success, redirect to /[community]/admin/community
       })
       .catch(console.error)
   }

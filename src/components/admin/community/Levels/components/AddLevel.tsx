@@ -227,7 +227,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 {...register(`levels.${index}.telegramGroupId`, {
                   required: watch("isTGEnabled"),
                 })}
-                isInvalid={errors.levels && !!errors.levels[index].telegramGroupId}
+                isInvalid={errors.levels && !!errors.levels[index]?.telegramGroupId}
               />
             </InputGroup>
           </FormControl>

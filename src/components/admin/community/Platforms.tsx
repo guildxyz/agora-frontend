@@ -60,6 +60,22 @@ const Platforms = (): JSX.Element => {
               <FormControl isDisabled={!watch("isDCEnabled")}>
                 <FormLabel>Invite channel</FormLabel>
                 <InputGroup>
+                  {/* TODO: fetch "/discordChannels/${discordServerId}". If it return an empty array, show an error message, and tell the user that they should invite Medouse to their DC server. Otherwise, list the available channels and let the user pick one (requred field).
+                  
+                  Response format:
+                  [
+                    {
+                        "id": "861688436566392863",
+                        "name": "general",
+                        "category": "MEDOUSA"
+                    },
+                    {
+                        "id": "866288974959214602",
+                        "name": "test",
+                        "category": "MEDOUSA"
+                    }
+                  ]
+                  */}
                   <Select
                     width={64}
                     placeholder="Select one"
