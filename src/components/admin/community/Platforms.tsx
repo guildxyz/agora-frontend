@@ -14,6 +14,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
+import { useState } from "react"
 import { useFormContext } from "react-hook-form"
 
 const Platforms = (): JSX.Element => {
@@ -22,6 +23,29 @@ const Platforms = (): JSX.Element => {
     register,
     formState: { errors },
   } = useFormContext()
+
+  const [discordChannels, setDiscordChannels] = useState(null)
+
+  const onServerIdChange = (e) => {
+    const serverId = e.target.value
+    console.log(serverId)
+
+    /*
+    if (serverId === "") {
+      // TODO
+      console.log("ServerID is an empty string...")
+      return
+    }
+
+    
+    fetch(`${process.env.NEXT_PUBLIC_API}/community/discordChannels/${serverId}`)
+      .then((response) => {
+        // TODO: set DC channels...
+        console.log(response)
+      })
+      .catch(console.error)
+    */
+  }
 
   return (
     <Section
@@ -53,6 +77,7 @@ const Platforms = (): JSX.Element => {
                       required: watch("isDCEnabled"),
                     })}
                     isInvalid={!!errors.discordServerId}
+                    onBlur={onServerIdChange}
                   />
                 </InputGroup>
               </FormControl>
