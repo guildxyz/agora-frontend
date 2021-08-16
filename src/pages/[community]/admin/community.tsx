@@ -41,13 +41,13 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
       const timeLock = level.stakeTimelockMs
 
       if (!timeLock) {
-        return level
+        return clearUndefinedData(level)
       }
 
-      return clearUndefinedData({
-        ...level,
+      return {
+        ...clearUndefinedData(level),
         stakeTimelockMs: convertMonthsToMs(timeLock),
-      })
+      }
     })
 
     const finalData = clearUndefinedData(editedData)
