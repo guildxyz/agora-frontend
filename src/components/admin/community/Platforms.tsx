@@ -30,21 +30,18 @@ const Platforms = (): JSX.Element => {
     const serverId = e.target.value
     console.log(serverId)
 
-    /*
     if (serverId === "") {
       // TODO
       console.log("ServerID is an empty string...")
       return
     }
 
-    
     fetch(`${process.env.NEXT_PUBLIC_API}/community/discordChannels/${serverId}`)
       .then((response) => {
         // TODO: set DC channels...
         console.log(response)
       })
       .catch(console.error)
-    */
   }
 
   return (
@@ -104,10 +101,10 @@ const Platforms = (): JSX.Element => {
                   <Select
                     width={64}
                     placeholder="Select one"
-                    {...register("discordInviteChannelId", {
+                    {...register("inviteChannel", {
                       required: watch("isDCEnabled"),
                     })}
-                    isInvalid={!!errors.discordInviteChannelId}
+                    isInvalid={!!errors.inviteChannel}
                   >
                     <option value="1">Welcome</option>
                   </Select>

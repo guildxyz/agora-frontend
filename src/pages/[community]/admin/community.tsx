@@ -52,14 +52,7 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
 
     const finalData = clearUndefinedData(editedData)
 
-    // TODO...
-    console.log(
-      `Sending request to: ${process.env.NEXT_PUBLIC_API}/community/${communityData.id}\nPayload:`,
-      finalData
-    )
-
-    /*
-    fetch(`${process.env.NEXT_PUBLIC_API}/community/${communityData.id}`, {
+    fetch(`${process.env.NEXT_PUBLIC_API}/community/levels/${communityData.id}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(finalData),
@@ -68,7 +61,6 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
         console.log(response)
       })
       .catch(console.error)
-    */
   }
 
   if (!chainId) {

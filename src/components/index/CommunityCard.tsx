@@ -121,7 +121,7 @@ const CommunityCard = ({
               </Wrap>
             ) : (
               <Wrap shouldWrapChildren>
-                <Tag colorScheme="alpha">{`$${marketcap.toLocaleString()} market cap`}</Tag>
+                <Tag colorScheme="alpha">{`$${marketcap?.toLocaleString()} market cap`}</Tag>
                 <Tag colorScheme="alpha">{`${holdersCount} holders`}</Tag>
               </Wrap>
             )}
