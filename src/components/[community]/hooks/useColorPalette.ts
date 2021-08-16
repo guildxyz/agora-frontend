@@ -1,13 +1,19 @@
 import Color from "color"
 import { useMemo } from "react"
-import {
-  DARKNESS_STEP,
-  DARK_ROTATE_STEP,
-  DARK_SATURATE_STEP,
-  LIGHTNESS_STEP,
-  LIGHT_ROTATE_STEP,
-  LIGHT_SATURATE_STEP,
-} from "./constants"
+
+const lightness = 95
+const darkness = 10
+const darkSteps = 4
+const lightSteps = 5
+
+const LIGHTNESS_STEP = (lightness - 50) / lightSteps
+const DARKNESS_STEP = (50 - darkness) / darkSteps
+
+const LIGHT_ROTATE_STEP = 1 / lightSteps
+const DARK_ROTATE_STEP = 1 / darkSteps
+
+const LIGHT_SATURATE_STEP = 1 / lightSteps
+const DARK_SATURATE_STEP = 1 / darkSteps
 
 const useColorPalette = (
   prefix: string,
