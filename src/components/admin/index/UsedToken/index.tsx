@@ -86,6 +86,7 @@ const UsedToken = (): JSX.Element => {
                     {...register("tokenAddress", {
                       required: true,
                       pattern: /^0x[A-F0-9]{40}$/i,
+                      validate: () => !error,
                     })}
                     isInvalid={!!errors.tokenAddress}
                   />
