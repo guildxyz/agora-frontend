@@ -104,7 +104,7 @@ const UsedToken = (): JSX.Element => {
                         !error ||
                         "Failed to fetch symbol. Please switch to the correct network.",
                     })}
-                    isInvalid={!!errors.tokenAddress}
+                    isInvalid={errors.tokenAddress}
                   />
                   {((!error && tokenSymbol !== undefined) ||
                     isTokenSymbolValidating) && (

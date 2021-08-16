@@ -94,7 +94,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
               <FormLabel>Name</FormLabel>
               <Input
                 {...register(`levels.${index}.name`, { required: true })}
-                isInvalid={errors.levels && !!errors.levels[index]?.name}
+                isInvalid={errors.levels && errors.levels[index]?.name}
               />
             </FormControl>
           </GridItem>
@@ -180,7 +180,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                   isDisabled={watch(`levels.${index}.requirementType`) === "OPEN"}
                   isInvalid={
                     errors.levels &&
-                    !!errors.levels[index]?.membershipRequirement?.tokenAmount
+                    errors.levels[index]?.membershipRequirement?.tokenAmount
                   }
                 />
                 <InputRightAddon>TKN</InputRightAddon>
@@ -201,7 +201,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                   isDisabled={watch(`levels.${index}.requirementType`) !== "STAKE"}
                   isInvalid={
                     errors.levels &&
-                    !!errors.levels[index]?.membershipRequirement?.tokenTimeLock
+                    errors.levels[index]?.membershipRequirement?.tokenTimeLock
                   }
                 />
                 <InputRightAddon>month(s)</InputRightAddon>
@@ -227,7 +227,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 {...register(`levels.${index}.telegramGroupId`, {
                   required: watch("isTGEnabled"),
                 })}
-                isInvalid={errors.levels && !!errors.levels[index]?.telegramGroupId}
+                isInvalid={errors.levels && errors.levels[index]?.telegramGroupId}
               />
             </InputGroup>
           </FormControl>

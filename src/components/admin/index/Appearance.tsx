@@ -48,7 +48,7 @@ const Appearance = ({ onColorChange }: Props): JSX.Element => {
                   message: "Please input a valid hexadecimal color code.",
                 },
               })}
-              isInvalid={!!errors.themeColor}
+              isInvalid={errors.themeColor}
             />
           </HStack>
           <ValidationError fieldName="themeColor" />

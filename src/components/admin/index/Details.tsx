@@ -53,7 +53,7 @@ const Details = (): JSX.Element => {
             <FormLabel>Name</FormLabel>
             <Input
               {...register("name", { required: "This field is required." })}
-              isInvalid={!!errors.name}
+              isInvalid={errors.name}
               onBlur={nameOnBlur}
             />
           </FormControl>
@@ -83,7 +83,7 @@ const Details = (): JSX.Element => {
                     }
                   },
                 })}
-                isInvalid={!!errors.urlName}
+                isInvalid={errors.urlName}
                 placeholder={generatedUrlName}
               />
             </InputGroup>
@@ -94,10 +94,7 @@ const Details = (): JSX.Element => {
         <GridItem colSpan={{ base: 1, md: 2 }}>
           <FormControl>
             <FormLabel>Description</FormLabel>
-            <Textarea
-              {...register("description")}
-              isInvalid={!!errors.description}
-            />
+            <Textarea {...register("description")} isInvalid={errors.description} />
           </FormControl>
         </GridItem>
 
