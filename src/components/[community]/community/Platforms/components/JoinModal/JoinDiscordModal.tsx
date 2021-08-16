@@ -56,15 +56,12 @@ const JoinDiscordModal = ({ platform, isOpen, onClose }: Props): JSX.Element => 
             <VStack spacing="6" mb="-8">
               {state.context.inviteData.alreadyJoined ? (
                 <Text>
-                  Seems like you've already joined the discord server, you should get
+                  Seems like you've already joined the Discord server, you should get
                   access to the correct channels soon!
                 </Text>
               ) : (
                 <>
-                  <Text>
-                    Here’s your link. It’s only active for 15 minutes and is only
-                    usable once:
-                  </Text>
+                  <Text>Here’s your invite link:</Text>
                   <Link
                     href={state.context.inviteData.inviteLink}
                     colorScheme="blue"

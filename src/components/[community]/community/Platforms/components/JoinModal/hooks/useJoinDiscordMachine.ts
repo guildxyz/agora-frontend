@@ -9,16 +9,14 @@ import usePersonalSign from "./usePersonalSign"
 
 type InviteData = {
   inviteLink: string
-  joinCode?: number
+  alreadyJoined?: boolean
 }
 
-const initialInviteData: InviteData = { inviteLink: "", joinCode: null }
+const initialInviteData: InviteData = { inviteLink: "", alreadyJoined: false }
 
 type ContextType = {
   error: MetaMaskError | Response | Error | DiscordError | null
   inviteData: InviteData
-  accessToken?: string
-  tokenType?: string
   signedMessage: string
 }
 
@@ -161,9 +159,9 @@ const useJoinModalMachine = (): any => {
               {
                 type: "DC_AUTH_ERROR",
                 data: {
-                  error: "Access denied",
+                  error: "Authorization rejected",
                   errorDescription:
-                    "The resource owner or authorization server denied the request",
+                    "Please try again and authenticate your Discord account in the popup window",
                 },
               },
               window.origin
