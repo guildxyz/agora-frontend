@@ -18,6 +18,7 @@ type ContextType = {
   error: MetaMaskError | Response | Error | DiscordError | null
   inviteData: InviteData
   signedMessage: string
+  signSuccessClosed: boolean
 }
 
 const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
@@ -27,6 +28,7 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
       error: null,
       inviteData: initialInviteData,
       signedMessage: null,
+      signSuccessClosed: false,
     },
     states: {
       idle: {
@@ -53,7 +55,7 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
         },
       },
       authenticating: {
-        entry: "openDiscordAuthWindow",
+        entry: ["openDiscordAuthWindow", "closeSignSuccess"],
         invoke: {
           src: "dcAuth",
           onDone: "fetching",
@@ -99,6 +101,9 @@ const joinModalMachine = createMachine<ContextType, DoneInvokeEvent<any>>(
       saveSignedMessage: assign((_, event) => ({
         signedMessage: event.data,
       })),
+      closeSignSuccess: assign({
+        signSuccessClosed: true,
+      }),
     },
   }
 )
