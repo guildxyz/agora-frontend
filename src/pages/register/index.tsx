@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Stack,
+  useToast,
   VStack,
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
@@ -16,10 +17,14 @@ import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import usePersonalSign from "components/[community]/community/Platforms/components/JoinModal/hooks/usePersonalSign"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
+import { useRouter } from "next/router"
 import React, { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 const Page = (): JSX.Element => {
+  const router = useRouter()
+  const toast = useToast()
+
   const { chainId } = useWeb3React()
 
   const [colorCode, setColorCode] = useState<string>(null)
@@ -44,9 +49,7 @@ const Page = (): JSX.Element => {
   const sign = usePersonalSign()
 
   const onSubmit = (data) => {
-    sign(
-      "Please sign this message, so we can verify that you are the owner of the token"
-    )
+    sign("Please sign this message to verify your address")
       .then((addressSignedMessage) => {
         const finalData = clearUndefinedData(data)
         fetch(`${process.env.NEXT_PUBLIC_API}/community`, {
@@ -54,10 +57,46 @@ const Page = (): JSX.Element => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...finalData, addressSignedMessage }),
         })
+          .then((response) => {
+            if (response.status !== 201) {
+              toast({
+                title: "Error",
+                description: "An error occurred while creating your community",
+                status: "error",
+                duration: 4000,
+              })
+              return
+            }
 
-        // TODO: on success, redirect to /[community]/admin/community
+            toast({
+              title: "Success!",
+              description:
+                "Community added! You'll be redirected to the admin page.",
+              status: "success",
+              duration: 2000,
+            })
+
+            setTimeout(() => {
+              router.push(`/${finalData.urlName}/admin/community`)
+            }, 2000)
+          })
+          .catch(() => {
+            toast({
+              title: "Error",
+              description: "Server error",
+              status: "error",
+              duration: 4000,
+            })
+          })
       })
-      .catch(console.error)
+      .catch(() => {
+        toast({
+          title: "Error",
+          description: "You must sign the message to verify your address!",
+          status: "error",
+          duration: 4000,
+        })
+      })
   }
 
   if (!chainId) {
