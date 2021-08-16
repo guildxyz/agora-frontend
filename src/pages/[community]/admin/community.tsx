@@ -41,13 +41,13 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
       const timeLock = level.stakeTimelockMs
 
       if (!timeLock) {
-        return level
+        return clearUndefinedData(level)
       }
 
-      return clearUndefinedData({
-        ...level,
+      return {
+        ...clearUndefinedData(level),
         stakeTimelockMs: convertMonthsToMs(timeLock),
-      })
+      }
     })
 
     const finalData = clearUndefinedData(editedData)
@@ -57,6 +57,18 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
       `Sending request to: ${process.env.NEXT_PUBLIC_API}/community/${communityData.id}\nPayload:`,
       finalData
     )
+
+    /*
+    fetch(`${process.env.NEXT_PUBLIC_API}/community/${communityData.id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(finalData),
+    })
+      .then((response) => {
+        console.log(response)
+      })
+      .catch(console.error)
+    */
   }
 
   if (!chainId) {
