@@ -19,7 +19,7 @@ import Section from "components/admin/common/Section"
 import NetworkChangeModal from "components/common/Layout/components/Account/components/NetworkModal/NetworkModal"
 import { Chains, RPC } from "connectors"
 import Image from "next/image"
-import React from "react"
+import { useEffect } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 import useTokenSymbol from "./hooks/useTokenSymbol"
 
@@ -27,6 +27,7 @@ const UsedToken = (): JSX.Element => {
   const {
     register,
     formState: { errors },
+    setValue,
   } = useFormContext()
   const { chainId } = useWeb3React()
 
@@ -42,6 +43,8 @@ const UsedToken = (): JSX.Element => {
     isValidating: isTokenSymbolValidating,
     error,
   } = useTokenSymbol(tokenAddress, selectedChain)
+
+  useEffect(() => setValue("chainName", Chains[chainId]), [chainId, setValue])
 
   const { colorMode } = useColorMode()
 

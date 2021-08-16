@@ -8,11 +8,8 @@ import {
   InputLeftAddon,
   Textarea,
 } from "@chakra-ui/react"
-import { useWeb3React } from "@web3-react/core"
 import Section from "components/admin/common/Section"
-import { Chains } from "connectors"
 import { UploadSimple } from "phosphor-react"
-import { useEffect } from "react"
 import { Controller, useFormContext, useWatch } from "react-hook-form"
 import slugify from "slugify"
 import PhotoUploader from "../common/PhotoUploader"
@@ -24,7 +21,6 @@ const Details = (): JSX.Element => {
     formState: { errors },
     setValue,
   } = useFormContext()
-  const { chainId } = useWeb3React()
 
   const nameInput = useWatch({ name: "name" })
   const urlNameInput = useWatch({ name: "urlName" })
@@ -34,8 +30,6 @@ const Details = (): JSX.Element => {
     lower: true,
     strict: true,
   })
-
-  useEffect(() => setValue("chainName", Chains[chainId]), [chainId, setValue])
 
   const fillUrlName = () =>
     urlNameInput.length > 0 || setValue("urlName", generatedUrlName)
