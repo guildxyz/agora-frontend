@@ -33,8 +33,13 @@ const Details = (): JSX.Element => {
     strict: true,
   })
 
-  const fillUrlName = () =>
-    urlNameInput.length > 0 || setValue("urlName", generatedUrlName)
+  const nameOnBlur = () => {
+    trigger("name")
+    if (urlNameInput.length <= 0) {
+      setValue("urlName", generatedUrlName)
+      trigger("urlName")
+    }
+  }
 
   return (
     <Section
@@ -49,10 +54,7 @@ const Details = (): JSX.Element => {
             <Input
               {...register("name", { required: "This field is required." })}
               isInvalid={!!errors.name}
-              onBlur={() => {
-                trigger("name")
-                fillUrlName()
-              }}
+              onBlur={nameOnBlur}
             />
           </FormControl>
           <ValidationError fieldName="name" />
@@ -64,12 +66,29 @@ const Details = (): JSX.Element => {
             <InputGroup>
               <InputLeftAddon>app.agora.space/</InputLeftAddon>
               <Input
-                {...register("urlName")}
+                {...register("urlName", {
+                  validate: async (value) => {
+                    try {
+                      const response = await fetch(
+                        `${process.env.NEXT_PUBLIC_API}/community/urlName/${value}`
+                      )
+                      if (!response.ok)
+                        console.info(
+                          "%cThe logged error is expected, it's needed for validating the url name input field.",
+                          "color: gray"
+                        )
+                      return !response.ok || "This url name is already in use."
+                    } catch {
+                      return "Failed to validate."
+                    }
+                  },
+                })}
                 isInvalid={!!errors.urlName}
                 placeholder={generatedUrlName}
               />
             </InputGroup>
           </FormControl>
+          <ValidationError fieldName="urlName" />
         </GridItem>
 
         <GridItem colSpan={{ base: 1, md: 2 }}>
