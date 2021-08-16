@@ -9,13 +9,21 @@ import {
   InputGroup,
   InputLeftAddon,
   Select,
+  Spinner,
   Switch,
   Text,
+  useColorMode,
   VStack,
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
 import { useState } from "react"
 import { useFormContext } from "react-hook-form"
+
+type DiscordChannel = {
+  id: string
+  name: string
+  category: string
+}
 
 const Platforms = (): JSX.Element => {
   const {
@@ -24,24 +32,44 @@ const Platforms = (): JSX.Element => {
     formState: { errors },
   } = useFormContext()
 
-  const [discordChannels, setDiscordChannels] = useState(null)
+  const { colorMode } = useColorMode()
+
+  const [selectLoading, setSelectLoading] = useState(false)
+  const [discordChannels, setDiscordChannels] = useState<DiscordChannel[] | null>(
+    null
+  )
+  const [discordError, setDiscordError] = useState(null)
 
   const onServerIdChange = (e) => {
     const serverId = e.target.value
-    console.log(serverId)
 
-    if (serverId === "") {
-      // TODO
-      console.log("ServerID is an empty string...")
-      return
-    }
+    if (errors.discordServerId) return
 
+    setSelectLoading(true)
     fetch(`${process.env.NEXT_PUBLIC_API}/community/discordChannels/${serverId}`)
       .then((response) => {
-        // TODO: set DC channels...
-        console.log(response)
+        if (response.status !== 200) {
+          setSelectLoading(false)
+          setDiscordError("Couldn't fetch channels list from your Discord server")
+          return
+        }
+
+        return response.json()
       })
-      .catch(console.error)
+      .then((data) => {
+        setDiscordChannels(data)
+        setSelectLoading(false)
+
+        if (data.length === 0) {
+          setDiscordError(
+            "It seems like you haven't invited Medousa to your Discord server yet."
+          )
+          return
+        }
+
+        setDiscordError(null)
+      })
+      .catch(console.error) // TODO?...
   }
 
   return (
@@ -64,7 +92,7 @@ const Platforms = (): JSX.Element => {
           </GridItem>
 
           <GridItem>
-            <VStack spacing={4}>
+            <VStack spacing={4} alignItems="start">
               <FormControl isDisabled={!watch("isDCEnabled")}>
                 <InputGroup>
                   <InputLeftAddon>Server ID</InputLeftAddon>
@@ -72,44 +100,44 @@ const Platforms = (): JSX.Element => {
                     width={64}
                     {...register("discordServerId", {
                       required: watch("isDCEnabled"),
+                      minLength: 17,
                     })}
-                    isInvalid={!!errors.discordServerId}
-                    onBlur={onServerIdChange}
+                    isInvalid={errors.discordServerId}
+                    onChange={onServerIdChange}
                   />
                 </InputGroup>
               </FormControl>
-
-              <FormControl isDisabled={!watch("isDCEnabled")}>
-                <FormLabel>Invite channel</FormLabel>
-                <InputGroup>
-                  {/* TODO: fetch "/discordChannels/${discordServerId}". If it return an empty array, show an error message, and tell the user that they should invite Medouse to their DC server. Otherwise, list the available channels and let the user pick one (requred field).
-                  
-                  Response format:
-                  [
-                    {
-                        "id": "861688436566392863",
-                        "name": "general",
-                        "category": "MEDOUSA"
-                    },
-                    {
-                        "id": "866288974959214602",
-                        "name": "test",
-                        "category": "MEDOUSA"
-                    }
-                  ]
-                  */}
-                  <Select
-                    width={64}
-                    placeholder="Select one"
-                    {...register("inviteChannel", {
-                      required: watch("isDCEnabled"),
-                    })}
-                    isInvalid={!!errors.inviteChannel}
-                  >
-                    <option value="1">Welcome</option>
-                  </Select>
-                </InputGroup>
-              </FormControl>
+              {selectLoading && <Spinner />}
+              {discordError && (
+                <Text
+                  color={colorMode === "light" ? "red.500" : "red.400"}
+                  fontSize="sm"
+                  mt={2}
+                >
+                  {discordError}
+                </Text>
+              )}
+              {discordChannels?.length > 0 && (
+                <FormControl isDisabled={!watch("isDCEnabled")}>
+                  <FormLabel>Invite channel</FormLabel>
+                  <InputGroup>
+                    <Select
+                      width={64}
+                      placeholder="Select one"
+                      {...register("inviteChannel", {
+                        required: watch("isDCEnabled"),
+                      })}
+                      isInvalid={errors.inviteChannel}
+                    >
+                      {discordChannels.map((channel) => (
+                        <option key={channel.id} value={channel.id}>
+                          {`#${channel.name} (${channel.category})`}
+                        </option>
+                      ))}
+                    </Select>
+                  </InputGroup>
+                </FormControl>
+              )}
             </VStack>
           </GridItem>
 
