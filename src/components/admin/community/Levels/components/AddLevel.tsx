@@ -178,10 +178,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                     required: watch(`levels.${index}.requirementType`) !== "OPEN",
                   })}
                   isDisabled={watch(`levels.${index}.requirementType`) === "OPEN"}
-                  isInvalid={
-                    errors.levels &&
-                    errors.levels[index]?.membershipRequirement?.tokenAmount
-                  }
+                  isInvalid={errors.levels && errors.levels[index]?.requirement}
                 />
                 <InputRightAddon>TKN</InputRightAddon>
               </InputGroup>
@@ -199,10 +196,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                     required: watch(`levels.${index}.requirementType`) === "STAKE",
                   })}
                   isDisabled={watch(`levels.${index}.requirementType`) !== "STAKE"}
-                  isInvalid={
-                    errors.levels &&
-                    errors.levels[index]?.membershipRequirement?.tokenTimeLock
-                  }
+                  isInvalid={errors.levels && errors.levels[index]?.stakeTimelockMs}
                 />
                 <InputRightAddon>month(s)</InputRightAddon>
               </InputGroup>
