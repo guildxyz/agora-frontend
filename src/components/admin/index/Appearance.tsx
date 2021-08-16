@@ -1,15 +1,14 @@
-import { Box, HStack, Input, Text, useColorMode, VStack } from "@chakra-ui/react"
+import { Box, HStack, Input, Text, VStack } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
 import { useEffect } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
+import ValidationError from "../common/ValidationError"
 
 type Props = {
   onColorChange: (color: string) => void
 }
 
 const Appearance = ({ onColorChange }: Props): JSX.Element => {
-  const { colorMode } = useColorMode()
-
   const {
     register,
     formState: { errors },
@@ -44,19 +43,15 @@ const Appearance = ({ onColorChange }: Props): JSX.Element => {
               placeholder="#4F46E5"
               {...register("themeColor", {
                 required: false,
-                pattern: /^#[0-9a-f]{3}([0-9a-f]{3})?$/i,
+                pattern: {
+                  value: /^#[0-9a-f]{3}([0-9a-f]{3})?$/i,
+                  message: "Please input a valid hexadecimal color code.",
+                },
               })}
               isInvalid={!!errors.themeColor}
             />
           </HStack>
-          {!!errors.themeColor && (
-            <Text
-              color={colorMode === "light" ? "red.500" : "red.400"}
-              fontSize="sm"
-            >
-              Please input a valid hexadecimal color code
-            </Text>
-          )}
+          <ValidationError fieldName="themeColor" />
         </VStack>
       </>
     </Section>

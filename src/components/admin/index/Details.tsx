@@ -13,6 +13,7 @@ import { UploadSimple } from "phosphor-react"
 import { Controller, useFormContext, useWatch } from "react-hook-form"
 import slugify from "slugify"
 import PhotoUploader from "../common/PhotoUploader"
+import ValidationError from "../common/ValidationError"
 
 const Details = (): JSX.Element => {
   const {
@@ -20,6 +21,7 @@ const Details = (): JSX.Element => {
     register,
     formState: { errors },
     setValue,
+    trigger,
   } = useFormContext()
 
   const nameInput = useWatch({ name: "name" })
@@ -45,11 +47,15 @@ const Details = (): JSX.Element => {
           <FormControl isRequired>
             <FormLabel>Name</FormLabel>
             <Input
-              {...register("name", { required: true })}
+              {...register("name", { required: "This field is required." })}
               isInvalid={!!errors.name}
-              onBlur={fillUrlName}
+              onBlur={() => {
+                trigger("name")
+                fillUrlName()
+              }}
             />
           </FormControl>
+          <ValidationError fieldName="name" />
         </GridItem>
 
         <GridItem>

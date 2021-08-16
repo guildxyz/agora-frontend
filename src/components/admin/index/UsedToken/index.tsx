@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import Section from "components/admin/common/Section"
+import ValidationError from "components/admin/common/ValidationError"
 import NetworkChangeModal from "components/common/Layout/components/Account/components/NetworkModal/NetworkModal"
 import { Chains, RPC } from "connectors"
 import Image from "next/image"
@@ -26,8 +27,9 @@ import useTokenSymbol from "./hooks/useTokenSymbol"
 const UsedToken = (): JSX.Element => {
   const {
     register,
-    formState: { errors },
+    formState: { errors, touchedFields },
     setValue,
+    trigger,
   } = useFormContext()
   const { chainId } = useWeb3React()
 
@@ -45,6 +47,10 @@ const UsedToken = (): JSX.Element => {
   } = useTokenSymbol(tokenAddress, selectedChain)
 
   useEffect(() => setValue("chainName", Chains[chainId]), [chainId, setValue])
+
+  useEffect(() => {
+    if (touchedFields.tokenAddress) trigger("tokenAddress")
+  }, [isTokenSymbolValidating, error, trigger, touchedFields])
 
   const { colorMode } = useColorMode()
 
@@ -87,9 +93,16 @@ const UsedToken = (): JSX.Element => {
                 <InputGroup>
                   <Input
                     {...register("tokenAddress", {
-                      required: true,
-                      pattern: /^0x[A-F0-9]{40}$/i,
-                      validate: () => !error,
+                      required: "This field is required.",
+                      pattern: {
+                        value: /^0x[A-F0-9]{40}$/i,
+                        message:
+                          "Please input a 42 characters long, 0x-prefixed hexadecimal address.",
+                      },
+                      validate: () =>
+                        isTokenSymbolValidating ||
+                        !error ||
+                        "Failed to fetch symbol. Please switch to the correct network.",
                     })}
                     isInvalid={!!errors.tokenAddress}
                   />
@@ -107,13 +120,7 @@ const UsedToken = (): JSX.Element => {
                   )}
                 </InputGroup>
               </HStack>
-              {!isTokenSymbolValidating && (!!errors.tokenAddress || !!error) && (
-                <Text color="red" fontSize={12} mt={2}>
-                  {error
-                    ? "Failed to fetch token data, is the correct chain selected?"
-                    : "Please input a 42 characters length, 0x-prefixed hexadecimal address."}
-                </Text>
-              )}
+              <ValidationError fieldName="tokenAddress" />
             </FormControl>
           </GridItem>
         </Grid>
