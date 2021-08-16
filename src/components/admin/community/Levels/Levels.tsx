@@ -1,6 +1,7 @@
 import { Button, Divider, HStack, Icon, Text, VStack } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
 import { Plus } from "phosphor-react"
+import { useEffect } from "react"
 import { useFieldArray } from "react-hook-form"
 import AddLevel from "./components/AddLevel"
 
@@ -12,6 +13,23 @@ const Levels = (): JSX.Element => {
   } = useFieldArray({
     name: "levels",
   })
+
+  useEffect(() => {
+    if (levelFields.length === 0) {
+      appendLevel(
+        {
+          name: "",
+          image: null,
+          description: "",
+          requirementType: "OPEN",
+          requirement: null,
+          tokenTimeLock: null,
+          telegramGroupId: null,
+        },
+        { shouldFocus: false }
+      )
+    }
+  }, [])
 
   return (
     <Section
@@ -41,7 +59,17 @@ const Levels = (): JSX.Element => {
             width={60}
             variant="ghost"
             leftIcon={<Icon as={Plus} />}
-            onClick={() => appendLevel({})}
+            onClick={() =>
+              appendLevel({
+                name: "",
+                image: null,
+                description: "",
+                requirementType: "OPEN",
+                requirement: null,
+                tokenTimeLock: null,
+                telegramGroupId: null,
+              })
+            }
           >
             Add level
           </Button>
