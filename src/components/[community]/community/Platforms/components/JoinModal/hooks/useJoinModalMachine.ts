@@ -9,16 +9,17 @@ import usePersonalSign from "./usePersonalSign"
 
 type Invite = {
   inviteLink: string
-  joinCode?: number
+  alreadyJoined?: boolean
 }
 
-const initialInviteData: Invite = { inviteLink: "", joinCode: null }
+const initialInviteData: Invite = { inviteLink: "", alreadyJoined: false }
 
 type JoinError = MetaMaskError | Response | Error
 
 type Context = {
   error?: JoinError
   inviteData?: Invite
+  id: string
 }
 
 type ErrorEvent = DoneInvokeEvent<JoinError>
@@ -27,38 +28,35 @@ type Event = ErrorEvent | InviteEvent
 
 const joinModalMachine = createMachine<Context, Event>(
   {
-    initial: "idle",
+    initial: "disabled",
     context: {
       error: undefined,
       inviteData: initialInviteData,
+      id: null,
     },
     states: {
+      disabled: {
+        on: { ENABLE: "idle" },
+        always: {
+          target: "idle",
+          cond: "shouldEnable",
+        },
+      },
       idle: {
         on: { SIGN: "signing" },
       },
       signing: {
-        on: {
-          CLOSE_MODAL: "idle",
-        },
         invoke: {
           src: "sign",
-          onDone: {
-            target: "fetching",
-          },
-          onError: {
-            target: "error",
-          },
+          onDone: "fetching",
+          onError: "error",
         },
       },
       fetching: {
         invoke: {
           src: "getInviteLink",
-          onDone: {
-            target: "success",
-          },
-          onError: {
-            target: "error",
-          },
+          onDone: "success",
+          onError: "error",
         },
       },
       error: {
@@ -71,16 +69,12 @@ const joinModalMachine = createMachine<Context, Event>(
         exit: "removeInvite",
       },
     },
-    on: {
-      RESET: {
-        target: "idle",
-      },
-    },
+    on: { RESET: "disabled" },
   },
   {
     actions: {
-      removeError: assign({ error: undefined }),
-      removeInvite: assign({ inviteData: initialInviteData }),
+      removeError: assign<Context>({ error: undefined }),
+      removeInvite: assign<Context>({ inviteData: initialInviteData }),
       setError: assign<Context, ErrorEvent>({
         error: (_, event) => event.data,
       }),
@@ -91,17 +85,24 @@ const joinModalMachine = createMachine<Context, Event>(
   }
 )
 
-const useJoinModalMachine = (platform: string): Machine<Context> => {
+const useJoinModalMachine = (platform: string, enable = true): Machine<Context> => {
   const { id: communityId } = useCommunity()
   const sign = usePersonalSign()
+
   const { account } = useWeb3React()
 
   const [state, send] = useMachine(joinModalMachine, {
     services: {
       sign: () => sign("Please sign this message to generate your invite link"),
 
-      getInviteLink: (_, event): Promise<Invite> =>
-        fetch(`${process.env.NEXT_PUBLIC_API}/user/joinPlatform`, {
+      getInviteLink: (context, event): Promise<Invite> => {
+        console.log({
+          platform,
+          communityId,
+          addressSignedMessage: event.data,
+          ...(context.id ? { platformUserId: context.id } : {}),
+        })
+        return fetch(`${process.env.NEXT_PUBLIC_API}/user/joinPlatform`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -110,12 +111,19 @@ const useJoinModalMachine = (platform: string): Machine<Context> => {
             platform,
             communityId,
             addressSignedMessage: event.data,
+            ...(context.id ? { platformUserId: context.id } : {}),
           }),
         }).then((response) =>
           response.ok ? response.json() : Promise.reject(response)
-        ),
+        )
+      },
+    },
+    guards: {
+      shouldEnable: () => !!enable,
     },
   })
+
+  useEffect(() => console.log(enable), [enable])
 
   useEffect(() => {
     send("RESET")
