@@ -7,30 +7,36 @@ import { assign, createMachine, DoneInvokeEvent } from "xstate"
 import usePersonalSign from "./usePersonalSign"
 
 export type ContextType = {
-  error: DiscordError
+  error: DiscordError | Response
   id: string
 }
 
 type AuthEvent = DoneInvokeEvent<{ id: string }>
-type ErrorEvent = DoneInvokeEvent<DiscordError>
+type ErrorEvent = DoneInvokeEvent<DiscordError | Response>
 
 const dcAuthMachine = createMachine<ContextType, AuthEvent | ErrorEvent>(
   {
-    initial: "loading",
+    initial: "checkIsMember",
     context: {
       error: null,
       id: null,
     },
     states: {
-      loading: {
-        entry: "idCheck",
+      checkIsMember: {
+        entry: "checkIsMember",
         on: {
           HAS_ID: "success",
           NO_ID: "idle",
+          ERROR: "checkIsMemberError",
         },
       },
+      checkIsMemberError: {
+        entry: "setIsMemberError",
+        on: { RESET: "checkIsMember" },
+        exit: "removeError",
+      },
       idle: {
-        on: { AUTH: "authenticating" },
+        on: { AUTH: "authenticating", RESET: "checkIsMember" },
       },
       authenticating: {
         entry: "openWindow",
@@ -40,14 +46,14 @@ const dcAuthMachine = createMachine<ContextType, AuthEvent | ErrorEvent>(
           onError: "error",
         },
         exit: "closeWindow",
-        on: { RESET: "idle" },
+        on: { RESET: "checkIsMember" },
       },
       error: {
         entry: "setError",
         on: {
           AUTH: "authenticating",
           CLOSE_MODAL: "idle",
-          RESET: "idle",
+          RESET: "checkIsMember",
         },
         exit: "removeError",
       },
@@ -56,10 +62,10 @@ const dcAuthMachine = createMachine<ContextType, AuthEvent | ErrorEvent>(
         on: {
           CLOSE_MODAL: "success",
           HIDE_NOTIFICATION: "success",
-          RESET: "idle",
+          RESET: "checkIsMember",
         },
       },
-      success: { on: { RESET: "idle" } },
+      success: { on: { RESET: "checkIsMember" } },
     },
   },
   {
@@ -71,6 +77,7 @@ const dcAuthMachine = createMachine<ContextType, AuthEvent | ErrorEvent>(
         error: (_, event) => event.data,
       }),
       removeError: assign<ContextType>({ error: null }),
+      setIsMemberError: assign<ContextType>({ error: new Response() }),
     },
   }
 )
@@ -116,14 +123,26 @@ const useDCAuthMachine = (): Machine<ContextType> => {
 
   const [state, send] = useMachine(dcAuthMachine, {
     actions: {
-      // TODO: Replace this with backend call once it's fixed
-      idCheck: () =>
-        new Promise<boolean>((resolve) =>
-          setTimeout(() => resolve(true), 5000)
-        ).then((data) => {
-          if (data) send("HAS_ID")
-          else send("NO_ID")
-        }),
+      checkIsMember: () =>
+        fetch(`${process.env.NEXT_PUBLIC_API}/user/isMember`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            platform: "DISCORD",
+            address: account,
+          }),
+        })
+          .then((response) => {
+            if (response.ok)
+              response.json().then((data) => {
+                if (data) send("HAS_ID")
+                else send("NO_ID")
+              })
+            else send("NO_ID")
+          })
+          .catch(() => send("ERROR")),
 
       openWindow: () => {
         authWindow.current = window.open(
