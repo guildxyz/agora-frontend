@@ -17,9 +17,7 @@ type Props = {
 
 const AdminHomePage = ({ communityData }: Props): JSX.Element => {
   const { chainId } = useWeb3React()
-
   const [colorCode, setColorCode] = useState<string>(null)
-
   const generatedColors = useColorPalette(
     "chakra-colors-primary",
     colorCode || "#71717a"

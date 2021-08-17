@@ -1,4 +1,4 @@
-import { Button, Stack, useToast, VStack } from "@chakra-ui/react"
+import { Box, Button, Stack, useToast, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
 import Levels from "components/admin/community/Levels"
@@ -7,6 +7,7 @@ import clearUndefinedData from "components/admin/utils/clearUndefinedData"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import usePersonalSign from "components/[community]/community/Platforms/components/JoinModal/hooks/usePersonalSign"
+import useColorPalette from "components/[community]/hooks/useColorPalette"
 import React from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { Community } from "temporaryData/types"
@@ -21,10 +22,12 @@ const convertMonthsToMs = (months: number) =>
 
 const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
   const toast = useToast()
-
   const { chainId } = useWeb3React()
+  const generatedColors = useColorPalette(
+    "chakra-colors-primary",
+    communityData.themeColor || "#71717a"
+  )
   const methods = useForm({ mode: "all" })
-
   const sign = usePersonalSign()
 
   const onSubmit = (data) => {
@@ -98,17 +101,19 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
 
   return (
     <FormProvider {...methods}>
-      <Layout title="Integrate token" imageUrl={communityData.imageUrl}>
-        <Stack spacing={{ base: 7, xl: 9 }}>
-          <Pagination isAdminPage />
-          <VStack spacing={12}>
-            <Platforms />
-            <Levels />
+      <Box sx={generatedColors}>
+        <Layout title="Integrate token" imageUrl={communityData.imageUrl}>
+          <Stack spacing={{ base: 7, xl: 9 }}>
+            <Pagination isAdminPage />
+            <VStack spacing={12}>
+              <Platforms />
+              <Levels />
 
-            <Button onClick={methods.handleSubmit(onSubmit)}>Submit</Button>
-          </VStack>
-        </Stack>
-      </Layout>
+              <Button onClick={methods.handleSubmit(onSubmit)}>Submit</Button>
+            </VStack>
+          </Stack>
+        </Layout>
+      </Box>
     </FormProvider>
   )
 }
