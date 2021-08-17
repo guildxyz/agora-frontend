@@ -5,9 +5,6 @@ import {
   FormLabel,
   Grid,
   GridItem,
-  Input,
-  InputGroup,
-  InputLeftAddon,
   Select,
   Spinner,
   Switch,
@@ -15,9 +12,16 @@ import {
   useColorMode,
   VStack,
 } from "@chakra-ui/react"
+import { useWeb3React } from "@web3-react/core"
 import Section from "components/admin/common/Section"
-import { useState } from "react"
+import { AnimatePresence, motion } from "framer-motion"
+import { useEffect, useState } from "react"
 import { useFormContext } from "react-hook-form"
+
+type DiscordServer = {
+  id: string
+  name: string
+}
 
 type DiscordChannel = {
   id: string
@@ -26,6 +30,8 @@ type DiscordChannel = {
 }
 
 const Platforms = (): JSX.Element => {
+  const { account } = useWeb3React()
+
   const {
     watch,
     register,
@@ -34,40 +40,107 @@ const Platforms = (): JSX.Element => {
 
   const { colorMode } = useColorMode()
 
-  const [selectLoading, setSelectLoading] = useState(false)
+  const [serverSelectLoading, setServerSelectLoading] = useState(false)
+  const [discordServers, setDiscordServers] = useState<DiscordServer[] | null>(null)
+  const [discordServersError, setDiscordServersError] = useState(null)
+  const [channelSelectLoading, setChannelSelectLoading] = useState(false)
   const [discordChannels, setDiscordChannels] = useState<DiscordChannel[] | null>(
     null
   )
-  const [discordError, setDiscordError] = useState(null)
+  const [discordChannelsError, setDiscordChannelsError] = useState(null)
 
-  const onServerIdChange = (e) => {
-    const serverId = e.target.value
+  useEffect(() => {
+    if (!account) return
 
-    if (errors.discordServerId) return
-
-    setSelectLoading(true)
-    fetch(`${process.env.NEXT_PUBLIC_API}/community/discordChannels/${serverId}`)
+    setServerSelectLoading(true)
+    fetch(`${process.env.NEXT_PUBLIC_API}/community/administeredServers/${account}`)
       .then((response) => {
         if (response.status !== 200) {
-          setSelectLoading(false)
-          setDiscordError("Couldn't fetch channels list from your Discord server")
+          setChannelSelectLoading(false)
+          setDiscordServersError("Couldn't fetch your discord servers")
+          setDiscordChannels(null)
           return
         }
 
         return response.json()
+
+        /*
+        // DEBUG
+        return [
+          {
+            name: "Devid test",
+            id: "717317894954025012",
+          },
+          {
+            name: "Agora Bot Test",
+            id: "844222532994727957",
+          },
+        ]
+        */
+      })
+      .then((data) => {
+        setDiscordServers(data)
+        setServerSelectLoading(false)
+
+        if (data.length === 0) {
+          setDiscordServersError(
+            "It seems like you don't have a Discord server yet."
+          )
+          return
+        }
+
+        setDiscordServersError(null)
+      })
+      .catch(console.error) // TODO?...
+  }, [account])
+
+  const onServerIdChange = (e) => {
+    const serverId = e.target.value
+
+    if (errors.discordServerId || discordServersError) return
+
+    setChannelSelectLoading(true)
+    fetch(`${process.env.NEXT_PUBLIC_API}/community/discordChannels/${serverId}`)
+      .then((response) => {
+        if (response.status !== 200) {
+          setChannelSelectLoading(false)
+          setDiscordChannelsError(
+            "Couldn't fetch channels list from your Discord server"
+          )
+          setDiscordChannels(null)
+          return
+        }
+
+        return response.json()
+
+        /*
+        // DEBUG
+        return [
+          {
+            id: "861688436566392863",
+            name: "general",
+            category: "MEDOUSA",
+          },
+          {
+            id: "866288974959214602",
+            name: "test",
+            category: "MEDOUSA",
+          },
+        ]
+        */
       })
       .then((data) => {
         setDiscordChannels(data)
-        setSelectLoading(false)
+        setChannelSelectLoading(false)
 
         if (data.length === 0) {
-          setDiscordError(
+          setDiscordChannelsError(
             "It seems like you haven't invited Medousa to your Discord server yet."
           )
           return
         }
 
-        setDiscordError(null)
+        setDiscordChannelsError(null)
       })
       .catch(console.error) // TODO?...
   }
@@ -93,50 +166,103 @@ const Platforms = (): JSX.Element => {
 
           <GridItem>
             <VStack spacing={4} alignItems="start">
-              <FormControl isDisabled={!watch("isDCEnabled")}>
-                <InputGroup>
-                  <InputLeftAddon>Server ID</InputLeftAddon>
-                  <Input
-                    width={64}
-                    {...register("discordServerId", {
-                      required: watch("isDCEnabled"),
-                      minLength: 17,
-                    })}
-                    isInvalid={errors.discordServerId}
-                    onChange={onServerIdChange}
-                  />
-                </InputGroup>
-              </FormControl>
-              {selectLoading && <Spinner />}
-              {discordError && (
+              {serverSelectLoading && (
+                <AnimatePresence>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.75 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.75 }}
+                  >
+                    <Spinner />
+                  </motion.div>
+                </AnimatePresence>
+              )}
+
+              {discordServers?.length > 0 && (
+                <AnimatePresence>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.75 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.75 }}
+                  >
+                    <FormControl isDisabled={!watch("isDCEnabled")}>
+                      <FormLabel>Pick a server</FormLabel>
+                      <Select
+                        width={64}
+                        placeholder="Select one"
+                        {...register("discordServerId", {
+                          required: watch("isDCEnabled"),
+                        })}
+                        isInvalid={errors.discordServerId}
+                        onChange={onServerIdChange}
+                      >
+                        {discordServers.map((server) => (
+                          <option key={server.id} value={server.id}>
+                            {`${server.name}`}
+                          </option>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </motion.div>
+                </AnimatePresence>
+              )}
+              {discordServersError && (
                 <Text
                   color={colorMode === "light" ? "red.500" : "red.400"}
                   fontSize="sm"
                   mt={2}
                 >
-                  {discordError}
+                  {discordServersError}
+                </Text>
+              )}
+
+              {channelSelectLoading && (
+                <AnimatePresence>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.75 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.75 }}
+                  >
+                    <Spinner />
+                  </motion.div>
+                </AnimatePresence>
+              )}
+              {discordChannelsError && (
+                <Text
+                  color={colorMode === "light" ? "red.500" : "red.400"}
+                  fontSize="sm"
+                  mt={2}
+                >
+                  {discordChannelsError}
                 </Text>
               )}
               {discordChannels?.length > 0 && (
-                <FormControl isDisabled={!watch("isDCEnabled")}>
-                  <FormLabel>Invite channel</FormLabel>
-                  <InputGroup>
-                    <Select
-                      width={64}
-                      placeholder="Select one"
-                      {...register("inviteChannel", {
-                        required: watch("isDCEnabled"),
-                      })}
-                      isInvalid={errors.inviteChannel}
-                    >
-                      {discordChannels.map((channel) => (
-                        <option key={channel.id} value={channel.id}>
-                          {`#${channel.name} (${channel.category})`}
-                        </option>
-                      ))}
-                    </Select>
-                  </InputGroup>
-                </FormControl>
+                <AnimatePresence>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.75 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.75 }}
+                  >
+                    <FormControl isDisabled={!watch("isDCEnabled")}>
+                      <FormLabel>Invite channel</FormLabel>
+
+                      <Select
+                        width={64}
+                        placeholder="Select one"
+                        {...register("inviteChannel", {
+                          required: watch("isDCEnabled"),
+                        })}
+                        isInvalid={errors.inviteChannel}
+                      >
+                        {discordChannels.map((channel) => (
+                          <option key={channel.id} value={channel.id}>
+                            {`#${channel.name} (${channel.category})`}
+                          </option>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </motion.div>
+                </AnimatePresence>
               )}
             </VStack>
           </GridItem>
