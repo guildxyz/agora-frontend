@@ -1,5 +1,6 @@
 import { Button, Divider, HStack, Icon, Text, VStack } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
+import { AnimatePresence, motion } from "framer-motion"
 import { Plus } from "phosphor-react"
 import { useEffect } from "react"
 import { useFieldArray } from "react-hook-form"
@@ -40,11 +41,15 @@ const Levels = (): JSX.Element => {
         {levelFields.length > 0 ? (
           <VStack width="full" spacing={8}>
             {levelFields.map((levelField, index) => (
-              <AddLevel
-                key={levelField.id}
-                index={index}
-                onRemove={() => removeLevel(index)}
-              />
+              <AnimatePresence key={levelField.id}>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.75, width: "100%" }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.75 }}
+                >
+                  <AddLevel index={index} onRemove={() => removeLevel(index)} />
+                </motion.div>
+              </AnimatePresence>
             ))}
           </VStack>
         ) : (
