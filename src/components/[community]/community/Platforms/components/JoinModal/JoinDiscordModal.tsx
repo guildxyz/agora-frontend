@@ -1,5 +1,4 @@
 import {
-  CloseButton,
   Icon,
   ModalBody,
   ModalCloseButton,
@@ -14,7 +13,7 @@ import { Error } from "components/common/Error"
 import Link from "components/common/Link"
 import Modal from "components/common/Modal"
 import ModalButton from "components/common/ModalButton"
-import { ArrowSquareOut, Check } from "phosphor-react"
+import { ArrowSquareOut } from "phosphor-react"
 import QRCode from "qrcode.react"
 import React from "react"
 import platformsContent from "../../platformsContent"
@@ -78,70 +77,31 @@ const JoinDiscordModal = ({ platform, isOpen, onClose }: Props): JSX.Element => 
           )}
         </ModalBody>
         <ModalFooter>
-          <VStack spacing="2" alignItems="strech">
-            {(() => {
-              switch (state.value) {
-                case "signing":
-                  return <ModalButton isLoading loadingText="Waiting confirmation" />
-                case "authenticating":
-                case "fetching":
-                case "authIdle":
-                case "authError":
-                  return (
-                    <ModalButton
-                      as="div"
-                      colorScheme="gray"
-                      variant="solidStatic"
-                      rightIcon={<CloseButton onClick={() => send("")} />}
-                      leftIcon={<Check />}
-                      justifyContent="space-between"
-                      px="4"
-                    >
-                      Message signed
-                    </ModalButton>
-                  )
-                case "success":
-                  return null
-                case "idle":
-                case "signError":
-                default:
-                  return <ModalButton onClick={() => send("SIGN")}>Sign</ModalButton>
-              }
-            })()}
-            {(() => {
-              switch (state.value) {
-                case "authenticating":
-                  return (
-                    <ModalButton
-                      isLoading
-                      loadingText="Waiting for authentication"
-                    />
-                  )
-                case "fetching":
-                  return (
-                    <ModalButton isLoading loadingText="Generating invite link" />
-                  )
-                case "success":
-                  return null
-                case "authIdle":
-                case "authError":
-                  return (
-                    <ModalButton onClick={() => send("AUTH")}>
-                      Connect Discord
-                    </ModalButton>
-                  )
-                case "idle":
-                case "signing":
-                case "signError":
-                default:
-                  return (
-                    <ModalButton disabled colorScheme="gray">
-                      Connect Discord
-                    </ModalButton>
-                  )
-              }
-            })()}
-          </VStack>
+          {(() => {
+            switch (state.value) {
+              case "signing":
+                return <ModalButton isLoading loadingText="Waiting confirmation" />
+              case "authenticating":
+                return (
+                  <ModalButton isLoading loadingText="Waiting for authentication" />
+                )
+              case "fetching":
+                return <ModalButton isLoading loadingText="Generating invite link" />
+              case "success":
+                return null
+              case "authIdle":
+              case "authError":
+                return (
+                  <ModalButton onClick={() => send("AUTH")}>
+                    Authenticate
+                  </ModalButton>
+                )
+              case "idle":
+              case "signError":
+              default:
+                return <ModalButton onClick={() => send("SIGN")}>Sign</ModalButton>
+            }
+          })()}
         </ModalFooter>
       </ModalContent>
     </Modal>
