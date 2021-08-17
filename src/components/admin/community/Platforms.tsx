@@ -1,10 +1,12 @@
 import {
   Badge,
+  Button,
   Divider,
   FormControl,
   FormLabel,
   Grid,
   GridItem,
+  HStack,
   Select,
   Spinner,
   Switch,
@@ -21,6 +23,7 @@ import { useFormContext } from "react-hook-form"
 type DiscordError = {
   message: string
   type: "server" | "channels"
+  showAuthBtn?: boolean
 }
 
 type DiscordServer = {
@@ -66,6 +69,7 @@ const Platforms = (): JSX.Element => {
           setDiscordError({
             message: "Please authenticate with Discord",
             type: "server",
+            showAuthBtn: true,
           })
           setDiscordChannels(null)
           return
@@ -200,13 +204,26 @@ const Platforms = (): JSX.Element => {
                 </AnimatePresence>
               )}
               {discordError && discordError.type === "server" && (
-                <Text
-                  color={colorMode === "light" ? "red.500" : "red.400"}
-                  fontSize="sm"
-                  mt={2}
-                >
-                  {discordError.message}
-                </Text>
+                <HStack spacing={4} justifyItems="center">
+                  <Text
+                    color={colorMode === "light" ? "red.500" : "red.400"}
+                    fontSize="sm"
+                    mt={2}
+                    height={8}
+                  >
+                    {discordError.message}
+                  </Text>
+                  {discordError.showAuthBtn && (
+                    <Button
+                      ml={4}
+                      size="sm"
+                      colorScheme="DISCORD"
+                      isDisabled={!watch("isDCEnabled")}
+                    >
+                      Authenticate
+                    </Button>
+                  )}
+                </HStack>
               )}
 
               {channelSelectLoading && (

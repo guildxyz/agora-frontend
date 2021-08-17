@@ -121,7 +121,12 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
                 <Platforms />
                 <Levels />
 
-                <Button onClick={methods.handleSubmit(onSubmit)}>Submit</Button>
+                <Button
+                  colorScheme="primary"
+                  onClick={methods.handleSubmit(onSubmit)}
+                >
+                  Submit
+                </Button>
               </VStack>
             </Stack>
           )}

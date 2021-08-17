@@ -59,10 +59,11 @@ const Levels = (): JSX.Element => {
         )}
 
         <HStack width="full" spacing={2}>
-          <Divider borderBottomWidth={2} borderColor="gray.300" />
+          <Divider borderBottomWidth={2} borderColor="primary.300" />
           <Button
             width={60}
             variant="ghost"
+            colorScheme="primary"
             leftIcon={<Icon as={Plus} />}
             onClick={() =>
               appendLevel({
@@ -78,7 +79,7 @@ const Levels = (): JSX.Element => {
           >
             Add level
           </Button>
-          <Divider borderBottomWidth={2} borderColor="gray.300" />
+          <Divider borderBottomWidth={2} borderColor="primary.300" />
         </HStack>
       </>
     </Section>
