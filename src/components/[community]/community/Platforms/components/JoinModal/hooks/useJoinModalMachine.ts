@@ -123,8 +123,6 @@ const useJoinModalMachine = (platform: string, enable = true): Machine<Context> 
     },
   })
 
-  useEffect(() => console.log(enable), [enable])
-
   useEffect(() => {
     send("RESET")
   }, [account, send])

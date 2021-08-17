@@ -14,15 +14,21 @@ export type ContextType = {
 type AuthEvent = DoneInvokeEvent<{ id: string }>
 type ErrorEvent = DoneInvokeEvent<DiscordError>
 
-// When this machine reaches its final state, the discord id of the authenticated user is available in its context
 const dcAuthMachine = createMachine<ContextType, AuthEvent | ErrorEvent>(
   {
-    initial: "idle",
+    initial: "loading",
     context: {
       error: null,
       id: null,
     },
     states: {
+      loading: {
+        entry: "idCheck",
+        on: {
+          HAS_ID: "success",
+          NO_ID: "idle",
+        },
+      },
       idle: {
         on: { AUTH: "authenticating" },
       },
@@ -34,10 +40,15 @@ const dcAuthMachine = createMachine<ContextType, AuthEvent | ErrorEvent>(
           onError: "error",
         },
         exit: "closeWindow",
+        on: { RESET: "idle" },
       },
       error: {
         entry: "setError",
-        on: { AUTH: "authenticating", CLOSE_MODAL: "idle" },
+        on: {
+          AUTH: "authenticating",
+          CLOSE_MODAL: "idle",
+          RESET: "idle",
+        },
         exit: "removeError",
       },
       notification: {
@@ -45,14 +56,10 @@ const dcAuthMachine = createMachine<ContextType, AuthEvent | ErrorEvent>(
         on: {
           CLOSE_MODAL: "success",
           HIDE_NOTIFICATION: "success",
+          RESET: "idle",
         },
       },
-      success: {},
-    },
-    on: {
-      RESET: {
-        target: "idle",
-      },
+      success: { on: { RESET: "idle" } },
     },
   },
   {
@@ -109,6 +116,15 @@ const useDCAuthMachine = (): Machine<ContextType> => {
 
   const [state, send] = useMachine(dcAuthMachine, {
     actions: {
+      // TODO: Replace this with backend call once it's fixed
+      idCheck: () =>
+        new Promise<boolean>((resolve) =>
+          setTimeout(() => resolve(true), 5000)
+        ).then((data) => {
+          if (data) send("HAS_ID")
+          else send("NO_ID")
+        }),
+
       openWindow: () => {
         authWindow.current = window.open(
           `https://discord.com/api/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID}&response_type=token&scope=identify&redirect_uri=${process.env.NEXT_PUBLIC_DISCORD_REDIRECT_URI}&state=${urlName}`,
@@ -134,6 +150,7 @@ const useDCAuthMachine = (): Machine<ContextType> => {
           }
         }, 500)
       },
+
       closeWindow: () => {
         window.removeEventListener("message", listener.current)
         listener.current = null
@@ -142,6 +159,7 @@ const useDCAuthMachine = (): Machine<ContextType> => {
     },
     services: {
       sign: () => sign("Please sign this message to verify your address"),
+
       auth: () =>
         new Promise((resolve, reject) => {
           listener.current = handleMessage(resolve, reject)

@@ -12,6 +12,8 @@ type Props = {
 
 const AuthButton = ({ state, send }: Props) => {
   switch (state) {
+    case "loading":
+      return <ModalButton isLoading loadingText="Checking Discord data" />
     case "success":
     case "notification":
       return (

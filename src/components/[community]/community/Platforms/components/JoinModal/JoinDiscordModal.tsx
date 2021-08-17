@@ -33,18 +33,15 @@ const JoinDiscordModal = ({ platform, isOpen, onClose }: Props): JSX.Element => 
     title,
     join: { description },
   } = platformsContent[platform]
-  const [joinState, joinSend] = useJoinModalMachine("DISCORD", false)
   const [authState, authSend] = useDCAuthMachine()
+  const [joinState, joinSend] = useJoinModalMachine("DISCORD", false)
 
   useEffect(() => {
-    if (
-      typeof authState.context.id === "string" &&
-      authState.context.id.length > 0
-    ) {
+    if (["notification", "success"].includes(authState.value as string)) {
       joinState.context.id = authState.context.id
       joinSend("ENABLE")
     }
-  }, [authState.context.id])
+  }, [authState.value])
 
   const closeModal = () => {
     joinSend("CLOSE_MODAL")
