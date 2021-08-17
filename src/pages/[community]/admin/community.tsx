@@ -98,7 +98,7 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
   }
 
   useEffect(() => {
-    if (communityData.owner.address !== account) {
+    if (account && account.toLowerCase() !== communityData.owner.address) {
       router.push(`/${communityData.urlName}`)
     }
   }, [account])
@@ -114,7 +114,7 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
           title={`${communityData.name} - Levels`}
           imageUrl={communityData.imageUrl}
         >
-          {communityData.owner.address === account && (
+          {account && account.toLowerCase() === communityData.owner.address && (
             <Stack spacing={{ base: 7, xl: 9 }}>
               <Pagination isAdminPage />
               <VStack spacing={12}>

@@ -3,7 +3,11 @@ import usePersonalSign from "components/[community]/community/Platforms/componen
 import { useRouter } from "next/router"
 import clearUndefinedData from "../utils/clearUndefinedData"
 
-const useSubmitCommunityData = (method: "POST" | "PATCH") => {
+const useSubmitCommunityData = (method: "POST" | "PATCH", id = null) => {
+  const fetchUrl =
+    method === "PATCH"
+      ? `${process.env.NEXT_PUBLIC_API}/community/${id}`
+      : `${process.env.NEXT_PUBLIC_API}/community`
   const router = useRouter()
   const toast = useToast()
   const sign = usePersonalSign()
@@ -12,13 +16,13 @@ const useSubmitCommunityData = (method: "POST" | "PATCH") => {
     sign("Please sign this message to verify your address")
       .then((addressSignedMessage) => {
         const finalData = clearUndefinedData(data)
-        fetch(`${process.env.NEXT_PUBLIC_API}/community`, {
+        fetch(fetchUrl, {
           method,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...finalData, addressSignedMessage }),
         })
           .then((response) => {
-            if (response.status !== 201) {
+            if (response.status !== 200 && response.status !== 201) {
               toast({
                 title: "Error",
                 description: `An error occurred while ${

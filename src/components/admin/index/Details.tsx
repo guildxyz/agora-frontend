@@ -15,7 +15,11 @@ import slugify from "slugify"
 import PhotoUploader from "../common/PhotoUploader"
 import ValidationError from "../common/ValidationError"
 
-const Details = (): JSX.Element => {
+type Props = {
+  isAdminPage?: boolean
+}
+
+const Details = ({ isAdminPage = false }: Props): JSX.Element => {
   const {
     control,
     register,
@@ -65,27 +69,31 @@ const Details = (): JSX.Element => {
             <FormLabel>URL</FormLabel>
             <InputGroup>
               <InputLeftAddon>app.agora.space/</InputLeftAddon>
-              <Input
-                {...register("urlName", {
-                  validate: async (value) => {
-                    try {
-                      const response = await fetch(
-                        `${process.env.NEXT_PUBLIC_API}/community/urlName/${value}`
-                      )
-                      if (!response.ok)
-                        console.info(
-                          "%cThe logged error is expected, it's needed for validating the url name input field.",
-                          "color: gray"
+              {isAdminPage ? (
+                <Input {...register("urlName")} disabled />
+              ) : (
+                <Input
+                  {...register("urlName", {
+                    validate: async (value) => {
+                      try {
+                        const response = await fetch(
+                          `${process.env.NEXT_PUBLIC_API}/community/urlName/${value}`
                         )
-                      return !response.ok || "This url name is already in use."
-                    } catch {
-                      return "Failed to validate."
-                    }
-                  },
-                })}
-                isInvalid={errors.urlName}
-                placeholder={generatedUrlName}
-              />
+                        if (!response.ok)
+                          console.info(
+                            "%cThe logged error is expected, it's needed for validating the url name input field.",
+                            "color: gray"
+                          )
+                        return !response.ok || "This url name is already in use."
+                      } catch {
+                        return "Failed to validate."
+                      }
+                    },
+                  })}
+                  isInvalid={errors.urlName}
+                  placeholder={generatedUrlName}
+                />
+              )}
             </InputGroup>
           </FormControl>
           <ValidationError fieldName="urlName" />
