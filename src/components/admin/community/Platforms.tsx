@@ -40,6 +40,11 @@ const Platforms = (): JSX.Element => {
 
   const { colorMode } = useColorMode()
 
+  const [discordError, setDiscordError] = useState<{
+    message: string
+    type: "server" | "channels"
+  } | null>(null)
+
   const [serverSelectLoading, setServerSelectLoading] = useState(false)
   const [discordServers, setDiscordServers] = useState<DiscordServer[] | null>(null)
   const [discordServersError, setDiscordServersError] = useState(null)
@@ -47,7 +52,6 @@ const Platforms = (): JSX.Element => {
   const [discordChannels, setDiscordChannels] = useState<DiscordChannel[] | null>(
     null
   )
-  const [discordChannelsError, setDiscordChannelsError] = useState(null)
 
   useEffect(() => {
     if (!account) return
@@ -55,41 +59,42 @@ const Platforms = (): JSX.Element => {
     setServerSelectLoading(true)
     fetch(`${process.env.NEXT_PUBLIC_API}/community/administeredServers/${account}`)
       .then((response) => {
+        // We don't know the DC id of the user
+        if (response.status === 400) {
+          setChannelSelectLoading(false)
+          setDiscordError({
+            message: "Please authenticate with Discord",
+            type: "server",
+          })
+          setDiscordChannels(null)
+          return
+        }
+
         if (response.status !== 200) {
           setChannelSelectLoading(false)
-          setDiscordServersError("Couldn't fetch your discord servers")
+          setDiscordError({
+            message: "Couldn't fetch your discord servers",
+            type: "server",
+          })
           setDiscordChannels(null)
           return
         }
 
         return response.json()
-
-        /*
-        // DEBUG
-        return [
-          {
-            name: "Devid test",
-            id: "717317894954025012",
-          },
-          {
-            name: "Agora Bot Test",
-            id: "844222532994727957",
-          },
-        ]
-        */
       })
       .then((data) => {
         setDiscordServers(data)
         setServerSelectLoading(false)
 
         if (data.length === 0) {
-          setDiscordServersError(
-            "It seems like you don't have a Discord server yet."
-          )
+          setDiscordError({
+            message: "It seems like you don't have a Discord server yet.",
+            type: "server",
+          })
           return
         }
 
-        setDiscordServersError(null)
+        setDiscordError(null)
       })
       .catch(console.error) // TODO?...
   }, [account])
@@ -97,50 +102,37 @@ const Platforms = (): JSX.Element => {
   const onServerIdChange = (e) => {
     const serverId = e.target.value
 
-    if (errors.discordServerId || discordServersError) return
+    if (errors.discordServerId || discordError?.type === "server") return
 
     setChannelSelectLoading(true)
     fetch(`${process.env.NEXT_PUBLIC_API}/community/discordChannels/${serverId}`)
       .then((response) => {
         if (response.status !== 200) {
           setChannelSelectLoading(false)
-          setDiscordChannelsError(
-            "Couldn't fetch channels list from your Discord server"
-          )
+          setDiscordError({
+            message: "Couldn't fetch channels list from your Discord server",
+            type: "channels",
+          })
           setDiscordChannels(null)
           return
         }
 
         return response.json()
-
-        /*
-        // DEBUG
-        return [
-          {
-            id: "861688436566392863",
-            name: "general",
-            category: "MEDOUSA",
-          },
-          {
-            id: "866288974959214602",
-            name: "test",
-            category: "MEDOUSA",
-          },
-        ]
-        */
       })
       .then((data) => {
         setDiscordChannels(data)
         setChannelSelectLoading(false)
 
         if (data.length === 0) {
-          setDiscordChannelsError(
-            "It seems like you haven't invited Medousa to your Discord server yet."
-          )
+          setDiscordError({
+            message:
+              "It seems like you haven't invited Medousa to your Discord server yet.",
+            type: "channels",
+          })
           return
         }
 
-        setDiscordChannelsError(null)
+        setDiscordError(null)
       })
       .catch(console.error) // TODO?...
   }
@@ -206,13 +198,13 @@ const Platforms = (): JSX.Element => {
                   </motion.div>
                 </AnimatePresence>
               )}
-              {discordServersError && (
+              {discordError && discordError.type === "server" && (
                 <Text
                   color={colorMode === "light" ? "red.500" : "red.400"}
                   fontSize="sm"
                   mt={2}
                 >
-                  {discordServersError}
+                  {discordError.message}
                 </Text>
               )}
 
@@ -227,13 +219,13 @@ const Platforms = (): JSX.Element => {
                   </motion.div>
                 </AnimatePresence>
               )}
-              {discordChannelsError && (
+              {discordError && discordError.type === "channels" && (
                 <Text
                   color={colorMode === "light" ? "red.500" : "red.400"}
                   fontSize="sm"
                   mt={2}
                 >
-                  {discordChannelsError}
+                  {discordError.message}
                 </Text>
               )}
               {discordChannels?.length > 0 && (
