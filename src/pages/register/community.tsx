@@ -1,12 +1,6 @@
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  Box,
-  Stack,
-  VStack,
-} from "@chakra-ui/react"
+import { Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
+import NotConnectedError from "components/admin/common/NotConnectedError"
 import Levels from "components/admin/community/Levels"
 import Platforms from "components/admin/community/Platforms"
 import Layout from "components/common/Layout"
@@ -19,20 +13,7 @@ const Page = (): JSX.Element => {
   const methods = useForm({ mode: "all" })
 
   if (!chainId) {
-    return (
-      <Box>
-        <Layout title="Integrate token">
-          <Alert status="error" mb="6">
-            <AlertIcon />
-            <Stack>
-              <AlertDescription position="relative" top={1}>
-                Please connect your wallet in order to continue!
-              </AlertDescription>
-            </Stack>
-          </Alert>
-        </Layout>
-      </Box>
-    )
+    return <NotConnectedError title="Integrate token" />
   }
 
   return (

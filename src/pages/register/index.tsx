@@ -1,14 +1,6 @@
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  Box,
-  Button,
-  Stack,
-  useToast,
-  VStack,
-} from "@chakra-ui/react"
+import { Box, Button, Stack, useToast, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
+import NotConnectedError from "components/admin/common/NotConnectedError"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
 import UsedToken from "components/admin/index/UsedToken"
@@ -100,20 +92,7 @@ const Page = (): JSX.Element => {
   }
 
   if (!chainId) {
-    return (
-      <Box>
-        <Layout title="Integrate token">
-          <Alert status="error" mb="6">
-            <AlertIcon />
-            <Stack>
-              <AlertDescription position="relative" top={1}>
-                Please connect your wallet in order to continue!
-              </AlertDescription>
-            </Stack>
-          </Alert>
-        </Layout>
-      </Box>
-    )
+    return <NotConnectedError title="Integrate token" />
   }
 
   return (
