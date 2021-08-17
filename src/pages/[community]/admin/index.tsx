@@ -1,6 +1,7 @@
 import { Box, Button, Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
+import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityData"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
 import UsedToken from "components/admin/index/UsedToken"
@@ -34,10 +35,7 @@ const AdminHomePage = ({ communityData }: Props): JSX.Element => {
     },
   })
 
-  const onSubmit = (data) => {
-    // TODO...
-    console.log(data)
-  }
+  const onSubmit = useSubmitCommunityData("PATCH")
 
   if (!chainId) {
     return <NotConnectedError title={`${communityData.name} - General`} />
@@ -65,7 +63,6 @@ const AdminHomePage = ({ communityData }: Props): JSX.Element => {
     </FormProvider>
   )
 }
-// <div>Community admin home page - {communityData.name}</div>
 
 export {
   getStaticPaths,
