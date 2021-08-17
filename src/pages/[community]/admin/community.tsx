@@ -8,7 +8,8 @@ import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import usePersonalSign from "components/[community]/community/Platforms/components/JoinModal/hooks/usePersonalSign"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
-import React from "react"
+import { useRouter } from "next/router"
+import React, { useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { Community } from "temporaryData/types"
 
@@ -21,8 +22,9 @@ const convertMonthsToMs = (months: number) =>
   Math.round(months / 3.8026486208174e-10)
 
 const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
+  const router = useRouter()
   const toast = useToast()
-  const { chainId } = useWeb3React()
+  const { chainId, account } = useWeb3React()
   const generatedColors = useColorPalette(
     "chakra-colors-primary",
     communityData.themeColor || "#71717a"
@@ -95,6 +97,12 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
     )
   }
 
+  useEffect(() => {
+    if (communityData.owner.address !== account) {
+      router.push(`/${communityData.urlName}`)
+    }
+  }, [account])
+
   if (!chainId) {
     return <NotConnectedError title={`${communityData.name} - Levels`} />
   }
@@ -102,16 +110,21 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
   return (
     <FormProvider {...methods}>
       <Box sx={generatedColors}>
-        <Layout title="Integrate token" imageUrl={communityData.imageUrl}>
-          <Stack spacing={{ base: 7, xl: 9 }}>
-            <Pagination isAdminPage />
-            <VStack spacing={12}>
-              <Platforms />
-              <Levels />
+        <Layout
+          title={`${communityData.name} - Levels`}
+          imageUrl={communityData.imageUrl}
+        >
+          {communityData.owner.address === account && (
+            <Stack spacing={{ base: 7, xl: 9 }}>
+              <Pagination isAdminPage />
+              <VStack spacing={12}>
+                <Platforms />
+                <Levels />
 
-              <Button onClick={methods.handleSubmit(onSubmit)}>Submit</Button>
-            </VStack>
-          </Stack>
+                <Button onClick={methods.handleSubmit(onSubmit)}>Submit</Button>
+              </VStack>
+            </Stack>
+          )}
         </Layout>
       </Box>
     </FormProvider>

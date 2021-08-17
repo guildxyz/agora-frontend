@@ -8,7 +8,8 @@ import UsedToken from "components/admin/index/UsedToken"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
-import { useState } from "react"
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { Community } from "temporaryData/types"
 
@@ -17,7 +18,8 @@ type Props = {
 }
 
 const AdminHomePage = ({ communityData }: Props): JSX.Element => {
-  const { chainId } = useWeb3React()
+  const router = useRouter()
+  const { chainId, account } = useWeb3React()
   const [colorCode, setColorCode] = useState<string>(null)
   const generatedColors = useColorPalette(
     "chakra-colors-primary",
@@ -37,6 +39,12 @@ const AdminHomePage = ({ communityData }: Props): JSX.Element => {
 
   const onSubmit = useSubmitCommunityData("PATCH")
 
+  useEffect(() => {
+    if (communityData.owner.address !== account) {
+      router.push(`/${communityData.urlName}`)
+    }
+  }, [account])
+
   if (!chainId) {
     return <NotConnectedError title={`${communityData.name} - General`} />
   }
@@ -44,20 +52,28 @@ const AdminHomePage = ({ communityData }: Props): JSX.Element => {
   return (
     <FormProvider {...methods}>
       <Box sx={generatedColors}>
-        <Layout title="Integrate token">
-          <Stack spacing={{ base: 7, xl: 9 }}>
-            <Pagination isAdminPage />
-            <VStack spacing={12}>
-              <Details />
-              <UsedToken />
-              <Appearance
-                onColorChange={(newColor: string) => setColorCode(newColor)}
-              />
-              <Button onClick={methods.handleSubmit(onSubmit)} colorScheme="primary">
-                Integrate token
-              </Button>
-            </VStack>
-          </Stack>
+        <Layout
+          title={`${communityData.name} - General`}
+          imageUrl={communityData.imageUrl}
+        >
+          {communityData.owner.address === account && (
+            <Stack spacing={{ base: 7, xl: 9 }}>
+              <Pagination isAdminPage />
+              <VStack spacing={12}>
+                <Details />
+                <UsedToken />
+                <Appearance
+                  onColorChange={(newColor: string) => setColorCode(newColor)}
+                />
+                <Button
+                  onClick={methods.handleSubmit(onSubmit)}
+                  colorScheme="primary"
+                >
+                  Integrate token
+                </Button>
+              </VStack>
+            </Stack>
+          )}
         </Layout>
       </Box>
     </FormProvider>
