@@ -18,6 +18,11 @@ import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { useFormContext } from "react-hook-form"
 
+type DiscordError = {
+  message: string
+  type: "server" | "channels"
+}
+
 type DiscordServer = {
   id: string
   name: string
@@ -40,14 +45,10 @@ const Platforms = (): JSX.Element => {
 
   const { colorMode } = useColorMode()
 
-  const [discordError, setDiscordError] = useState<{
-    message: string
-    type: "server" | "channels"
-  } | null>(null)
+  const [discordError, setDiscordError] = useState<DiscordError | null>(null)
 
   const [serverSelectLoading, setServerSelectLoading] = useState(false)
   const [discordServers, setDiscordServers] = useState<DiscordServer[] | null>(null)
-  const [discordServersError, setDiscordServersError] = useState(null)
   const [channelSelectLoading, setChannelSelectLoading] = useState(false)
   const [discordChannels, setDiscordChannels] = useState<DiscordChannel[] | null>(
     null
