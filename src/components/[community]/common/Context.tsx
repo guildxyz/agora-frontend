@@ -1,18 +1,12 @@
 import { Box, Portal } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { Chains } from "connectors"
-import React, {
-  createContext,
-  PropsWithChildren,
-  useContext,
-  useMemo,
-  useRef,
-} from "react"
+import React, { createContext, useContext, useMemo, useRef } from "react"
 import { Community, ProvidedCommunity } from "temporaryData/types"
 import useColorPalette from "../hooks/useColorPalette"
 import useMemberCount from "../hooks/useMemberCount"
 
-type Props = PropsWithChildren<{
+type Props = {
   data: Community
   /**
    * This is needed because we're using it for the CommunityCard components too and
@@ -21,7 +15,8 @@ type Props = PropsWithChildren<{
    * it was just an easier solution for now
    */
   shouldRenderWrapper?: boolean
-}>
+  children: JSX.Element
+}
 
 const CommunityContext = createContext<ProvidedCommunity | null>(null)
 
