@@ -28,20 +28,13 @@ type Event = ErrorEvent | InviteEvent
 
 const joinModalMachine = createMachine<Context, Event>(
   {
-    initial: "disabled",
+    initial: "idle",
     context: {
       error: undefined,
       inviteData: initialInviteData,
       id: null,
     },
     states: {
-      disabled: {
-        on: { ENABLE: "idle" },
-        always: {
-          target: "idle",
-          cond: "shouldEnable",
-        },
-      },
       idle: {
         on: { SIGN: "signing" },
       },
@@ -69,7 +62,7 @@ const joinModalMachine = createMachine<Context, Event>(
         exit: "removeInvite",
       },
     },
-    on: { RESET: "disabled" },
+    on: { RESET: "idle" },
   },
   {
     actions: {
@@ -85,7 +78,7 @@ const joinModalMachine = createMachine<Context, Event>(
   }
 )
 
-const useJoinModalMachine = (platform: string, enable = true): Machine<Context> => {
+const useJoinModalMachine = (platform: string): Machine<Context> => {
   const { id: communityId } = useCommunity()
   const sign = usePersonalSign()
 
@@ -95,14 +88,8 @@ const useJoinModalMachine = (platform: string, enable = true): Machine<Context> 
     services: {
       sign: () => sign("Please sign this message to generate your invite link"),
 
-      getInviteLink: (context, event): Promise<Invite> => {
-        console.log({
-          platform,
-          communityId,
-          addressSignedMessage: event.data,
-          ...(context.id ? { platformUserId: context.id } : {}),
-        })
-        return fetch(`${process.env.NEXT_PUBLIC_API}/user/joinPlatform`, {
+      getInviteLink: (context, event): Promise<Invite> =>
+        fetch(`${process.env.NEXT_PUBLIC_API}/user/joinPlatform`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -115,11 +102,7 @@ const useJoinModalMachine = (platform: string, enable = true): Machine<Context> 
           }),
         }).then((response) =>
           response.ok ? response.json() : Promise.reject(response)
-        )
-      },
-    },
-    guards: {
-      shouldEnable: () => !!enable,
+        ),
     },
   })
 

@@ -4,7 +4,6 @@ import { useCommunity } from "components/[community]/common/Context"
 import { useEffect, useRef } from "react"
 import { DiscordError, Machine } from "temporaryData/types"
 import { assign, createMachine, DoneInvokeEvent } from "xstate"
-import usePersonalSign from "./usePersonalSign"
 
 export type ContextType = {
   error: DiscordError | Response
@@ -25,7 +24,7 @@ const dcAuthMachine = createMachine<ContextType, AuthEvent | ErrorEvent>(
       checkIsMember: {
         entry: "checkIsMember",
         on: {
-          HAS_ID: "success",
+          HAS_ID: "idKnown",
           NO_ID: "idle",
           ERROR: "checkIsMemberError",
         },
@@ -42,7 +41,7 @@ const dcAuthMachine = createMachine<ContextType, AuthEvent | ErrorEvent>(
         entry: "openWindow",
         invoke: {
           src: "auth",
-          onDone: "notification",
+          onDone: "successNotification",
           onError: "error",
         },
         exit: "closeWindow",
@@ -57,15 +56,15 @@ const dcAuthMachine = createMachine<ContextType, AuthEvent | ErrorEvent>(
         },
         exit: "removeError",
       },
-      notification: {
+      successNotification: {
         entry: "setId",
         on: {
-          CLOSE_MODAL: "success",
-          HIDE_NOTIFICATION: "success",
+          CLOSE_MODAL: "idKnown",
+          HIDE_NOTIFICATION: "idKnown",
           RESET: "checkIsMember",
         },
       },
-      success: { on: { RESET: "checkIsMember" } },
+      idKnown: { on: { RESET: "checkIsMember" } },
     },
   },
   {
@@ -85,7 +84,6 @@ const dcAuthMachine = createMachine<ContextType, AuthEvent | ErrorEvent>(
 const useDCAuthMachine = (): Machine<ContextType> => {
   const { urlName } = useCommunity()
   const { account } = useWeb3React()
-  const sign = usePersonalSign()
   const authWindow = useRef<Window>(null)
   const listener = useRef<(event: MessageEvent) => void>()
 
@@ -177,8 +175,6 @@ const useDCAuthMachine = (): Machine<ContextType> => {
       },
     },
     services: {
-      sign: () => sign("Please sign this message to verify your address"),
-
       auth: () =>
         new Promise((resolve, reject) => {
           listener.current = handleMessage(resolve, reject)

@@ -1,26 +1,30 @@
 import { CloseButton, Collapse, Text } from "@chakra-ui/react"
 import ModalButton from "components/common/ModalButton"
 import { Check } from "phosphor-react"
-import React from "react"
 import { State } from "xstate"
 import type { ContextType } from "../hooks/useDCAuthMachine"
 
 type Props = {
-  state: string
+  state: State<ContextType>
   send: (event: string) => State<ContextType>
 }
 
-const AuthButton = ({ state, send }: Props) => {
-  switch (state) {
+const DCAuthButton = ({ state, send }: Props) => {
+  switch (state.value) {
     case "checkIsMember":
-      return <ModalButton isLoading loadingText="Checking Discord data" />
+      return <ModalButton mb="3" isLoading loadingText="Checking Discord data" />
     case "checkIsMemberError":
-      return <ModalButton onClick={() => send("RESET")}>Retry</ModalButton>
-    case "success":
-    case "notification":
       return (
-        <Collapse in={state === "notification"} unmountOnExit>
+        <ModalButton mb="3" onClick={() => send("RESET")}>
+          Retry
+        </ModalButton>
+      )
+    case "idKnown":
+    case "successNotification":
+      return (
+        <Collapse in={state.matches("successNotification")} unmountOnExit>
           <ModalButton
+            mb="3"
             as="div"
             colorScheme="gray"
             variant="solidStatic"
@@ -36,12 +40,18 @@ const AuthButton = ({ state, send }: Props) => {
         </Collapse>
       )
     case "authenticating":
-      return <ModalButton isLoading loadingText="Waiting for authentication" />
+      return (
+        <ModalButton mb="3" isLoading loadingText="Waiting for authentication" />
+      )
     case "idle":
     case "error":
     default:
-      return <ModalButton onClick={() => send("AUTH")}>Connect Discord</ModalButton>
+      return (
+        <ModalButton mb="3" onClick={() => send("AUTH")}>
+          Connect Discord
+        </ModalButton>
+      )
   }
 }
 
-export default AuthButton
+export default DCAuthButton
