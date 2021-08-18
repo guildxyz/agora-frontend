@@ -14,7 +14,7 @@ const Appearance = ({ onColorChange }: Props): JSX.Element => {
     formState: { errors },
   } = useFormContext()
 
-  const pickedColor = useWatch({ name: "themeColor", defaultValue: "#e4e4e7" })
+  const pickedColor = useWatch({ name: "themeColor" })
 
   useEffect(() => {
     if (!errors.themeColor) onColorChange(pickedColor)

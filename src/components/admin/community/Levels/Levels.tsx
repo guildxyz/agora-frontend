@@ -1,5 +1,14 @@
-import { Button, Divider, HStack, Icon, Text, VStack } from "@chakra-ui/react"
+import {
+  Button,
+  Divider,
+  HStack,
+  Icon,
+  Text,
+  useToast,
+  VStack,
+} from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
+import usePersonalSign from "components/[community]/community/Platforms/components/JoinModal/hooks/usePersonalSign"
 import { AnimatePresence, motion } from "framer-motion"
 import { Plus } from "phosphor-react"
 import { useEffect } from "react"
@@ -15,22 +24,83 @@ const Levels = (): JSX.Element => {
     name: "levels",
   })
 
+  const sign = usePersonalSign()
+  const toast = useToast()
+
   useEffect(() => {
     if (levelFields.length === 0) {
       appendLevel(
         {
           name: "",
-          image: null,
+          image: undefined,
           description: "",
           requirementType: "OPEN",
-          requirement: null,
-          tokenTimeLock: null,
-          telegramGroupId: null,
+          requirement: undefined,
+          tokenTimeLock: undefined,
+          telegramGroupId: undefined,
         },
         { shouldFocus: false }
       )
     }
   }, [])
+
+  const onDelete = (index: number, id: number) => {
+    sign("Please sign this message to verify your address")
+      .then((addressSignedMessage) => {
+        fetch(`${process.env.NEXT_PUBLIC_API}/community/level/${id}`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ addressSignedMessage }),
+        })
+          .then((response) => {
+            // TODO
+            if (response.status !== 200) {
+              toast({
+                title: "Error",
+                description: "Could not remove level",
+                status: "error",
+                duration: 4000,
+              })
+              return
+            }
+
+            // Success
+            toast({
+              title: "Success!",
+              description: "Level removed!",
+              status: "success",
+              duration: 2000,
+            })
+            removeLevel(index)
+          })
+          .catch(() => {
+            toast({
+              title: "Error",
+              description: "Server error",
+              status: "error",
+              duration: 4000,
+            })
+          })
+      })
+      .catch(() => {
+        toast({
+          title: "Error",
+          description: "You must sign the message to verify your address!",
+          status: "error",
+          duration: 4000,
+        })
+      })
+  }
+
+  const removeLevelHandler = (index: number, id: number) => {
+    if (id) {
+      // Delete from the database
+      onDelete(index, id)
+    } else {
+      // Just remove from the form
+      removeLevel(index)
+    }
+  }
 
   return (
     <Section
@@ -47,7 +117,10 @@ const Levels = (): JSX.Element => {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.75 }}
                 >
-                  <AddLevel index={index} onRemove={() => removeLevel(index)} />
+                  <AddLevel
+                    index={index}
+                    onRemove={(id) => removeLevelHandler(index, id)}
+                  />
                 </motion.div>
               </AnimatePresence>
             ))}
@@ -59,26 +132,27 @@ const Levels = (): JSX.Element => {
         )}
 
         <HStack width="full" spacing={2}>
-          <Divider borderBottomWidth={2} borderColor="gray.300" />
+          <Divider borderBottomWidth={2} borderColor="primary.300" />
           <Button
             width={60}
             variant="ghost"
+            colorScheme="primary"
             leftIcon={<Icon as={Plus} />}
             onClick={() =>
               appendLevel({
                 name: "",
-                image: null,
+                image: undefined,
                 description: "",
                 requirementType: "OPEN",
-                requirement: null,
-                tokenTimeLock: null,
-                telegramGroupId: null,
+                requirement: undefined,
+                tokenTimeLock: undefined,
+                telegramGroupId: undefined,
               })
             }
           >
             Add level
           </Button>
-          <Divider borderBottomWidth={2} borderColor="gray.300" />
+          <Divider borderBottomWidth={2} borderColor="primary.300" />
         </HStack>
       </>
     </Section>

@@ -1,12 +1,17 @@
-import { Button, ButtonGroup, useColorMode } from "@chakra-ui/react"
+import {
+  Button,
+  ButtonGroup,
+  useBreakpointValue,
+  useColorMode,
+} from "@chakra-ui/react"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { useMemo } from "react"
 
-const LinkButton = ({ href, disabled = false, isAdminPage = false, children }) => {
+const LinkButton = ({ href, disabled = false, size = "md", children }) => {
   const router = useRouter()
-  const [, communityUrl, currentPath] = router.asPath.split(/[/#]/)
-  const isActive = currentPath === (href || undefined)
+  const [, communityUrl, ...currentPath] = router.asPath.split(/[/#]/)
+  const isActive = currentPath.join("/") === href
   const { colorMode } = useColorMode()
   const gray = useMemo(
     () => (colorMode === "light" ? "gray.600" : "gray.400"),
@@ -14,19 +19,14 @@ const LinkButton = ({ href, disabled = false, isAdminPage = false, children }) =
   )
 
   return (
-    <Link
-      key="href"
-      passHref
-      href={
-        isAdminPage ? `/${communityUrl}/admin/${href}` : `/${communityUrl}/${href}`
-      }
-    >
+    <Link key="href" passHref href={`/${communityUrl}/${href}`}>
       <Button
         as="a"
         colorScheme="primary"
         isActive={isActive}
         disabled={disabled}
         color={!isActive ? gray : undefined}
+        size={size}
       >
         {children}
       </Button>
@@ -34,18 +34,32 @@ const LinkButton = ({ href, disabled = false, isAdminPage = false, children }) =
   )
 }
 
-const Pagination = ({ isAdminPage = false }) => (
-  <ButtonGroup variant="ghost">
-    <LinkButton href="" isAdminPage={isAdminPage}>
-      Info
-    </LinkButton>
-    <LinkButton href="community" isAdminPage={isAdminPage}>
-      Community
-    </LinkButton>
-    {/* <LinkButton href="twitter-bounty" disabled>
+const Pagination = ({ isAdmin = false }) => {
+  const buttonSize = useBreakpointValue({ base: "sm", md: "md" })
+
+  return (
+    <ButtonGroup variant="ghost">
+      <LinkButton href="" size={buttonSize}>
+        Info
+      </LinkButton>
+      <LinkButton href="community" size={buttonSize}>
+        Community
+      </LinkButton>
+      {isAdmin && (
+        <>
+          <LinkButton href="admin" size={buttonSize}>
+            Edit info
+          </LinkButton>
+          <LinkButton href="admin/community" size={buttonSize}>
+            Manage levels
+          </LinkButton>
+        </>
+      )}
+      {/* <LinkButton href="twitter-bounty" disabled>
       Twitter bounty
     </LinkButton> */}
-  </ButtonGroup>
-)
+    </ButtonGroup>
+  )
+}
 
 export default Pagination

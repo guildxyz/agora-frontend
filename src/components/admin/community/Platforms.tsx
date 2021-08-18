@@ -1,10 +1,15 @@
 import {
   Badge,
+  Button,
   Divider,
   FormControl,
   FormLabel,
   Grid,
   GridItem,
+  HStack,
+  Input,
+  InputGroup,
+  InputLeftAddon,
   Select,
   Spinner,
   Switch,
@@ -12,16 +17,29 @@ import {
   useColorMode,
   VStack,
 } from "@chakra-ui/react"
-import { useWeb3React } from "@web3-react/core"
+// import { useWeb3React } from "@web3-react/core"
 import Section from "components/admin/common/Section"
 import { AnimatePresence, motion } from "framer-motion"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useFormContext } from "react-hook-form"
+import { Platform } from "temporaryData/types"
 
+type Props = {
+  activePlatforms?: Platform[]
+}
+
+type DiscordError = {
+  message: string
+  type: "server" | "channels"
+  showAuthBtn?: boolean
+}
+
+/*
 type DiscordServer = {
   id: string
   name: string
 }
+*/
 
 type DiscordChannel = {
   id: string
@@ -29,8 +47,8 @@ type DiscordChannel = {
   category: string
 }
 
-const Platforms = (): JSX.Element => {
-  const { account } = useWeb3React()
+const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
+  // const { account } = useWeb3React()
 
   const {
     watch,
@@ -40,107 +58,99 @@ const Platforms = (): JSX.Element => {
 
   const { colorMode } = useColorMode()
 
+  const [discordError, setDiscordError] = useState<DiscordError | null>(null)
+
   const [serverSelectLoading, setServerSelectLoading] = useState(false)
-  const [discordServers, setDiscordServers] = useState<DiscordServer[] | null>(null)
-  const [discordServersError, setDiscordServersError] = useState(null)
+  // const [discordServers, setDiscordServers] = useState<DiscordServer[] | null>(null)
   const [channelSelectLoading, setChannelSelectLoading] = useState(false)
   const [discordChannels, setDiscordChannels] = useState<DiscordChannel[] | null>(
     null
   )
-  const [discordChannelsError, setDiscordChannelsError] = useState(null)
 
+  /*
+    // We'll need this when we'll be able to authenticat the user with DC & fetch their administered servers
   useEffect(() => {
     if (!account) return
 
     setServerSelectLoading(true)
     fetch(`${process.env.NEXT_PUBLIC_API}/community/administeredServers/${account}`)
       .then((response) => {
+        // We don't know the DC id of the user
+        if (response.status === 400) {
+          setChannelSelectLoading(false)
+          setDiscordError({
+            message: "Please authenticate with Discord",
+            type: "server",
+            showAuthBtn: true,
+          })
+          setDiscordChannels(null)
+          return
+        }
+
         if (response.status !== 200) {
           setChannelSelectLoading(false)
-          setDiscordServersError("Couldn't fetch your discord servers")
+          setDiscordError({
+            message: "Couldn't fetch your discord servers",
+            type: "server",
+          })
           setDiscordChannels(null)
           return
         }
 
         return response.json()
-
-        /*
-        // DEBUG
-        return [
-          {
-            name: "Devid test",
-            id: "717317894954025012",
-          },
-          {
-            name: "Agora Bot Test",
-            id: "844222532994727957",
-          },
-        ]
-        */
       })
       .then((data) => {
         setDiscordServers(data)
         setServerSelectLoading(false)
 
-        if (data.length === 0) {
-          setDiscordServersError(
-            "It seems like you don't have a Discord server yet."
-          )
+        if (data?.length === 0) {
+          setDiscordError({
+            message: "It seems like you don't have a Discord server yet.",
+            type: "server",
+          })
           return
         }
 
-        setDiscordServersError(null)
+        setDiscordError(null)
       })
       .catch(console.error) // TODO?...
-  }, [account])
+    }, [account])
+    */
 
   const onServerIdChange = (e) => {
     const serverId = e.target.value
 
-    if (errors.discordServerId || discordServersError) return
+    if (errors.discordServerId || discordError?.type === "server") return
 
     setChannelSelectLoading(true)
     fetch(`${process.env.NEXT_PUBLIC_API}/community/discordChannels/${serverId}`)
       .then((response) => {
         if (response.status !== 200) {
           setChannelSelectLoading(false)
-          setDiscordChannelsError(
-            "Couldn't fetch channels list from your Discord server"
-          )
+          setDiscordError({
+            message: "Couldn't fetch channels list from your Discord server",
+            type: "channels",
+          })
           setDiscordChannels(null)
           return
         }
 
         return response.json()
-
-        /*
-        // DEBUG
-        return [
-          {
-            id: "861688436566392863",
-            name: "general",
-            category: "MEDOUSA",
-          },
-          {
-            id: "866288974959214602",
-            name: "test",
-            category: "MEDOUSA",
-          },
-        ]
-        */
       })
       .then((data) => {
         setDiscordChannels(data)
         setChannelSelectLoading(false)
 
-        if (data.length === 0) {
-          setDiscordChannelsError(
-            "It seems like you haven't invited Medousa to your Discord server yet."
-          )
+        if (!Array.isArray(data) || data.length === 0) {
+          setDiscordError({
+            message:
+              "It seems like you haven't invited Medousa to your Discord server yet.",
+            type: "channels",
+          })
           return
         }
 
-        setDiscordChannelsError(null)
+        setDiscordError(null)
       })
       .catch(console.error) // TODO?...
   }
@@ -159,117 +169,166 @@ const Platforms = (): JSX.Element => {
         >
           <GridItem>
             <FormControl display="flex" height="full" alignItems="center">
-              <Switch colorScheme="primary" mr={4} {...register("isDCEnabled")} />
+              <Switch
+                colorScheme="primary"
+                mr={4}
+                {...register("isDCEnabled")}
+                defaultChecked={
+                  !!activePlatforms.find((platform) => platform.name === "DISCORD")
+                }
+              />
               <FormLabel margin={0}>Discord</FormLabel>
             </FormControl>
           </GridItem>
 
           <GridItem>
-            <VStack spacing={4} alignItems="start">
-              {serverSelectLoading && (
-                <AnimatePresence>
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.75 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.75 }}
-                  >
-                    <Spinner />
-                  </motion.div>
-                </AnimatePresence>
-              )}
+            {watch("isDCEnabled") ? (
+              <VStack spacing={4} alignItems="start">
+                {false && serverSelectLoading && (
+                  <AnimatePresence>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.75 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.75 }}
+                    >
+                      <Spinner />
+                    </motion.div>
+                  </AnimatePresence>
+                )}
 
-              {discordServers?.length > 0 && (
-                <AnimatePresence>
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.75 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.75 }}
-                  >
-                    <FormControl isDisabled={!watch("isDCEnabled")}>
-                      <FormLabel>Pick a server</FormLabel>
-                      <Select
-                        width={64}
-                        placeholder="Select one"
-                        {...register("discordServerId", {
-                          required: watch("isDCEnabled"),
-                        })}
-                        isInvalid={errors.discordServerId}
-                        onChange={onServerIdChange}
+                {
+                  /* discordServers?.length > 0 */ true && (
+                    <AnimatePresence>
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.75 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.75 }}
                       >
-                        {discordServers.map((server) => (
-                          <option key={server.id} value={server.id}>
-                            {`${server.name}`}
-                          </option>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </motion.div>
-                </AnimatePresence>
-              )}
-              {discordServersError && (
-                <Text
-                  color={colorMode === "light" ? "red.500" : "red.400"}
-                  fontSize="sm"
-                  mt={2}
-                >
-                  {discordServersError}
-                </Text>
-              )}
+                        <FormControl isDisabled={!watch("isDCEnabled")}>
+                          <InputGroup>
+                            <InputLeftAddon>Server ID</InputLeftAddon>
+                            <Input
+                              width={64}
+                              {...register("discordServerId", {
+                                required: watch("isDCEnabled"),
+                                minLength: 17,
+                              })}
+                              isInvalid={errors.discordServerId}
+                              onChange={onServerIdChange}
+                            />
+                          </InputGroup>
 
-              {channelSelectLoading && (
-                <AnimatePresence>
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.75 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.75 }}
-                  >
-                    <Spinner />
-                  </motion.div>
-                </AnimatePresence>
-              )}
-              {discordChannelsError && (
-                <Text
-                  color={colorMode === "light" ? "red.500" : "red.400"}
-                  fontSize="sm"
-                  mt={2}
-                >
-                  {discordChannelsError}
-                </Text>
-              )}
-              {discordChannels?.length > 0 && (
-                <AnimatePresence>
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.75 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.75 }}
-                  >
-                    <FormControl isDisabled={!watch("isDCEnabled")}>
-                      <FormLabel>Invite channel</FormLabel>
-
-                      <Select
-                        width={64}
-                        placeholder="Select one"
-                        {...register("inviteChannel", {
-                          required: watch("isDCEnabled"),
-                        })}
-                        isInvalid={errors.inviteChannel}
+                          {/*
+                        <FormLabel>Pick a server</FormLabel>
+                         <Select
+                          width={64}
+                          placeholder="Select one"
+                          {...register("discordServerId", {
+                            required: watch("isDCEnabled"),
+                          })}
+                          isInvalid={errors.discordServerId}
+                          onChange={onServerIdChange}
+                        >
+                          {discordServers.map((server) => (
+                            <option key={server.id} value={server.id}>
+                              {`${server.name}`}
+                            </option>
+                          ))}
+                        </Select> */}
+                        </FormControl>
+                      </motion.div>
+                    </AnimatePresence>
+                  )
+                }
+                {discordError && discordError.type === "server" && (
+                  <HStack spacing={4} justifyItems="center">
+                    <Text
+                      color={colorMode === "light" ? "red.500" : "red.400"}
+                      fontSize="sm"
+                      mt={2}
+                      height={8}
+                    >
+                      {discordError.message}
+                    </Text>
+                    {false && discordError.showAuthBtn && (
+                      <Button
+                        ml={4}
+                        size="sm"
+                        colorScheme="DISCORD"
+                        isDisabled={!watch("isDCEnabled")}
                       >
-                        {discordChannels.map((channel) => (
-                          <option key={channel.id} value={channel.id}>
-                            {`#${channel.name} (${channel.category})`}
-                          </option>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </motion.div>
-                </AnimatePresence>
-              )}
-            </VStack>
+                        Authenticate
+                      </Button>
+                    )}
+                  </HStack>
+                )}
+
+                {channelSelectLoading && (
+                  <AnimatePresence>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.75 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.75 }}
+                    >
+                      <Spinner />
+                    </motion.div>
+                  </AnimatePresence>
+                )}
+                {discordError && discordError.type === "channels" && (
+                  <Text
+                    color={colorMode === "light" ? "red.500" : "red.400"}
+                    fontSize="sm"
+                    mt={2}
+                  >
+                    {discordError.message}
+                  </Text>
+                )}
+                {discordChannels?.length > 0 && (
+                  <AnimatePresence>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.75 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.75 }}
+                    >
+                      <FormControl isDisabled={!watch("isDCEnabled")}>
+                        <FormLabel>Invite channel</FormLabel>
+
+                        <Select
+                          width={64}
+                          placeholder="Select one"
+                          {...register("inviteChannel", {
+                            required: watch("isDCEnabled"),
+                          })}
+                          isInvalid={errors.inviteChannel}
+                        >
+                          {discordChannels.map((channel) => (
+                            <option key={channel.id} value={channel.id}>
+                              {`#${channel.name} (${channel.category})`}
+                            </option>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </motion.div>
+                  </AnimatePresence>
+                )}
+              </VStack>
+            ) : (
+              <Text colorScheme="gray">
+                Medousa will generate roles on your Discord server for every level
+              </Text>
+            )}
           </GridItem>
 
           <GridItem>
             <FormControl display="flex" height="full" alignItems="center">
-              <Switch colorScheme="primary" mr={4} {...register("isTGEnabled")} />
+              <Switch
+                colorScheme="primary"
+                mr={4}
+                {...register("isTGEnabled")}
+                defaultChecked={
+                  !!activePlatforms.find((platform) => platform.name === "TELEGRAM")
+                }
+              />
               <FormLabel margin={0}>Telegram</FormLabel>
             </FormControl>
           </GridItem>

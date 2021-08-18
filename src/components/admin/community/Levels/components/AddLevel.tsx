@@ -47,7 +47,7 @@ const membershipsData: { [key: string]: MembershipData } = {
 
 type Props = {
   index: number // index is (and should be) only used for managing the form state / removing a level form the form!
-  onRemove: () => void
+  onRemove: (levelId: number | null) => void
 }
 
 const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
@@ -55,6 +55,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
     control,
     register,
     setValue,
+    getValues,
     watch,
     formState: { errors },
   } = useFormContext()
@@ -80,7 +81,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
         rounded="full"
         zIndex="docked"
         aria-label="Remove level"
-        onClick={onRemove}
+        onClick={() => onRemove(getValues(`levels.${index}.id`))}
       />
 
       <VStack spacing={12}>
@@ -204,37 +205,30 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
           </GridItem>
         </Grid>
 
-        <VStack width="full" spacing={6} alignItems="start">
-          <Text as="h2" fontWeight="bold" fontSize="lg">
-            Platform linking
-          </Text>
-
-          <FormControl isDisabled={!watch("isTGEnabled")}>
-            <FormLabel>
-              <Text as="span">Telegram group</Text>
-              <Hint header="Where can I find the TG group ID?" body="TODO..." />
-            </FormLabel>
-            <InputGroup>
-              <Input
-                width="full"
-                placeholder="+ paste group ID"
-                {...register(`levels.${index}.telegramGroupId`, {
-                  required: watch("isTGEnabled"),
-                })}
-                isInvalid={errors.levels && errors.levels[index]?.telegramGroupId}
-              />
-            </InputGroup>
-          </FormControl>
-
-          <FormControl isDisabled={!watch("isDCEnabled")}>
-            <FormLabel>
-              <Text as="span">Discord role(s)</Text>
-            </FormLabel>
-            <Text colorScheme="gray">
-              Medousa will generate roles on your Discord server for every level
+        {watch("isTGEnabled") && (
+          <VStack width="full" spacing={6} alignItems="start">
+            <Text as="h2" fontWeight="bold" fontSize="lg">
+              Platform linking
             </Text>
-          </FormControl>
-        </VStack>
+
+            <FormControl>
+              <FormLabel>
+                <Text as="span">Telegram group</Text>
+                <Hint header="Where can I find the TG group ID?" body="TODO..." />
+              </FormLabel>
+              <InputGroup>
+                <Input
+                  width="full"
+                  placeholder="+ paste group ID"
+                  {...register(`levels.${index}.telegramGroupId`, {
+                    required: watch("isTGEnabled"),
+                  })}
+                  isInvalid={errors.levels && errors.levels[index]?.telegramGroupId}
+                />
+              </InputGroup>
+            </FormControl>
+          </VStack>
+        )}
       </VStack>
     </Card>
   )
