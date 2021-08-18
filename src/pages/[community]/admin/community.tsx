@@ -26,15 +26,21 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
   const methods = useForm({
     mode: "all",
     defaultValues: {
+      isTGEnabled: !!communityData.communityPlatforms
+        .filter((platform) => platform.active)
+        .find((platform) => platform.name === "TELEGRAM"),
+      isDCEnabled: !!communityData.communityPlatforms
+        .filter((platform) => platform.active)
+        .find((platform) => platform.name === "DISCORD"),
       levels: communityData.levels.map((level) => ({
         id: level.id,
-        name: level.name,
-        image: level.imageUrl,
-        description: level.description,
+        name: level.name || undefined,
+        image: level.imageUrl || undefined,
+        description: level.description || undefined,
         requirementType: level.requirementType,
-        requirement: level.requirement,
-        stakeTimelockMs: level.stakeTimelockMs, // TODO: convert it to months
-        telegramGroupId: level.telegramGroupId,
+        requirement: level.requirement || undefined,
+        stakeTimelockMs: level.stakeTimelockMs || undefined, // TODO: convert it to months
+        telegramGroupId: level.telegramGroupId || undefined,
       })),
     },
   })
@@ -69,7 +75,11 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
                 }
               />
               <VStack spacing={12}>
-                <Platforms />
+                <Platforms
+                  activePlatforms={communityData.communityPlatforms.filter(
+                    (platform) => platform.active
+                  )}
+                />
                 <Levels />
 
                 <Button

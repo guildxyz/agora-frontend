@@ -19,6 +19,11 @@ import Section from "components/admin/common/Section"
 import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { useFormContext } from "react-hook-form"
+import { Platform } from "temporaryData/types"
+
+type Props = {
+  activePlatforms?: Platform[]
+}
 
 type DiscordError = {
   message: string
@@ -37,7 +42,7 @@ type DiscordChannel = {
   category: string
 }
 
-const Platforms = (): JSX.Element => {
+const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
   const { account } = useWeb3React()
 
   const {
@@ -91,7 +96,7 @@ const Platforms = (): JSX.Element => {
         setDiscordServers(data)
         setServerSelectLoading(false)
 
-        if (data.length === 0) {
+        if (data?.length === 0) {
           setDiscordError({
             message: "It seems like you don't have a Discord server yet.",
             type: "server",
@@ -156,7 +161,14 @@ const Platforms = (): JSX.Element => {
         >
           <GridItem>
             <FormControl display="flex" height="full" alignItems="center">
-              <Switch colorScheme="primary" mr={4} {...register("isDCEnabled")} />
+              <Switch
+                colorScheme="primary"
+                mr={4}
+                {...register("isDCEnabled")}
+                defaultChecked={
+                  !!activePlatforms.find((platform) => platform.name === "DISCORD")
+                }
+              />
               <FormLabel margin={0}>Discord</FormLabel>
             </FormControl>
           </GridItem>
@@ -285,7 +297,14 @@ const Platforms = (): JSX.Element => {
 
           <GridItem>
             <FormControl display="flex" height="full" alignItems="center">
-              <Switch colorScheme="primary" mr={4} {...register("isTGEnabled")} />
+              <Switch
+                colorScheme="primary"
+                mr={4}
+                {...register("isTGEnabled")}
+                defaultChecked={
+                  !!activePlatforms.find((platform) => platform.name === "TELEGRAM")
+                }
+              />
               <FormLabel margin={0}>Telegram</FormLabel>
             </FormControl>
           </GridItem>
