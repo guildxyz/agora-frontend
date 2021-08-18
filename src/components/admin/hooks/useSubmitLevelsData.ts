@@ -2,10 +2,10 @@ import { useToast } from "@chakra-ui/react"
 import usePersonalSign from "components/[community]/community/Platforms/components/JoinModal/hooks/usePersonalSign"
 import clearUndefinedData from "../utils/clearUndefinedData"
 
-const useSubmitLevelsData = (method: "POST" | "PATCH", id = null) => {
-  const fetchUrl = `${process.env.NEXT_PUBLIC_API}/community/${
-    method === "POST" ? `levels/${id}` : "level"
-  }`
+const useSubmitLevelsData = (
+  method: "POST" | "PATCH" | "DELETE",
+  communityId: number = null
+) => {
   const toast = useToast()
   const sign = usePersonalSign()
 
@@ -36,11 +36,14 @@ const useSubmitLevelsData = (method: "POST" | "PATCH", id = null) => {
 
     const finalData: any = clearUndefinedData(editedData)
 
+    console.log("FINAL DATA", finalData)
+
     // Signing the message, and sending the data to the API
-    sign("Please sign this message to verify your address").then(
-      (addressSignedMessage) => {
-        if (method === "POST") {
-          fetch(fetchUrl, {
+    sign("Please sign this message to verify your address")
+      .then((addressSignedMessage) => {
+        // POST
+        if (method === "POST" && communityId) {
+          fetch(`${process.env.NEXT_PUBLIC_API}/community/levels/${communityId}`, {
             method,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ ...finalData, addressSignedMessage }),
@@ -75,43 +78,54 @@ const useSubmitLevelsData = (method: "POST" | "PATCH", id = null) => {
           return
         }
 
-        // On PATCH - sending a PATCH request for every level
-        const levelsToUpdate = [...finalData.levels].map((level) =>
-          fetch(`${fetchUrl}/${level.id}`, {
-            method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...level, addressSignedMessage }),
-          })
-        )
-        Promise.all(levelsToUpdate)
-          .then((responses) => {
-            if (responses.find((res) => res.status !== 200 && res.status !== 201)) {
+        // PATCH
+        if (method === "PATCH") {
+          const levelsToUpdate = [...finalData.levels].map((level) =>
+            fetch(`${process.env.NEXT_PUBLIC_API}/community/level/${level.id}`, {
+              method,
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ ...level, addressSignedMessage }),
+            })
+          )
+          Promise.all(levelsToUpdate)
+            .then((responses) => {
+              if (
+                responses.find((res) => res.status !== 200 && res.status !== 201)
+              ) {
+                toast({
+                  title: "Error",
+                  description:
+                    "An error occurred while editing the levels of your community",
+                  status: "error",
+                  duration: 4000,
+                })
+                return
+              }
+              toast({
+                title: "Success!",
+                description: "Level(s) updated!",
+                status: "success",
+                duration: 2000,
+              })
+            })
+            .catch(() => {
               toast({
                 title: "Error",
-                description:
-                  "An error occurred while editing the levels of your community",
+                description: "Server error",
                 status: "error",
                 duration: 4000,
               })
-              return
-            }
-            toast({
-              title: "Success!",
-              description: "Level(s) updated!",
-              status: "success",
-              duration: 2000,
             })
-          })
-          .catch(() => {
-            toast({
-              title: "Error",
-              description: "Server error",
-              status: "error",
-              duration: 4000,
-            })
-          })
-      }
-    )
+        }
+      })
+      .catch(() => {
+        toast({
+          title: "Error",
+          description: "You must sign the message to verify your address!",
+          status: "error",
+          duration: 4000,
+        })
+      })
   }
 
   return onSubmit

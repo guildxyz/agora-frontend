@@ -47,7 +47,7 @@ const membershipsData: { [key: string]: MembershipData } = {
 
 type Props = {
   index: number // index is (and should be) only used for managing the form state / removing a level form the form!
-  onRemove: () => void
+  onRemove: (levelId: number | null) => void
 }
 
 const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
@@ -55,6 +55,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
     control,
     register,
     setValue,
+    getValues,
     watch,
     formState: { errors },
   } = useFormContext()
@@ -80,7 +81,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
         rounded="full"
         zIndex="docked"
         aria-label="Remove level"
-        onClick={onRemove}
+        onClick={() => onRemove(getValues(`levels.${index}.id`))}
       />
 
       <VStack spacing={12}>

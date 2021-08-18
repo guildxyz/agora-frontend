@@ -76,7 +76,9 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
                   colorScheme="primary"
                   onClick={methods.handleSubmit(onSubmit)}
                 >
-                  Submit
+                  {communityData.levels?.length > 0
+                    ? "Update levels"
+                    : "Create levels"}
                 </Button>
               </VStack>
             </Stack>
