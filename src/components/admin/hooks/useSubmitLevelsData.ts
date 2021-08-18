@@ -93,23 +93,22 @@ const useSubmitLevelsData = (
             )
 
           // New levels should be created
-          const levelsToCreate = [...finalData.levels]
-            .filter((level) => !level.id)
-            .map((level) =>
-              fetch(
-                `${process.env.NEXT_PUBLIC_API}/community/level/${communityId}`,
-                {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    ...level,
-                    addressSignedMessage,
-                  }),
-                }
-              )
-            )
+          const levelsToCreateArray = [...finalData.levels].filter(
+            (level) => !level.id
+          )
+          const levelsToCreate = fetch(
+            `${process.env.NEXT_PUBLIC_API}/community/levels/${communityId}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                levels: levelsToCreateArray,
+                addressSignedMessage,
+              }),
+            }
+          )
 
-          Promise.all([...levelsToUpdate, ...levelsToCreate])
+          Promise.all([...levelsToUpdate, levelsToCreate])
             .then((responses) => {
               if (
                 responses.find((res) => res.status !== 200 && res.status !== 201)
