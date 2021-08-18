@@ -23,7 +23,7 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
         <Stack spacing={{ base: 7, xl: 9 }}>
           <Pagination
             isAdmin={
-              account && account.toLowerCase() === communityData.owner.address
+              account && account.toLowerCase() === communityData.owner?.address
             }
           />
           {communityData.levels.length ? (
@@ -67,7 +67,7 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
 
 export {
   getStaticPaths,
-  getStaticProps
+  getStaticProps,
 } from "components/[community]/utils/dataFetching"
 
 export default CommunityPage
