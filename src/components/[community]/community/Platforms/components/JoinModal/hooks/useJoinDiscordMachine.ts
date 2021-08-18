@@ -167,20 +167,28 @@ const useJoinModalMachine = (onOpen: () => void): any => {
           .then((result) => result.json())
           .then((response) => response.id),
       register: (context, event) =>
-        fetch(`${process.env.NEXT_PUBLIC_API}/user/joinPlatform`, {
+        fetch("/api/hash", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            platform: "DISCORD",
-            platformUserId: context.id,
-            communityId,
-            addressSignedMessage: event.data,
-          }),
-        }).then((response) =>
-          response.ok ? response.json() : Promise.reject(response)
-        ),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ data: context.id }),
+        })
+          .then((response) => response.json())
+          .then(({ hashed }) =>
+            fetch(`${process.env.NEXT_PUBLIC_API}/user/joinPlatform`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                platform: "DISCORD",
+                platformUserId: hashed,
+                communityId,
+                addressSignedMessage: event.data,
+              }),
+            }).then((response) =>
+              response.ok ? response.json() : Promise.reject(response)
+            )
+          ),
     },
   })
 
