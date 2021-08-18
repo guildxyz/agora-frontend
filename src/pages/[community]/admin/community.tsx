@@ -17,6 +17,7 @@ type Props = {
 }
 
 const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
+  console.log(communityData)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { chainId, account } = useWeb3React()
@@ -33,6 +34,10 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
       isDCEnabled: !!communityData.communityPlatforms
         .filter((platform) => platform.active)
         .find((platform) => platform.name === "DISCORD"),
+      discordServerId:
+        communityData.communityPlatforms
+          .filter((platform) => platform.active)
+          .find((platform) => platform.name === "DISCORD")?.platformId || undefined,
       levels: communityData.levels.map((level) => ({
         id: level.id,
         name: level.name || undefined,
