@@ -12,6 +12,7 @@ import React, { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 const Page = (): JSX.Element => {
+  const [loading, setLoading] = useState(false)
   const { chainId } = useWeb3React()
   const [colorCode, setColorCode] = useState<string>(null)
   const generatedColors = useColorPalette(
@@ -31,7 +32,7 @@ const Page = (): JSX.Element => {
     },
   })
 
-  const onSubmit = useSubmitCommunityData("POST")
+  const onSubmit = useSubmitCommunityData(setLoading, "POST")
 
   if (!chainId) {
     return <NotConnectedError title="Integrate token" />
@@ -49,7 +50,11 @@ const Page = (): JSX.Element => {
               <Appearance
                 onColorChange={(newColor: string) => setColorCode(newColor)}
               />
-              <Button onClick={methods.handleSubmit(onSubmit)} colorScheme="primary">
+              <Button
+                onClick={methods.handleSubmit(onSubmit)}
+                colorScheme="primary"
+                isLoading={loading}
+              >
                 Integrate token
               </Button>
             </VStack>

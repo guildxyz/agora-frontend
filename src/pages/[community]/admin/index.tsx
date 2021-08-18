@@ -18,6 +18,7 @@ type Props = {
 }
 
 const AdminHomePage = ({ communityData }: Props): JSX.Element => {
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { chainId, account } = useWeb3React()
   const [colorCode, setColorCode] = useState<string>(null)
@@ -37,7 +38,7 @@ const AdminHomePage = ({ communityData }: Props): JSX.Element => {
     },
   })
 
-  const onSubmit = useSubmitCommunityData("PATCH", communityData.id)
+  const onSubmit = useSubmitCommunityData(setLoading, "PATCH", communityData.id)
 
   useEffect(() => {
     if (account && account.toLowerCase() !== communityData.owner?.address) {
@@ -72,6 +73,7 @@ const AdminHomePage = ({ communityData }: Props): JSX.Element => {
                 <Button
                   onClick={methods.handleSubmit(onSubmit)}
                   colorScheme="primary"
+                  isLoading={loading}
                 >
                   Update community
                 </Button>

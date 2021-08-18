@@ -3,7 +3,11 @@ import usePersonalSign from "components/[community]/community/Platforms/componen
 import { useRouter } from "next/router"
 import clearUndefinedData from "../utils/clearUndefinedData"
 
-const useSubmitCommunityData = (method: "POST" | "PATCH", id = null) => {
+const useSubmitCommunityData = (
+  setLoading: (loading: boolean) => void,
+  method: "POST" | "PATCH",
+  id = null
+) => {
   const fetchUrl =
     method === "PATCH"
       ? `${process.env.NEXT_PUBLIC_API}/community/${id}`
@@ -13,6 +17,8 @@ const useSubmitCommunityData = (method: "POST" | "PATCH", id = null) => {
   const sign = usePersonalSign()
 
   const onSubmit = (data: any) => {
+    setLoading(true)
+
     sign("Please sign this message to verify your address")
       .then((addressSignedMessage) => {
         const finalData = clearUndefinedData(data)
@@ -22,6 +28,8 @@ const useSubmitCommunityData = (method: "POST" | "PATCH", id = null) => {
           body: JSON.stringify({ ...finalData, addressSignedMessage }),
         })
           .then((response) => {
+            setLoading(false)
+
             if (response.status !== 200 && response.status !== 201) {
               toast({
                 title: "Error",
@@ -51,6 +59,7 @@ const useSubmitCommunityData = (method: "POST" | "PATCH", id = null) => {
             }
           })
           .catch(() => {
+            setLoading(false)
             toast({
               title: "Error",
               description: "Server error",
@@ -60,6 +69,8 @@ const useSubmitCommunityData = (method: "POST" | "PATCH", id = null) => {
           })
       })
       .catch(() => {
+        setLoading(false)
+
         toast({
           title: "Error",
           description: "You must sign the message to verify your address!",

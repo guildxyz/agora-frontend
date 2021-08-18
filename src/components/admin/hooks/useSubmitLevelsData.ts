@@ -3,6 +3,7 @@ import usePersonalSign from "components/[community]/community/Platforms/componen
 import clearUndefinedData from "../utils/clearUndefinedData"
 
 const useSubmitLevelsData = (
+  setLoading: (loading: boolean) => void,
   method: "POST" | "PATCH" | "DELETE",
   communityId: number = null
 ) => {
@@ -14,6 +15,8 @@ const useSubmitLevelsData = (
     Math.round(months / 3.8026486208174e-10)
 
   const onSubmit = (data: any) => {
+    setLoading(true)
+
     const editedData = { ...data }
 
     // Won't send these to the backend
@@ -47,6 +50,8 @@ const useSubmitLevelsData = (
             body: JSON.stringify({ ...finalData, addressSignedMessage }),
           })
             .then((response) => {
+              setLoading(false)
+
               if (response.status !== 200 && response.status !== 201) {
                 toast({
                   title: "Error",
@@ -66,6 +71,8 @@ const useSubmitLevelsData = (
               })
             })
             .catch(() => {
+              setLoading(false)
+
               toast({
                 title: "Error",
                 description: "Server error",
@@ -110,6 +117,8 @@ const useSubmitLevelsData = (
 
           Promise.all([...levelsToUpdate, levelsToCreate])
             .then((responses) => {
+              setLoading(false)
+
               if (
                 responses.find((res) => res.status !== 200 && res.status !== 201)
               ) {
@@ -130,6 +139,8 @@ const useSubmitLevelsData = (
               })
             })
             .catch(() => {
+              setLoading(false)
+
               toast({
                 title: "Error",
                 description: "Server error",
@@ -140,6 +151,8 @@ const useSubmitLevelsData = (
         }
       })
       .catch(() => {
+        setLoading(false)
+
         toast({
           title: "Error",
           description: "You must sign the message to verify your address!",

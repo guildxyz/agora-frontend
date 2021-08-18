@@ -8,7 +8,7 @@ import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import { useRouter } from "next/router"
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { Community } from "temporaryData/types"
 
@@ -17,6 +17,7 @@ type Props = {
 }
 
 const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { chainId, account } = useWeb3React()
   const generatedColors = useColorPalette(
@@ -46,6 +47,7 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
   })
 
   const onSubmit = useSubmitLevelsData(
+    setLoading,
     communityData.levels?.length > 0 ? "PATCH" : "POST",
     communityData.id
   )
@@ -85,6 +87,7 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
                 <Button
                   colorScheme="primary"
                   onClick={methods.handleSubmit(onSubmit)}
+                  isLoading={loading}
                 >
                   {communityData.levels?.length > 0
                     ? "Update levels"
