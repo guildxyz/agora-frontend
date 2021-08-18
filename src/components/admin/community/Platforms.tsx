@@ -7,6 +7,9 @@ import {
   Grid,
   GridItem,
   HStack,
+  Input,
+  InputGroup,
+  InputLeftAddon,
   Select,
   Spinner,
   Switch,
@@ -14,10 +17,10 @@ import {
   useColorMode,
   VStack,
 } from "@chakra-ui/react"
-import { useWeb3React } from "@web3-react/core"
+// import { useWeb3React } from "@web3-react/core"
 import Section from "components/admin/common/Section"
 import { AnimatePresence, motion } from "framer-motion"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { Platform } from "temporaryData/types"
 
@@ -31,10 +34,12 @@ type DiscordError = {
   showAuthBtn?: boolean
 }
 
+/*
 type DiscordServer = {
   id: string
   name: string
 }
+*/
 
 type DiscordChannel = {
   id: string
@@ -43,7 +48,7 @@ type DiscordChannel = {
 }
 
 const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
-  const { account } = useWeb3React()
+  // const { account } = useWeb3React()
 
   const {
     watch,
@@ -56,12 +61,14 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
   const [discordError, setDiscordError] = useState<DiscordError | null>(null)
 
   const [serverSelectLoading, setServerSelectLoading] = useState(false)
-  const [discordServers, setDiscordServers] = useState<DiscordServer[] | null>(null)
+  // const [discordServers, setDiscordServers] = useState<DiscordServer[] | null>(null)
   const [channelSelectLoading, setChannelSelectLoading] = useState(false)
   const [discordChannels, setDiscordChannels] = useState<DiscordChannel[] | null>(
     null
   )
 
+  /*
+    // We'll need this when we'll be able to authenticat the user with DC & fetch their administered servers
   useEffect(() => {
     if (!account) return
 
@@ -107,7 +114,8 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
         setDiscordError(null)
       })
       .catch(console.error) // TODO?...
-  }, [account])
+    }, [account])
+    */
 
   const onServerIdChange = (e) => {
     const serverId = e.target.value
@@ -133,7 +141,7 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
         setDiscordChannels(data)
         setChannelSelectLoading(false)
 
-        if (data.length === 0) {
+        if (!Array.isArray(data) || data.length === 0) {
           setDiscordError({
             message:
               "It seems like you haven't invited Medousa to your Discord server yet.",
@@ -176,7 +184,7 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
           <GridItem>
             {watch("isDCEnabled") ? (
               <VStack spacing={4} alignItems="start">
-                {serverSelectLoading && (
+                {false && serverSelectLoading && (
                   <AnimatePresence>
                     <motion.div
                       initial={{ opacity: 0, scale: 0.75 }}
@@ -188,16 +196,31 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
                   </AnimatePresence>
                 )}
 
-                {discordServers?.length > 0 && (
-                  <AnimatePresence>
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.75 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.75 }}
-                    >
-                      <FormControl isDisabled={!watch("isDCEnabled")}>
+                {
+                  /* discordServers?.length > 0 */ true && (
+                    <AnimatePresence>
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.75 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.75 }}
+                      >
+                        <FormControl isDisabled={!watch("isDCEnabled")}>
+                          <InputGroup>
+                            <InputLeftAddon>Server ID</InputLeftAddon>
+                            <Input
+                              width={64}
+                              {...register("discordServerId", {
+                                required: watch("isDCEnabled"),
+                                minLength: 17,
+                              })}
+                              isInvalid={errors.discordServerId}
+                              onChange={onServerIdChange}
+                            />
+                          </InputGroup>
+
+                          {/*
                         <FormLabel>Pick a server</FormLabel>
-                        <Select
+                         <Select
                           width={64}
                           placeholder="Select one"
                           {...register("discordServerId", {
@@ -211,11 +234,12 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
                               {`${server.name}`}
                             </option>
                           ))}
-                        </Select>
-                      </FormControl>
-                    </motion.div>
-                  </AnimatePresence>
-                )}
+                        </Select> */}
+                        </FormControl>
+                      </motion.div>
+                    </AnimatePresence>
+                  )
+                }
                 {discordError && discordError.type === "server" && (
                   <HStack spacing={4} justifyItems="center">
                     <Text
@@ -226,7 +250,7 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
                     >
                       {discordError.message}
                     </Text>
-                    {discordError.showAuthBtn && (
+                    {false && discordError.showAuthBtn && (
                       <Button
                         ml={4}
                         size="sm"
