@@ -162,119 +162,125 @@ const Platforms = (): JSX.Element => {
           </GridItem>
 
           <GridItem>
-            <VStack spacing={4} alignItems="start">
-              {serverSelectLoading && (
-                <AnimatePresence>
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.75 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.75 }}
-                  >
-                    <Spinner />
-                  </motion.div>
-                </AnimatePresence>
-              )}
+            {watch("isDCEnabled") ? (
+              <VStack spacing={4} alignItems="start">
+                {serverSelectLoading && (
+                  <AnimatePresence>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.75 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.75 }}
+                    >
+                      <Spinner />
+                    </motion.div>
+                  </AnimatePresence>
+                )}
 
-              {discordServers?.length > 0 && (
-                <AnimatePresence>
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.75 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.75 }}
-                  >
-                    <FormControl isDisabled={!watch("isDCEnabled")}>
-                      <FormLabel>Pick a server</FormLabel>
-                      <Select
-                        width={64}
-                        placeholder="Select one"
-                        {...register("discordServerId", {
-                          required: watch("isDCEnabled"),
-                        })}
-                        isInvalid={errors.discordServerId}
-                        onChange={onServerIdChange}
+                {discordServers?.length > 0 && (
+                  <AnimatePresence>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.75 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.75 }}
+                    >
+                      <FormControl isDisabled={!watch("isDCEnabled")}>
+                        <FormLabel>Pick a server</FormLabel>
+                        <Select
+                          width={64}
+                          placeholder="Select one"
+                          {...register("discordServerId", {
+                            required: watch("isDCEnabled"),
+                          })}
+                          isInvalid={errors.discordServerId}
+                          onChange={onServerIdChange}
+                        >
+                          {discordServers.map((server) => (
+                            <option key={server.id} value={server.id}>
+                              {`${server.name}`}
+                            </option>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </motion.div>
+                  </AnimatePresence>
+                )}
+                {discordError && discordError.type === "server" && (
+                  <HStack spacing={4} justifyItems="center">
+                    <Text
+                      color={colorMode === "light" ? "red.500" : "red.400"}
+                      fontSize="sm"
+                      mt={2}
+                      height={8}
+                    >
+                      {discordError.message}
+                    </Text>
+                    {discordError.showAuthBtn && (
+                      <Button
+                        ml={4}
+                        size="sm"
+                        colorScheme="DISCORD"
+                        isDisabled={!watch("isDCEnabled")}
                       >
-                        {discordServers.map((server) => (
-                          <option key={server.id} value={server.id}>
-                            {`${server.name}`}
-                          </option>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </motion.div>
-                </AnimatePresence>
-              )}
-              {discordError && discordError.type === "server" && (
-                <HStack spacing={4} justifyItems="center">
+                        Authenticate
+                      </Button>
+                    )}
+                  </HStack>
+                )}
+
+                {channelSelectLoading && (
+                  <AnimatePresence>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.75 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.75 }}
+                    >
+                      <Spinner />
+                    </motion.div>
+                  </AnimatePresence>
+                )}
+                {discordError && discordError.type === "channels" && (
                   <Text
                     color={colorMode === "light" ? "red.500" : "red.400"}
                     fontSize="sm"
                     mt={2}
-                    height={8}
                   >
                     {discordError.message}
                   </Text>
-                  {discordError.showAuthBtn && (
-                    <Button
-                      ml={4}
-                      size="sm"
-                      colorScheme="DISCORD"
-                      isDisabled={!watch("isDCEnabled")}
+                )}
+                {discordChannels?.length > 0 && (
+                  <AnimatePresence>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.75 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.75 }}
                     >
-                      Authenticate
-                    </Button>
-                  )}
-                </HStack>
-              )}
+                      <FormControl isDisabled={!watch("isDCEnabled")}>
+                        <FormLabel>Invite channel</FormLabel>
 
-              {channelSelectLoading && (
-                <AnimatePresence>
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.75 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.75 }}
-                  >
-                    <Spinner />
-                  </motion.div>
-                </AnimatePresence>
-              )}
-              {discordError && discordError.type === "channels" && (
-                <Text
-                  color={colorMode === "light" ? "red.500" : "red.400"}
-                  fontSize="sm"
-                  mt={2}
-                >
-                  {discordError.message}
-                </Text>
-              )}
-              {discordChannels?.length > 0 && (
-                <AnimatePresence>
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.75 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.75 }}
-                  >
-                    <FormControl isDisabled={!watch("isDCEnabled")}>
-                      <FormLabel>Invite channel</FormLabel>
-
-                      <Select
-                        width={64}
-                        placeholder="Select one"
-                        {...register("inviteChannel", {
-                          required: watch("isDCEnabled"),
-                        })}
-                        isInvalid={errors.inviteChannel}
-                      >
-                        {discordChannels.map((channel) => (
-                          <option key={channel.id} value={channel.id}>
-                            {`#${channel.name} (${channel.category})`}
-                          </option>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </motion.div>
-                </AnimatePresence>
-              )}
-            </VStack>
+                        <Select
+                          width={64}
+                          placeholder="Select one"
+                          {...register("inviteChannel", {
+                            required: watch("isDCEnabled"),
+                          })}
+                          isInvalid={errors.inviteChannel}
+                        >
+                          {discordChannels.map((channel) => (
+                            <option key={channel.id} value={channel.id}>
+                              {`#${channel.name} (${channel.category})`}
+                            </option>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </motion.div>
+                  </AnimatePresence>
+                )}
+              </VStack>
+            ) : (
+              <Text colorScheme="gray">
+                Medousa will generate roles on your Discord server for every level
+              </Text>
+            )}
           </GridItem>
 
           <GridItem>

@@ -204,37 +204,30 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
           </GridItem>
         </Grid>
 
-        <VStack width="full" spacing={6} alignItems="start">
-          <Text as="h2" fontWeight="bold" fontSize="lg">
-            Platform linking
-          </Text>
-
-          <FormControl isDisabled={!watch("isTGEnabled")}>
-            <FormLabel>
-              <Text as="span">Telegram group</Text>
-              <Hint header="Where can I find the TG group ID?" body="TODO..." />
-            </FormLabel>
-            <InputGroup>
-              <Input
-                width="full"
-                placeholder="+ paste group ID"
-                {...register(`levels.${index}.telegramGroupId`, {
-                  required: watch("isTGEnabled"),
-                })}
-                isInvalid={errors.levels && errors.levels[index]?.telegramGroupId}
-              />
-            </InputGroup>
-          </FormControl>
-
-          <FormControl isDisabled={!watch("isDCEnabled")}>
-            <FormLabel>
-              <Text as="span">Discord role(s)</Text>
-            </FormLabel>
-            <Text colorScheme="gray">
-              Medousa will generate roles on your Discord server for every level
+        {watch("isTGEnabled") && (
+          <VStack width="full" spacing={6} alignItems="start">
+            <Text as="h2" fontWeight="bold" fontSize="lg">
+              Platform linking
             </Text>
-          </FormControl>
-        </VStack>
+
+            <FormControl>
+              <FormLabel>
+                <Text as="span">Telegram group</Text>
+                <Hint header="Where can I find the TG group ID?" body="TODO..." />
+              </FormLabel>
+              <InputGroup>
+                <Input
+                  width="full"
+                  placeholder="+ paste group ID"
+                  {...register(`levels.${index}.telegramGroupId`, {
+                    required: watch("isTGEnabled"),
+                  })}
+                  isInvalid={errors.levels && errors.levels[index]?.telegramGroupId}
+                />
+              </InputGroup>
+            </FormControl>
+          </VStack>
+        )}
       </VStack>
     </Card>
   )
