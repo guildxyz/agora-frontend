@@ -9,6 +9,10 @@ enum Chains {
   POLYGON = 137,
 }
 
+enum SpaceFactory {
+  BSCTEST = "0xf7D32e49C09F88Fa779aC12a951f9C3aF2b08869",
+}
+
 const RPC = {
   POLYGON: {
     chainId: "0x89",
@@ -44,12 +48,24 @@ const RPC = {
     blockExplorerUrls: ["https://bscscan.com/"],
     iconUrls: ["/networkLogos/bsc.svg"],
   },
+  BSCTEST: {
+    chainId: "0x61",
+    chainName: "BSC Testnet",
+    nativeCurrency: {
+      name: "Binance Coin",
+      symbol: "BNB",
+      decimals: 18,
+    },
+    rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545/"],
+    blockExplorerUrls: ["https://testnet.bscscan.com/"],
+    iconUrls: ["/networkLogos/bsc.svg"],
+  },
 }
 
-const supportedChains = ["POLYGON", "BSC", "GOERLI", "ETHEREUM"]
+const supportedChains = ["POLYGON", "BSC", "BSCTEST", "GOERLI", "ETHEREUM"]
 const supportedChainIds = supportedChains.map((_) => Chains[_])
 
 const injected = new InjectedConnector({ supportedChainIds })
 
-export { Chains, RPC, supportedChains }
+export { Chains, SpaceFactory, RPC, supportedChains }
 export default injected
