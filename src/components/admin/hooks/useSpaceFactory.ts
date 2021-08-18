@@ -11,7 +11,7 @@ const useSpaceFactory = () => {
 
   return {
     spaces: contract?.spaces ?? null,
-    createSpace: contract?.callStatic?.createSpace ?? null,
+    createSpace: contract?.createSpace ?? null,
   }
 }
 

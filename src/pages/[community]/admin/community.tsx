@@ -1,12 +1,16 @@
-import { Box, Button, Stack, VStack } from "@chakra-ui/react"
+import { Box, Button, HStack, Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
 import Levels from "components/admin/community/Levels"
 import Platforms from "components/admin/community/Platforms"
+import useFactoryContractAddress from "components/admin/hooks/useFactoryContractAddress"
+import useSpaceFactory from "components/admin/hooks/useSpaceFactory"
+import useStakeToken from "components/admin/hooks/useStakeToken"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
+import { Chains } from "connectors"
 import { useRouter } from "next/router"
 import React, { useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
@@ -45,16 +49,39 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
     },
   })
 
+  const levels = methods.watch("levels")
+  const hasStakeLevel = levels.some((level) => level.requirementType === "STAKE")
+
+  const { createSpace } = useSpaceFactory()
+
+  const isOnCorrectChain =
+    true || communityData.chainData.some((chain) => chain.name === Chains[chainId])
+
+  const currentChainData = communityData.chainData.find(
+    (chain) => chain.name === Chains[chainId]
+  )
+
   const onSubmit = useSubmitLevelsData(
     communityData.levels?.length > 0 ? "PATCH" : "POST",
     communityData.id
   )
 
-  useEffect(() => {
+  const { contractAddress, mutate } = useFactoryContractAddress(
+    currentChainData?.token.address
+  )
+
+  const stakeToken = useStakeToken(contractAddress)
+
+  const isSpaceCreated =
+    contractAddress !== "0x0000000000000000000000000000000000000000"
+
+  useEffect(() => console.log(stakeToken), [stakeToken])
+
+  /* useEffect(() => {
     if (account && account.toLowerCase() !== communityData.owner?.address) {
       router.push(`/${communityData.urlName}`)
     }
-  }, [account])
+  }, [account]) */
 
   if (!chainId) {
     return <NotConnectedError title={`${communityData.name} - Levels`} />
@@ -67,8 +94,10 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
           title={`${communityData.name} - Levels`}
           imageUrl={communityData.imageUrl}
         >
-          {account && account.toLowerCase() === communityData.owner?.address && (
-            <Stack spacing={{ base: 7, xl: 9 }}>
+          {account && isOnCorrectChain && (
+            /* account.toLowerCase() === communityData.owner?.address && */ <Stack
+              spacing={{ base: 7, xl: 9 }}
+            >
               <Pagination
                 isAdmin={
                   account && account.toLowerCase() === communityData.owner?.address
@@ -82,14 +111,30 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
                 />
                 <Levels />
 
-                <Button
-                  colorScheme="primary"
-                  onClick={methods.handleSubmit(onSubmit)}
-                >
-                  {communityData.levels?.length > 0
-                    ? "Update levels"
-                    : "Create levels"}
-                </Button>
+                <HStack>
+                  {hasStakeLevel && !isSpaceCreated && (
+                    <Button
+                      colorScheme="primary"
+                      onClick={async () => {
+                        const tx = await createSpace(currentChainData?.token.address)
+                        await tx.wait()
+                        mutate()
+                      }}
+                    >
+                      Deploy contract
+                    </Button>
+                  )}
+
+                  <Button
+                    disabled={hasStakeLevel && !isSpaceCreated}
+                    colorScheme="primary"
+                    onClick={methods.handleSubmit(onSubmit)}
+                  >
+                    {communityData.levels?.length > 0
+                      ? "Update levels"
+                      : "Create levels"}
+                  </Button>
+                </HStack>
               </VStack>
             </Stack>
           )}
