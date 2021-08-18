@@ -36,8 +36,6 @@ const useSubmitLevelsData = (
 
     const finalData: any = clearUndefinedData(editedData)
 
-    console.log("FINAL DATA", finalData)
-
     // Signing the message, and sending the data to the API
     sign("Please sign this message to verify your address")
       .then((addressSignedMessage) => {
@@ -79,15 +77,39 @@ const useSubmitLevelsData = (
         }
 
         // PATCH
-        if (method === "PATCH") {
-          const levelsToUpdate = [...finalData.levels].map((level) =>
-            fetch(`${process.env.NEXT_PUBLIC_API}/community/level/${level.id}`, {
-              method,
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ ...level, addressSignedMessage }),
-            })
-          )
-          Promise.all(levelsToUpdate)
+        if (method === "PATCH" && communityId) {
+          // TODO!
+          // Maybe we should create an endpoint for this request, where we can send an array of levels, and it'll update the already existing levels, and add the new ones if needed!
+
+          // Already existing levels need to be updated
+          const levelsToUpdate = [...finalData.levels]
+            .filter((level) => level.id)
+            .map((level) =>
+              fetch(`${process.env.NEXT_PUBLIC_API}/community/level/${level.id}`, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ...level, addressSignedMessage }),
+              })
+            )
+
+          // New levels should be created
+          const levelsToCreate = [...finalData.levels]
+            .filter((level) => !level.id)
+            .map((level) =>
+              fetch(
+                `${process.env.NEXT_PUBLIC_API}/community/level/${communityId}`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    ...level,
+                    addressSignedMessage,
+                  }),
+                }
+              )
+            )
+
+          Promise.all([...levelsToUpdate, ...levelsToCreate])
             .then((responses) => {
               if (
                 responses.find((res) => res.status !== 200 && res.status !== 201)

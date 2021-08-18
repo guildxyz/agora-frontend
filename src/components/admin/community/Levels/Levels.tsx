@@ -44,7 +44,7 @@ const Levels = (): JSX.Element => {
     }
   }, [])
 
-  const onDelete = (id: number) => {
+  const onDelete = (index: number, id: number) => {
     sign("Please sign this message to verify your address")
       .then((addressSignedMessage) => {
         fetch(`${process.env.NEXT_PUBLIC_API}/community/level/${id}`, {
@@ -71,6 +71,7 @@ const Levels = (): JSX.Element => {
               status: "success",
               duration: 2000,
             })
+            removeLevel(index)
           })
           .catch(() => {
             toast({
@@ -94,7 +95,7 @@ const Levels = (): JSX.Element => {
   const removeLevelHandler = (index: number, id: number) => {
     if (id) {
       // Delete from the database
-      onDelete(id)
+      onDelete(index, id)
     } else {
       // Just remove from the form
       removeLevel(index)
