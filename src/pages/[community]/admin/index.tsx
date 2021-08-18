@@ -40,7 +40,7 @@ const AdminHomePage = ({ communityData }: Props): JSX.Element => {
   const onSubmit = useSubmitCommunityData("PATCH", communityData.id)
 
   useEffect(() => {
-    if (account && account.toLowerCase() !== communityData.owner.address) {
+    if (account && account.toLowerCase() !== communityData.owner?.address) {
       router.push(`/${communityData.urlName}`)
     }
   }, [account])
@@ -56,9 +56,13 @@ const AdminHomePage = ({ communityData }: Props): JSX.Element => {
           title={`${communityData.name} - General`}
           imageUrl={communityData.imageUrl}
         >
-          {account && account.toLowerCase() === communityData.owner.address && (
+          {account && account.toLowerCase() === communityData.owner?.address && (
             <Stack spacing={{ base: 7, xl: 9 }}>
-              <Pagination isAdminPage />
+              <Pagination
+                isAdmin={
+                  account && account.toLowerCase() === communityData.owner?.address
+                }
+              />
               <VStack spacing={12}>
                 <Details isAdminPage />
                 <UsedToken />

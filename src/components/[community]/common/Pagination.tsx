@@ -1,9 +1,14 @@
-import { Button, ButtonGroup, useColorMode } from "@chakra-ui/react"
+import {
+  Button,
+  ButtonGroup,
+  useBreakpointValue,
+  useColorMode,
+} from "@chakra-ui/react"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { useMemo } from "react"
 
-const LinkButton = ({ href, disabled = false, children }) => {
+const LinkButton = ({ href, disabled = false, size = "md", children }) => {
   const router = useRouter()
   // Disabling ESLint rules cause it cries about the underscore variable incorrectly
   /* eslint-disable @typescript-eslint/naming-convention */
@@ -24,6 +29,7 @@ const LinkButton = ({ href, disabled = false, children }) => {
         isActive={isActive}
         disabled={disabled}
         color={!isActive ? gray : undefined}
+        size={size}
       >
         {children}
       </Button>
@@ -31,16 +37,32 @@ const LinkButton = ({ href, disabled = false, children }) => {
   )
 }
 
-const Pagination = ({ isAdminPage = false }) => (
-  <ButtonGroup variant="ghost">
-    <LinkButton href={isAdminPage ? "admin" : ""}>Info</LinkButton>
-    <LinkButton href={isAdminPage ? "admin/community" : "community"}>
-      Community
-    </LinkButton>
-    {/* <LinkButton href="twitter-bounty" disabled>
+const Pagination = ({ isAdmin = false }) => {
+  const buttonSize = useBreakpointValue({ base: "sm", md: "md" })
+
+  return (
+    <ButtonGroup variant="ghost">
+      <LinkButton href="" size={buttonSize}>
+        Info
+      </LinkButton>
+      <LinkButton href="community" size={buttonSize}>
+        Community
+      </LinkButton>
+      {isAdmin && (
+        <>
+          <LinkButton href="admin" size={buttonSize}>
+            Edit info
+          </LinkButton>
+          <LinkButton href="admin/community" size={buttonSize}>
+            Manage levels
+          </LinkButton>
+        </>
+      )}
+      {/* <LinkButton href="twitter-bounty" disabled>
       Twitter bounty
     </LinkButton> */}
-  </ButtonGroup>
-)
+    </ButtonGroup>
+  )
+}
 
 export default Pagination
