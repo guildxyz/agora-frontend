@@ -10,6 +10,7 @@ import {
   InputGroup,
   InputRightAddon,
   Spinner,
+  Stack,
   Text,
   useColorMode,
   useDisclosure,
@@ -67,14 +68,14 @@ const UsedToken = (): JSX.Element => {
           <GridItem>
             <FormControl isRequired>
               <FormLabel>Token address</FormLabel>
-              <HStack mt={4} spacing={2}>
+              <Stack direction={{ base: "column", md: "row" }} mt={4} spacing={2}>
                 <Button
                   variant="ghost"
                   colorScheme="gray"
                   px={6}
                   height={10}
                   bgColor={colorMode === "light" ? "gray.100" : "whiteAlpha.200"}
-                  width="max-content"
+                  width={{ base: "full", md: "max-content" }}
                   onClick={onOpen}
                 >
                   <HStack>
@@ -108,7 +109,7 @@ const UsedToken = (): JSX.Element => {
                   />
                   {((!error && tokenSymbol !== undefined) ||
                     isTokenSymbolValidating) && (
-                    <InputRightAddon>
+                    <InputRightAddon fontSize={{ base: "xs", sm: "md" }}>
                       {tokenSymbol === undefined && isTokenSymbolValidating ? (
                         <HStack px={4} alignContent="center">
                           <Spinner size="sm" color="blackAlpha.400" />
@@ -119,7 +120,7 @@ const UsedToken = (): JSX.Element => {
                     </InputRightAddon>
                   )}
                 </InputGroup>
-              </HStack>
+              </Stack>
               <ValidationError fieldName="tokenAddress" />
             </FormControl>
           </GridItem>
