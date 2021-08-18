@@ -70,11 +70,11 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
 
   useEffect(() => console.log(stakeToken), [stakeToken])
 
-  /* useEffect(() => {
+  useEffect(() => {
     if (account && account.toLowerCase() !== communityData.owner?.address) {
       router.push(`/${communityData.urlName}`)
     }
-  }, [account]) */
+  }, [account])
 
   if (!chainId) {
     return <NotConnectedError title={`${communityData.name} - Levels`} />
@@ -87,50 +87,52 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
           title={`${communityData.name} - Levels`}
           imageUrl={communityData.imageUrl}
         >
-          {account && isOnCorrectChain && (
-            /* account.toLowerCase() === communityData.owner?.address && */ <Stack
-              spacing={{ base: 7, xl: 9 }}
-            >
-              <Pagination
-                isAdmin={
-                  account && account.toLowerCase() === communityData.owner?.address
-                }
-              />
-              <VStack spacing={12}>
-                <Platforms
-                  activePlatforms={communityData.communityPlatforms.filter(
-                    (platform) => platform.active
-                  )}
+          {account &&
+            isOnCorrectChain &&
+            account.toLowerCase() === communityData.owner?.address && (
+              <Stack spacing={{ base: 7, xl: 9 }}>
+                <Pagination
+                  isAdmin={
+                    account && account.toLowerCase() === communityData.owner?.address
+                  }
                 />
-                <Levels />
+                <VStack spacing={12}>
+                  <Platforms
+                    activePlatforms={communityData.communityPlatforms.filter(
+                      (platform) => platform.active
+                    )}
+                  />
+                  <Levels />
 
-                <HStack>
-                  {hasStakeLevel && !isSpaceCreated && (
+                  <HStack>
+                    {hasStakeLevel && !isSpaceCreated && (
+                      <Button
+                        colorScheme="primary"
+                        onClick={async () => {
+                          const tx = await createSpace(
+                            currentChainData?.token.address
+                          )
+                          await tx.wait()
+                          mutateContractAddress()
+                        }}
+                      >
+                        Deploy contract
+                      </Button>
+                    )}
+
                     <Button
+                      disabled={hasStakeLevel && !isSpaceCreated}
                       colorScheme="primary"
-                      onClick={async () => {
-                        const tx = await createSpace(currentChainData?.token.address)
-                        await tx.wait()
-                        mutateContractAddress()
-                      }}
+                      onClick={methods.handleSubmit(onSubmit)}
                     >
-                      Deploy contract
+                      {communityData.levels?.length > 0
+                        ? "Update levels"
+                        : "Create levels"}
                     </Button>
-                  )}
-
-                  <Button
-                    disabled={hasStakeLevel && !isSpaceCreated}
-                    colorScheme="primary"
-                    onClick={methods.handleSubmit(onSubmit)}
-                  >
-                    {communityData.levels?.length > 0
-                      ? "Update levels"
-                      : "Create levels"}
-                  </Button>
-                </HStack>
-              </VStack>
-            </Stack>
-          )}
+                  </HStack>
+                </VStack>
+              </Stack>
+            )}
         </Layout>
       </Box>
     </FormProvider>
