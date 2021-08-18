@@ -3,9 +3,7 @@ import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
 import Levels from "components/admin/community/Levels"
 import Platforms from "components/admin/community/Platforms"
-import useFactoryContractAddress from "components/admin/hooks/useFactoryContractAddress"
 import useSpaceFactory from "components/admin/hooks/useSpaceFactory"
-import useStakeToken from "components/admin/hooks/useStakeToken"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
@@ -52,25 +50,20 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
   const levels = methods.watch("levels")
   const hasStakeLevel = levels.some((level) => level.requirementType === "STAKE")
 
-  const { createSpace } = useSpaceFactory()
-
-  const isOnCorrectChain =
-    true || communityData.chainData.some((chain) => chain.name === Chains[chainId])
-
   const currentChainData = communityData.chainData.find(
     (chain) => chain.name === Chains[chainId]
   )
+
+  const { createSpace, contractAddress, mutateContractAddress, stakeToken } =
+    useSpaceFactory(currentChainData?.token.address)
+
+  const isOnCorrectChain =
+    true || communityData.chainData.some((chain) => chain.name === Chains[chainId])
 
   const onSubmit = useSubmitLevelsData(
     communityData.levels?.length > 0 ? "PATCH" : "POST",
     communityData.id
   )
-
-  const { contractAddress, mutate } = useFactoryContractAddress(
-    currentChainData?.token.address
-  )
-
-  const stakeToken = useStakeToken(contractAddress)
 
   const isSpaceCreated =
     contractAddress !== "0x0000000000000000000000000000000000000000"
@@ -118,7 +111,7 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
                       onClick={async () => {
                         const tx = await createSpace(currentChainData?.token.address)
                         await tx.wait()
-                        mutate()
+                        mutateContractAddress()
                       }}
                     >
                       Deploy contract
