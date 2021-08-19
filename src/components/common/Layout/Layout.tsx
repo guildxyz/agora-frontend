@@ -1,29 +1,37 @@
 import {
   Box,
+  Button,
   Container,
   Flex,
   Heading,
   HStack,
+  Icon,
   Img,
   useColorMode,
 } from "@chakra-ui/react"
 import Account from "components/common/Layout/components/Account"
 import Head from "next/head"
+import { useRouter } from "next/router"
+import { Pencil } from "phosphor-react"
 import { PropsWithChildren } from "react"
+import Card from "../Card"
 import ColorModeSwitch from "./components/ColorModeSwitch"
 import LogoWithMenu from "./components/LogoWithMenu"
 
 type Props = {
   title: string
   imageUrl?: string
+  editBtnUrl?: string
 }
 
 const Layout = ({
   title,
   imageUrl = null,
+  editBtnUrl,
   children,
 }: PropsWithChildren<Props>): JSX.Element => {
   const { colorMode } = useColorMode()
+  const router = useRouter()
 
   return (
     <>
@@ -73,7 +81,16 @@ const Layout = ({
                 {title}
               </Heading>
             </HStack>
-            <Account />
+            <HStack>
+              <Account />
+              {editBtnUrl && (
+                <Card>
+                  <Button variant="ghost" onClick={() => router.push(editBtnUrl)}>
+                    <Icon as={Pencil} fontSize={18} />
+                  </Button>
+                </Card>
+              )}
+            </HStack>
           </HStack>
           {children}
         </Container>

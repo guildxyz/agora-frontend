@@ -17,7 +17,14 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
 
   return (
     <CommunityProvider data={communityData}>
-      <Layout title={communityData.name} imageUrl={communityData.imageUrl}>
+      <Layout
+        title={communityData.name}
+        imageUrl={communityData.imageUrl}
+        editBtnUrl={
+          account.toLowerCase() === communityData.owner.address &&
+          `/${communityData.urlName}/admin`
+        }
+      >
         <Stack spacing={{ base: 7, xl: 9 }}>
           <Pagination
             isAdmin={
