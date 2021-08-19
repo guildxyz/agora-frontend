@@ -21,16 +21,12 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
         title={communityData.name}
         imageUrl={communityData.imageUrl}
         editBtnUrl={
-          account.toLowerCase() === communityData.owner.address &&
+          account?.toLowerCase() === communityData.owner?.address &&
           `/${communityData.urlName}/admin`
         }
       >
         <Stack spacing={{ base: 7, xl: 9 }}>
-          <Pagination
-            isAdmin={
-              account && account.toLowerCase() === communityData.owner?.address
-            }
-          />
+          <Pagination />
           <Stack spacing={{ base: 7 }}>
             <ActionCard
               title="About"

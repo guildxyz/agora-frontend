@@ -76,11 +76,7 @@ const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
         >
           {account && account.toLowerCase() === communityData.owner?.address && (
             <Stack spacing={{ base: 7, xl: 9 }}>
-              <Pagination
-                isAdmin={
-                  account && account.toLowerCase() === communityData.owner?.address
-                }
-              />
+              <Pagination isAdminPage />
               <VStack spacing={12}>
                 <Platforms
                   activePlatforms={communityData.communityPlatforms.filter(

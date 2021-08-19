@@ -34,27 +34,20 @@ const LinkButton = ({ href, disabled = false, size = "md", children }) => {
   )
 }
 
-const Pagination = ({ isAdmin = false }) => {
+const Pagination = ({ isAdminPage = false }) => {
   const buttonSize = useBreakpointValue({ base: "sm", md: "md" })
 
   return (
     <ButtonGroup variant="ghost">
-      <LinkButton href="" size={buttonSize}>
+      <LinkButton href={isAdminPage ? "admin" : ""} size={buttonSize}>
         Info
       </LinkButton>
-      <LinkButton href="community" size={buttonSize}>
+      <LinkButton
+        href={isAdminPage ? "admin/community" : "community"}
+        size={buttonSize}
+      >
         Community
       </LinkButton>
-      {isAdmin && (
-        <>
-          <LinkButton href="admin" size={buttonSize}>
-            Edit info
-          </LinkButton>
-          <LinkButton href="admin/community" size={buttonSize}>
-            Manage levels
-          </LinkButton>
-        </>
-      )}
       {/* <LinkButton href="twitter-bounty" disabled>
       Twitter bounty
     </LinkButton> */}
