@@ -5,7 +5,6 @@ import useIndicatorData from "./hooks/useIndicatorData"
 import LevelState from "./types"
 
 const MotionBox = motion<BoxProps>(Box)
-
 const Indicator = ({ ...rest }: Rest) => (
   <MotionBox
     pos="absolute"
@@ -16,11 +15,9 @@ const Indicator = ({ ...rest }: Rest) => (
     {...rest}
   />
 )
-
 type Props = {
   levelsState: { [x: string]: LevelState }
 }
-
 const AccessIndicator = ({ levelsState }: Props) => {
   const { colorMode } = useColorMode()
   const { accessHeight, focusHeight, pendingHeight, focusColor } =
@@ -39,17 +36,14 @@ const AccessIndicator = ({ levelsState }: Props) => {
       <Indicator
         top={accessHeight}
         bg="primary.500"
-        opacity="0.7"
-        animate={
-          pendingHeight > 0 && {
-            height: pendingHeight,
-            opacity: [0.4, 0.7, 0.4],
-          }
-        }
+        animate={{
+          height: pendingHeight,
+          opacity: pendingHeight > 0 ? [0.4, 0.7, 0.4] : 0.7,
+        }}
         transition={{
           height: { type: "just" },
           opacity: {
-            repeat: Infinity,
+            repeat: pendingHeight > 0 && Infinity,
             duration: 1,
             type: "tween",
           },
@@ -65,6 +59,5 @@ const AccessIndicator = ({ levelsState }: Props) => {
     </>
   )
 }
-
 export default AccessIndicator
 export type { LevelState }
