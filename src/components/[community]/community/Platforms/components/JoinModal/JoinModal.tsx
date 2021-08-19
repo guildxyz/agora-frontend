@@ -48,15 +48,12 @@ const JoinModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
             error={state.context.error}
             processError={processJoinPlatformError}
           />
-          {state.value !== "success" ? (
+          {!state.matches("success") ? (
             <Text>{description}</Text>
           ) : (
             /** Negative margin bottom to offset the Footer's padding that's there anyway */
             <VStack spacing="6" mb="-8">
-              <Text>
-                Here’s your link. It’s only active for 15 minutes and is only usable
-                once:
-              </Text>
+              <Text>Here’s your invite link:</Text>
               <Link
                 href={state.context.inviteData.inviteLink}
                 colorScheme="blue"

@@ -10,10 +10,7 @@ import { useMemo } from "react"
 
 const LinkButton = ({ href, disabled = false, size = "md", children }) => {
   const router = useRouter()
-  // Disabling ESLint rules cause it cries about the underscore variable incorrectly
-  /* eslint-disable @typescript-eslint/naming-convention */
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  const [_, communityUrl, ...currentPath] = router.asPath.split("/")
+  const [, communityUrl, ...currentPath] = router.asPath.split("/")
   const isActive = currentPath.join("/") === href
   const { colorMode } = useColorMode()
   const gray = useMemo(

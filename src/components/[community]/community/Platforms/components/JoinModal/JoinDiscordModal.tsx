@@ -13,36 +13,37 @@ import { Error } from "components/common/Error"
 import Link from "components/common/Link"
 import Modal from "components/common/Modal"
 import ModalButton from "components/common/ModalButton"
-import { useCommunity } from "components/[community]/common/Context"
 import { ArrowSquareOut } from "phosphor-react"
 import QRCode from "qrcode.react"
-import React from "react"
+import { useEffect } from "react"
 import platformsContent from "../../platformsContent"
-import useJoinDiscordMachine from "./hooks/useJoinDiscordMachine"
+import DCAuthButton from "./components/DCAuthButton"
+import useDCAuthMachine from "./hooks/useDCAuthMachine"
+import useJoinModalMachine from "./hooks/useJoinModalMachine"
 import processJoinPlatformError from "./utils/processJoinPlatformError"
 
 type Props = {
   platform: string
   isOpen: boolean
   onClose: () => void
-  onOpen: () => void
 }
 
-const JoinDiscordModal = ({
-  platform,
-  isOpen,
-  onClose,
-  onOpen,
-}: Props): JSX.Element => {
+const JoinDiscordModal = ({ platform, isOpen, onClose }: Props): JSX.Element => {
   const {
     title,
     join: { description },
   } = platformsContent[platform]
-  const [state, send] = useJoinDiscordMachine(onOpen)
-  const { urlName } = useCommunity()
+  const [authState, authSend] = useDCAuthMachine()
+  const [joinState, joinSend] = useJoinModalMachine("DISCORD")
+
+  useEffect(() => {
+    if (authState.context.id) joinState.context.id = authState.context.id
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authState.context]) // intentionally leaving out joinState.context to prevent infinite loop
 
   const closeModal = () => {
-    send("CLOSE_MODAL")
+    joinSend("CLOSE_MODAL")
+    authSend("CLOSE_MODAL")
     onClose()
   }
 
@@ -54,71 +55,77 @@ const JoinDiscordModal = ({
         <ModalCloseButton />
         <ModalBody>
           <Error
-            error={state.context.error}
+            error={joinState.context.error || authState.context.error}
             processError={processJoinPlatformError}
           />
-          {state.value !== "success" ? (
+          {!joinState.matches("success") ? (
             <Text>{description}</Text>
           ) : (
             /** Negative margin bottom to offset the Footer's padding that's there anyway */
             <VStack spacing="6" mb="-8">
-              {state.context.inviteData.alreadyJoined ? (
+              {joinState.context.inviteData.alreadyJoined ? (
                 <Text>
-                  Seems like you've already joined the discord server, you should get
+                  Seems like you've already joined the Discord server, you should get
                   access to the correct channels soon!
                 </Text>
               ) : (
                 <>
-                  <Text>
-                    Here’s your link. It’s only active for 15 minutes and is only
-                    usable once:
-                  </Text>
+                  <Text>Here’s your invite link:</Text>
                   <Link
-                    href={state.context.inviteData.inviteLink}
+                    href={joinState.context.inviteData.inviteLink}
                     colorScheme="blue"
                     isExternal
                   >
-                    {state.context.inviteData.inviteLink}
+                    {joinState.context.inviteData.inviteLink}
                     <Icon as={ArrowSquareOut} mx="2" />
                   </Link>
-                  <QRCode size={150} value={state.context.inviteData.inviteLink} />
+                  <QRCode
+                    size={150}
+                    value={joinState.context.inviteData.inviteLink}
+                  />
                 </>
               )}
             </VStack>
           )}
         </ModalBody>
         <ModalFooter>
-          {(() => {
-            switch (state.value) {
-              case "signing":
-                return <ModalButton isLoading loadingText="Waiting confirmation" />
-              case "registering":
-                return (
-                  <ModalButton
-                    isLoading
-                    loadingText="Conneting your Discord account"
-                  />
-                )
-              case "fetchingUserData":
-                return <ModalButton isLoading loadingText="Fetching Discord data" />
-              case "success":
-                return null
-              case "signIdle":
-              case "signError":
-                return <ModalButton onClick={() => send("SIGN")}>Sign</ModalButton>
-              default:
-              case "idle":
-              case "authError":
-                return (
-                  <Link
-                    _hover={{ textDecoration: "none" }}
-                    href={`https://discord.com/api/oauth2/authorize?client_id=${process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID}&response_type=token&scope=identify&redirect_uri=${process.env.NEXT_PUBLIC_DISCORD_REDIRECT_URI}&state=${urlName}`}
-                  >
-                    <ModalButton>Authenticate</ModalButton>
-                  </Link>
-                )
-            }
-          })()}
+          {/* margin is applied on AuthButton, so there's no jump when it collapses and unmounts */}
+          <VStack spacing="0" alignItems="strech">
+            <DCAuthButton state={authState} send={authSend} />
+            {["successNotification", "idKnown"].some(authState.matches) ? (
+              (() => {
+                switch (joinState.value) {
+                  case "signing":
+                    return (
+                      <ModalButton isLoading loadingText="Waiting confirmation" />
+                    )
+                  case "fetching":
+                    return (
+                      <ModalButton isLoading loadingText="Generating invite link" />
+                    )
+                  case "success":
+                    return null
+                  case "idle":
+                  case "error":
+                  default:
+                    return (
+                      <ModalButton
+                        onClick={() => {
+                          authSend("HIDE_NOTIFICATION")
+                          joinSend("SIGN")
+                        }}
+                      >
+                        Sign
+                      </ModalButton>
+                    )
+                }
+              })()
+            ) : (
+              <ModalButton disabled colorScheme="gray">
+                Sign
+              </ModalButton>
+            )}
+          </VStack>
         </ModalFooter>
       </ModalContent>
     </Modal>
