@@ -82,7 +82,7 @@ const UsedToken = (): JSX.Element => {
                     <Box position="relative" width={4} height={4}>
                       <Image
                         alt={`${RPC[Chains[chainId]].chainName} icon`}
-                        src={RPC[Chains[chainId]].iconUrl}
+                        src={RPC[Chains[chainId]].iconUrls[0]}
                         layout="fill"
                       />
                     </Box>

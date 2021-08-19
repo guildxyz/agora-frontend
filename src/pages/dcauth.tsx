@@ -24,7 +24,19 @@ const fetchUserID = async (tokenType: string, accessToken: string) => {
     )
 
   const { id } = await response.json()
-  return id
+
+  const hashResponse = await fetch("/api/hash", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ data: id }),
+  })
+
+  if (!hashResponse.ok)
+    throw newNamedError("Hashing error", "Failed to hash Discord user ID")
+
+  const { hashed } = await hashResponse.json()
+
+  return hashed
 }
 
 const DCAuth = () => {
