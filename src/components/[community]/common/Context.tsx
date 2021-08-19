@@ -12,7 +12,7 @@ import { Community, ProvidedCommunity } from "temporaryData/types"
 import useColorPalette from "../hooks/useColorPalette"
 import useMemberCount from "../hooks/useMemberCount"
 
-type Props = PropsWithChildren<{
+type Props = {
   data: Community
   /**
    * This is needed because we're using it for the CommunityCard components too and
@@ -21,7 +21,7 @@ type Props = PropsWithChildren<{
    * it was just an easier solution for now
    */
   shouldRenderWrapper?: boolean
-}>
+}
 
 const CommunityContext = createContext<ProvidedCommunity | null>(null)
 
@@ -29,7 +29,7 @@ const CommunityProvider = ({
   data,
   shouldRenderWrapper = true,
   children,
-}: Props): JSX.Element => {
+}: PropsWithChildren<Props>): JSX.Element => {
   const { chainId } = useWeb3React()
 
   const membersCount = useMemberCount(data.id, data.levels)
