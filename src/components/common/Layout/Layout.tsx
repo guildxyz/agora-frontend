@@ -5,6 +5,7 @@ import {
   Heading,
   HStack,
   Img,
+  useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react"
 import Account from "components/common/Layout/components/Account"
@@ -20,6 +21,11 @@ type Props = {
 
 const Layout = ({ title, imageUrl = null, children }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
+  const exactImageSize = useBreakpointValue({
+    base: "2.5rem",
+    md: "3rem",
+    lg: "3.5rem",
+  })
 
   return (
     <>
@@ -58,6 +64,8 @@ const Layout = ({ title, imageUrl = null, children }: Props): JSX.Element => {
                 <Img
                   src={imageUrl}
                   alt={`${title} - logo`}
+                  htmlWidth={exactImageSize}
+                  htmlHeight={exactImageSize}
                   boxSize={{ base: 10, md: 12, lg: 14 }}
                   borderRadius="full"
                 />
