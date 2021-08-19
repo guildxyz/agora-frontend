@@ -57,6 +57,7 @@ const Layout = ({ title, imageUrl = null, children }: Props): JSX.Element => {
               {imageUrl && (
                 <Img
                   src={imageUrl}
+                  alt={`${title} - logo`}
                   boxSize={{ base: 10, md: 12, lg: 14 }}
                   borderRadius="full"
                 />
