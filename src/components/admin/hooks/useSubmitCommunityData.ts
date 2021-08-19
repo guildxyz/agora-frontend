@@ -31,13 +31,13 @@ const useSubmitCommunityData = (
             setLoading(false)
 
             if (response.status !== 200 && response.status !== 201) {
-              toast({
-                title: "Error",
-                description: `An error occurred while ${
-                  method === "POST" ? "creating" : "updating"
-                } your community`,
-                status: "error",
-                duration: 4000,
+              response.json().then((errorMsg) => {
+                toast({
+                  title: "Error",
+                  description: errorMsg,
+                  status: "error",
+                  duration: 4000,
+                })
               })
               return
             }
