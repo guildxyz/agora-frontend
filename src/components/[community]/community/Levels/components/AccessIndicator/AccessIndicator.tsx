@@ -40,10 +40,12 @@ const AccessIndicator = ({ levelsState }: Props) => {
         top={accessHeight}
         bg="primary.500"
         opacity="0.7"
-        animate={{
-          height: pendingHeight,
-          opacity: [0.4, 0.7, 0.4],
-        }}
+        animate={
+          pendingHeight > 0 && {
+            height: pendingHeight,
+            opacity: [0.4, 0.7, 0.4],
+          }
+        }
         transition={{
           height: { type: "just" },
           opacity: {
