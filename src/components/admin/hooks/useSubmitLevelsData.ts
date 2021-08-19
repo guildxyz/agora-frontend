@@ -103,25 +103,37 @@ const useSubmitLevelsData = (
           const levelsToCreateArray = [...finalData.levels].filter(
             (level) => !level.id
           )
-          const levelsToCreate = fetch(
-            `${process.env.NEXT_PUBLIC_API}/community/levels/${communityId}`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                levels: levelsToCreateArray,
-                addressSignedMessage,
-              }),
-            }
-          )
 
-          Promise.all([...levelsToUpdate, levelsToCreate])
+          const levelsToCreate =
+            levelsToCreateArray?.length > 0
+              ? fetch(
+                  `${process.env.NEXT_PUBLIC_API}/community/levels/${communityId}`,
+                  {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      levels: levelsToCreateArray,
+                      addressSignedMessage,
+                    }),
+                  }
+                )
+              : null
+
+          const promises = [...levelsToUpdate]
+
+          if (levelsToCreate) {
+            promises.concat(levelsToCreate)
+          }
+
+          Promise.all(promises)
             .then((responses) => {
               setLoading(false)
 
-              if (
-                responses.find((res) => res.status !== 200 && res.status !== 201)
-              ) {
+              const failingResponses = responses.filter(
+                (res) => res.status !== 200 && res.status !== 201
+              )
+
+              if (failingResponses.length > 0) {
                 toast({
                   title: "Error",
                   description:
