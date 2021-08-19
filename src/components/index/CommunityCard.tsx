@@ -102,7 +102,11 @@ const CommunityCard = ({
           alignItems="center"
         >
           <Img
-            src={`${imageUrl}`}
+            src={`${
+              imageUrl.includes("assets.coingecko.com")
+                ? imageUrl.replace("large", "small")
+                : imageUrl
+            }`}
             boxSize="45px"
             alt={`${name} logo`}
             borderRadius="full"
