@@ -82,11 +82,13 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
           <Stack spacing={12}>
             <CategorySection
               title="Your communities"
+              titleAs="h2"
               placeholder="You don't have access to any communities"
               ref={refAccess}
             />
             <CategorySection
               title="Other tokenized communities"
+              titleAs="h2"
               placeholder="There aren't any other communities"
             >
               {filteredCommunities.map((community) => (

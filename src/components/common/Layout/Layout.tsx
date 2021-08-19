@@ -63,6 +63,7 @@ const Layout = ({ title, imageUrl = null, children }: Props): JSX.Element => {
                 />
               )}
               <Heading
+                as="h1"
                 fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
                 fontFamily="display"
                 pb={imageUrl && { base: 1, lg: 2 }}

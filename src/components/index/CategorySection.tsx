@@ -5,12 +5,13 @@ import { forwardRef, MutableRefObject, useEffect, useState } from "react"
 type Props = {
   title: string
   placeholder: string
+  titleAs?: any
   children?: JSX.Element[]
 }
 
 const CategorySection = forwardRef(
   (
-    { title, placeholder, children }: Props,
+    { title, placeholder, titleAs = "h1", children }: Props,
     ref: MutableRefObject<HTMLDivElement>
   ) => {
     const { account } = useWeb3React()
@@ -33,7 +34,7 @@ const CategorySection = forwardRef(
 
     return (
       <Stack spacing={5}>
-        <Heading fontSize={{ base: "md", sm: "lg" }} as="h4">
+        <Heading fontSize={{ base: "md", sm: "lg" }} as={titleAs}>
           {title}
         </Heading>
 
