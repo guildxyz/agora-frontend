@@ -2,6 +2,7 @@ import { Icon, SimpleGrid, Stack, Text } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import Card from "components/common/Card"
 import Layout from "components/common/Layout"
+import Link from "components/common/Link"
 import { CommunityProvider } from "components/[community]/common/Context"
 import Pagination from "components/[community]/common/Pagination"
 import Levels from "components/[community]/community/Levels"
@@ -57,8 +58,11 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
                 alignItems="center"
               >
                 <Icon as={Info} mr="2" />
-                This community is not using Agora Space yet. Let them know they
-                should!
+                This community is not using Agora Space yet.&nbsp;
+                <Link href="/register" color="indigo.500">
+                  Integrate it
+                </Link>
+                &nbsp; if you're in charge, or tweet them to do so!
               </Text>
             </Card>
           )}
