@@ -53,7 +53,6 @@ const Levels = (): JSX.Element => {
           body: JSON.stringify({ addressSignedMessage }),
         })
           .then((response) => {
-            // TODO
             if (response.status !== 200) {
               toast({
                 title: "Error",

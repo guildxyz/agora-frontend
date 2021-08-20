@@ -100,6 +100,7 @@ const useSubmitLevelsData = (
               // Don't need IDs for PATCH
               const payload = { ...level }
               delete payload.id
+              delete payload.tokenSymbol
 
               return fetch(
                 `${process.env.NEXT_PUBLIC_API}/community/level/${level.id}`,

@@ -68,6 +68,12 @@ const AdminCommunityPage = (): JSX.Element => {
           .find((platform) => platform.name === "DISCORD") || undefined
 
       methods.setValue(
+        "tokenSymbol",
+        communityData.chainData?.length > 0
+          ? communityData.chainData[0].token?.symbol
+          : undefined
+      )
+      methods.setValue(
         "isTGEnabled",
         !!communityData.communityPlatforms
           .filter((platform) => platform.active)
@@ -85,7 +91,7 @@ const AdminCommunityPage = (): JSX.Element => {
           description: level.description || undefined,
           requirementType: level.requirementType,
           requirement: level.requirement || undefined,
-          stakeTimelockMs: convertMsToMonths(level.stakeTimelockMs), // TODO: convert it to months
+          stakeTimelockMs: convertMsToMonths(level.stakeTimelockMs),
           telegramGroupId: level.telegramGroupId || undefined,
         }))
       )

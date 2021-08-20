@@ -181,7 +181,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                   isDisabled={watch(`levels.${index}.requirementType`) === "OPEN"}
                   isInvalid={errors.levels && errors.levels[index]?.requirement}
                 />
-                <InputRightAddon>TKN</InputRightAddon>
+                <InputRightAddon>{getValues("tokenSymbol")}</InputRightAddon>
               </InputGroup>
             </FormControl>
           </GridItem>
@@ -214,7 +214,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
             <FormControl>
               <FormLabel>
                 <Text as="span">Telegram group</Text>
-                <Hint header="Where can I find the TG group ID?" body="TODO..." />
+                <Hint body="Medousa will send you the group id when you add her to your group. If she's already in, type /groupId and she'll send it again." />
               </FormLabel>
               <InputGroup>
                 <Input
