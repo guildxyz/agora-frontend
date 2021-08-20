@@ -3,7 +3,6 @@ import { ExternalProvider, Web3Provider } from "@ethersproject/providers"
 import { formatUnits } from "@ethersproject/units"
 import { useWeb3React } from "@web3-react/core"
 import ERC20_ABI from "constants/erc20abi.json"
-import useKeepSWRDataLiveAsBlocksArrive from "hooks/useKeepSWRDataLiveAsBlocksArrive"
 import useSWR from "swr"
 import type { Token } from "temporaryData/types"
 
@@ -13,6 +12,7 @@ const getBalance = async (
   decimals: number,
   tokenAddress: string
 ): Promise<number> => {
+  // console.log("getBalance called", address, decimals, tokenAddress)
   const library = new Web3Provider(
     (window as Window & typeof globalThis & { ethereum: ExternalProvider }).ethereum
   )
@@ -28,7 +28,7 @@ const useBalance = (token: Token): number => {
   const shouldFetch =
     typeof account === "string" && !!token && typeof token.address === "string"
 
-  const { data, mutate } = useSWR(
+  const { data } = useSWR(
     shouldFetch
       ? ["balance", account, token?.decimals, token?.address, chainId]
       : null,
@@ -37,10 +37,12 @@ const useBalance = (token: Token): number => {
       revalidateOnFocus: false,
       revalidateOnMount: false,
       dedupingInterval: 5000,
+      refreshInterval: 10_000,
+      // onSuccess: () => console.log("balance fetched", token.symbol),
     }
   )
 
-  useKeepSWRDataLiveAsBlocksArrive(mutate)
+  // useKeepSWRDataLiveAsBlocksArrive(mutate)
 
   return data
 }

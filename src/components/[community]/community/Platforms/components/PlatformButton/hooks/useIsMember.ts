@@ -8,6 +8,7 @@ const fetchIsMember = async (
   platform: string,
   communityId: number
 ) =>
+  // console.log("fetchIsMember called", url, address, platform, communityId)
   fetch(url, {
     method: "POST",
     headers: {
@@ -38,6 +39,7 @@ const useIsMember = (platform: string): boolean => {
         ]
       : null,
     fetchIsMember
+    // { onSuccess: () => console.log("isMember fetched") }
   )
 
   return data

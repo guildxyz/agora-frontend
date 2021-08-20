@@ -6,16 +6,19 @@ import useSWR from "swr"
 const createContract = (
   _: string,
   address: string,
-  ABI: ContractInterface,
+  ABI: string,
   withSigner: boolean,
   account: string
 ) => {
+  // console.log(`createContract called - `, address, account)
+  if (typeof window === "undefined") return
+
   const library = new Web3Provider(
     (window as Window & typeof globalThis & { ethereum: ExternalProvider }).ethereum
   )
   return new Contract(
     address,
-    ABI,
+    JSON.parse(ABI),
     withSigner ? library.getSigner(account).connectUnchecked() : library
   )
 }
@@ -27,15 +30,31 @@ const useContract = (
 ): Contract => {
   const { account, chainId } = useWeb3React<Web3Provider>()
 
-  const shouldFetch = typeof address === "string" && address.length > 0
+  const shouldFetch =
+    typeof address === "string" &&
+    typeof account === "string" &&
+    address.length > 0 &&
+    account.length > 0
 
   const { data } = useSWR(
-    shouldFetch ? ["contract", address, ABI, withSigner, account, chainId] : null,
+    shouldFetch
+      ? ["contract", address, JSON.stringify(ABI), withSigner, account, chainId]
+      : null,
     createContract,
     {
       revalidateOnFocus: false,
       revalidateOnMount: false,
-      compare: (a, b) => a?.address === b?.address,
+      compare: (a, b) =>
+        a?.address === b?.address && a?.signer
+          ? a?.signer?.getAddress() === b?.signer?.getAddress()
+          : true,
+      initialData: createContract(
+        "initial contract",
+        address,
+        JSON.stringify(ABI),
+        withSigner,
+        account
+      ),
     }
   )
 

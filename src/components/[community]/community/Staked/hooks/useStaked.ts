@@ -1,10 +1,9 @@
 import { Contract } from "@ethersproject/contracts"
-import { ExternalProvider, Web3Provider } from "@ethersproject/providers"
 import { formatEther } from "@ethersproject/units"
 import { useWeb3React } from "@web3-react/core"
 import { useCommunity } from "components/[community]/common/Context"
 import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
-import useKeepSWRDataLiveAsBlocksArrive from "hooks/useKeepSWRDataLiveAsBlocksArrive"
+import useContract from "hooks/useContract"
 import useSWR from "swr"
 
 type StakedType = {
@@ -18,24 +17,14 @@ type StakedType = {
 
 const getTimelocks = async (
   _: string,
-  contractAddress: string,
+  contract: Contract,
   account: string
 ): Promise<StakedType> => {
   const getStaked = async (
     i: number,
     { unlockedAmount, locked }: StakedType
   ): Promise<StakedType> => {
-    const library = new Web3Provider(
-      (
-        window as Window & typeof globalThis & { ethereum: ExternalProvider }
-      ).ethereum
-    )
-
-    const contract = new Contract(
-      contractAddress,
-      AGORA_SPACE_ABI,
-      library.getSigner(account).connectUnchecked()
-    )
+    // console.log("getStaked called", contract, account)
 
     try {
       const { amount, expires } = await contract.timelocks(account, i)
@@ -77,19 +66,22 @@ const useStaked = (): StakedType => {
     chainData: { contractAddress },
   } = useCommunity()
   const { account, active } = useWeb3React()
+  const contract = useContract(contractAddress, AGORA_SPACE_ABI, true)
 
-  const { data, mutate } = useSWR(
-    active ? ["staked", contractAddress, account] : null,
+  const { data } = useSWR(
+    active ? ["staked", contract, account] : null,
     getTimelocks,
     {
       initialData: {
         unlockedAmount: 0,
         locked: [],
       },
+      refreshInterval: 10_000,
+      // onSuccess: () => console.log("timelocks fetched"),
     }
   )
 
-  useKeepSWRDataLiveAsBlocksArrive(mutate)
+  // useKeepSWRDataLiveAsBlocksArrive(mutate)
 
   return data
 }

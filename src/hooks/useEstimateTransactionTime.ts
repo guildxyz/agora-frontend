@@ -31,6 +31,7 @@ const getEstimatedTransactionTime = async (
   transaction: TransactionRequest,
   network: "ETHEREUM" | "GOERLI" | "POLYGON" | "BSC"
 ) => {
+  console.log("getEstimatedTransactionTime called", transaction, network)
   const library = new Web3Provider(
     (window as Window & typeof globalThis & { ethereum: ExternalProvider }).ethereum
   )
@@ -54,7 +55,11 @@ const useEstimateTransactionTime = (transaction: TransactionRequest): number => 
   const { data } = useSWR(
     ["estimatedTransactionTime", transaction, name],
     getEstimatedTransactionTime,
-    { revalidateOnFocus: false, dedupingInterval: 5000 }
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 5000,
+      onSuccess: () => console.log("estimated transaction time fetched"),
+    }
   )
 
   return data
