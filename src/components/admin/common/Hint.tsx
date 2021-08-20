@@ -12,7 +12,7 @@ import {
 import { Question } from "phosphor-react"
 
 type Props = {
-  header: string
+  header?: string
   body: string
 }
 
@@ -34,7 +34,7 @@ const Hint = ({ header, body }: Props) => (
     <PopoverContent fontSize="sm">
       <PopoverArrow />
       <PopoverCloseButton />
-      <PopoverHeader>{header}</PopoverHeader>
+      {header && <PopoverHeader>{header}</PopoverHeader>}
       <PopoverBody>{body}.</PopoverBody>
     </PopoverContent>
   </Popover>
