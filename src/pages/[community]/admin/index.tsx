@@ -33,13 +33,20 @@ const AdminHomePage = (): JSX.Element => {
   useEffect(() => {
     if (router.query.community && !communityData) {
       fetchCommunityData(router.query.community.toString()).then(
-        (newCommunityData) => setCommunityData(newCommunityData)
+        (newCommunityData) => {
+          if (!newCommunityData) {
+            router.push("/404")
+            return
+          }
+          setCommunityData(newCommunityData)
+        }
       )
     }
   }, [router.query, chainId])
 
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
+    console.log(communityData)
     if (communityData) {
       methods.setValue("name", communityData.name)
       methods.setValue("urlName", communityData.urlName)

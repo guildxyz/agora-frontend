@@ -47,7 +47,13 @@ const AdminCommunityPage = (): JSX.Element => {
   useEffect(() => {
     if (router.query.community && !communityData) {
       fetchCommunityData(router.query.community.toString()).then(
-        (newCommunityData) => setCommunityData(newCommunityData)
+        (newCommunityData) => {
+          if (!newCommunityData) {
+            router.push("/404")
+            return
+          }
+          setCommunityData(newCommunityData)
+        }
       )
     }
   }, [router.query, chainId])
