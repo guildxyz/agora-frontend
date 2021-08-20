@@ -17,7 +17,6 @@ import {
   useColorMode,
   VStack,
 } from "@chakra-ui/react"
-// import { useWeb3React } from "@web3-react/core"
 import Section from "components/admin/common/Section"
 import { AnimatePresence, motion } from "framer-motion"
 import { useState } from "react"
@@ -34,13 +33,6 @@ type DiscordError = {
   showAuthBtn?: boolean
 }
 
-/*
-type DiscordServer = {
-  id: string
-  name: string
-}
-*/
-
 type DiscordChannel = {
   id: string
   name: string
@@ -48,8 +40,6 @@ type DiscordChannel = {
 }
 
 const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
-  // const { account } = useWeb3React()
-
   const {
     watch,
     register,
@@ -59,64 +49,10 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
 
   const [discordError, setDiscordError] = useState<DiscordError | null>(null)
-
-  const [serverSelectLoading, setServerSelectLoading] = useState(false)
-  // const [discordServers, setDiscordServers] = useState<DiscordServer[] | null>(null)
   const [channelSelectLoading, setChannelSelectLoading] = useState(false)
   const [discordChannels, setDiscordChannels] = useState<DiscordChannel[] | null>(
     null
   )
-
-  /*
-    // We'll need this when we'll be able to authenticat the user with DC & fetch their administered servers
-  useEffect(() => {
-    if (!account) return
-
-    setServerSelectLoading(true)
-    fetch(`${process.env.NEXT_PUBLIC_API}/community/administeredServers/${account}`)
-      .then((response) => {
-        // We don't know the DC id of the user
-        if (response.status === 400) {
-          setChannelSelectLoading(false)
-          setDiscordError({
-            message: "Please authenticate with Discord",
-            type: "server",
-            showAuthBtn: true,
-          })
-          setDiscordChannels(null)
-          return
-        }
-
-        if (response.status !== 200) {
-          setChannelSelectLoading(false)
-          setDiscordError({
-            message: "Couldn't fetch your discord servers",
-            type: "server",
-          })
-          setDiscordChannels(null)
-          return
-        }
-
-        return response.json()
-      })
-      .then((data) => {
-        setDiscordServers(data)
-        setServerSelectLoading(false)
-
-        if (data?.length === 0) {
-          setDiscordError({
-            message: "It seems like you don't have a Discord server yet.",
-            type: "server",
-          })
-          return
-        }
-
-        setDiscordError(null)
-      })
-      .catch(console.error) // TODO?...
-    }, [account])
-    */
-
   const onServerIdChange = (e) => {
     const serverId = e.target.value
 
@@ -184,62 +120,20 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
           <GridItem>
             {watch("isDCEnabled") ? (
               <VStack spacing={4} alignItems="start">
-                {false && serverSelectLoading && (
-                  <AnimatePresence>
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.75 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.75 }}
-                    >
-                      <Spinner />
-                    </motion.div>
-                  </AnimatePresence>
-                )}
-
-                {
-                  /* discordServers?.length > 0 */ true && (
-                    <AnimatePresence>
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.75 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.75 }}
-                      >
-                        <FormControl isDisabled={!watch("isDCEnabled")}>
-                          <InputGroup>
-                            <InputLeftAddon>Server ID</InputLeftAddon>
-                            <Input
-                              width={64}
-                              {...register("discordServerId", {
-                                required: watch("isDCEnabled"),
-                                minLength: 17,
-                              })}
-                              isInvalid={errors.discordServerId}
-                              onChange={onServerIdChange}
-                            />
-                          </InputGroup>
-
-                          {/*
-                        <FormLabel>Pick a server</FormLabel>
-                         <Select
-                          width={64}
-                          placeholder="Select one"
-                          {...register("discordServerId", {
-                            required: watch("isDCEnabled"),
-                          })}
-                          isInvalid={errors.discordServerId}
-                          onChange={onServerIdChange}
-                        >
-                          {discordServers.map((server) => (
-                            <option key={server.id} value={server.id}>
-                              {`${server.name}`}
-                            </option>
-                          ))}
-                        </Select> */}
-                        </FormControl>
-                      </motion.div>
-                    </AnimatePresence>
-                  )
-                }
+                <FormControl isDisabled={!watch("isDCEnabled")}>
+                  <InputGroup>
+                    <InputLeftAddon>Server ID</InputLeftAddon>
+                    <Input
+                      width={64}
+                      {...register("discordServerId", {
+                        required: watch("isDCEnabled"),
+                        minLength: 17,
+                      })}
+                      isInvalid={errors.discordServerId}
+                      onChange={onServerIdChange}
+                    />
+                  </InputGroup>
+                </FormControl>
                 {discordError && discordError.type === "server" && (
                   <HStack spacing={4} justifyItems="center">
                     <Text
