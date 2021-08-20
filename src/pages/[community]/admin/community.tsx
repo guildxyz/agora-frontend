@@ -31,6 +31,13 @@ const AdminCommunityPage = (): JSX.Element => {
     communityData?.id
   )
 
+  // Helper method for converting ms to month(s)
+  const convertMsToMonths = (ms: number) => {
+    if (!ms) return undefined
+
+    return Math.round(ms * 3.8026486208174e-10)
+  }
+
   // Fetch the communityData when we have the necessary info for it
   useEffect(() => {
     if (router.query.community && !communityData) {
@@ -68,7 +75,7 @@ const AdminCommunityPage = (): JSX.Element => {
           description: level.description || undefined,
           requirementType: level.requirementType,
           requirement: level.requirement || undefined,
-          stakeTimelockMs: level.stakeTimelockMs || undefined, // TODO: convert it to months
+          stakeTimelockMs: convertMsToMonths(level.stakeTimelockMs), // TODO: convert it to months
           telegramGroupId: level.telegramGroupId || undefined,
         }))
       )

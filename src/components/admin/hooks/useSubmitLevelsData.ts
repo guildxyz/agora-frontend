@@ -33,7 +33,7 @@ const useSubmitLevelsData = (
 
       return {
         ...clearUndefinedData(level),
-        stakeTimelockMs: convertMonthsToMs(timeLock),
+        stakeTimelockMs: convertMonthsToMs(timeLock).toString(),
       }
     })
 
