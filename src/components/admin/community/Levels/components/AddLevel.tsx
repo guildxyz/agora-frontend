@@ -63,7 +63,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
   const options = ["OPEN", "HOLD", "STAKE"]
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "membership",
-    defaultValue: options[0],
+    defaultValue: getValues(`levels.${index}.requirementType`) || options[0],
     onChange: (newValue: MembershipTypes) =>
       setValue(`levels.${index}.requirementType`, newValue, {}),
   })
