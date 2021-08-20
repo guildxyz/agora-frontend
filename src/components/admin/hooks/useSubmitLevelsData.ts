@@ -91,13 +91,20 @@ const useSubmitLevelsData = (
           // Already existing levels need to be updated
           const levelsToUpdate = [...finalData.levels]
             .filter((level) => level.id)
-            .map((level) =>
-              fetch(`${process.env.NEXT_PUBLIC_API}/community/level/${level.id}`, {
-                method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ...level, addressSignedMessage }),
-              })
-            )
+            .map((level) => {
+              // Don't need IDs for PATCH
+              const payload = { ...level }
+              delete payload.id
+
+              return fetch(
+                `${process.env.NEXT_PUBLIC_API}/community/level/${level.id}`,
+                {
+                  method,
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ ...payload, addressSignedMessage }),
+                }
+              )
+            })
 
           // New levels should be created
           const levelsToCreateArray = [...finalData.levels].filter(
