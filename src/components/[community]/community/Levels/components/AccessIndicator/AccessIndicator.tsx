@@ -1,10 +1,11 @@
 import { Box, BoxProps, useColorMode } from "@chakra-ui/react"
 import { motion } from "framer-motion"
-import { Rest } from "temporaryData/types"
+import type { Rest } from "temporaryData/types"
 import useIndicatorData from "./hooks/useIndicatorData"
-import LevelState from "./types"
+import type LevelState from "./types"
 
 const MotionBox = motion<BoxProps>(Box)
+
 const Indicator = ({ ...rest }: Rest) => (
   <MotionBox
     pos="absolute"
@@ -15,9 +16,11 @@ const Indicator = ({ ...rest }: Rest) => (
     {...rest}
   />
 )
+
 type Props = {
   levelsState: { [x: string]: LevelState }
 }
+
 const AccessIndicator = ({ levelsState }: Props) => {
   const { colorMode } = useColorMode()
   const { accessHeight, focusHeight, pendingHeight, focusColor } =
@@ -59,5 +62,6 @@ const AccessIndicator = ({ levelsState }: Props) => {
     </>
   )
 }
+
 export default AccessIndicator
 export type { LevelState }
