@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
 import { AnimatePresence, motion } from "framer-motion"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import { Platform } from "temporaryData/types"
 
@@ -43,6 +43,7 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
   const {
     watch,
     register,
+    getValues,
     formState: { errors },
   } = useFormContext()
 
@@ -53,9 +54,10 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
   const [discordChannels, setDiscordChannels] = useState<DiscordChannel[] | null>(
     null
   )
-  const onServerIdChange = (e) => {
-    const serverId = e.target.value
 
+  const discordServerIdChange = watch("discordServerId")
+
+  const onServerIdChange = (serverId) => {
     if (errors.discordServerId || discordError?.type === "server") return
 
     setChannelSelectLoading(true)
@@ -90,6 +92,13 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
       })
       .catch(console.error) // TODO?...
   }
+
+  // Fetch channels on server ID change. I've used a useEffect here, so it'll run on the admin page too, when we fill the form data with the data which we fetch from the API
+  useEffect(() => {
+    if (discordServerIdChange) {
+      onServerIdChange(getValues("discordServerId"))
+    }
+  }, [discordServerIdChange])
 
   return (
     <Section
@@ -130,7 +139,6 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
                         minLength: 17,
                       })}
                       isInvalid={errors.discordServerId}
-                      onChange={onServerIdChange}
                     />
                   </InputGroup>
                 </FormControl>

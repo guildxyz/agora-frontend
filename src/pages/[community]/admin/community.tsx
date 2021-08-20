@@ -43,24 +43,22 @@ const AdminCommunityPage = (): JSX.Element => {
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
     if (communityData) {
+      console.log(communityData)
+
+      const discordServer =
+        communityData.communityPlatforms
+          .filter((platform) => platform.active)
+          .find((platform) => platform.name === "DISCORD") || undefined
+
       methods.setValue(
         "isTGEnabled",
         !!communityData.communityPlatforms
           .filter((platform) => platform.active)
           .find((platform) => platform.name === "TELEGRAM")
       )
-      methods.setValue(
-        "isDCEnabled",
-        !!communityData.communityPlatforms
-          .filter((platform) => platform.active)
-          .find((platform) => platform.name === "DISCORD")
-      )
-      methods.setValue(
-        "discordServerId",
-        communityData.communityPlatforms
-          .filter((platform) => platform.active)
-          .find((platform) => platform.name === "DISCORD")?.platformId || undefined
-      )
+      methods.setValue("isDCEnabled", !!discordServer)
+      methods.setValue("discordServerId", discordServer?.platformId || undefined)
+      methods.setValue("inviteChannel", discordServer?.inviteChannel || undefined)
       methods.setValue(
         "levels",
         communityData.levels.map((level) => ({
