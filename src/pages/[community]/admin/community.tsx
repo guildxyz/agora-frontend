@@ -55,8 +55,6 @@ const AdminCommunityPage = (): JSX.Element => {
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
     if (communityData) {
-      console.log("Updating communityData...", communityData)
-
       const discordServer =
         communityData.communityPlatforms
           .filter((platform) => platform.active)

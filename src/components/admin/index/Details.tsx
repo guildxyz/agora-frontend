@@ -76,6 +76,7 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
               ) : (
                 <Input
                   {...register("urlName", {
+                    maxLength: 20,
                     validate: async (value) => {
                       try {
                         const response = await fetch(
