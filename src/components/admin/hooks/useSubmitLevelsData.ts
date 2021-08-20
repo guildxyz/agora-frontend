@@ -5,7 +5,8 @@ import clearUndefinedData from "../utils/clearUndefinedData"
 const useSubmitLevelsData = (
   setLoading: (loading: boolean) => void,
   method: "POST" | "PATCH" | "DELETE",
-  communityId: number = null
+  communityId: number = null,
+  successCallback?: () => void
 ) => {
   const toast = useToast()
   const sign = usePersonalSign()
@@ -69,6 +70,10 @@ const useSubmitLevelsData = (
                 status: "success",
                 duration: 2000,
               })
+
+              if (successCallback) {
+                successCallback()
+              }
             })
             .catch(() => {
               setLoading(false)
@@ -150,12 +155,17 @@ const useSubmitLevelsData = (
                 })
                 return
               }
+
               toast({
                 title: "Success!",
                 description: "Level(s) updated!",
                 status: "success",
                 duration: 2000,
               })
+
+              if (successCallback) {
+                successCallback()
+              }
             })
             .catch(() => {
               setLoading(false)

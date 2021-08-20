@@ -28,7 +28,12 @@ const AdminCommunityPage = (): JSX.Element => {
   const onSubmit = useSubmitLevelsData(
     setLoading,
     communityData?.levels?.length > 0 ? "PATCH" : "POST",
-    communityData?.id
+    communityData?.id,
+    // Refetch when the level data is updated in the DB
+    () =>
+      fetchCommunityData(router.query.community.toString()).then(
+        (newCommunityData) => setCommunityData(newCommunityData)
+      )
   )
 
   // Helper method for converting ms to month(s)
@@ -50,7 +55,7 @@ const AdminCommunityPage = (): JSX.Element => {
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
     if (communityData) {
-      console.log(communityData)
+      console.log("Updating communityData...", communityData)
 
       const discordServer =
         communityData.communityPlatforms
