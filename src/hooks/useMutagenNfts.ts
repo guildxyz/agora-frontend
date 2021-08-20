@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise */
 import { aggregate } from "@makerdao/multicall"
 import { useWeb3React } from "@web3-react/core"
 import useSWR from "swr"
@@ -15,35 +16,25 @@ const getMutagenNfts = async (
   mutagenAddress: string,
   account: string
 ) => {
-  const idRequests = [...Array(amount)].map((_, i) => ({
+  const requests = [...Array(amount)].map((_, i) => ({
     target: mutagenAddress,
     call: ["tokenOfOwnerByIndex(address,uint256)(uint256)", account, i],
     returns: [[i, (val) => parseInt(val)]],
   }))
   const {
-    results: { transformed: idResults },
-  } = await aggregate(idRequests, config)
-  const ids: number[] = Object.values(idResults)
+    results: { transformed },
+  } = await aggregate(requests, config)
+  const ids: number[] = Object.values(transformed)
 
-  const dataRequests = ids.map((id) => ({
-    target: mutagenAddress,
-    call: ["unpackPrintId(uint256)(uint8,uint256,uint16)", id],
-    returns: [[id], [], []],
-  }))
-  const {
-    results: { transformed: dataResults },
-  } = await aggregate(dataRequests, config)
+  return ids.map((tokenId) => {
+    const type = tokenId & 3
+    // source: https://etherscan.io/address/0xdf9e0684f15e60cfcc646acffb02d97d2d5a1a67#code#F3#L81
+    const genesisIndex = (tokenId >> 2) & 63
 
-  return Object.entries(dataResults)
-    .slice(0, -1)
-    .map(([tokenId, genesisIdx]) => {
-      // eslint-disable-next-line no-bitwise
-      const type = parseInt(tokenId) & 3
-
-      if (type === 0) return `Genesis_${genesisIdx}`
-      if (type === 1) return `Print_${genesisIdx}`
-      return null
-    })
+    if (type === 0) return `Genesis_${genesisIndex}`
+    if (type === 1) return `Print_${genesisIndex}`
+    return null
+  })
 }
 
 const useMutagenNfts = (requirementType: RequirementType, token: Token) => {
