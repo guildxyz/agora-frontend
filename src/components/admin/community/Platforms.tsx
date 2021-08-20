@@ -12,12 +12,14 @@ import {
   InputLeftAddon,
   Select,
   Spinner,
+  Stack,
   Switch,
   Text,
   useColorMode,
   VStack,
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
+import Link from "components/common/Link"
 import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { useFormContext } from "react-hook-form"
@@ -177,13 +179,29 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
                   </AnimatePresence>
                 )}
                 {discordError && discordError.type === "channels" && (
-                  <Text
-                    color={colorMode === "light" ? "red.500" : "red.400"}
-                    fontSize="sm"
-                    mt={2}
+                  <Stack
+                    direction={{ base: "column", lg: "row" }}
+                    spacing={2}
+                    justifyContent="center"
                   >
-                    {discordError.message}
-                  </Text>
+                    <Text
+                      color={colorMode === "light" ? "red.500" : "red.400"}
+                      fontSize="sm"
+                      mt={2}
+                      height={{ base: "auto", lg: 4 }}
+                    >
+                      {discordError.message}
+                    </Text>
+                    <Link
+                      href="https://discord.com/api/oauth2/authorize?client_id=868172385000509460&permissions=8&scope=bot%20applications.commands"
+                      target="_blank"
+                      _hover={{ textDecoration: "none" }}
+                    >
+                      <Button size="sm" colorScheme="DISCORD" width="max-content">
+                        Invite now
+                      </Button>
+                    </Link>
+                  </Stack>
                 )}
                 {discordChannels?.length > 0 && (
                   <AnimatePresence>

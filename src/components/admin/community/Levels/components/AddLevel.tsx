@@ -9,6 +9,7 @@ import {
   Input,
   InputGroup,
   InputRightAddon,
+  Kbd,
   Stack,
   Text,
   Textarea,
@@ -214,7 +215,15 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
             <FormControl>
               <FormLabel>
                 <Text as="span">Telegram group</Text>
-                <Hint body="Medousa will send you the group id when you add her to your group. If she's already in, type /groupId and she'll send it again." />
+                <Hint
+                  body={
+                    <Text>
+                      Medousa will send you the group id when you add her to your
+                      group. If she's already in, type <Kbd>/groupId</Kbd> and she'll
+                      send it again.
+                    </Text>
+                  }
+                />
               </FormLabel>
               <InputGroup>
                 <Input
