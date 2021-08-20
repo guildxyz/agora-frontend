@@ -15,51 +15,53 @@ type StakedType = {
   }>
 }
 
-const getTimelocks = async (
-  _: string,
-  contract: Contract,
-  account: string
-): Promise<StakedType> => {
-  const getStaked = async (
-    i: number,
-    { unlockedAmount, locked }: StakedType
+const getTimelocks =
+  (contract: Contract) =>
+  async (
+    _: string,
+
+    account: string
   ): Promise<StakedType> => {
-    // console.log("getStaked called", contract, account)
+    const getStaked = async (
+      i: number,
+      { unlockedAmount, locked }: StakedType
+    ): Promise<StakedType> => {
+      // console.log("getStaked called", contract, account)
 
-    try {
-      const { amount, expires } = await contract.timelocks(account, i)
-      const expiresNumber = expires.toNumber() * 1000
-      if (expiresNumber < Date.now()) {
+      try {
+        const { amount, expires } = await contract.timelocks(account, i)
+        const expiresNumber = expires.toNumber() * 1000
+        if (expiresNumber < Date.now()) {
+          return await getStaked(i + 1, {
+            unlockedAmount: unlockedAmount + +formatEther(amount),
+            locked,
+          })
+        }
         return await getStaked(i + 1, {
-          unlockedAmount: unlockedAmount + +formatEther(amount),
-          locked,
+          unlockedAmount,
+          locked: [
+            ...locked,
+            {
+              amount: +formatEther(amount),
+              expires: new Date(expiresNumber),
+              id: i,
+            },
+          ],
         })
+      } catch (_) {
+        console.info(
+          "%cThe logged error is expected, it's needed for fetching the user's timelocks. We can't prevent MetaMask from logging it",
+          "color: gray"
+        )
+        return { unlockedAmount, locked }
       }
-      return await getStaked(i + 1, {
-        unlockedAmount,
-        locked: [
-          ...locked,
-          {
-            amount: +formatEther(amount),
-            expires: new Date(expiresNumber),
-            id: i,
-          },
-        ],
-      })
-    } catch (_) {
-      console.info(
-        "%cThe logged error is expected, it's needed for fetching the user's timelocks. We can't prevent MetaMask from logging it",
-        "color: gray"
-      )
-      return { unlockedAmount, locked }
     }
-  }
 
-  return getStaked(0, {
-    unlockedAmount: 0,
-    locked: [],
-  })
-}
+    return getStaked(0, {
+      unlockedAmount: 0,
+      locked: [],
+    })
+  }
 
 const useStaked = (): StakedType => {
   const {
@@ -69,8 +71,8 @@ const useStaked = (): StakedType => {
   const contract = useContract(contractAddress, AGORA_SPACE_ABI, true)
 
   const { data } = useSWR(
-    active ? ["staked", contract, account] : null,
-    getTimelocks,
+    active ? ["staked", account] : null,
+    getTimelocks(contract),
     {
       initialData: {
         unlockedAmount: 0,
