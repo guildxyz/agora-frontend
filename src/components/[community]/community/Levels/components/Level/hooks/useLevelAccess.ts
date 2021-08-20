@@ -11,6 +11,8 @@ const useLevelAccess = (
   stakeToken: Token | undefined,
   chain: number
 ): [boolean, string] => {
+  // The balances will be NaN if the tokens are undefined. This is fine, since this only happens,
+  // if the user is not on the correct chain, and this is handled before the balances are used
   const tokenBalance = useBalance(token)
   const stakeBalance = useBalance(stakeToken)
   const ownedNfts = useMutagenNfts(type, token)

@@ -1,7 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber"
-import { TransactionRequest, Web3Provider } from "@ethersproject/providers"
+import {
+  ExternalProvider,
+  TransactionRequest,
+  Web3Provider,
+} from "@ethersproject/providers"
 import { parseUnits } from "@ethersproject/units"
-import { useWeb3React } from "@web3-react/core"
 import { useCommunity } from "components/[community]/common/Context"
 import useSWR from "swr"
 
@@ -26,9 +29,12 @@ const getEthereumEstimatedTransactionTime = async (
 const getEstimatedTransactionTime = async (
   _: string,
   transaction: TransactionRequest,
-  library: Web3Provider,
   network: "ETHEREUM" | "GOERLI" | "POLYGON" | "BSC"
 ) => {
+  const library = new Web3Provider(
+    (window as Window & typeof globalThis & { ethereum: ExternalProvider }).ethereum
+  )
+
   if (network === "ETHEREUM" || network === "GOERLI") {
     const gasPrice = await library.estimateGas(transaction)
     const weiGasPrice = parseUnits(gasPrice.toString(), "gwei")
@@ -41,13 +47,12 @@ const getEstimatedTransactionTime = async (
 }
 
 const useEstimateTransactionTime = (transaction: TransactionRequest): number => {
-  const { library } = useWeb3React<Web3Provider>()
   const {
     chainData: { name },
   } = useCommunity()
 
   const { data } = useSWR(
-    ["estimatedTransactionTime", transaction, library, name],
+    ["estimatedTransactionTime", transaction, name],
     getEstimatedTransactionTime,
     { revalidateOnFocus: false, dedupingInterval: 5000 }
   )

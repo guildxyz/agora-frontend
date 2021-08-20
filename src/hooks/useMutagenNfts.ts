@@ -1,22 +1,29 @@
 import { Contract } from "@ethersproject/contracts"
+import { ExternalProvider, Web3Provider } from "@ethersproject/providers"
 import { useWeb3React } from "@web3-react/core"
 import mutagenABI from "constants/mutagenABI.json"
 import useSWR from "swr"
 import { RequirementType, Token } from "temporaryData/types"
 import useBalance from "./useBalance"
-import useContract from "./useContract"
-import useKeepSWRDataLiveAsBlocksArrive from "./useKeepSWRDataLiveAsBlocksArrive"
 
 const getMutagenNfts = async (
   _: string,
   amount: number,
-  contract: Contract,
+  contractAddress: string,
   account: string
 ) =>
   Promise.all(
     [...Array(amount)].map((_, i) =>
       (async () => {
-        const tokenId = await contract.tokenOfOwnerByIndex(account, i)
+        const tokenId = await new Contract(
+          contractAddress,
+          mutagenABI,
+          new Web3Provider(
+            (
+              window as Window & typeof globalThis & { ethereum: ExternalProvider }
+            ).ethereum
+          )
+        ).tokenOfOwnerByIndex(account, i)
         // eslint-disable-next-line no-bitwise
         const tokenType = tokenId & 3
         // const url = await contract.tokenURI(tokenId)
@@ -28,21 +35,18 @@ const getMutagenNfts = async (
 
 const useMutagenNfts = (requirementType: RequirementType, token: Token) => {
   const { account } = useWeb3React()
-  const amount: any = useBalance(token)
-  const contract = useContract(token?.address, mutagenABI)
+  const amount = useBalance(token)
 
-  const shouldFetch = requirementType === "NFT_HOLD" && !!contract && amount > 0
+  const shouldFetch = requirementType === "NFT_HOLD" && amount > 0
 
-  /**
-   * TODO: deduping doesn't work for some reason. getMutagenNfts get's called 4 times
-   * in a row even tho the parameters didn't change
-   */
-  const { data, mutate } = useSWR(
-    shouldFetch ? ["mutagen", parseInt(amount, 10), contract, account] : null,
-    getMutagenNfts
+  const { data } = useSWR(
+    shouldFetch ? ["mutagen", amount, token?.address, account] : null,
+    getMutagenNfts,
+    {
+      dedupingInterval: 3000,
+      refreshInterval: 10_000,
+    }
   )
-
-  useKeepSWRDataLiveAsBlocksArrive(mutate)
 
   return data
 }

@@ -1,5 +1,9 @@
 import { Contract } from "@ethersproject/contracts"
-import { TransactionResponse } from "@ethersproject/providers"
+import {
+  ExternalProvider,
+  TransactionResponse,
+  Web3Provider,
+} from "@ethersproject/providers"
 import { useWeb3React } from "@web3-react/core"
 import { useCommunity } from "components/[community]/common/Context"
 import ERC20_ABI from "constants/erc20abi.json"
@@ -16,10 +20,19 @@ const MAX_VALUE = BigInt(
 
 const getAllowance = async (
   _: string,
-  tokenContract: Contract,
+  tokenAddress: string,
   account: string,
   contractAddress: string
 ) => {
+  const library = new Web3Provider(
+    (window as Window & typeof globalThis & { ethereum: ExternalProvider }).ethereum
+  )
+  const tokenContract = new Contract(
+    tokenAddress,
+    ERC20_ABI,
+    library.getSigner(account).connectUnchecked()
+  )
+
   const allowance = await tokenContract.allowance(account, contractAddress)
   return allowance >= MAX_VALUE / BigInt(4)
 }
@@ -34,9 +47,7 @@ const useTokenAllowance = (token: Token): TokenAllowance => {
   const shouldFetch = typeof account === "string" && !!tokenContract
 
   const { data, mutate } = useSWR(
-    shouldFetch
-      ? [`${token.name}_allowance`, tokenContract, account, contractAddress]
-      : null,
+    shouldFetch ? ["allowance", token.address, account, contractAddress] : null,
     getAllowance
   )
 

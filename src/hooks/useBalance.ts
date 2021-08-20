@@ -1,9 +1,8 @@
 import { Contract } from "@ethersproject/contracts"
-import { Web3Provider } from "@ethersproject/providers"
+import { ExternalProvider, Web3Provider } from "@ethersproject/providers"
 import { formatUnits } from "@ethersproject/units"
 import { useWeb3React } from "@web3-react/core"
 import ERC20_ABI from "constants/erc20abi.json"
-import useContract from "hooks/useContract"
 import useKeepSWRDataLiveAsBlocksArrive from "hooks/useKeepSWRDataLiveAsBlocksArrive"
 import useSWR from "swr"
 import type { Token } from "temporaryData/types"
@@ -11,27 +10,33 @@ import type { Token } from "temporaryData/types"
 const getBalance = async (
   _: string,
   address: string,
-  tokenContract: Contract,
-  decimals: number
-): Promise<number> =>
-  tokenContract &&
-  tokenContract.balanceOf(address).then((balance) => formatUnits(balance, decimals))
+  decimals: number,
+  tokenAddress: string
+): Promise<number> => {
+  const library = new Web3Provider(
+    (window as Window & typeof globalThis & { ethereum: ExternalProvider }).ethereum
+  )
+
+  return new Contract(tokenAddress, ERC20_ABI, library)
+    .balanceOf(address)
+    .then((balance) => +formatUnits(balance, decimals))
+}
 
 const useBalance = (token: Token): number => {
-  const { library, chainId, account } = useWeb3React<Web3Provider>()
-  const tokenContract = useContract(token?.address, ERC20_ABI)
+  const { chainId, account } = useWeb3React<Web3Provider>()
 
   const shouldFetch =
-    typeof account === "string" && !!library && typeof token?.address === "string"
+    typeof account === "string" && !!token && typeof token.address === "string"
 
   const { data, mutate } = useSWR(
     shouldFetch
-      ? [`${token?.name}_balance`, account, tokenContract, token.decimals, chainId]
+      ? ["balance", account, token?.decimals, token?.address, chainId]
       : null,
     getBalance,
     {
       revalidateOnFocus: false,
       revalidateOnMount: false,
+      dedupingInterval: 5000,
     }
   )
 
