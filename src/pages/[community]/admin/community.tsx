@@ -1,111 +1,156 @@
-import { Box, Button, Stack, VStack } from "@chakra-ui/react"
+import { Box, Button, Spinner, Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
 import Levels from "components/admin/community/Levels"
 import Platforms from "components/admin/community/Platforms"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
+import fetchCommunityData from "components/admin/utils/fetchCommunityData"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
+import { AnimatePresence, motion } from "framer-motion"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
-import { Community } from "temporaryData/types"
 
-type Props = {
-  communityData: Community
-}
-
-const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
-  console.log(communityData)
+const AdminCommunityPage = (): JSX.Element => {
+  const [communityData, setCommunityData] = useState(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { chainId, account } = useWeb3React()
   const generatedColors = useColorPalette(
     "chakra-colors-primary",
-    communityData.themeColor || "#71717a"
+    communityData?.themeColor || "#71717a"
   )
-  const methods = useForm({
-    mode: "all",
-    defaultValues: {
-      isTGEnabled: !!communityData.communityPlatforms
-        .filter((platform) => platform.active)
-        .find((platform) => platform.name === "TELEGRAM"),
-      isDCEnabled: !!communityData.communityPlatforms
-        .filter((platform) => platform.active)
-        .find((platform) => platform.name === "DISCORD"),
-      discordServerId:
-        communityData.communityPlatforms
-          .filter((platform) => platform.active)
-          .find((platform) => platform.name === "DISCORD")?.platformId || undefined,
-      levels: communityData.levels.map((level) => ({
-        id: level.id,
-        name: level.name || undefined,
-        image: level.imageUrl || undefined,
-        description: level.description || undefined,
-        requirementType: level.requirementType,
-        requirement: level.requirement || undefined,
-        stakeTimelockMs: level.stakeTimelockMs || undefined, // TODO: convert it to months
-        telegramGroupId: level.telegramGroupId || undefined,
-      })),
-    },
-  })
+
+  const methods = useForm({ mode: "all" })
 
   const onSubmit = useSubmitLevelsData(
     setLoading,
-    communityData.levels?.length > 0 ? "PATCH" : "POST",
-    communityData.id
+    communityData?.levels?.length > 0 ? "PATCH" : "POST",
+    communityData?.id
   )
 
+  // Fetch the communityData when we have the necessary info for it
   useEffect(() => {
-    if (account && account.toLowerCase() !== communityData.owner?.address) {
+    if (router.query.community && !communityData) {
+      fetchCommunityData(router.query.community.toString()).then(
+        (newCommunityData) => setCommunityData(newCommunityData)
+      )
+    }
+  }, [router.query, chainId])
+
+  // Set up the default form field values if we have the necessary data
+  useEffect(() => {
+    if (communityData) {
+      methods.setValue(
+        "isTGEnabled",
+        !!communityData.communityPlatforms
+          .filter((platform) => platform.active)
+          .find((platform) => platform.name === "TELEGRAM")
+      )
+      methods.setValue(
+        "isDCEnabled",
+        !!communityData.communityPlatforms
+          .filter((platform) => platform.active)
+          .find((platform) => platform.name === "DISCORD")
+      )
+      methods.setValue(
+        "discordServerId",
+        communityData.communityPlatforms
+          .filter((platform) => platform.active)
+          .find((platform) => platform.name === "DISCORD")?.platformId || undefined
+      )
+      methods.setValue(
+        "levels",
+        communityData.levels.map((level) => ({
+          id: level.id,
+          name: level.name || undefined,
+          image: level.imageUrl || undefined,
+          description: level.description || undefined,
+          requirementType: level.requirementType,
+          requirement: level.requirement || undefined,
+          stakeTimelockMs: level.stakeTimelockMs || undefined, // TODO: convert it to months
+          telegramGroupId: level.telegramGroupId || undefined,
+        }))
+      )
+    }
+  }, [communityData])
+
+  // Redirect the user if they aren't the community owner
+  useEffect(() => {
+    if (
+      communityData &&
+      account &&
+      account.toLowerCase() !== communityData.owner?.address
+    ) {
       router.push(`/${communityData.urlName}`)
     }
   }, [account])
 
+  // If the user isn't logged in, display an error message
   if (!chainId) {
-    return <NotConnectedError title={`${communityData.name} - Levels`} />
+    return (
+      <NotConnectedError
+        title={communityData ? `${communityData.name} - Levels` : "Loading..."}
+      />
+    )
   }
 
+  // If we haven't fetched the community data / form data yet, display a spinner, otherwise render the admin page
   return (
-    <FormProvider {...methods}>
-      <Box sx={generatedColors}>
-        <Layout
-          title={`${communityData.name} - Levels`}
-          imageUrl={communityData.imageUrl}
-        >
-          {account && account.toLowerCase() === communityData.owner?.address && (
-            <Stack spacing={{ base: 7, xl: 9 }}>
-              <Pagination isAdminPage />
-              <VStack spacing={12}>
-                <Platforms
-                  activePlatforms={communityData.communityPlatforms.filter(
-                    (platform) => platform.active
-                  )}
-                />
-                <Levels />
-
-                <Button
-                  colorScheme="primary"
-                  onClick={methods.handleSubmit(onSubmit)}
-                  isLoading={loading}
+    <>
+      {!communityData || !methods ? (
+        <Box sx={generatedColors}>
+          <VStack pt={16} justifyItems="center">
+            <Spinner size="xl" />
+          </VStack>
+        </Box>
+      ) : (
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <FormProvider {...methods}>
+              <Box sx={generatedColors}>
+                <Layout
+                  title={`${communityData.name} - Levels`}
+                  imageUrl={communityData.imageUrl}
                 >
-                  {communityData.levels?.length > 0
-                    ? "Update levels"
-                    : "Create levels"}
-                </Button>
-              </VStack>
-            </Stack>
-          )}
-        </Layout>
-      </Box>
-    </FormProvider>
+                  {account &&
+                    account.toLowerCase() === communityData.owner?.address && (
+                      <Stack spacing={{ base: 7, xl: 9 }}>
+                        <Pagination isAdminPage />
+                        <VStack spacing={12}>
+                          <Platforms
+                            activePlatforms={communityData.communityPlatforms.filter(
+                              (platform) => platform.active
+                            )}
+                          />
+                          <Levels />
+
+                          <Button
+                            colorScheme="primary"
+                            onClick={methods.handleSubmit(onSubmit)}
+                            isLoading={loading}
+                          >
+                            {communityData.levels?.length > 0
+                              ? "Update levels"
+                              : "Create levels"}
+                          </Button>
+                        </VStack>
+                      </Stack>
+                    )}
+                </Layout>
+              </Box>
+            </FormProvider>
+          </motion.div>
+        </AnimatePresence>
+      )}
+    </>
   )
 }
-
-export {
-  getStaticPaths,
-  getStaticProps,
-} from "components/[community]/utils/dataFetching"
 
 export default AdminCommunityPage

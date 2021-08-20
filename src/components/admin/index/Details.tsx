@@ -31,15 +31,17 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
   const nameInput = useWatch({ name: "name" })
   const urlNameInput = useWatch({ name: "urlName" })
 
-  const generatedUrlName = slugify(nameInput, {
-    replacement: "-",
-    lower: true,
-    strict: true,
-  })
+  const generatedUrlName =
+    nameInput &&
+    slugify(nameInput, {
+      replacement: "-",
+      lower: true,
+      strict: true,
+    })
 
   const nameOnBlur = () => {
     trigger("name")
-    if (urlNameInput.length <= 0) {
+    if (urlNameInput?.length <= 0) {
       setValue("urlName", generatedUrlName)
       trigger("urlName")
     }
