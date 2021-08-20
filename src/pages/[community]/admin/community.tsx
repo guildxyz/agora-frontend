@@ -164,8 +164,11 @@ const AdminCommunityPage = (): JSX.Element => {
                             alignItems="center"
                             py={{ base: 4, xl: 0 }}
                             width={{ base: "full", xl: "max-content" }}
-                            background={colorMode === "light" ? "white" : "gray.700"}
-                            borderTop="1px"
+                            background={{
+                              base: colorMode === "light" ? "white" : "gray.700",
+                              lg: "transparent",
+                            }}
+                            borderTop={{ base: "1px", lg: "none" }}
                             borderTopColor={
                               colorMode === "light" ? "gray.200" : "gray.600"
                             }

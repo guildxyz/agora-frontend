@@ -31,10 +31,11 @@ const useSubmitCommunityData = (
             setLoading(false)
 
             if (response.status !== 200 && response.status !== 201) {
-              response.json().then((errorMsg) => {
+              response.json().then(() => {
                 toast({
                   title: "Error",
-                  description: errorMsg,
+                  description:
+                    "Please make sure that you're sending valid data and you haven't already created a community on Agora Space.",
                   status: "error",
                   duration: 4000,
                 })
