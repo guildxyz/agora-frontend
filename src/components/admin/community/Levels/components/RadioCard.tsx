@@ -16,12 +16,13 @@ const RadioCard = (props) => {
         {...checkbox}
         cursor="pointer"
         borderRadius="md"
+        borderWidth={2}
         bgColor={colorMode === "light" ? "blackAlpha.100" : "whiteAlpha.100"}
+        borderColor="transparent"
         fontWeight="medium"
         color={colorMode === "light" ? "gray.700" : "white"}
         _checked={{
-          bgColor: colorMode === "light" ? "primary.100" : "primary.300",
-          color: colorMode === "light" ? "primary.600" : "primary.800",
+          borderColor: colorMode === "light" ? "primary.300" : "primary.700",
         }}
         _focus={{
           boxShadow: "outline",
