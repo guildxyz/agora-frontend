@@ -1,5 +1,6 @@
 import { Stack, Text, useColorMode, Wrap } from "@chakra-ui/react"
-import { Lock, LockOpen, LockSimpleOpen, Tag, Users } from "phosphor-react"
+import { useRouter } from "next/router"
+import { Lock, LockOpen, LockSimpleOpen, Tag } from "phosphor-react"
 import type { Icon as IconType, RequirementType } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
 
@@ -7,6 +8,7 @@ type Props = {
   stakeTimelockMs: number
   requirementType: RequirementType
   requirement: number
+  requirementData: string
   membersCount: number
   tokenSymbol: string
 }
@@ -28,12 +30,6 @@ const accessRequirementInfo = {
     label: "stake",
     icon: Lock,
   },
-}
-
-const mutagenNftNames = {
-  1: "Prints",
-  2: "Mutagens",
-  0: "Geneses",
 }
 
 type ChildProps = {
@@ -64,26 +60,33 @@ const InfoTags = ({
   stakeTimelockMs,
   requirementType,
   requirement,
+  requirementData,
   membersCount,
   tokenSymbol,
-}: Props): JSX.Element => (
-  <Wrap direction="row" spacing={{ base: 2, lg: 4 }}>
-    <InfoTag
-      icon={accessRequirementInfo[requirementType].icon}
-      label={`${accessRequirementInfo[requirementType].label} ${
-        requirementType === "STAKE"
-          ? `for ${msToReadableFormat(stakeTimelockMs)}`
-          : ``
-      }`}
-    />
-    {requirementType !== "OPEN" &&
-      (requirementType === "NFT_HOLD" ? (
-        <InfoTag icon={Tag} label={`1 ${mutagenNftNames[requirement]}`} />
-      ) : (
-        <InfoTag icon={Tag} label={`${requirement} ${tokenSymbol}`} />
-      ))}
-    <InfoTag icon={Users} label={`${membersCount} members`} />
-  </Wrap>
-)
+}: Props): JSX.Element => {
+  // Need this only in order to fetch community urlName & hide nft name & members count on Mutagen levels
+  const router = useRouter()
+
+  return (
+    <Wrap direction="row" spacing={{ base: 2, lg: 4 }}>
+      <InfoTag
+        icon={accessRequirementInfo[requirementType].icon}
+        label={`${accessRequirementInfo[requirementType].label} ${
+          requirementType === "STAKE"
+            ? `for ${msToReadableFormat(stakeTimelockMs)}`
+            : ``
+        }`}
+      />
+      {requirementType !== "OPEN" &&
+        (requirementType === "NFT_HOLD" ? (
+          <InfoTag icon={Tag} label={`${requirementData}`} />
+        ) : (
+          <InfoTag icon={Tag} label={`${requirement} ${tokenSymbol}`} />
+        ))}
+      {/* temporarily removing tag until membersCount is buggy  */}
+      {/* <InfoTag icon={Users} label={`${membersCount} members`} /> */}
+    </Wrap>
+  )
+}
 
 export default InfoTags
