@@ -1,4 +1,4 @@
-import { Box, Button, Spinner, Stack, VStack } from "@chakra-ui/react"
+import { Box, Button, Spinner, Stack, useColorMode, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
 import Levels from "components/admin/community/Levels"
@@ -22,6 +22,7 @@ const AdminCommunityPage = (): JSX.Element => {
     "chakra-colors-primary",
     communityData?.themeColor || "#71717a"
   )
+  const { colorMode } = useColorMode()
 
   const methods = useForm({ mode: "all" })
 
@@ -137,7 +138,7 @@ const AdminCommunityPage = (): JSX.Element => {
                     account.toLowerCase() === communityData.owner?.address && (
                       <Stack spacing={{ base: 7, xl: 9 }}>
                         <Pagination isAdminPage />
-                        <VStack spacing={12}>
+                        <VStack pb={{ base: 16, xl: 0 }} spacing={12}>
                           <Platforms
                             activePlatforms={communityData.communityPlatforms.filter(
                               (platform) => platform.active
@@ -145,15 +146,36 @@ const AdminCommunityPage = (): JSX.Element => {
                           />
                           <Levels />
 
-                          <Button
-                            colorScheme="primary"
-                            onClick={methods.handleSubmit(onSubmit)}
-                            isLoading={loading}
+                          <Box
+                            position="fixed"
+                            bottom={{ base: 0, xl: 4 }}
+                            right={{
+                              base: 0,
+                              xl: "calc((100vw - var(--chakra-sizes-container-lg)) / 2)",
+                            }}
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            py={{ base: 4, xl: 0 }}
+                            width={{ base: "full", xl: "max-content" }}
+                            background={colorMode === "light" ? "white" : "gray.700"}
+                            borderTop="1px"
+                            borderTopColor={
+                              colorMode === "light" ? "gray.200" : "gray.600"
+                            }
+                            transform={{ base: "none", xl: "translateX(100%)" }}
+                            zIndex="docked"
                           >
-                            {communityData.levels?.length > 0
-                              ? "Update levels"
-                              : "Create levels"}
-                          </Button>
+                            <Button
+                              colorScheme="primary"
+                              onClick={methods.handleSubmit(onSubmit)}
+                              isLoading={loading}
+                            >
+                              {communityData.levels?.length > 0
+                                ? "Update levels"
+                                : "Create levels"}
+                            </Button>
+                          </Box>
                         </VStack>
                       </Stack>
                     )}

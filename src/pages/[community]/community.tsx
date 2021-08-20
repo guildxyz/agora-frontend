@@ -62,7 +62,7 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
                 <Link href="/register" color="indigo.500">
                   Integrate it
                 </Link>
-                &nbsp; if you're in charge, or tweet them to do so!
+                &nbsp;if you're in charge, or tweet them to do so!
               </Text>
             </Card>
           )}
