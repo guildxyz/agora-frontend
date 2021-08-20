@@ -1,6 +1,7 @@
 import {
+  Box,
   Button,
-  ButtonGroup,
+  HStack,
   useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react"
@@ -22,6 +23,7 @@ const LinkButton = ({ href, disabled = false, size = "md", children }) => {
     <Link key="href" passHref href={`/${communityUrl}/${href}`}>
       <Button
         as="a"
+        variant="ghost"
         colorScheme="primary"
         isActive={isActive}
         disabled={disabled}
@@ -38,7 +40,7 @@ const Pagination = ({ isAdminPage = false }) => {
   const buttonSize = useBreakpointValue({ base: "sm", md: "md" })
 
   return (
-    <ButtonGroup variant="ghost">
+    <HStack>
       <LinkButton href={isAdminPage ? "admin" : ""} size={buttonSize}>
         Info
       </LinkButton>
@@ -48,10 +50,19 @@ const Pagination = ({ isAdminPage = false }) => {
       >
         Community
       </LinkButton>
+
+      {isAdminPage && (
+        <Box marginInlineStart="auto!important">
+          <LinkButton href="" size={buttonSize}>
+            Back to community
+          </LinkButton>
+        </Box>
+      )}
+
       {/* <LinkButton href="twitter-bounty" disabled>
       Twitter bounty
     </LinkButton> */}
-    </ButtonGroup>
+    </HStack>
   )
 }
 
