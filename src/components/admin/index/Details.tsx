@@ -76,7 +76,11 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
               ) : (
                 <Input
                   {...register("urlName", {
-                    maxLength: 20,
+                    maxLength: {
+                      value: 20,
+                      message:
+                        "The maximum possible URL name length is 20 characters",
+                    },
                     validate: async (value) => {
                       try {
                         const response = await fetch(
