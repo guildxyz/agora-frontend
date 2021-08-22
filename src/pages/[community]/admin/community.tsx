@@ -171,9 +171,9 @@ const AdminCommunityPage = (): JSX.Element => {
                             width={{ base: "full", xl: "max-content" }}
                             background={{
                               base: colorMode === "light" ? "white" : "gray.700",
-                              lg: "transparent",
+                              xl: "transparent",
                             }}
-                            borderTop={{ base: "1px", lg: "none" }}
+                            borderTop={{ base: "1px", xl: "none" }}
                             borderTopColor={
                               colorMode === "light" ? "gray.200" : "gray.600"
                             }
