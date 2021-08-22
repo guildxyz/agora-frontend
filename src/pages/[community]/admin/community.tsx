@@ -145,8 +145,12 @@ const AdminCommunityPage = (): JSX.Element => {
                       <Stack spacing={{ base: 7, xl: 9 }}>
                         <Pagination isAdminPage />
                         <VStack pb={{ base: 16, xl: 0 }} spacing={12}>
+                          {console.log(!communityData?.levels)}
                           <Platforms
-                            comingSoon
+                            comingSoon={
+                              communityData?.levels ||
+                              communityData.levels.length > 0
+                            }
                             activePlatforms={communityData.communityPlatforms.filter(
                               (platform) => platform.active
                             )}
