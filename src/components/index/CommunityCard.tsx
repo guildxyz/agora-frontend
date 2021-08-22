@@ -11,10 +11,10 @@ import { useWeb3React } from "@web3-react/core"
 import Card from "components/common/Card"
 import Link from "components/common/Link"
 import ImgPlaceholder from "components/[community]/common/ImgPlaceholder"
-import useLevelAccess from "components/[community]/community/Levels/components/Level/hooks/useLevelAccess"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import useMemberCount from "components/[community]/hooks/useMemberCount"
 import { Chains } from "connectors"
+import useBalance from "hooks/useBalance"
 import React, { MutableRefObject } from "react"
 import { ChainData, Community } from "temporaryData/types"
 
@@ -25,20 +25,12 @@ type Props = {
 
 const WrappedCard = ({ community, refAccess }: Props): JSX.Element => {
   const { chainId } = useWeb3React()
-
   const currentChainData = community.chainData.find(
-    (_) => Chains[_.name] === chainId
+    (chain) => Chains[chain.name] === chainId
   )
+  const balance = useBalance(currentChainData?.token)
 
-  const [hasAccess] = useLevelAccess(
-    community.levels.length ? community.levels[0].requirementType : "HOLD",
-    community.levels.length ? community.levels[0].requirement : -1,
-    currentChainData?.token,
-    currentChainData?.stakeToken,
-    Chains[currentChainData?.name]
-  )
-
-  if (hasAccess)
+  if (balance)
     return (
       <Portal containerRef={refAccess}>
         <CommunityCard community={community} currentChainData={currentChainData} />
@@ -59,6 +51,7 @@ const CommunityCard = ({
     chainData,
     id,
     holdersCount,
+    parallelLevels,
   },
   currentChainData: _currentChainData,
 }: {
@@ -116,13 +109,17 @@ const CommunityCard = ({
             <Heading size="sm">{name}</Heading>
             {levels.length ? (
               <Wrap spacing="2" shouldWrapChildren>
-                <Tag colorScheme="alpha">{`${membersCount} members`}</Tag>
+                {/* temporarily removing tag until membersCount is buggy */}
+                {/* <Tag colorScheme="alpha">{`${membersCount} members`}</Tag> */}
                 <Tag colorScheme="alpha">{`${levels.length} levels`}</Tag>
-                <Tag colorScheme="alpha">
-                  {`min: ${levels[0]?.requirement ?? 0} ${
-                    currentChainData.token.symbol
-                  }`}
-                </Tag>
+                {/* TODO: support min tag for communities with parallel levels  */}
+                {!parallelLevels && (
+                  <Tag colorScheme="alpha">
+                    {`min: ${levels[0]?.requirement ?? 0} ${
+                      currentChainData.token.symbol
+                    }`}
+                  </Tag>
+                )}
               </Wrap>
             ) : (
               <Wrap shouldWrapChildren>

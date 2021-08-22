@@ -33,6 +33,7 @@ type Props = {
 const Level = ({
   data: {
     requirement,
+    requirementData,
     requirementType,
     name,
     stakeTimelockMs,
@@ -52,6 +53,7 @@ const Level = ({
   const [hasAccess, noAccessMessage] = useLevelAccess(
     requirementType,
     requirement,
+    requirementData,
     chainData.token,
     chainData.stakeToken,
     Chains[chainData.name]
@@ -95,10 +97,13 @@ const Level = ({
             {name}
           </Heading>
           <InfoTags
-            requirement={requirement}
-            stakeTimelockMs={stakeTimelockMs}
-            requirementType={requirementType}
-            membersCount={membersCount}
+            {...{
+              requirement,
+              requirementType,
+              requirementData,
+              stakeTimelockMs,
+              membersCount,
+            }}
             tokenSymbol={chainData.token.symbol}
           />
         </GridItem>
