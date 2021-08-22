@@ -62,6 +62,14 @@ const AdminCommunityPage = (): JSX.Element => {
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
     if (communityData) {
+      /**
+       * TODO!!! I think we should remove things like "tokenSymbol", "isTGEnabled",
+       * "isDCEnabled", and "stakeToken" from the form, and provide it in a provider,
+       * or as props, because we won't edit these values, and we also won't send them
+       * to the API in POST/PATCH request, we just need them to implement some logic
+       * in the form.
+       */
+
       const discordServer =
         communityData.communityPlatforms
           .filter((platform) => platform.active)
@@ -73,6 +81,7 @@ const AdminCommunityPage = (): JSX.Element => {
           ? communityData.chainData[0].token?.symbol
           : undefined
       )
+      methods.setValue("stakeToken", communityData.chainData.stakeToken)
       methods.setValue(
         "isTGEnabled",
         !!communityData.communityPlatforms

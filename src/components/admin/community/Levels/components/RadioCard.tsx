@@ -1,7 +1,7 @@
 /* eslint-disable react/destructuring-assignment */
 import { Box, useColorMode, useRadio } from "@chakra-ui/react"
 
-const RadioCard = (props) => {
+const RadioCard = ({ isDisabled = false, ...props }) => {
   const { colorMode } = useColorMode()
 
   const { getInputProps, getCheckboxProps } = useRadio(props)
@@ -11,9 +11,10 @@ const RadioCard = (props) => {
 
   return (
     <Box as="label" width="full">
-      <input {...input} />
+      {!isDisabled && <input {...input} />}
       <Box
         {...checkbox}
+        _disabled={{ bgColor: "red.500 " }}
         cursor="pointer"
         borderRadius="md"
         borderWidth={2}
@@ -29,6 +30,7 @@ const RadioCard = (props) => {
         }}
         px={5}
         py={3}
+        opacity={isDisabled ? 0.5 : 1}
       >
         {props.children}
       </Box>
