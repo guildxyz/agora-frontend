@@ -27,6 +27,7 @@ import { Platform } from "temporaryData/types"
 
 type Props = {
   activePlatforms?: Platform[]
+  comingSoon?: boolean
 }
 
 type DiscordError = {
@@ -41,7 +42,10 @@ type DiscordChannel = {
   category: string
 }
 
-const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
+const Platforms = ({
+  activePlatforms = [],
+  comingSoon = false,
+}: Props): JSX.Element => {
   const {
     watch,
     register,
@@ -114,8 +118,19 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
           templateColumns={{ base: "100%", md: "auto 100%" }}
           gap={{ base: 8, md: 12 }}
         >
+          {comingSoon && (
+            <GridItem colSpan={{ base: 1, md: 2 }} mb={-8}>
+              <Badge>Coming soon</Badge>
+            </GridItem>
+          )}
+
           <GridItem>
-            <FormControl display="flex" height="full" alignItems="center">
+            <FormControl
+              display="flex"
+              height="full"
+              alignItems="center"
+              isDisabled={comingSoon}
+            >
               <Switch
                 colorScheme="primary"
                 mr={4}
@@ -123,6 +138,7 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
                 defaultChecked={
                   !!activePlatforms.find((platform) => platform.name === "DISCORD")
                 }
+                isDisabled={comingSoon}
               />
               <FormLabel margin={0}>Discord</FormLabel>
             </FormControl>
@@ -131,7 +147,7 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
           <GridItem>
             {watch("isDCEnabled") ? (
               <VStack spacing={4} alignItems="start">
-                <FormControl isDisabled={!watch("isDCEnabled")}>
+                <FormControl isDisabled={comingSoon}>
                   <InputGroup>
                     <InputLeftAddon>Server ID</InputLeftAddon>
                     <Input
@@ -210,7 +226,7 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.75 }}
                     >
-                      <FormControl isDisabled={!watch("isDCEnabled")}>
+                      <FormControl isDisabled={comingSoon}>
                         <FormLabel>Invite channel</FormLabel>
 
                         <Select
@@ -240,7 +256,12 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
           </GridItem>
 
           <GridItem>
-            <FormControl display="flex" height="full" alignItems="center">
+            <FormControl
+              display="flex"
+              height="full"
+              alignItems="center"
+              isDisabled={comingSoon}
+            >
               <Switch
                 colorScheme="primary"
                 mr={4}
@@ -248,6 +269,7 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
                 defaultChecked={
                   !!activePlatforms.find((platform) => platform.name === "TELEGRAM")
                 }
+                isDisabled={comingSoon}
               />
               <FormLabel margin={0}>Telegram</FormLabel>
             </FormControl>

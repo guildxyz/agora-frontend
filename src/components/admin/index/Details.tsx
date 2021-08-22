@@ -123,6 +123,7 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
                   isInvalid={fieldState.invalid}
                   buttonIcon={UploadSimple}
                   buttonText="Change image"
+                  isDisabled
                   onPhotoChange={(newPhoto: File) => field.onChange(newPhoto)}
                   {...field}
                 />

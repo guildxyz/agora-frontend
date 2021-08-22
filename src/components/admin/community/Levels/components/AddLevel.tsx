@@ -102,7 +102,8 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
           </GridItem>
 
           <GridItem>
-            <FormControl>
+            {/* Disabled for now, until we can't upload photos */}
+            <FormControl isDisabled>
               <FormLabel>Image</FormLabel>
               <Controller
                 render={({ field, fieldState }) => (
@@ -110,6 +111,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                     ref={field.ref}
                     isInvalid={fieldState.invalid}
                     buttonText="Change image..."
+                    isDisabled
                     onPhotoChange={(newPhoto: File) => field.onChange(newPhoto)}
                     {...field}
                   />
