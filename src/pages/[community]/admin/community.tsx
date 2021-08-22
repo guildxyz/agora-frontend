@@ -57,7 +57,7 @@ const AdminCommunityPage = (): JSX.Element => {
         }
       )
     }
-  }, [router.query, chainId])
+  }, [router, chainId])
 
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
@@ -145,12 +145,8 @@ const AdminCommunityPage = (): JSX.Element => {
                       <Stack spacing={{ base: 7, xl: 9 }}>
                         <Pagination isAdminPage />
                         <VStack pb={{ base: 16, xl: 0 }} spacing={12}>
-                          {console.log(!communityData?.levels)}
                           <Platforms
-                            comingSoon={
-                              communityData?.levels ||
-                              communityData.levels.length > 0
-                            }
+                            comingSoon={communityData?.levels?.length > 0}
                             activePlatforms={communityData.communityPlatforms.filter(
                               (platform) => platform.active
                             )}

@@ -46,7 +46,6 @@ const AdminHomePage = (): JSX.Element => {
 
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
-    console.log(communityData)
     if (communityData) {
       methods.setValue("name", communityData.name)
       methods.setValue("urlName", communityData.urlName)

@@ -20,6 +20,7 @@ const Levels = (): JSX.Element => {
     fields: levelFields,
     append: appendLevel,
     remove: removeLevel,
+    swap: swapLevels,
   } = useFieldArray({
     name: "levels",
   })
@@ -70,7 +71,14 @@ const Levels = (): JSX.Element => {
               status: "success",
               duration: 2000,
             })
-            removeLevel(index)
+
+            // Reorder levels if needed
+            if (index < levelFields.length - 1) {
+              swapLevels(index, levelFields.length - 1)
+              removeLevel(levelFields.length - 1)
+            } else {
+              removeLevel(index)
+            }
           })
           .catch(() => {
             toast({
