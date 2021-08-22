@@ -14,6 +14,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { useCommunity } from "components/[community]/common/Context"
+import ImgPlaceholder from "components/[community]/common/ImgPlaceholder"
 import InfoTags from "components/[community]/community/Levels/components/InfoTags"
 import { Chains } from "connectors"
 import { Check, CheckCircle } from "phosphor-react"
@@ -102,12 +103,16 @@ const Level = ({
           />
         </GridItem>
         <GridItem order={{ md: 0 }}>
-          <Img
-            src={`${imageUrl}`}
-            boxSize="45px"
-            alt={`${name} image`}
-            borderRadius="full"
-          />
+          {imageUrl ? (
+            <Img
+              src={`${imageUrl}`}
+              boxSize="45px"
+              alt={`${name} image`}
+              borderRadius="full"
+            />
+          ) : (
+            <ImgPlaceholder boxSize="45px" />
+          )}
         </GridItem>
         {description && (
           <GridItem colSpan={{ base: 2, md: 1 }} colStart={{ md: 2 }} order={2}>
