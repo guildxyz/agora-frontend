@@ -184,7 +184,13 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                   isDisabled={watch(`levels.${index}.requirementType`) === "OPEN"}
                   isInvalid={errors.levels && errors.levels[index]?.requirement}
                 />
-                <InputRightAddon>{getValues("tokenSymbol")}</InputRightAddon>
+                <InputRightAddon
+                  opacity={
+                    watch(`levels.${index}.requirementType`) === "OPEN" ? 0.5 : 1
+                  }
+                >
+                  {getValues("tokenSymbol")}
+                </InputRightAddon>
               </InputGroup>
             </FormControl>
           </GridItem>
@@ -202,7 +208,13 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                   isDisabled={watch(`levels.${index}.requirementType`) !== "STAKE"}
                   isInvalid={errors.levels && errors.levels[index]?.stakeTimelockMs}
                 />
-                <InputRightAddon>month(s)</InputRightAddon>
+                <InputRightAddon
+                  opacity={
+                    watch(`levels.${index}.requirementType`) !== "STAKE" ? 0.5 : 1
+                  }
+                >
+                  month(s)
+                </InputRightAddon>
               </InputGroup>
             </FormControl>
           </GridItem>
