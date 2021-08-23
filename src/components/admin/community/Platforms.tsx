@@ -277,15 +277,16 @@ const Platforms = ({
 
           <GridItem>
             <Text colorScheme="gray">
-              You'll have to{" "}
+              You'll need a group for each level, with <i>@Agoraspacebot</i> being
+              added to them (
               <Link
                 href="https://agora-space.gitbook.io/agoraspace/tools/role-management-bot/telegram#2-invite-medousa"
                 target="_blank"
                 color="telegram.500"
               >
-                invite Medousa
-              </Link>{" "}
-              to your Telegram groups and set the proper group ID for every level
+                help
+              </Link>
+              ). You'll have to set the belonging group for each level below.
             </Text>
           </GridItem>
 
