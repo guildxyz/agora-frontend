@@ -27,7 +27,6 @@ const useSubmitLevelsData = (
     // Converting timeLock to ms for every level
     editedData.levels = editedData.levels?.map((level) => {
       const timeLock = level.stakeTimelockMs
-
       if (!timeLock) {
         return clearUndefinedData(level)
       }

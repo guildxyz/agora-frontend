@@ -95,6 +95,7 @@ const AdminCommunityPage = (): JSX.Element => {
         "levels",
         communityData.levels.map((level) => ({
           id: level.id,
+          dbId: level.id, // Needed for proper form management
           name: level.name || undefined,
           image: level.imageUrl || undefined,
           description: level.description || undefined,
