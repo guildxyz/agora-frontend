@@ -17,13 +17,12 @@ const RadioCard = ({ isDisabled = false, ...props }) => {
         _disabled={{ bgColor: "red.500 " }}
         cursor="pointer"
         borderRadius="md"
-        borderWidth={2}
-        bgColor={colorMode === "light" ? "blackAlpha.100" : "whiteAlpha.100"}
-        borderColor="transparent"
+        bgColor={colorMode === "light" ? "blackAlpha.50" : "whiteAlpha.100"}
         fontWeight="medium"
         color={colorMode === "light" ? "gray.700" : "white"}
         _checked={{
-          borderColor: colorMode === "light" ? "primary.300" : "primary.700",
+          bgColor: colorMode === "light" ? "primary.100" : "primary.200",
+          color: colorMode === "light" ? "primary.500" : "primary.600",
         }}
         _focus={{
           boxShadow: "outline",
