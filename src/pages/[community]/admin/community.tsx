@@ -75,25 +75,20 @@ const AdminCommunityPage = (): JSX.Element => {
           .filter((platform) => platform.active)
           .find((platform) => platform.name === "DISCORD") || undefined
 
-      methods.setValue(
-        "tokenSymbol",
+      // Reset the form state so we can watch the "isDirty" prop
+      methods.reset({
+        tokenSymbol:
         communityData.chainData?.length > 0
           ? communityData.chainData[0].token?.symbol
-          : undefined
-      )
-      methods.setValue("stakeToken", communityData.chainData.stakeToken)
-      methods.setValue(
-        "isTGEnabled",
-        !!communityData.communityPlatforms
+            : undefined,
+        isTGEnabled: !!communityData.communityPlatforms
           .filter((platform) => platform.active)
-          .find((platform) => platform.name === "TELEGRAM")
-      )
-      methods.setValue("isDCEnabled", !!discordServer)
-      methods.setValue("discordServerId", discordServer?.platformId || undefined)
-      methods.setValue("inviteChannel", discordServer?.inviteChannel || undefined)
-      methods.setValue(
-        "levels",
-        communityData.levels.map((level) => ({
+          .find((platform) => platform.name === "TELEGRAM"),
+        stakeToken: communityData.chainData.stakeToken,
+        isDCEnabled: !!discordServer,
+        discordServerId: discordServer?.platformId || undefined,
+        inviteChannel: discordServer?.inviteChannel || undefined,
+        levels: communityData.levels.map((level) => ({
           id: level.id,
           dbId: level.id, // Needed for proper form management
           name: level.name || undefined,
@@ -103,8 +98,8 @@ const AdminCommunityPage = (): JSX.Element => {
           requirement: level.requirement || undefined,
           stakeTimelockMs: convertMsToMonths(level.stakeTimelockMs),
           telegramGroupId: level.telegramGroupId || undefined,
-        }))
-      )
+        })),
+      })
     }
   }, [communityData])
 
