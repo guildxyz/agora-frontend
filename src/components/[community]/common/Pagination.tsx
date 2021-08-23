@@ -7,9 +7,31 @@ import {
 } from "@chakra-ui/react"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { useMemo } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
-const LinkButton = ({ href, disabled = false, size = "md", children }) => {
+type LinkButtonProps = {
+  variant?: string
+  href: string
+  disabled?: boolean
+  size?: string
+  children: any
+}
+
+type PaginationProps = {
+  doneBtnUrl?: string
+  editBtnUrl?: string
+  isAdminPage?: boolean
+  saveBtnLoading?: boolean
+  onSaveClick?: () => void
+}
+
+const LinkButton = ({
+  variant = "ghost",
+  href,
+  disabled = false,
+  size = "md",
+  children,
+}: LinkButtonProps): JSX.Element => {
   const router = useRouter()
   const [, communityUrl, ...currentPath] = router.asPath.split("/")
   const isActive = currentPath.join("/") === href
@@ -23,11 +45,11 @@ const LinkButton = ({ href, disabled = false, size = "md", children }) => {
     <Link key="href" passHref href={`/${communityUrl}/${href}`}>
       <Button
         as="a"
-        variant="ghost"
+        variant={variant}
         colorScheme="primary"
         isActive={isActive}
         disabled={disabled}
-        color={!isActive ? gray : undefined}
+        color={(!isActive && (variant === "solid" ? "white" : gray)) || undefined}
         size={size}
       >
         {children}
@@ -36,11 +58,54 @@ const LinkButton = ({ href, disabled = false, size = "md", children }) => {
   )
 }
 
-const Pagination = ({ isAdminPage = false }) => {
+const Pagination = ({
+  doneBtnUrl = "",
+  editBtnUrl = null,
+  isAdminPage = false,
+  saveBtnLoading = false,
+  onSaveClick = null,
+}: PaginationProps): JSX.Element => {
+  const paginationRef = useRef()
+  const [isSticky, setIsSticky] = useState(false)
   const buttonSize = useBreakpointValue({ base: "sm", md: "md" })
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const current = paginationRef.current || null
+      const rect = current?.getBoundingClientRect()
+
+      // When the Pagination component becomes "sticky"...
+      setIsSticky(rect.top === 0)
+    }
+
+    window.addEventListener("scroll", handleScroll)
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
+
   return (
-    <HStack>
+    <HStack
+      ref={paginationRef}
+      position="sticky"
+      top={0}
+      py={isSticky ? 2 : 0}
+      height={isSticky ? 16 : 12}
+      zIndex="banner"
+      _before={{
+        content: `""`,
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "full",
+        height: 16,
+        bgColor: "white",
+        boxShadow: "md",
+        transition: "opacity 0.2s ease",
+        opacity: isSticky ? 1 : 0,
+      }}
+    >
       <LinkButton href={isAdminPage ? "admin" : ""} size={buttonSize}>
         Info
       </LinkButton>
@@ -51,10 +116,31 @@ const Pagination = ({ isAdminPage = false }) => {
         Community
       </LinkButton>
 
-      {isAdminPage && (
+      {isAdminPage && onSaveClick && (
         <Box marginInlineStart="auto!important">
-          <LinkButton href="" size={buttonSize}>
-            Back to community
+          <Button
+            isLoading={saveBtnLoading}
+            variant="solid"
+            colorScheme="green"
+            onClick={onSaveClick}
+          >
+            Save
+          </Button>
+        </Box>
+      )}
+
+      {isAdminPage && !onSaveClick && (
+        <Box marginInlineStart="auto!important">
+          <LinkButton variant="solid" href={doneBtnUrl}>
+            Done
+          </LinkButton>
+        </Box>
+      )}
+
+      {editBtnUrl && (
+        <Box marginInlineStart="auto!important">
+          <LinkButton variant="solid" href={editBtnUrl}>
+            Edit
           </LinkButton>
         </Box>
       )}

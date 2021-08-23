@@ -1,4 +1,4 @@
-import { Box, Button, Spinner, Stack, VStack } from "@chakra-ui/react"
+import { Box, Spinner, Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
 import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityData"
@@ -47,12 +47,15 @@ const AdminHomePage = (): JSX.Element => {
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
     if (communityData) {
-      methods.setValue("name", communityData.name)
-      methods.setValue("urlName", communityData.urlName)
-      methods.setValue("description", communityData.description)
-      methods.setValue("chainName", communityData.chainData[0].name) // Maybe we'll need to think about this one, because currently we're displaying the active chain's name inside the form!
-      methods.setValue("themeColor", communityData.themeColor)
-      methods.setValue("tokenAddress", communityData.chainData[0].token.address)
+      // Reset the form state so we can watch the "isDirty" prop
+      methods.reset({
+        name: communityData.name,
+        urlName: communityData.urlName,
+        description: communityData.description,
+        chainName: communityData.chainData[0].name, // Maybe we'll need to think about this one, because currently we're displaying the active chain's name inside the form!
+        themeColor: communityData.themeColor,
+        tokenAddress: communityData.chainData[0].token.address,
+      })
     }
   }, [communityData])
 
@@ -101,7 +104,14 @@ const AdminHomePage = (): JSX.Element => {
                   {account &&
                     account.toLowerCase() === communityData.owner?.address && (
                       <Stack spacing={{ base: 7, xl: 9 }}>
-                        <Pagination isAdminPage />
+                        <Pagination
+                          isAdminPage
+                          saveBtnLoading={loading}
+                          onSaveClick={
+                            methods.formState.isDirty &&
+                            methods.handleSubmit(onSubmit)
+                          }
+                        />
                         <VStack spacing={12}>
                           <Details isAdminPage />
                           <UsedToken />
@@ -110,13 +120,6 @@ const AdminHomePage = (): JSX.Element => {
                               setColorCode(newColor)
                             }
                           />
-                          <Button
-                            onClick={methods.handleSubmit(onSubmit)}
-                            colorScheme="primary"
-                            isLoading={loading}
-                          >
-                            Update community
-                          </Button>
                         </VStack>
                       </Stack>
                     )}
