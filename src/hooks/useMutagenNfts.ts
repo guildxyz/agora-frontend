@@ -1,27 +1,30 @@
 /* eslint-disable no-bitwise */
 import { aggregate } from "@makerdao/multicall"
 import { useWeb3React } from "@web3-react/core"
+import { Chains, RPC } from "connectors"
 import useSWR from "swr"
 import { RequirementType, Token } from "temporaryData/types"
+import MulticallAddresses from "utils/multicall"
 import useBalance from "./useBalance"
-
-const config = {
-  multicallAddress: "0x5ba1e12693dc8f9c48aad8770482f4739beed696",
-  // rpcUrl: "https://rpc.goerli.mudit.blog/",
-  rpcUrl: "https://eth-mainnet.alchemyapi.io/v2/tB6vigGmhws9fP7bqr__93CT6SOy1lGy",
-}
 
 const getMutagenNfts = async (
   _: string,
   amount: number,
   mutagenAddress: string,
-  account: string
+  account: string,
+  currentChain: string
 ) => {
   const requests = [...Array(amount)].map((_, i) => ({
     target: mutagenAddress,
     call: ["tokenOfOwnerByIndex(address,uint256)(uint256)", account, i],
     returns: [[i, (val) => parseInt(val)]],
   }))
+
+  const config = {
+    multicallAddress: MulticallAddresses[currentChain],
+    rpcUrl: RPC[currentChain].rpcUrls[0],
+  }
+
   const {
     results: { transformed },
   } = await aggregate(requests, config)
@@ -39,13 +42,19 @@ const getMutagenNfts = async (
 }
 
 const useMutagenNfts = (requirementType: RequirementType, token: Token) => {
-  const { account } = useWeb3React()
-  const amount: any = useBalance(token)
+  const { account, chainId } = useWeb3React()
+  const amount = useBalance(token)
 
-  const shouldFetch = requirementType === "NFT_HOLD" && !!token && amount > 0
+  const shouldFetch =
+    requirementType === "NFT_HOLD" &&
+    !!token &&
+    amount > 0 &&
+    typeof chainId === "number"
 
   const { data } = useSWR(
-    shouldFetch ? ["mutagen", parseInt(amount), token.address, account] : null,
+    shouldFetch
+      ? ["mutagen", amount, token.address, account, Chains[chainId]]
+      : null,
     getMutagenNfts,
     /**
      * Can't use useKeepSWRDataLiveAsBlocksArrive because deduping doesn't work with
