@@ -10,15 +10,16 @@ import type { Community } from "temporaryData/communities"
 
 type Props = {
   communityData: Community
+  preview: boolean
 }
 
-const CommunityPage = ({ communityData }: Props): JSX.Element => {
+const CommunityPage = ({ communityData, preview }: Props): JSX.Element => {
   const { account } = useWeb3React()
 
   return (
     <CommunityProvider data={communityData}>
       <Layout
-        title={communityData.name}
+        title={`${preview ? "Preview - " : ""}${communityData.name}`}
         imageUrl={communityData.imageUrl}
         editBtnUrl={
           account?.toLowerCase() === communityData.owner?.address &&

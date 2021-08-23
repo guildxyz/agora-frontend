@@ -6,7 +6,20 @@ import { Community } from "temporaryData/types"
 // Set this to true if you don't want the data to be fetched from backend
 const DEBUG = false
 
-const getStaticProps: GetStaticProps = async ({ params }) => {
+const getStaticProps: GetStaticProps = async ({ params, preview }) => {
+  /* if (preview) {
+    const host =
+      process.env.NODE_ENV === "production"
+        ? "https://app.agora.space"
+        : "localhost:3000"
+    const siteHasBuit = await fetch(`${host}/${params.community}`).then(
+      (response) => response.ok
+    )
+    if(siteHasBuit) {
+      // TODO: fetch a clearPreview endpoint to delete cookie
+    }
+  } */
+
   const localData = [...communities, ...tokens].find(
     (i) => i.urlName === params.community
   )
@@ -25,7 +38,7 @@ const getStaticProps: GetStaticProps = async ({ params }) => {
   }
 
   return {
-    props: { communityData },
+    props: { communityData, preview: !!preview },
   }
 }
 
