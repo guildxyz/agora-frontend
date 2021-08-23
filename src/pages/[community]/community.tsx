@@ -13,23 +13,25 @@ import type { Community } from "temporaryData/communities"
 
 type Props = {
   communityData: Community
+  preview: boolean
 }
 
-const CommunityPage = ({ communityData }: Props): JSX.Element => {
+const CommunityPage = ({ communityData, preview }: Props): JSX.Element => {
   const { account } = useWeb3React()
 
   return (
     <CommunityProvider data={communityData}>
       <Layout
-        title={communityData.name}
+        title={`${preview ? "Preview - " : ""}${communityData.name}`}
         imageUrl={communityData.imageUrl}
-        editBtnUrl={
-          account?.toLowerCase() === communityData.owner?.address &&
-          `/${communityData.urlName}/admin/community`
-        }
       >
         <Stack spacing={{ base: 7, xl: 9 }}>
-          <Pagination />
+          <Pagination
+            editBtnUrl={
+              account?.toLowerCase() === communityData.owner?.address &&
+              `admin/community`
+            }
+          />
           {communityData.levels.length ? (
             <>
               <SimpleGrid

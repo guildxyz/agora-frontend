@@ -21,13 +21,13 @@ const CommunityPage = ({ communityData, preview }: Props): JSX.Element => {
       <Layout
         title={`${preview ? "Preview - " : ""}${communityData.name}`}
         imageUrl={communityData.imageUrl}
-        editBtnUrl={
-          account?.toLowerCase() === communityData.owner?.address &&
-          `/${communityData.urlName}/admin`
-        }
       >
         <Stack spacing={{ base: 7, xl: 9 }}>
-          <Pagination />
+          <Pagination
+            editBtnUrl={
+              account?.toLowerCase() === communityData.owner?.address && `admin`
+            }
+          />
           <Stack spacing={{ base: 7 }}>
             <ActionCard
               title="About"

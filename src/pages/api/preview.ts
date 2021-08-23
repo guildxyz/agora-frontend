@@ -24,7 +24,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     }
   )
 
-  res.redirect(`/${community.urlName}`)
+  if (req.query.levelsPage) {
+    res.redirect(`/${community.urlName}/community`)
+  } else {
+    res.redirect(`/${community.urlName}`)
+  }
 }
 
 export default handler

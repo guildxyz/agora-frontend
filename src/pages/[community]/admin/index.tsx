@@ -1,4 +1,4 @@
-import { Box, Button, Spinner, Stack, VStack } from "@chakra-ui/react"
+import { Box, Spinner, Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
 import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityData"
@@ -104,7 +104,14 @@ const AdminHomePage = (): JSX.Element => {
                   {account &&
                     account.toLowerCase() === communityData.owner?.address && (
                       <Stack spacing={{ base: 7, xl: 9 }}>
-                        <Pagination isAdminPage />
+                        <Pagination
+                          isAdminPage
+                          saveBtnLoading={loading}
+                          onSaveClick={
+                            methods.formState.isDirty &&
+                            methods.handleSubmit(onSubmit)
+                          }
+                        />
                         <VStack spacing={12}>
                           <Details isAdminPage />
                           <UsedToken />
@@ -113,13 +120,6 @@ const AdminHomePage = (): JSX.Element => {
                               setColorCode(newColor)
                             }
                           />
-                          <Button
-                            onClick={methods.handleSubmit(onSubmit)}
-                            colorScheme="primary"
-                            isLoading={loading}
-                          >
-                            Update community
-                          </Button>
                         </VStack>
                       </Stack>
                     )}

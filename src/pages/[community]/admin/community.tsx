@@ -1,4 +1,4 @@
-import { Box, Button, Spinner, Stack, useColorMode, VStack } from "@chakra-ui/react"
+import { Box, Spinner, Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
 import Levels from "components/admin/community/Levels"
@@ -22,7 +22,6 @@ const AdminCommunityPage = (): JSX.Element => {
     "chakra-colors-primary",
     communityData?.themeColor || "#71717a"
   )
-  const { colorMode } = useColorMode()
 
   const methods = useForm({ mode: "all" })
 
@@ -30,10 +29,10 @@ const AdminCommunityPage = (): JSX.Element => {
     setLoading,
     communityData?.levels?.length > 0 ? "PATCH" : "POST",
     communityData?.id,
-    // Refetch when the level data is updated in the DB
+    // Redirect to the preview page
     () =>
-      fetchCommunityData(router.query.community.toString()).then(
-        (newCommunityData) => setCommunityData(newCommunityData)
+      window.location.replace(
+        `/api/preview?urlName=${communityData.urlName}&levelsPage="true"`
       )
   )
 
@@ -78,8 +77,8 @@ const AdminCommunityPage = (): JSX.Element => {
       // Reset the form state so we can watch the "isDirty" prop
       methods.reset({
         tokenSymbol:
-        communityData.chainData?.length > 0
-          ? communityData.chainData[0].token?.symbol
+          communityData.chainData?.length > 0
+            ? communityData.chainData[0].token?.symbol
             : undefined,
         isTGEnabled: !!communityData.communityPlatforms
           .filter((platform) => platform.active)
@@ -148,7 +147,15 @@ const AdminCommunityPage = (): JSX.Element => {
                   {account &&
                     account.toLowerCase() === communityData.owner?.address && (
                       <Stack spacing={{ base: 7, xl: 9 }}>
-                        <Pagination isAdminPage />
+                        <Pagination
+                          doneBtnUrl="community"
+                          isAdminPage
+                          saveBtnLoading={loading}
+                          onSaveClick={
+                            methods.formState.isDirty &&
+                            methods.handleSubmit(onSubmit)
+                          }
+                        />
                         <VStack pb={{ base: 16, xl: 0 }} spacing={12}>
                           <Platforms
                             comingSoon={communityData?.levels?.length > 0}
@@ -157,40 +164,6 @@ const AdminCommunityPage = (): JSX.Element => {
                             )}
                           />
                           <Levels />
-
-                          <Box
-                            position="fixed"
-                            bottom={{ base: 0, xl: 4 }}
-                            right={{
-                              base: 0,
-                              xl: "calc((100vw - var(--chakra-sizes-container-lg)) / 2)",
-                            }}
-                            display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                            py={{ base: 4, xl: 0 }}
-                            width={{ base: "full", xl: "max-content" }}
-                            background={{
-                              base: colorMode === "light" ? "white" : "gray.700",
-                              xl: "transparent",
-                            }}
-                            borderTop={{ base: "1px", xl: "none" }}
-                            borderTopColor={
-                              colorMode === "light" ? "gray.200" : "gray.600"
-                            }
-                            transform={{ base: "none", xl: "translateX(100%)" }}
-                            zIndex="docked"
-                          >
-                            <Button
-                              colorScheme="primary"
-                              onClick={methods.handleSubmit(onSubmit)}
-                              isLoading={loading}
-                            >
-                              {communityData.levels?.length > 0
-                                ? "Update levels"
-                                : "Create levels"}
-                            </Button>
-                          </Box>
                         </VStack>
                       </Stack>
                     )}
