@@ -22,6 +22,7 @@ const useSubmitCommunityData = (
     sign("Please sign this message to verify your address")
       .then((addressSignedMessage) => {
         const finalData = clearUndefinedData(data)
+
         fetch(fetchUrl, {
           method,
           headers: { "Content-Type": "application/json" },
@@ -52,6 +53,10 @@ const useSubmitCommunityData = (
               status: "success",
               duration: 2000,
             })
+
+            if (method === "PATCH") {
+              window.location.replace(`/api/preview?urlName=${finalData.urlName}`)
+            }
 
             if (method === "POST") {
               setTimeout(() => {

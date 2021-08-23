@@ -39,6 +39,7 @@ const getStaticProps: GetStaticProps = async ({ params, preview }) => {
 
   return {
     props: { communityData, preview: !!preview },
+    revalidate: 600, // Refetch community data after 600 seconds - https://vercel.com/docs/next.js/incremental-static-regeneration
   }
 }
 
