@@ -243,16 +243,15 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                   }
                 />
               </FormLabel>
-              <InputGroup>
-                <Input
-                  width="full"
-                  placeholder="+ paste group ID"
-                  {...register(`levels.${index}.telegramGroupId`, {
-                    required: watch("isTGEnabled"),
-                  })}
-                  isInvalid={errors.levels && errors.levels[index]?.telegramGroupId}
-                />
-              </InputGroup>
+
+              <Input
+                width="full"
+                placeholder="+ paste group ID"
+                {...register(`levels.${index}.telegramGroupId`, {
+                  required: watch("isTGEnabled"),
+                })}
+                isInvalid={errors.levels && errors.levels[index]?.telegramGroupId}
+              />
             </FormControl>
           </VStack>
         )}
