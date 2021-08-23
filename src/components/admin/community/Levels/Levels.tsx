@@ -23,6 +23,7 @@ const Levels = (): JSX.Element => {
     swap: swapLevels,
   } = useFieldArray({
     name: "levels",
+    keyName: "dbId",
   })
 
   const sign = usePersonalSign()
@@ -118,7 +119,8 @@ const Levels = (): JSX.Element => {
         {levelFields.length > 0 ? (
           <VStack width="full" spacing={8}>
             {levelFields.map((levelField, index) => (
-              <AnimatePresence key={levelField.id}>
+              // eslint-disable-next-line react/no-array-index-key
+              <AnimatePresence key={index}>
                 <motion.div
                   initial={{ opacity: 0, scale: 0.75, width: "100%" }}
                   animate={{ opacity: 1, scale: 1 }}

@@ -115,7 +115,7 @@ const Platforms = ({
       <VStack>
         <Grid
           width="full"
-          templateColumns={{ base: "100%", md: "auto 100%" }}
+          templateColumns={{ base: "100%", md: "20% auto" }}
           gap={{ base: 8, md: 12 }}
         >
           {comingSoon && (
@@ -277,7 +277,15 @@ const Platforms = ({
 
           <GridItem>
             <Text colorScheme="gray">
-              You'll have to set the group IDs for every level
+              You'll have to{" "}
+              <Link
+                href="https://agora-space.gitbook.io/agoraspace/tools/role-management-bot/telegram#2-invite-medousa"
+                target="_blank"
+                color="telegram.500"
+              >
+                invite Medousa
+              </Link>{" "}
+              to your Telegram groups and set the proper group ID for every level
             </Text>
           </GridItem>
 
