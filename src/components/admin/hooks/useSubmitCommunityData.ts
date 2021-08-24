@@ -1,13 +1,11 @@
 import usePersonalSign from "components/[community]/community/Platforms/components/JoinModal/hooks/usePersonalSign"
 import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
+import { useState } from "react"
 import clearUndefinedData from "../utils/clearUndefinedData"
 
-const useSubmitCommunityData = (
-  setLoading: (loading: boolean) => void, // Could be moved inside hook, and be returned(?)
-  method: "POST" | "PATCH",
-  id = null
-) => {
+const useSubmitCommunityData = (method: "POST" | "PATCH", id = null) => {
+  const [loading, setLoading] = useState(false)
   const fetchUrl =
     method === "PATCH"
       ? `${process.env.NEXT_PUBLIC_API}/community/${id}`
@@ -94,7 +92,7 @@ const useSubmitCommunityData = (
       })
   }
 
-  return onSubmit
+  return { onSubmit, loading }
 }
 
 export default useSubmitCommunityData

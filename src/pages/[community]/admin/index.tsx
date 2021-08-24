@@ -16,7 +16,6 @@ import { FormProvider, useForm } from "react-hook-form"
 
 const AdminHomePage = (): JSX.Element => {
   const [communityData, setCommunityData] = useState(null)
-  const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { chainId, account } = useWeb3React()
   const [colorCode, setColorCode] = useState<string>(null)
@@ -27,7 +26,7 @@ const AdminHomePage = (): JSX.Element => {
 
   const methods = useForm({ mode: "all" })
 
-  const onSubmit = useSubmitCommunityData(setLoading, "PATCH", communityData?.id)
+  const {onSubmit, loading} = useSubmitCommunityData("PATCH", communityData?.id)
 
   // Fetch the communityData when we have the necessary info for it
   useEffect(() => {
