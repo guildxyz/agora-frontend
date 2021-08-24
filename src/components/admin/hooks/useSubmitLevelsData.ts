@@ -1,15 +1,16 @@
 import usePersonalSign from "components/[community]/community/Platforms/components/JoinModal/hooks/usePersonalSign"
 import useToast from "hooks/useToast"
+import { useState } from "react"
 import clearUndefinedData from "../utils/clearUndefinedData"
 
 const useSubmitLevelsData = (
-  setLoading: (loading: boolean) => void,
   method: "POST" | "PATCH" | "DELETE",
   communityId: number = null,
   successCallback?: () => void
 ) => {
   const toast = useToast()
   const sign = usePersonalSign()
+  const [loading, setLoading] = useState(false)
 
   // Helper method for converting month(s) to ms
   const convertMonthsToMs = (months: number) =>
@@ -191,7 +192,7 @@ const useSubmitLevelsData = (
       })
   }
 
-  return onSubmit
+  return { onSubmit, loading }
 }
 
 export default useSubmitLevelsData

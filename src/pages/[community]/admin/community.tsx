@@ -15,7 +15,6 @@ import { FormProvider, useForm } from "react-hook-form"
 
 const AdminCommunityPage = (): JSX.Element => {
   const [communityData, setCommunityData] = useState(null)
-  const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { chainId, account } = useWeb3React()
   const generatedColors = useColorPalette(
@@ -25,9 +24,8 @@ const AdminCommunityPage = (): JSX.Element => {
 
   const methods = useForm({ mode: "all" })
 
-  const onSubmit = useSubmitLevelsData(
-    setLoading,
-    communityData?.levels?.length > 0 ? "PATCH" : "POST",
+  const { loading, onSubmit } = useSubmitLevelsData(
+    communityData?.levels.length > 0 ? "PATCH" : "POST",
     communityData?.id,
     // Set preview cookies & redirect to the preview page
     () =>
