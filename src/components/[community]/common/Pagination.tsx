@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   HStack,
+  Tooltip,
   useBreakpointValue,
   useColorMode,
 } from "@chakra-ui/react"
@@ -21,7 +22,9 @@ type PaginationProps = {
   doneBtnUrl?: string
   editBtnUrl?: string
   isAdminPage?: boolean
+  isCommunityTabDisabled?: boolean
   saveBtnLoading?: boolean
+  saveBtnText?: string
   onSaveClick?: () => void
 }
 
@@ -62,7 +65,9 @@ const Pagination = ({
   doneBtnUrl = "",
   editBtnUrl = null,
   isAdminPage = false,
+  isCommunityTabDisabled = false,
   saveBtnLoading = false,
+  saveBtnText = "Save",
   onSaveClick = null,
 }: PaginationProps): JSX.Element => {
   const paginationRef = useRef()
@@ -110,12 +115,26 @@ const Pagination = ({
       <LinkButton href={isAdminPage ? "admin" : ""} size={buttonSize}>
         Info
       </LinkButton>
-      <LinkButton
-        href={isAdminPage ? "admin/community" : "community"}
-        size={buttonSize}
+
+      <Tooltip
+        label="You must first integrate your token"
+        placement="bottom"
+        isDisabled={!isCommunityTabDisabled}
       >
-        Community
-      </LinkButton>
+        <Box>
+          <LinkButton
+            href={
+              (!isCommunityTabDisabled &&
+                (isAdminPage ? "admin/community" : "community")) ||
+              ""
+            }
+            size={buttonSize}
+            disabled={isCommunityTabDisabled}
+          >
+            Community
+          </LinkButton>
+        </Box>
+      </Tooltip>
 
       {isAdminPage && onSaveClick && (
         <Box marginInlineStart="auto!important">
@@ -123,9 +142,10 @@ const Pagination = ({
             isLoading={saveBtnLoading}
             variant="solid"
             colorScheme="green"
+            size={buttonSize}
             onClick={onSaveClick}
           >
-            Save
+            {saveBtnText}
           </Button>
         </Box>
       )}
