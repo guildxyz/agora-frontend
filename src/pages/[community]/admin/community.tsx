@@ -5,6 +5,7 @@ import Levels from "components/admin/community/Levels"
 import Platforms from "components/admin/community/Platforms"
 import useCommunityData from "components/admin/hooks/useCommunityData"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
+import convertMsToMonths from "components/admin/utils/convertMsToMonths"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
@@ -39,13 +40,6 @@ const AdminCommunityPage = (): JSX.Element => {
           router.push(`/${communityData.urlName}/community`)
         })
   )
-
-  // Helper method for converting ms to month(s)
-  const convertMsToMonths = (ms: number) => {
-    if (!ms) return undefined
-
-    return Math.round(ms * 3.8026486208174e-10)
-  }
 
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
