@@ -6,7 +6,7 @@ import clearUndefinedData from "../utils/clearUndefinedData"
 const useSubmitLevelsData = (
   method: "POST" | "PATCH" | "DELETE",
   communityId: number = null,
-  successCallback?: () => void
+  successCallback: () => void = () => {}
 ) => {
   const toast = useToast()
   const sign = usePersonalSign()
@@ -53,7 +53,7 @@ const useSubmitLevelsData = (
             .then((response) => {
               setLoading(false)
 
-              if (response.status !== 200 && response.status !== 201) {
+              if (!response.ok) {
                 toast({
                   title: "Error",
                   description:
@@ -66,14 +66,13 @@ const useSubmitLevelsData = (
 
               toast({
                 title: "Success!",
-                description: "Level(s) added!",
+                description:
+                  "Level(s) added! It might take some time for the page to update for everyone.",
                 status: "success",
                 duration: 2000,
               })
 
-              if (successCallback) {
-                successCallback()
-              }
+              successCallback()
             })
             .catch(() => {
               setLoading(false)
@@ -142,9 +141,7 @@ const useSubmitLevelsData = (
             .then((responses) => {
               setLoading(false)
 
-              const failingResponses = responses.filter(
-                (res) => res.status !== 200 && res.status !== 201
-              )
+              const failingResponses = responses.filter(({ ok }) => !ok)
 
               if (failingResponses.length > 0) {
                 toast({
@@ -159,14 +156,13 @@ const useSubmitLevelsData = (
 
               toast({
                 title: "Success!",
-                description: "Level(s) updated!",
+                description:
+                  "Level(s) updated! It might take some time for the page to update for everyone.",
                 status: "success",
                 duration: 2000,
               })
 
-              if (successCallback) {
-                successCallback()
-              }
+              successCallback()
             })
             .catch(() => {
               setLoading(false)
