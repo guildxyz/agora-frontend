@@ -1,15 +1,8 @@
-import {
-  Button,
-  Divider,
-  HStack,
-  Icon,
-  Text,
-  useToast,
-  VStack,
-} from "@chakra-ui/react"
+import { Button, Divider, HStack, Icon, Text, VStack } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
 import usePersonalSign from "components/[community]/community/Platforms/components/JoinModal/hooks/usePersonalSign"
 import { AnimatePresence, motion } from "framer-motion"
+import useToast from "hooks/useToast"
 import { Plus } from "phosphor-react"
 import { useEffect } from "react"
 import { useFieldArray } from "react-hook-form"

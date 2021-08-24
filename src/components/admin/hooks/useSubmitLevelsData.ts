@@ -1,5 +1,5 @@
-import { useToast } from "@chakra-ui/react"
 import usePersonalSign from "components/[community]/community/Platforms/components/JoinModal/hooks/usePersonalSign"
+import useToast from "hooks/useToast"
 import clearUndefinedData from "../utils/clearUndefinedData"
 
 const useSubmitLevelsData = (

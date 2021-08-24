@@ -1,10 +1,11 @@
-import { Icon, Stack, Text, useToast } from "@chakra-ui/react"
+import { Icon, Stack, Text } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import Card from "components/common/Card"
 import Layout from "components/common/Layout"
 import ActionCard from "components/[community]/common/ActionCard"
 import { CommunityProvider } from "components/[community]/common/Context"
 import Pagination from "components/[community]/common/Pagination"
+import useToast from "hooks/useToast"
 import { Info } from "phosphor-react"
 import { useEffect } from "react"
 import type { Community } from "temporaryData/communities"
@@ -26,16 +27,12 @@ const CommunityPage = ({ communityData, preview }: Props): JSX.Element => {
           "This site is currently in preview mode. This community has just been updated. The changes should go live in about 5-10 minutes.",
         status: "info",
         duration: 10_000,
-        isClosable: true,
       })
   }, [])
 
   return (
     <CommunityProvider data={communityData}>
-      <Layout
-        title={communityData.name}
-        imageUrl={communityData.imageUrl}
-      >
+      <Layout title={communityData.name} imageUrl={communityData.imageUrl}>
         <Stack spacing={{ base: 7, xl: 9 }}>
           <Pagination
             editBtnUrl={
