@@ -4,7 +4,7 @@ import { useRouter } from "next/router"
 import clearUndefinedData from "../utils/clearUndefinedData"
 
 const useSubmitCommunityData = (
-  setLoading: (loading: boolean) => void,
+  setLoading: (loading: boolean) => void, // Could be moved inside hook, and be returned(?)
   method: "POST" | "PATCH",
   id = null
 ) => {
@@ -31,7 +31,7 @@ const useSubmitCommunityData = (
           .then((response) => {
             setLoading(false)
 
-            if (response.status !== 200 && response.status !== 201) {
+            if (!response.ok) {
               response.json().then(() => {
                 toast({
                   title: "Error",
@@ -49,13 +49,21 @@ const useSubmitCommunityData = (
               description:
                 method === "POST"
                   ? "Community added! You'll be redirected to the admin page."
-                  : "Community updated!",
+                  : "Community updated! It might take some time for the page to update for everyone.",
               status: "success",
               duration: 2000,
             })
 
             if (method === "PATCH") {
-              window.location.replace(`/api/preview?urlName=${finalData.urlName}`)
+              fetch(`/api/preview?urlName=${finalData.urlName}`)
+                .then((res) => res.json())
+                .then((cookies: string[]) => {
+                  cookies.forEach((cookie: string) => {
+                    document.cookie = cookie
+                  })
+
+                  router.push(`/${finalData.urlName}`)
+                })
             }
 
             if (method === "POST") {
