@@ -55,8 +55,8 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
   const {
     control,
     register,
-    setValue,
     getValues,
+    setValue,
     watch,
     formState: { errors },
   } = useFormContext()
@@ -66,7 +66,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
     name: "membership",
     defaultValue: getValues(`levels.${index}.requirementType`) || options[0],
     onChange: (newValue: MembershipTypes) =>
-      setValue(`levels.${index}.requirementType`, newValue, {}),
+      setValue(`levels.${index}.requirementType`, newValue, { shouldDirty: true }),
   })
 
   const radioGroup = getRootProps()
@@ -170,7 +170,9 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 {...register(`levels.${index}.requirementType`, {
                   required: true,
                 })}
-                defaultValue={options[0]}
+                defaultValue={
+                  getValues(`levels.${index}.requirementType`) || options[0]
+                }
               />
             </FormControl>
           </GridItem>
