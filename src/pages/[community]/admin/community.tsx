@@ -22,12 +22,12 @@ const AdminCommunityPage = (): JSX.Element => {
     communityData?.themeColor || "#71717a"
   )
   const isOwner = useRedirectIfNotOwner(
-    communityData.owner?.address,
-    `/${communityData.urlName}`
+    communityData?.owner?.address,
+    `/${communityData?.urlName}`
   )
   const methods = useForm({ mode: "all" })
 
-  const HTTPMethod = communityData?.levels.length > 0 ? "PATCH" : "POST"
+  const HTTPMethod = communityData?.levels?.length > 0 ? "PATCH" : "POST"
 
   const { loading, onSubmit } = useSubmitLevelsData(HTTPMethod, communityData?.id)
 

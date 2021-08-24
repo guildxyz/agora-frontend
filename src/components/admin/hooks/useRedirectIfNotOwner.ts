@@ -3,7 +3,7 @@ import { useRouter } from "next/router"
 import { useEffect } from "react"
 
 const useRedirectIfNotOwner = (ownerAddress: string, redirectUrl: string) => {
-  const { account } = useWeb3React()
+  const { account, active } = useWeb3React()
   const router = useRouter()
 
   useEffect(() => {
@@ -16,6 +16,7 @@ const useRedirectIfNotOwner = (ownerAddress: string, redirectUrl: string) => {
     }
   }, [account, router, ownerAddress, redirectUrl])
 
+  if (!active) return false
   return account.toLowerCase() === ownerAddress
 }
 

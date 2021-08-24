@@ -23,8 +23,8 @@ const AdminHomePage = (): JSX.Element => {
   )
   const communityData = useCommunityData()
   const isOwner = useRedirectIfNotOwner(
-    communityData.owner?.address,
-    `/${communityData.urlName}`
+    communityData?.owner?.address,
+    `/${communityData?.urlName}`
   )
   const methods = useForm({ mode: "all" })
 
@@ -38,9 +38,9 @@ const AdminHomePage = (): JSX.Element => {
         name: communityData.name,
         urlName: communityData.urlName,
         description: communityData.description,
-        chainName: communityData.chainData[0].name, // Maybe we'll need to think about this one, because currently we're displaying the active chain's name inside the form!
+        chainName: communityData.chainData.name, // Maybe we'll need to think about this one, because currently we're displaying the active chain's name inside the form!
         themeColor: communityData.themeColor,
-        tokenAddress: communityData.chainData[0].token.address,
+        tokenAddress: communityData.chainData.token.address,
       })
     }
   }, [communityData])
