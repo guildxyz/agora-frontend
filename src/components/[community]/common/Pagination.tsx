@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  HStack,
-  Tooltip,
-  useBreakpointValue,
-  useColorMode,
-} from "@chakra-ui/react"
+import { Box, Button, HStack, Tooltip, useColorMode } from "@chakra-ui/react"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -72,7 +65,6 @@ const Pagination = ({
 }: PaginationProps): JSX.Element => {
   const paginationRef = useRef()
   const [isSticky, setIsSticky] = useState(false)
-  const buttonSize = useBreakpointValue({ base: "sm", md: "md" })
 
   useEffect(() => {
     const handleScroll = () => {
@@ -107,12 +99,12 @@ const Pagination = ({
         height: 16,
         bgColor: "white",
         boxShadow: "md",
-        transition: "opacity 0.2s ease",
+        transition: "0.2s ease",
         visibility: isSticky ? "visible" : "hidden",
         opacity: isSticky ? 1 : 0,
       }}
     >
-      <LinkButton href={isAdminPage ? "admin" : ""} size={buttonSize}>
+      <LinkButton href={isAdminPage ? "admin" : ""} size="md">
         Info
       </LinkButton>
 
@@ -128,7 +120,7 @@ const Pagination = ({
                 (isAdminPage ? "admin/community" : "community")) ||
               ""
             }
-            size={buttonSize}
+            size="md"
             disabled={isCommunityTabDisabled}
           >
             Community
@@ -141,8 +133,8 @@ const Pagination = ({
           <Button
             isLoading={saveBtnLoading}
             variant="solid"
-            colorScheme="green"
-            size={buttonSize}
+            colorScheme="primary"
+            size="md"
             onClick={onSaveClick}
           >
             {saveBtnText}
