@@ -5,30 +5,15 @@ import Layout from "components/common/Layout"
 import ActionCard from "components/[community]/common/ActionCard"
 import { CommunityProvider } from "components/[community]/common/Context"
 import Pagination from "components/[community]/common/Pagination"
-import useToast from "hooks/useToast"
 import { Info } from "phosphor-react"
-import { useEffect } from "react"
 import type { Community } from "temporaryData/communities"
 
 type Props = {
   communityData: Community
-  preview: boolean
 }
 
-const CommunityPage = ({ communityData, preview }: Props): JSX.Element => {
+const CommunityPage = ({ communityData }: Props): JSX.Element => {
   const { account } = useWeb3React()
-  const toast = useToast()
-
-  useEffect(() => {
-    if (preview)
-      toast({
-        title: "Preview mode.",
-        description:
-          "This site is currently in preview mode. This community has just been updated. The changes should go live in about 5-10 minutes.",
-        status: "info",
-        duration: 10_000,
-      })
-  }, [])
 
   return (
     <CommunityProvider data={communityData}>
