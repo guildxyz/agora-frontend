@@ -4,42 +4,32 @@ import NotConnectedError from "components/admin/common/NotConnectedError"
 import Levels from "components/admin/community/Levels"
 import Platforms from "components/admin/community/Platforms"
 import useCommunityData from "components/admin/hooks/useCommunityData"
+import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
 import convertMsToMonths from "components/admin/utils/convertMsToMonths"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import { AnimatePresence, motion } from "framer-motion"
-import { useRouter } from "next/router"
 import React, { useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 const AdminCommunityPage = (): JSX.Element => {
-  const router = useRouter()
   const { chainId, account } = useWeb3React()
   const communityData = useCommunityData()
   const generatedColors = useColorPalette(
     "chakra-colors-primary",
     communityData?.themeColor || "#71717a"
   )
-
+  const isOwner = useRedirectIfNotOwner(
+    communityData.owner?.address,
+    `/${communityData.urlName}`
+  )
   const methods = useForm({ mode: "all" })
 
-  const { loading, onSubmit } = useSubmitLevelsData(
-    communityData?.levels.length > 0 ? "PATCH" : "POST",
-    communityData?.id,
-    // Set preview cookies & redirect to the preview page
-    () =>
-      fetch(`/api/preview?urlName=${communityData.urlName}`)
-        .then((res) => res.json())
-        .then((cookies: string[]) => {
-          cookies.forEach((cookie: string) => {
-            document.cookie = cookie
-          })
+  const HTTPMethod = communityData?.levels.length > 0 ? "PATCH" : "POST"
 
-          router.push(`/${communityData.urlName}/community`)
-        })
-  )
+  const { loading, onSubmit } = useSubmitLevelsData(HTTPMethod, communityData?.id)
 
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
@@ -81,17 +71,6 @@ const AdminCommunityPage = (): JSX.Element => {
     }
   }, [communityData])
 
-  // Redirect the user if they aren't the community owner
-  useEffect(() => {
-    if (
-      communityData &&
-      account &&
-      account.toLowerCase() !== communityData.owner?.address
-    ) {
-      router.push(`/${communityData.urlName}`)
-    }
-  }, [account])
-
   // If the user isn't logged in, display an error message
   if (!chainId) {
     return (
@@ -125,7 +104,7 @@ const AdminCommunityPage = (): JSX.Element => {
               title={`${communityData.name} - Levels`}
               imageUrl={communityData.imageUrl}
             >
-              {account && account.toLowerCase() === communityData.owner?.address && (
+              {account && isOwner && (
                 <Stack spacing={{ base: 7, xl: 9 }}>
                   <Pagination
                     doneBtnUrl="community"
