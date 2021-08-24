@@ -29,11 +29,17 @@ const AdminCommunityPage = (): JSX.Element => {
     setLoading,
     communityData?.levels?.length > 0 ? "PATCH" : "POST",
     communityData?.id,
-    // Redirect to the preview page
+    // Set preview cookies & redirect to the preview page
     () =>
-      window.location.replace(
-        `/api/preview?urlName=${communityData.urlName}&levelsPage="true"`
-      )
+      fetch(`/api/preview?urlName=${communityData.urlName}`)
+        .then((res) => res.json())
+        .then((cookies: string[]) => {
+          cookies.forEach((cookie: string) => {
+            document.cookie = cookie
+          })
+
+          router.push(`/${communityData.urlName}/community`)
+        })
   )
 
   // Helper method for converting ms to month(s)
