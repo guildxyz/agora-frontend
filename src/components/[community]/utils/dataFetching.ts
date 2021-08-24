@@ -7,22 +7,9 @@ import { Community } from "temporaryData/types"
 const DEBUG = false
 
 const getStaticProps: GetStaticProps = async ({ params, preview }) => {
-  /* if (preview) {
-    const host =
-      process.env.NODE_ENV === "production"
-        ? "https://app.agora.space"
-        : "localhost:3000"
-    const siteHasBuit = await fetch(`${host}/${params.community}`).then(
-      (response) => response.ok
-    )
-    if(siteHasBuit) {
-      // TODO: fetch a clearPreview endpoint to delete cookie
-    }
-  } */
-
-  const localData = [...communities, ...tokens].find(
-    (i) => i.urlName === params.community
-  )
+  const localData =
+    communities.find((i) => i.urlName === params.community) ??
+    tokens.find((i) => i.urlName === params.community)
 
   const communityData =
     DEBUG && process.env.NODE_ENV !== "production"

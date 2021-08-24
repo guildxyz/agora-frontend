@@ -1,4 +1,4 @@
-import { Icon, SimpleGrid, Stack, Text } from "@chakra-ui/react"
+import { Icon, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import Card from "components/common/Card"
 import Layout from "components/common/Layout"
@@ -9,6 +9,7 @@ import Levels from "components/[community]/community/Levels"
 import Platforms from "components/[community]/community/Platforms"
 import Staked from "components/[community]/community/Staked"
 import { Info } from "phosphor-react"
+import { useEffect } from "react"
 import type { Community } from "temporaryData/communities"
 
 type Props = {
@@ -18,6 +19,19 @@ type Props = {
 
 const CommunityPage = ({ communityData, preview }: Props): JSX.Element => {
   const { account } = useWeb3React()
+  const toast = useToast()
+
+  useEffect(() => {
+    if (preview)
+      toast({
+        title: "Preview mode.",
+        description:
+          "This site is currently in preview mode. The community you visited has just been created, and should be ready in 5-10 minutes.",
+        status: "info",
+        duration: 10_000,
+        isClosable: true,
+      })
+  }, [])
 
   return (
     <CommunityProvider data={communityData}>

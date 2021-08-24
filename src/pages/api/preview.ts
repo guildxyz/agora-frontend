@@ -20,7 +20,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   res.setPreviewData(
     {},
     {
-      maxAge: 5 * 60,
+      maxAge: 600, // Preview cookie expires in 10 minutes
     }
   )
 
