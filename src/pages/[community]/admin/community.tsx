@@ -37,8 +37,9 @@ const AdminCommunityPage = (): JSX.Element => {
           cookies.forEach((cookie: string) => {
             document.cookie = cookie
           })
-
-          router.push(`/${communityData.urlName}/community`)
+          setTimeout(() => {
+            router.push(`/${communityData.urlName}/community`)
+          }, 2000)
         })
   )
 
@@ -123,7 +124,7 @@ const AdminCommunityPage = (): JSX.Element => {
   if (!chainId) {
     return (
       <NotConnectedError
-        title={communityData ? `${communityData.name} - Levels` : "Loading..."}
+        title={communityData ? `${communityData.name} - Settings` : "Loading..."}
       />
     )
   }
@@ -147,7 +148,7 @@ const AdminCommunityPage = (): JSX.Element => {
             <FormProvider {...methods}>
               <Box sx={generatedColors}>
                 <Layout
-                  title={`${communityData.name} - Levels`}
+                  title={`${communityData.name} - Settings`}
                   imageUrl={communityData.imageUrl}
                 >
                   {account &&

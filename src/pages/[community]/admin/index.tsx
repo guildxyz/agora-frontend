@@ -74,7 +74,7 @@ const AdminHomePage = (): JSX.Element => {
   if (!chainId) {
     return (
       <NotConnectedError
-        title={communityData ? `${communityData.name} - General` : "Loading..."}
+        title={communityData ? `${communityData.name} - Settings` : "Loading..."}
       />
     )
   }
@@ -98,7 +98,7 @@ const AdminHomePage = (): JSX.Element => {
             <FormProvider {...methods}>
               <Box sx={generatedColors}>
                 <Layout
-                  title={`${communityData.name} - General`}
+                  title={`${communityData.name} - Settings`}
                   imageUrl={communityData.imageUrl}
                 >
                   {account &&
