@@ -92,7 +92,7 @@ const Pagination = ({
       top={0}
       py={isSticky ? 2 : 0}
       height={isSticky ? 16 : 12}
-      zIndex="banner"
+      zIndex={isSticky ? "banner" : "auto"}
       _before={{
         content: `""`,
         position: "fixed",
@@ -103,6 +103,7 @@ const Pagination = ({
         bgColor: "white",
         boxShadow: "md",
         transition: "opacity 0.2s ease",
+        visibility: isSticky ? "visible" : "hidden",
         opacity: isSticky ? 1 : 0,
       }}
     >
