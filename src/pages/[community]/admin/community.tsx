@@ -11,10 +11,12 @@ import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import { AnimatePresence, motion } from "framer-motion"
+import { useRouter } from "next/router"
 import React, { useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 const AdminCommunityPage = (): JSX.Element => {
+  const router = useRouter()
   const { chainId, account } = useWeb3React()
   const communityData = useCommunityData()
   const generatedColors = useColorPalette(
@@ -29,7 +31,21 @@ const AdminCommunityPage = (): JSX.Element => {
 
   const HTTPMethod = communityData?.levels?.length > 0 ? "PATCH" : "POST"
 
-  const { loading, onSubmit } = useSubmitLevelsData(HTTPMethod, communityData?.id)
+  const { loading, onSubmit } = useSubmitLevelsData(
+    HTTPMethod,
+    communityData?.id,
+    () =>
+      fetch(`/api/preview?urlName=${communityData.urlName}`)
+        .then((res) => res.json())
+        .then((cookies: string[]) => {
+          cookies.forEach((cookie: string) => {
+            document.cookie = cookie
+          })
+          setTimeout(() => {
+            router.push(`/${communityData.urlName}/community`)
+          }, 2000)
+        })
+  )
 
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
@@ -75,7 +91,7 @@ const AdminCommunityPage = (): JSX.Element => {
   if (!chainId) {
     return (
       <NotConnectedError
-        title={communityData ? `${communityData.name} - Levels` : "Loading..."}
+        title={communityData ? `${communityData.name} - Settings` : "Loading..."}
       />
     )
   }
@@ -101,7 +117,7 @@ const AdminCommunityPage = (): JSX.Element => {
         <FormProvider {...methods}>
           <Box sx={generatedColors}>
             <Layout
-              title={`${communityData.name} - Levels`}
+              title={`${communityData.name} - Settings`}
               imageUrl={communityData.imageUrl}
             >
               {account && isOwner && (

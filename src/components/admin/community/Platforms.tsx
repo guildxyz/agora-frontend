@@ -277,8 +277,15 @@ const Platforms = ({
 
           <GridItem>
             <Text colorScheme="gray">
-              You'll need a group for each level, with <i>@Agoraspacebot</i> being
-              added to them (
+              You'll need a group for each level, with{" "}
+              <Link
+                href="https://t.me/agoraspacebot"
+                target="_blank"
+                color="telegram.500"
+              >
+                @agoraspacebot
+              </Link>{" "}
+              being added to them (
               <Link
                 href="https://agora-space.gitbook.io/agoraspace/tools/role-management-bot/telegram#2-invite-medousa"
                 target="_blank"

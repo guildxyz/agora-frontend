@@ -36,7 +36,7 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
                 display="flex"
                 alignItems="center"
               >
-                <Icon as={Info} mr="2" />
+                <Icon as={Info} mr="4" />
                 More info coming soon
               </Text>
             </Card>

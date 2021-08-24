@@ -55,12 +55,14 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
                 display="flex"
                 alignItems="center"
               >
-                <Icon as={Info} mr="2" />
-                This community is not using Agora Space yet.&nbsp;
-                <Link href="/register" color="indigo.500">
-                  Integrate it
-                </Link>
-                &nbsp;if you're in charge, or tweet them to do so!
+                <Icon as={Info} mr="4" />
+                <span>
+                  This community is not using Agora Space yet.{" "}
+                  <Link href="/register" color="indigo.500">
+                    Integrate it
+                  </Link>{" "}
+                  if you're in charge, or tweet them to do so!
+                </span>
               </Text>
             </Card>
           )}
