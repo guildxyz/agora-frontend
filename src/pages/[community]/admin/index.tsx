@@ -1,11 +1,11 @@
 import { Box, Spinner, Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
+import useCommunityData from "components/admin/hooks/useCommunityData"
 import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityData"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
 import UsedToken from "components/admin/index/UsedToken"
-import fetchCommunityData from "components/admin/utils/fetchCommunityData"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
@@ -15,7 +15,6 @@ import { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 const AdminHomePage = (): JSX.Element => {
-  const [communityData, setCommunityData] = useState(null)
   const router = useRouter()
   const { chainId, account } = useWeb3React()
   const [colorCode, setColorCode] = useState<string>(null)
@@ -23,25 +22,11 @@ const AdminHomePage = (): JSX.Element => {
     "chakra-colors-primary",
     colorCode || "#71717a"
   )
+  const communityData = useCommunityData()
 
   const methods = useForm({ mode: "all" })
 
-  const {onSubmit, loading} = useSubmitCommunityData("PATCH", communityData?.id)
-
-  // Fetch the communityData when we have the necessary info for it
-  useEffect(() => {
-    if (router.query.community && !communityData) {
-      fetchCommunityData(router.query.community.toString()).then(
-        (newCommunityData) => {
-          if (!newCommunityData) {
-            router.push("/404")
-            return
-          }
-          setCommunityData(newCommunityData)
-        }
-      )
-    }
-  }, [router.query, chainId])
+  const { onSubmit, loading } = useSubmitCommunityData("PATCH", communityData?.id)
 
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
@@ -78,57 +63,53 @@ const AdminHomePage = (): JSX.Element => {
     )
   }
 
-  // If we haven't fetched the community data / form data yet, display a spinner, otherwise render the admin page
+  // If we haven't fetched the community data / form data yet, display a spinner
+  if (!communityData || !methods)
+    return (
+      <Box sx={generatedColors}>
+        <VStack pt={16} justifyItems="center">
+          <Spinner size="xl" />
+        </VStack>
+      </Box>
+    )
+
+  // Otherwise render the admin page
   return (
-    <>
-      {!communityData || !methods ? (
-        <Box sx={generatedColors}>
-          <VStack pt={16} justifyItems="center">
-            <Spinner size="xl" />
-          </VStack>
-        </Box>
-      ) : (
-        <AnimatePresence>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <FormProvider {...methods}>
-              <Box sx={generatedColors}>
-                <Layout
-                  title={`${communityData.name} - General`}
-                  imageUrl={communityData.imageUrl}
-                >
-                  {account &&
-                    account.toLowerCase() === communityData.owner?.address && (
-                      <Stack spacing={{ base: 7, xl: 9 }}>
-                        <Pagination
-                          isAdminPage
-                          saveBtnLoading={loading}
-                          onSaveClick={
-                            methods.formState.isDirty &&
-                            methods.handleSubmit(onSubmit)
-                          }
-                        />
-                        <VStack spacing={12}>
-                          <Details isAdminPage />
-                          <UsedToken />
-                          <Appearance
-                            onColorChange={(newColor: string) =>
-                              setColorCode(newColor)
-                            }
-                          />
-                        </VStack>
-                      </Stack>
-                    )}
-                </Layout>
-              </Box>
-            </FormProvider>
-          </motion.div>
-        </AnimatePresence>
-      )}
-    </>
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <FormProvider {...methods}>
+          <Box sx={generatedColors}>
+            <Layout
+              title={`${communityData.name} - General`}
+              imageUrl={communityData.imageUrl}
+            >
+              {account && account.toLowerCase() === communityData.owner?.address && (
+                <Stack spacing={{ base: 7, xl: 9 }}>
+                  <Pagination
+                    isAdminPage
+                    saveBtnLoading={loading}
+                    onSaveClick={
+                      methods.formState.isDirty && methods.handleSubmit(onSubmit)
+                    }
+                  />
+                  <VStack spacing={12}>
+                    <Details isAdminPage />
+                    <UsedToken />
+                    <Appearance
+                      onColorChange={(newColor: string) => setColorCode(newColor)}
+                    />
+                  </VStack>
+                </Stack>
+              )}
+            </Layout>
+          </Box>
+        </FormProvider>
+      </motion.div>
+    </AnimatePresence>
   )
 }
 
