@@ -7,20 +7,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(401).json({ message: "Invalid request" })
   }
 
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API}/community/urlName/${urlName}`
-  )
-
-  if (!response.ok) {
-    return res.status(401).json({ message: "Invalid urlName" })
-  }
-
-  // const community = await response.json()
-
   res.setPreviewData(
     {},
     {
-      maxAge: 600, // Preview cookie expires in 10 minutes
+      maxAge: 30, // Preview cookie expires in 30s
     }
   )
 
