@@ -10,6 +10,7 @@ import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import { AnimatePresence, motion } from "framer-motion"
+import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
@@ -43,6 +44,12 @@ const AdminHomePage = (): JSX.Element => {
       })
     }
   }, [communityData])
+
+  useWarnIfUnsavedChanges(
+    methods.formState?.isDirty ||
+      !methods.formState.isValid ||
+      !methods.formState.isSubmitSuccessful
+  )
 
   // If the user isn't logged in, display an error message
   if (!chainId) {
