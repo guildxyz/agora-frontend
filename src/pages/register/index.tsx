@@ -34,8 +34,7 @@ const Page = (): JSX.Element => {
   const { onSubmit } = useSubmitCommunityData("POST")
 
   useWarnIfUnsavedChanges(
-    methods.formState?.isDirty &&
-      (!methods.formState.isValid || !methods.formState.isSubmitSuccessful)
+    methods.formState?.isDirty && !methods.formState.isSubmitted
   )
 
   if (!chainId) {
