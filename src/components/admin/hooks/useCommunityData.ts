@@ -40,14 +40,16 @@ const useCommunityData = (): ProvidedCommunity => {
   const router = useRouter()
   const { chainId } = useWeb3React()
 
-  const shouldFetch = !!router.query.community
+  const shouldFetch =
+    typeof router.query.community?.toString() === "string" &&
+    router.query.community.toString().length > 0 &&
+    typeof chainId === "number"
 
   const { data: community } = useSWR(
     shouldFetch ? ["community", router.query.community.toString(), chainId] : null,
     fetchCommunityData,
     {
       revalidateOnFocus: false,
-      revalidateOnMount: false,
       onError: () => router.push("/404"),
     }
   )
