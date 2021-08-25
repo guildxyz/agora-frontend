@@ -263,6 +263,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 placeholder="+ paste group ID"
                 {...register(`levels.${index}.telegramGroupId`, {
                   required: watch("isTGEnabled"),
+                  shouldUnregister: true,
                 })}
                 isInvalid={errors.levels && errors.levels[index]?.telegramGroupId}
               />
