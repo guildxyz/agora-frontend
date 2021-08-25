@@ -31,7 +31,7 @@ const Page = (): JSX.Element => {
     },
   })
 
-  const { onSubmit } = useSubmitCommunityData("POST")
+  const { onSubmit, loading } = useSubmitCommunityData("POST")
 
   useWarnIfUnsavedChanges(
     methods.formState?.isDirty && !methods.formState.isSubmitted
@@ -51,6 +51,7 @@ const Page = (): JSX.Element => {
                 isAdminPage
                 isCommunityTabDisabled
                 onSaveClick={methods.handleSubmit(onSubmit)}
+                saveBtnLoading={loading}
               />
               <VStack spacing={12}>
                 <Details />
