@@ -8,6 +8,7 @@ type LinkButtonProps = {
   href: string
   disabled?: boolean
   size?: string
+  doneBtn?: boolean
   children: any
 }
 
@@ -25,11 +26,15 @@ const LinkButton = ({
   href,
   disabled = false,
   size = "md",
+  doneBtn = false,
   children,
 }: LinkButtonProps): JSX.Element => {
   const router = useRouter()
   const [, communityUrl, ...currentPath] = router.asPath.split("/")
-  const isActive = currentPath.join("/") === href
+  const fullHref = currentPath.includes("admin")
+    ? (href.length > 0 && `admin/${href}`) || "admin"
+    : href
+  const isActive = !doneBtn && currentPath.join("/") === fullHref
   const { colorMode } = useColorMode()
   const gray = useMemo(
     () => (colorMode === "light" ? "gray.600" : "gray.400"),
@@ -37,7 +42,7 @@ const LinkButton = ({
   )
 
   return (
-    <Link key="href" passHref href={`/${communityUrl}/${href}`}>
+    <Link key="href" passHref href={`/${communityUrl}/${doneBtn ? href : fullHref}`}>
       <Button
         as="a"
         variant={variant}
@@ -70,7 +75,7 @@ const Pagination = ({
       const rect = current?.getBoundingClientRect()
 
       // When the Pagination component becomes "sticky"...
-      setIsSticky(rect.top === 0)
+      setIsSticky(rect?.top === 0)
     }
 
     window.addEventListener("scroll", handleScroll)
@@ -102,7 +107,7 @@ const Pagination = ({
         opacity: isSticky ? 1 : 0,
       }}
     >
-      <LinkButton href={isAdminPage ? "admin" : ""} size="md">
+      <LinkButton href="" size="md">
         Info
       </LinkButton>
 
@@ -113,11 +118,7 @@ const Pagination = ({
       >
         <Box>
           <LinkButton
-            href={
-              (!isCommunityTabDisabled &&
-                (isAdminPage ? "admin/community" : "community")) ||
-              ""
-            }
+            href={!isCommunityTabDisabled ? "community" : "#"}
             size="md"
             disabled={isCommunityTabDisabled}
           >
@@ -142,7 +143,7 @@ const Pagination = ({
 
       {isAdminPage && !onSaveClick && (
         <Box marginInlineStart="auto!important">
-          <LinkButton variant="solid" href={doneBtnUrl}>
+          <LinkButton doneBtn variant="solid" href={doneBtnUrl}>
             Done
           </LinkButton>
         </Box>
