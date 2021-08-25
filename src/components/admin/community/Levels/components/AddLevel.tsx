@@ -181,10 +181,8 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
           </GridItem>
 
           <GridItem>
-            <FormControl>
-              <FormLabel opacity={requirementTypeChange === "OPEN" ? 0.5 : 1}>
-                Amount
-              </FormLabel>
+            <FormControl isDisabled={requirementTypeChange === "OPEN"}>
+              <FormLabel>Amount</FormLabel>
               <InputGroup>
                 <Input
                   type="number"
@@ -192,7 +190,6 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                     valueAsNumber: true,
                     required: requirementTypeChange !== "OPEN",
                   })}
-                  isDisabled={requirementTypeChange === "OPEN"}
                   isInvalid={errors.levels && errors.levels[index]?.requirement}
                 />
                 <InputRightAddon
@@ -205,10 +202,8 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
           </GridItem>
 
           <GridItem>
-            <FormControl>
-              <FormLabel opacity={requirementTypeChange !== "STAKE" ? 0.5 : 1}>
-                Timelock
-              </FormLabel>
+            <FormControl isDisabled={requirementTypeChange !== "STAKE"}>
+              <FormLabel>Timelock</FormLabel>
               <InputGroup>
                 <Input
                   type="number"
@@ -216,7 +211,6 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                     valueAsNumber: true,
                     required: requirementTypeChange === "STAKE",
                   })}
-                  isDisabled={requirementTypeChange !== "STAKE"}
                   isInvalid={errors.levels && errors.levels[index]?.stakeTimelockMs}
                 />
                 <InputRightAddon

@@ -24,6 +24,7 @@ import useTokenSymbol from "./hooks/useTokenSymbol"
 
 const UsedToken = (): JSX.Element => {
   const {
+    watch,
     register,
     formState: { errors, touchedFields },
     setValue,
