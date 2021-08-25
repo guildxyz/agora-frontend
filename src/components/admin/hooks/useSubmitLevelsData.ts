@@ -63,7 +63,7 @@ const useSubmitLevelsData = (
               toast({
                 title: "Success!",
                 description:
-                  "Level(s) added! It might take some time for the page to update for everyone.",
+                  "Level(s) added! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
                 status: "success",
                 duration: 2000,
               })
@@ -143,7 +143,7 @@ const useSubmitLevelsData = (
               toast({
                 title: "Success!",
                 description:
-                  "Level(s) updated! It might take some time for the page to update for everyone.",
+                  "Level(s) updated! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
                 status: "success",
                 duration: 2000,
               })

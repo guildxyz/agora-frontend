@@ -40,8 +40,8 @@ const useSubmitCommunityData = (method: "POST" | "PATCH", id = null) => {
               title: "Success!",
               description:
                 method === "POST"
-                  ? "Community added! You'll be redirected to the admin page."
-                  : "Community updated! It might take some time for the page to update for everyone.",
+                  ? "Community added! You're being redirected to it's page"
+                  : "Community updated! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
               status: "success",
               duration: 2000,
             })
@@ -60,7 +60,7 @@ const useSubmitCommunityData = (method: "POST" | "PATCH", id = null) => {
 
             if (method === "POST") {
               setTimeout(() => {
-                router.push(`/${finalData.urlName}/admin/community`)
+                router.push(`/${finalData.urlName}`)
               }, 2000)
             }
           })

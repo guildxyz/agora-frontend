@@ -17,7 +17,6 @@ type PaginationProps = {
   isAdminPage?: boolean
   isCommunityTabDisabled?: boolean
   saveBtnLoading?: boolean
-  saveBtnText?: string
   onSaveClick?: () => void
 }
 
@@ -60,7 +59,6 @@ const Pagination = ({
   isAdminPage = false,
   isCommunityTabDisabled = false,
   saveBtnLoading = false,
-  saveBtnText = "Save",
   onSaveClick = null,
 }: PaginationProps): JSX.Element => {
   const paginationRef = useRef()
@@ -109,7 +107,7 @@ const Pagination = ({
       </LinkButton>
 
       <Tooltip
-        label="You must first integrate your token"
+        label="You have to save general info of your token first"
         placement="bottom"
         isDisabled={!isCommunityTabDisabled}
       >
@@ -137,7 +135,7 @@ const Pagination = ({
             size="md"
             onClick={onSaveClick}
           >
-            {saveBtnText}
+            Save
           </Button>
         </Box>
       )}

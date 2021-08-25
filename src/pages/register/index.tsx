@@ -45,7 +45,6 @@ const Page = (): JSX.Element => {
             <Pagination
               isAdminPage
               isCommunityTabDisabled
-              saveBtnText="Integrate token"
               onSaveClick={methods.handleSubmit(onSubmit)}
             />
             <VStack spacing={12}>

@@ -78,7 +78,7 @@ const AdminHomePage = (): JSX.Element => {
               title={`${communityData.name} - Settings`}
               imageUrl={communityData.imageUrl}
             >
-              {account && account.toLowerCase() === communityData.owner?.address && (
+              {account && isOwner && (
                 <Stack spacing={{ base: 7, xl: 9 }}>
                   <Pagination
                     isAdminPage
