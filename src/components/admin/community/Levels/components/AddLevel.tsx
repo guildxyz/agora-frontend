@@ -179,7 +179,13 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
 
           <GridItem>
             <FormControl>
-              <FormLabel>Amount</FormLabel>
+              <FormLabel
+                opacity={
+                  watch(`levels.${index}.requirementType`) === "OPEN" ? 0.5 : 1
+                }
+              >
+                Amount
+              </FormLabel>
               <InputGroup>
                 <Input
                   type="number"
@@ -203,7 +209,13 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
 
           <GridItem>
             <FormControl>
-              <FormLabel>Timelock</FormLabel>
+              <FormLabel
+                opacity={
+                  watch(`levels.${index}.requirementType`) !== "STAKE" ? 0.5 : 1
+                }
+              >
+                Timelock
+              </FormLabel>
               <InputGroup>
                 <Input
                   type="number"
