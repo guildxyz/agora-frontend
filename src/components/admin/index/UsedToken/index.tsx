@@ -32,11 +32,7 @@ const UsedToken = (): JSX.Element => {
   const { chainId } = useWeb3React()
 
   const tokenAddress = useWatch({ name: "tokenAddress" })
-  const selectedChain = useWatch({
-    name: "chainName",
-    // We cannot set this default value in the useForm, since the chainId id undefned on first render
-    defaultValue: Chains[chainId],
-  })
+  const selectedChain = useWatch({ name: "chainName" })
 
   const {
     data: tokenSymbol,
@@ -44,7 +40,10 @@ const UsedToken = (): JSX.Element => {
     error,
   } = useTokenSymbol(tokenAddress, selectedChain)
 
-  useEffect(() => setValue("chainName", Chains[chainId]), [chainId, setValue])
+  useEffect(() => {
+    console.log("Setting chainName field to", Chains[chainId])
+    setValue("chainName", Chains[chainId])
+  }, [chainId, setValue])
 
   useEffect(() => {
     if (touchedFields.tokenAddress) trigger("tokenAddress")
