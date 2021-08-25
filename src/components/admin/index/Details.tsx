@@ -14,6 +14,7 @@ import { Controller, useFormContext, useWatch } from "react-hook-form"
 import slugify from "slugify"
 import PhotoUploader from "../common/PhotoUploader"
 import ValidationError from "../common/ValidationError"
+import UsedToken from "./UsedToken"
 
 type Props = {
   isAdminPage?: boolean
@@ -54,6 +55,10 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
       cardType
     >
       <Grid templateColumns={{ base: "100%", md: "repeat(2, 1fr)" }} gap={12}>
+        <GridItem colSpan={{ base: 1, md: 2 }}>
+          <UsedToken />
+        </GridItem>
+
         <GridItem>
           <FormControl isRequired>
             <FormLabel>Name</FormLabel>

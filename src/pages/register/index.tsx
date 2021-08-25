@@ -4,7 +4,6 @@ import NotConnectedError from "components/admin/common/NotConnectedError"
 import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityData"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
-import UsedToken from "components/admin/index/UsedToken"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
@@ -49,7 +48,6 @@ const Page = (): JSX.Element => {
             />
             <VStack spacing={12}>
               <Details />
-              <UsedToken />
               <Appearance
                 onColorChange={(newColor: string) => setColorCode(newColor)}
               />

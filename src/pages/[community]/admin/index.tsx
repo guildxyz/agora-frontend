@@ -6,7 +6,6 @@ import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityData"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
-import UsedToken from "components/admin/index/UsedToken"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
@@ -89,7 +88,6 @@ const AdminHomePage = (): JSX.Element => {
                   />
                   <VStack spacing={12}>
                     <Details isAdminPage />
-                    <UsedToken />
                     <Appearance
                       onColorChange={(newColor: string) => setColorCode(newColor)}
                     />
