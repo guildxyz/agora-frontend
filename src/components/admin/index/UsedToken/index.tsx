@@ -15,12 +15,13 @@ import {
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import ValidationError from "components/admin/common/ValidationError"
+import slugify from "components/admin/utils/slugify"
 import NetworkChangeModal from "components/common/Layout/components/Account/components/NetworkModal/NetworkModal"
 import { Chains, RPC } from "connectors"
 import Image from "next/image"
 import { useEffect } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
-import useTokenSymbol from "./hooks/useTokenSymbol"
+import useTokenData from "./hooks/useTokenData"
 
 const UsedToken = (): JSX.Element => {
   const {
@@ -33,12 +34,21 @@ const UsedToken = (): JSX.Element => {
 
   const tokenAddress = useWatch({ name: "tokenAddress" })
   const selectedChain = useWatch({ name: "chainName" })
+  const communityName = useWatch({ name: "name" })
+  const urlName = useWatch({ name: "urlName" })
 
   const {
-    data: tokenSymbol,
+    data: [tokenName, tokenSymbol],
     isValidating: isTokenSymbolValidating,
     error,
-  } = useTokenSymbol(tokenAddress, selectedChain)
+  } = useTokenData(tokenAddress, selectedChain)
+
+  useEffect(() => {
+    if (tokenName !== undefined) {
+      setValue("name", communityName || tokenName)
+      setValue("urlName", urlName || slugify(tokenName))
+    }
+  }, [tokenName])
 
   useEffect(() => {
     console.log("Setting chainName field to", Chains[chainId])

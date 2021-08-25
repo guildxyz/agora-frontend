@@ -11,9 +11,9 @@ import {
 import Section from "components/admin/common/Section"
 import { UploadSimple } from "phosphor-react"
 import { Controller, useFormContext, useWatch } from "react-hook-form"
-import slugify from "slugify"
 import PhotoUploader from "../common/PhotoUploader"
 import ValidationError from "../common/ValidationError"
+import slugify from "../utils/slugify"
 import UsedToken from "./UsedToken"
 
 type Props = {
@@ -32,13 +32,7 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
   const nameInput = useWatch({ name: "name" })
   const urlNameInput = useWatch({ name: "urlName" })
 
-  const generatedUrlName =
-    nameInput &&
-    slugify(nameInput, {
-      replacement: "-",
-      lower: true,
-      strict: true,
-    })
+  const generatedUrlName = nameInput && slugify(nameInput.toString())
 
   const nameOnBlur = () => {
     trigger("name")
