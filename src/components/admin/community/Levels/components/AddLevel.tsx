@@ -20,7 +20,7 @@ import Hint from "components/admin/common/Hint"
 import PhotoUploader from "components/admin/common/PhotoUploader"
 import Card from "components/common/Card"
 import { Lock, LockOpen, LockSimpleOpen } from "phosphor-react"
-import { Controller, useFormContext } from "react-hook-form"
+import { Controller, useFormContext, useWatch } from "react-hook-form"
 import { Icon as IconType } from "temporaryData/types"
 import RadioCard from "./RadioCard"
 
@@ -70,6 +70,9 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
   })
 
   const radioGroup = getRootProps()
+
+  const requirementTypeChange = useWatch({ name: `levels.${index}.requirementType` })
+  const isTGEnabledChange = useWatch({ name: "isTGEnabled" })
 
   return (
     <Card position="relative" width="full" padding={8}>
@@ -179,11 +182,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
 
           <GridItem>
             <FormControl>
-              <FormLabel
-                opacity={
-                  watch(`levels.${index}.requirementType`) === "OPEN" ? 0.5 : 1
-                }
-              >
+              <FormLabel opacity={requirementTypeChange === "OPEN" ? 0.5 : 1}>
                 Amount
               </FormLabel>
               <InputGroup>
@@ -191,15 +190,13 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                   type="number"
                   {...register(`levels.${index}.requirement`, {
                     valueAsNumber: true,
-                    required: watch(`levels.${index}.requirementType`) !== "OPEN",
+                    required: requirementTypeChange !== "OPEN",
                   })}
-                  isDisabled={watch(`levels.${index}.requirementType`) === "OPEN"}
+                  isDisabled={requirementTypeChange === "OPEN"}
                   isInvalid={errors.levels && errors.levels[index]?.requirement}
                 />
                 <InputRightAddon
-                  opacity={
-                    watch(`levels.${index}.requirementType`) === "OPEN" ? 0.5 : 1
-                  }
+                  opacity={requirementTypeChange === "OPEN" ? 0.5 : 1}
                 >
                   {getValues("tokenSymbol")}
                 </InputRightAddon>
@@ -209,11 +206,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
 
           <GridItem>
             <FormControl>
-              <FormLabel
-                opacity={
-                  watch(`levels.${index}.requirementType`) !== "STAKE" ? 0.5 : 1
-                }
-              >
+              <FormLabel opacity={requirementTypeChange !== "STAKE" ? 0.5 : 1}>
                 Timelock
               </FormLabel>
               <InputGroup>
@@ -221,15 +214,13 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                   type="number"
                   {...register(`levels.${index}.stakeTimelockMs`, {
                     valueAsNumber: true,
-                    required: watch(`levels.${index}.requirementType`) === "STAKE",
+                    required: requirementTypeChange === "STAKE",
                   })}
-                  isDisabled={watch(`levels.${index}.requirementType`) !== "STAKE"}
+                  isDisabled={requirementTypeChange !== "STAKE"}
                   isInvalid={errors.levels && errors.levels[index]?.stakeTimelockMs}
                 />
                 <InputRightAddon
-                  opacity={
-                    watch(`levels.${index}.requirementType`) !== "STAKE" ? 0.5 : 1
-                  }
+                  opacity={requirementTypeChange !== "STAKE" ? 0.5 : 1}
                 >
                   month(s)
                 </InputRightAddon>
@@ -238,7 +229,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
           </GridItem>
         </Grid>
 
-        {watch("isTGEnabled") && (
+        {isTGEnabledChange && (
           <VStack width="full" spacing={6} alignItems="start">
             <Text as="h2" fontWeight="bold" fontSize="lg">
               Platform linking
@@ -262,7 +253,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 width="full"
                 placeholder="+ paste group ID"
                 {...register(`levels.${index}.telegramGroupId`, {
-                  required: watch("isTGEnabled"),
+                  required: isTGEnabledChange,
                   shouldUnregister: true,
                 })}
                 isInvalid={errors.levels && errors.levels[index]?.telegramGroupId}

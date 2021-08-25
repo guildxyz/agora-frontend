@@ -22,7 +22,7 @@ import Section from "components/admin/common/Section"
 import Link from "components/common/Link"
 import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useState } from "react"
-import { useFormContext } from "react-hook-form"
+import { useFormContext, useWatch } from "react-hook-form"
 import { Platform } from "temporaryData/types"
 
 type Props = {
@@ -47,7 +47,6 @@ const Platforms = ({
   comingSoon = false,
 }: Props): JSX.Element => {
   const {
-    watch,
     register,
     getValues,
     formState: { errors },
@@ -61,7 +60,8 @@ const Platforms = ({
     null
   )
 
-  const discordServerIdChange = watch("discordServerId")
+  const isDCEnabledChange = useWatch({ name: "isDCEnabled" })
+  const discordServerIdChange = useWatch({ name: "discordServerId" })
 
   const onServerIdChange = (serverId) => {
     if (errors.discordServerId || discordError?.type === "server") return
@@ -145,7 +145,7 @@ const Platforms = ({
           </GridItem>
 
           <GridItem>
-            {watch("isDCEnabled") ? (
+            {isDCEnabledChange ? (
               <VStack spacing={4} alignItems="start">
                 <FormControl isDisabled={comingSoon}>
                   <InputGroup>
@@ -153,7 +153,7 @@ const Platforms = ({
                     <Input
                       width={64}
                       {...register("discordServerId", {
-                        required: watch("isDCEnabled"),
+                        required: isDCEnabledChange,
                         minLength: 17,
                       })}
                       isInvalid={errors.discordServerId}
@@ -175,7 +175,7 @@ const Platforms = ({
                         ml={4}
                         size="sm"
                         colorScheme="DISCORD"
-                        isDisabled={!watch("isDCEnabled")}
+                        isDisabled={!isDCEnabledChange}
                       >
                         Authenticate
                       </Button>
@@ -233,7 +233,7 @@ const Platforms = ({
                           width={64}
                           placeholder="Select one"
                           {...register("inviteChannel", {
-                            required: watch("isDCEnabled"),
+                            required: isDCEnabledChange,
                           })}
                           isInvalid={errors.inviteChannel}
                         >
