@@ -25,6 +25,7 @@ import useTokenData from "./hooks/useTokenData"
 
 const UsedToken = (): JSX.Element => {
   const {
+    watch,
     register,
     formState: { errors, touchedFields },
     setValue,
