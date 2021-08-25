@@ -1,6 +1,6 @@
 import useToast from "hooks/useToast"
 
-type ApiError = {
+export type ApiError = {
   msg: string
   value?: string
   param?: string
