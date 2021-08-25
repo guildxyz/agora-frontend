@@ -68,6 +68,7 @@ const Pagination = ({
 }: PaginationProps): JSX.Element => {
   const paginationRef = useRef()
   const [isSticky, setIsSticky] = useState(false)
+  const { colorMode } = useColorMode()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -100,7 +101,7 @@ const Pagination = ({
         left: 0,
         width: "full",
         height: 16,
-        bgColor: "white",
+        bgColor: colorMode === "light" ? "white" : "gray.800",
         boxShadow: "md",
         transition: "0.2s ease",
         visibility: isSticky ? "visible" : "hidden",
