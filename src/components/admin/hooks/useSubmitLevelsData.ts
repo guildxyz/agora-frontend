@@ -4,6 +4,18 @@ import { useState } from "react"
 import clearUndefinedData from "../utils/clearUndefinedData"
 import useShowErrorToast from "./useShowErrorToast"
 
+// Replacing specific values in the JSON with undefined, so we won't send them to the API
+const replacer = (key, value) => {
+  if (
+    key === "isDCEnabled" ||
+    key === "isTGEnabled" ||
+    value === null ||
+    Number.isNaN(value)
+  )
+    return undefined
+  return value
+}
+
 const useSubmitLevelsData = (
   method: "POST" | "PATCH" | "DELETE",
   communityId: number = null,
@@ -22,10 +34,6 @@ const useSubmitLevelsData = (
     setLoading(true)
 
     const editedData = { ...data }
-
-    // Won't send these to the backend
-    delete editedData.isDCEnabled
-    delete editedData.isTGEnabled
 
     // Converting timeLock to ms for every level
     editedData.levels = editedData.levels?.map((level) => {
@@ -50,7 +58,7 @@ const useSubmitLevelsData = (
           fetch(`${process.env.NEXT_PUBLIC_API}/community/levels/${communityId}`, {
             method,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...finalData, addressSignedMessage }),
+            body: JSON.stringify({ ...finalData, addressSignedMessage }, replacer),
           })
             .then((response) => {
               setLoading(false)
