@@ -75,7 +75,9 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
             title="Your communities"
             placeholder="You don't have access to any communities"
             ref={refAccess}
-          />
+          >
+            {account && <IntegrateCommunityCard />}
+          </CategorySection>
           <CategorySection
             title="Other tokenized communities"
             placeholder="There aren't any other communities"
@@ -88,12 +90,6 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
               />
             ))}
           </CategorySection>
-          {account && (
-            <IntegrateCommunityCard
-              key="integrateCommunityBtn"
-              refAccess={refAccess}
-            />
-          )}
         </Stack>
       </>
     </Layout>

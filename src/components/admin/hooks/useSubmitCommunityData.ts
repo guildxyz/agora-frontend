@@ -3,6 +3,7 @@ import useToast from "hooks/useToast"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import clearUndefinedData from "../utils/clearUndefinedData"
+import useShowErrorToast from "./useShowErrorToast"
 
 const useSubmitCommunityData = (method: "POST" | "PATCH", id = null) => {
   const [loading, setLoading] = useState(false)
@@ -12,6 +13,7 @@ const useSubmitCommunityData = (method: "POST" | "PATCH", id = null) => {
       : `${process.env.NEXT_PUBLIC_API}/community`
   const router = useRouter()
   const toast = useToast()
+  const showErrorToast = useShowErrorToast()
   const sign = usePersonalSign()
 
   const onSubmit = (data: any) => {
@@ -30,15 +32,7 @@ const useSubmitCommunityData = (method: "POST" | "PATCH", id = null) => {
             setLoading(false)
 
             if (!response.ok) {
-              response.json().then(() => {
-                toast({
-                  title: "Error",
-                  description:
-                    "Please make sure that you're sending valid data and you haven't already created a community on Agora Space.",
-                  status: "error",
-                  duration: 4000,
-                })
-              })
+              response.json().then((json) => showErrorToast(json.errors))
               return
             }
 
@@ -46,8 +40,8 @@ const useSubmitCommunityData = (method: "POST" | "PATCH", id = null) => {
               title: "Success!",
               description:
                 method === "POST"
-                  ? "Community added! You'll be redirected to the admin page."
-                  : "Community updated! It might take some time for the page to update for everyone.",
+                  ? "Community added! You're being redirected to it's page"
+                  : "Community updated! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
               status: "success",
               duration: 2000,
             })
@@ -66,29 +60,18 @@ const useSubmitCommunityData = (method: "POST" | "PATCH", id = null) => {
 
             if (method === "POST") {
               setTimeout(() => {
-                router.push(`/${finalData.urlName}/admin/community`)
+                router.push(`/${finalData.urlName}`)
               }, 2000)
             }
           })
           .catch(() => {
             setLoading(false)
-            toast({
-              title: "Error",
-              description: "Server error",
-              status: "error",
-              duration: 4000,
-            })
+            showErrorToast("Server error")
           })
       })
       .catch(() => {
         setLoading(false)
-
-        toast({
-          title: "Error",
-          description: "You must sign the message to verify your address!",
-          status: "error",
-          duration: 4000,
-        })
+        showErrorToast("You must sign the message to verify your address!")
       })
   }
 

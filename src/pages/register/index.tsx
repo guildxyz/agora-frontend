@@ -4,10 +4,10 @@ import NotConnectedError from "components/admin/common/NotConnectedError"
 import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityData"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
-import UsedToken from "components/admin/index/UsedToken"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
+import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import React, { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
@@ -33,32 +33,38 @@ const Page = (): JSX.Element => {
 
   const { onSubmit } = useSubmitCommunityData("POST")
 
+  useWarnIfUnsavedChanges(
+    methods.formState?.isDirty ||
+      !methods.formState.isValid ||
+      !methods.formState.isSubmitSuccessful
+  )
+
   if (!chainId) {
     return <NotConnectedError title="Integrate token" />
   }
 
   return (
-    <FormProvider {...methods}>
-      <Box sx={generatedColors}>
-        <Layout title="Integrate token">
-          <Stack spacing={{ base: 7, xl: 9 }}>
-            <Pagination
-              isAdminPage
-              isCommunityTabDisabled
-              saveBtnText="Integrate token"
-              onSaveClick={methods.handleSubmit(onSubmit)}
-            />
-            <VStack spacing={12}>
-              <Details />
-              <UsedToken />
-              <Appearance
-                onColorChange={(newColor: string) => setColorCode(newColor)}
+    <>
+      <FormProvider {...methods}>
+        <Box sx={generatedColors}>
+          <Layout title="Integrate token">
+            <Stack spacing={{ base: 7, xl: 9 }}>
+              <Pagination
+                isAdminPage
+                isCommunityTabDisabled
+                onSaveClick={methods.handleSubmit(onSubmit)}
               />
-            </VStack>
-          </Stack>
-        </Layout>
-      </Box>
-    </FormProvider>
+              <VStack spacing={12}>
+                <Details />
+                <Appearance
+                  onColorChange={(newColor: string) => setColorCode(newColor)}
+                />
+              </VStack>
+            </Stack>
+          </Layout>
+        </Box>
+      </FormProvider>
+    </>
   )
 }
 

@@ -3,8 +3,6 @@ import {
   Button,
   FormControl,
   FormLabel,
-  Grid,
-  GridItem,
   HStack,
   Input,
   InputGroup,
@@ -16,7 +14,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import Section from "components/admin/common/Section"
 import ValidationError from "components/admin/common/ValidationError"
 import NetworkChangeModal from "components/common/Layout/components/Account/components/NetworkModal/NetworkModal"
 import { Chains, RPC } from "connectors"
@@ -58,76 +55,66 @@ const UsedToken = (): JSX.Element => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
-    <Section
-      title="Used token"
-      description="The token that members will have to stake or hold to access non-open levels"
-      cardType
-    >
-      <>
-        <Grid templateColumns={{ base: "100%" }} gap={12}>
-          <GridItem>
-            <FormControl isRequired>
-              <FormLabel>Token address</FormLabel>
-              <Stack direction={{ base: "column", md: "row" }} mt={4} spacing={2}>
-                <Button
-                  variant="ghost"
-                  colorScheme="gray"
-                  px={6}
-                  height={10}
-                  bgColor={colorMode === "light" ? "gray.100" : "whiteAlpha.200"}
-                  width={{ base: "full", md: "max-content" }}
-                  onClick={onOpen}
-                >
-                  <HStack>
-                    <Box position="relative" width={4} height={4}>
-                      <Image
-                        alt={`${RPC[Chains[chainId]].chainName} icon`}
-                        src={RPC[Chains[chainId]].iconUrls[0]}
-                        layout="fill"
-                      />
-                    </Box>
-                    <Text as="span" fontSize="sm">
-                      {RPC[Chains[chainId]].chainName}
-                    </Text>
+    <>
+      <FormControl isRequired>
+        <FormLabel>Token address</FormLabel>
+        <Stack direction={{ base: "column", md: "row" }} mt={4} spacing={2}>
+          <Button
+            variant="ghost"
+            colorScheme="gray"
+            px={6}
+            height={10}
+            bgColor={colorMode === "light" ? "gray.100" : "whiteAlpha.200"}
+            width={{ base: "full", md: "max-content" }}
+            onClick={onOpen}
+          >
+            <HStack>
+              <Box position="relative" width={4} height={4}>
+                <Image
+                  alt={`${RPC[Chains[chainId]].chainName} icon`}
+                  src={RPC[Chains[chainId]].iconUrls[0]}
+                  layout="fill"
+                />
+              </Box>
+              <Text as="span" fontSize="sm">
+                {RPC[Chains[chainId]].chainName}
+              </Text>
+            </HStack>
+          </Button>
+          <InputGroup>
+            <Input
+              {...register("tokenAddress", {
+                required: "This field is required.",
+                pattern: {
+                  value: /^0x[A-F0-9]{40}$/i,
+                  message:
+                    "Please input a 42 characters long, 0x-prefixed hexadecimal address.",
+                },
+                validate: () =>
+                  isTokenSymbolValidating ||
+                  !error ||
+                  "Failed to fetch symbol. Please switch to the correct network.",
+              })}
+              isInvalid={errors.tokenAddress}
+            />
+            {((!error && tokenSymbol !== undefined) || isTokenSymbolValidating) && (
+              <InputRightAddon fontSize={{ base: "xs", sm: "md" }}>
+                {tokenSymbol === undefined && isTokenSymbolValidating ? (
+                  <HStack px={4} alignContent="center">
+                    <Spinner size="sm" color="blackAlpha.400" />
                   </HStack>
-                </Button>
-                <InputGroup>
-                  <Input
-                    {...register("tokenAddress", {
-                      required: "This field is required.",
-                      pattern: {
-                        value: /^0x[A-F0-9]{40}$/i,
-                        message:
-                          "Please input a 42 characters long, 0x-prefixed hexadecimal address.",
-                      },
-                      validate: () =>
-                        isTokenSymbolValidating ||
-                        !error ||
-                        "Failed to fetch symbol. Please switch to the correct network.",
-                    })}
-                    isInvalid={errors.tokenAddress}
-                  />
-                  {((!error && tokenSymbol !== undefined) ||
-                    isTokenSymbolValidating) && (
-                    <InputRightAddon fontSize={{ base: "xs", sm: "md" }}>
-                      {tokenSymbol === undefined && isTokenSymbolValidating ? (
-                        <HStack px={4} alignContent="center">
-                          <Spinner size="sm" color="blackAlpha.400" />
-                        </HStack>
-                      ) : (
-                        tokenSymbol
-                      )}
-                    </InputRightAddon>
-                  )}
-                </InputGroup>
-              </Stack>
-              <ValidationError fieldName="tokenAddress" />
-            </FormControl>
-          </GridItem>
-        </Grid>
-        <NetworkChangeModal isOpen={isOpen} onClose={onClose} />
-      </>
-    </Section>
+                ) : (
+                  tokenSymbol
+                )}
+              </InputRightAddon>
+            )}
+          </InputGroup>
+        </Stack>
+        <ValidationError fieldName="tokenAddress" />
+      </FormControl>
+
+      <NetworkChangeModal isOpen={isOpen} onClose={onClose} />
+    </>
   )
 }
 

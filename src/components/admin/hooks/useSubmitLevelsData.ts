@@ -2,6 +2,7 @@ import usePersonalSign from "components/[community]/community/Platforms/componen
 import useToast from "hooks/useToast"
 import { useState } from "react"
 import clearUndefinedData from "../utils/clearUndefinedData"
+import useShowErrorToast from "./useShowErrorToast"
 
 const useSubmitLevelsData = (
   method: "POST" | "PATCH" | "DELETE",
@@ -9,6 +10,7 @@ const useSubmitLevelsData = (
   successCallback: () => void = () => {}
 ) => {
   const toast = useToast()
+  const showErrorToast = useShowErrorToast()
   const sign = usePersonalSign()
   const [loading, setLoading] = useState(false)
 
@@ -54,20 +56,14 @@ const useSubmitLevelsData = (
               setLoading(false)
 
               if (!response.ok) {
-                toast({
-                  title: "Error",
-                  description:
-                    "An error occurred while adding levels to your community",
-                  status: "error",
-                  duration: 4000,
-                })
+                response.json().then((json) => showErrorToast(json.errors))
                 return
               }
 
               toast({
                 title: "Success!",
                 description:
-                  "Level(s) added! It might take some time for the page to update for everyone.",
+                  "Level(s) added! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
                 status: "success",
                 duration: 2000,
               })
@@ -76,13 +72,7 @@ const useSubmitLevelsData = (
             })
             .catch(() => {
               setLoading(false)
-
-              toast({
-                title: "Error",
-                description: "Server error",
-                status: "error",
-                duration: 4000,
-              })
+              showErrorToast("Server error")
             })
           return
         }
@@ -144,12 +134,8 @@ const useSubmitLevelsData = (
               const failingResponses = responses.filter(({ ok }) => !ok)
 
               if (failingResponses.length > 0) {
-                toast({
-                  title: "Error",
-                  description:
-                    "An error occurred while editing the levels of your community",
-                  status: "error",
-                  duration: 4000,
+                failingResponses.forEach((response) => {
+                  response.json().then((json) => showErrorToast(json.errors))
                 })
                 return
               }
@@ -157,7 +143,7 @@ const useSubmitLevelsData = (
               toast({
                 title: "Success!",
                 description:
-                  "Level(s) updated! It might take some time for the page to update for everyone.",
+                  "Level(s) updated! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
                 status: "success",
                 duration: 2000,
               })
@@ -166,25 +152,13 @@ const useSubmitLevelsData = (
             })
             .catch(() => {
               setLoading(false)
-
-              toast({
-                title: "Error",
-                description: "Server error",
-                status: "error",
-                duration: 4000,
-              })
+              showErrorToast("Server error")
             })
         }
       })
       .catch(() => {
         setLoading(false)
-
-        toast({
-          title: "Error",
-          description: "You must sign the message to verify your address!",
-          status: "error",
-          duration: 4000,
-        })
+        showErrorToast("You must sign the message to verify your address!")
       })
   }
 

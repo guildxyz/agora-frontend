@@ -6,11 +6,11 @@ import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityData"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
-import UsedToken from "components/admin/index/UsedToken"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import { AnimatePresence, motion } from "framer-motion"
+import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
@@ -45,6 +45,12 @@ const AdminHomePage = (): JSX.Element => {
     }
   }, [communityData])
 
+  useWarnIfUnsavedChanges(
+    methods.formState?.isDirty ||
+      !methods.formState.isValid ||
+      !methods.formState.isSubmitSuccessful
+  )
+
   // If the user isn't logged in, display an error message
   if (!chainId) {
     return (
@@ -78,7 +84,7 @@ const AdminHomePage = (): JSX.Element => {
               title={`${communityData.name} - Settings`}
               imageUrl={communityData.imageUrl}
             >
-              {account && account.toLowerCase() === communityData.owner?.address && (
+              {account && isOwner && (
                 <Stack spacing={{ base: 7, xl: 9 }}>
                   <Pagination
                     isAdminPage
@@ -89,7 +95,6 @@ const AdminHomePage = (): JSX.Element => {
                   />
                   <VStack spacing={12}>
                     <Details isAdminPage />
-                    <UsedToken />
                     <Appearance
                       onColorChange={(newColor: string) => setColorCode(newColor)}
                     />
