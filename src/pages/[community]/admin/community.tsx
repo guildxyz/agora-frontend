@@ -89,9 +89,8 @@ const AdminCommunityPage = (): JSX.Element => {
   }, [communityData])
 
   useWarnIfUnsavedChanges(
-    methods.formState?.isDirty ||
-      !methods.formState.isValid ||
-      !methods.formState.isSubmitSuccessful
+    methods.formState?.isDirty &&
+      (!methods.formState.isValid || !methods.formState.isSubmitSuccessful)
   )
 
   // If the user isn't logged in, display an error message
