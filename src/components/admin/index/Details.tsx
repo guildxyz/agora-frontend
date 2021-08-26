@@ -77,6 +77,7 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
               ) : (
                 <Input
                   {...register("urlName", {
+                    required: true,
                     maxLength: {
                       value: 20,
                       message:
