@@ -28,7 +28,7 @@ const AdminHomePage = (): JSX.Element => {
   )
   const methods = useForm({ mode: "all" })
 
-  const { onSubmit, loading } = useSubmitCommunityData("PATCH", communityData?.id)
+  const { onSubmit, loading } = useSubmitCommunityData("PATCH")
 
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
