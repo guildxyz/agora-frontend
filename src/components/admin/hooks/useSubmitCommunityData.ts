@@ -6,10 +6,12 @@ import { assign, createMachine, DoneInvokeEvent, EventObject } from "xstate"
 import type { ApiError } from "./useShowErrorToast"
 import useShowErrorToast from "./useShowErrorToast"
 
-type ContextType = any
+type ContextType = {
+  urlName: string
+}
 
 // Successful data-flow events
-interface InitialEvent<FormDataType> extends EventObject {
+type InitialEvent<FormDataType> = EventObject & {
   data: FormDataType
 }
 type SignEvent<FormDataType> = DoneInvokeEvent<
@@ -160,7 +162,7 @@ const useSubmitCommunityData = <FormDataType>(
 
   const onSubmit = (data: FormDataType) => send("SIGN", { data })
 
-  return { onSubmit, loading: ["sign", "fetch"].some(state.matches) }
+  return { onSubmit, loading: ["sign", "fetch", "parseError"].some(state.matches) }
 }
 
 export default useSubmitCommunityData

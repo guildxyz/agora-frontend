@@ -56,21 +56,7 @@ const AdminCommunityPage = (): JSX.Element => {
 
   const HTTPMethod = communityData?.levels?.length > 0 ? "PATCH" : "POST"
 
-  const { loading, onSubmit } = useSubmitLevelsData(
-    HTTPMethod,
-    communityData?.id,
-    () =>
-      fetch(`/api/preview?urlName=${communityData.urlName}`)
-        .then((res) => res.json())
-        .then((cookies: string[]) => {
-          cookies.forEach((cookie: string) => {
-            document.cookie = cookie
-          })
-          setTimeout(() => {
-            router.push(`/${communityData.urlName}/community`)
-          }, 2000)
-        })
-  )
+  const { loading, onSubmit } = useSubmitLevelsData(HTTPMethod)
 
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
