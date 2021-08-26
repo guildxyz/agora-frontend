@@ -189,6 +189,11 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                   {...register(`levels.${index}.requirement`, {
                     valueAsNumber: true,
                     required: requirementTypeChange !== "OPEN",
+                    max: {
+                      value: 2147483647, // Postgres Int max value
+                      message:
+                        "The maximum possible requirement amount is 2147483647",
+                    },
                   })}
                   isInvalid={errors.levels && errors.levels[index]?.requirement}
                 />
