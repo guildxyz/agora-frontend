@@ -25,7 +25,6 @@ import useTokenData from "./hooks/useTokenData"
 
 const UsedToken = (): JSX.Element => {
   const {
-    watch,
     register,
     formState: { errors, touchedFields },
     setValue,
@@ -52,9 +51,8 @@ const UsedToken = (): JSX.Element => {
   }, [tokenName])
 
   useEffect(() => {
-    console.log("Setting chainName field to", Chains[chainId])
     setValue("chainName", Chains[chainId])
-  }, [chainId, setValue])
+  }, [chainId, setValue, tokenAddress])
 
   useEffect(() => {
     if (touchedFields.tokenAddress) trigger("tokenAddress")
