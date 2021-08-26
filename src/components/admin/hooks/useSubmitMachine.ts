@@ -12,6 +12,7 @@ import createSubmitMachine, {
 import useShowErrorToast from "./useShowErrorToast"
 
 const useSubmitMachine = <FormDataType>(
+  successText: string,
   fetch: (
     _context: ContextType,
     {
@@ -51,8 +52,7 @@ const useSubmitMachine = <FormDataType>(
       showSuccessToast: () =>
         toast({
           title: "Success!",
-          description:
-            "Level(s) added! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
+          description: successText,
           status: "success",
           duration: 2000,
         }),

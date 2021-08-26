@@ -116,7 +116,12 @@ const useSubmitLevelsData = (
     return data
   }
 
-  return useSubmitMachine<FormData>(fetchService, redirectAction, preprocess)
+  return useSubmitMachine<FormData>(
+    "Level(s) added! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
+    fetchService,
+    redirectAction,
+    preprocess
+  )
 }
 
 export default useSubmitLevelsData

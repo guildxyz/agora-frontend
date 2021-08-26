@@ -37,7 +37,13 @@ const useSubmitCommunityData = <FormDataType>(method: "POST" | "PATCH") => {
             }, 2000)
           )
 
-  return useSubmitMachine(fetchService, redirectAction)
+  return useSubmitMachine(
+    method === "POST"
+      ? "Community added! You're being redirected to it's page"
+      : "Community updated! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
+    fetchService,
+    redirectAction
+  )
 }
 
 export default useSubmitCommunityData
