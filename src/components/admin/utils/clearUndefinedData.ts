@@ -1,4 +1,4 @@
-const clearUndefinedData = (data: Record<string, unknown>) => {
+const clearUndefinedData = <InputType>(data: Partial<InputType>) => {
   const formData = { ...data }
 
   // Deleting the "undefined" fields
