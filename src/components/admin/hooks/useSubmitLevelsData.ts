@@ -2,6 +2,7 @@ import usePersonalSign from "components/[community]/community/Platforms/componen
 import useToast from "hooks/useToast"
 import type { FormData, Level } from "pages/[community]/admin/community"
 import { useState } from "react"
+import convertMonthsToMs from "../utils/convertMonthsToMs"
 import useShowErrorToast from "./useShowErrorToast"
 
 // Replacing specific values in the JSON with undefined, so we won't send them to the API
@@ -26,13 +27,7 @@ const useSubmitLevelsData = (
   const sign = usePersonalSign()
   const [loading, setLoading] = useState(false)
 
-  // Helper method for converting month(s) to ms
-  const convertMonthsToMs = (months: number) =>
-    Math.round(months / 3.8026486208174e-10)
-
-  const onSubmit = (
-    _data: Omit<FormData, "levels"> & { levels: Partial<Level>[] }
-  ) => {
+  const onSubmit = (_data: FormData) => {
     setLoading(true)
 
     const data = _data
