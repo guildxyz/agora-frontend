@@ -28,69 +28,70 @@ const useSubmitLevelsData = (
     { data }: SignEvent<FormData & { levels: Level[] }>
   ) => {
     if (method === "POST" && communityData?.id)
-      fetch(`${process.env.NEXT_PUBLIC_API}/community/levels/${communityData?.id}`, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data }, replacer),
-      })
-    else {
-      const { addressSignedMessage } = data
-      const { levelUpdatePromises, levelsToCreate } = data.levels.reduce(
-        (
-          acc: {
-            levelUpdatePromises: Promise<Response>[]
-            levelsToCreate: Partial<Level>[]
-          },
-          level
-        ) => {
-          if (level.id) {
-            // Already existing levels need to be updated
-            const { id } = level
-            const payload = level
-            // Don't need IDs for PATCH
-            delete payload.id
-            delete payload.tokenSymbol
-
-            acc.levelUpdatePromises.push(
-              fetch(`${process.env.NEXT_PUBLIC_API}/community/level/${id}`, {
-                method,
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  ...payload,
-                  addressSignedMessage,
-                }),
-              })
-            )
-            return acc
-          }
-          // New levels should be created
-          acc.levelsToCreate.push(level)
-          return acc
-        },
+      return fetch(
+        `${process.env.NEXT_PUBLIC_API}/community/levels/${communityData?.id}`,
         {
-          levelUpdatePromises: [],
-          levelsToCreate: [],
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...data }, replacer),
         }
       )
+    const { addressSignedMessage } = data
+    const { levelUpdatePromises, levelsToCreate } = data.levels.reduce(
+      (
+        acc: {
+          levelUpdatePromises: Promise<Response>[]
+          levelsToCreate: Partial<Level>[]
+        },
+        level
+      ) => {
+        if (level.id) {
+          // Already existing levels need to be updated
+          const { id } = level
+          const payload = level
+          // Don't need IDs for PATCH
+          delete payload.id
+          delete payload.tokenSymbol
 
-      const promises = levelUpdatePromises
-      if (levelsToCreate.length > 0)
-        promises.push(
-          fetch(
-            `${process.env.NEXT_PUBLIC_API}/community/levels/${communityData?.id}`,
-            {
-              method: "POST",
+          acc.levelUpdatePromises.push(
+            fetch(`${process.env.NEXT_PUBLIC_API}/community/level/${id}`, {
+              method,
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                levels: levelsToCreate,
+                ...payload,
                 addressSignedMessage,
               }),
-            }
+            })
           )
-        )
+          return acc
+        }
+        // New levels should be created
+        acc.levelsToCreate.push(level)
+        return acc
+      },
+      {
+        levelUpdatePromises: [],
+        levelsToCreate: [],
+      }
+    )
 
-      return Promise.all(promises)
-    }
+    const promises = levelUpdatePromises
+    if (levelsToCreate.length > 0)
+      promises.push(
+        fetch(
+          `${process.env.NEXT_PUBLIC_API}/community/levels/${communityData?.id}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              levels: levelsToCreate,
+              addressSignedMessage,
+            }),
+          }
+        )
+      )
+
+    return Promise.all(promises)
   }
 
   const redirectAction = () =>
