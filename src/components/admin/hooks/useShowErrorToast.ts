@@ -21,7 +21,7 @@ const useShowErrorToast = () => {
       return
     }
 
-    errors.forEach((error) =>
+    errors?.forEach((error) =>
       toast({
         title: "Error",
         description: error.msg + (error.param ? `: ${error.param}` : ""),

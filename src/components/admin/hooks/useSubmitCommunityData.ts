@@ -31,11 +31,7 @@ const useSubmitCommunityData = <FormDataType>(method: "POST" | "PATCH") => {
               router.push(`/${urlName}`)
             })
       : ({ urlName }: ContextType) =>
-          new Promise<void>(() =>
-            setTimeout(() => {
-              router.push(`/${urlName}`)
-            }, 2000)
-          )
+          new Promise<void>(() => router.push(`/${urlName}`))
 
   return useSubmitMachine(
     method === "POST"

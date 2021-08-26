@@ -101,9 +101,8 @@ const useSubmitLevelsData = (
         cookies.forEach((cookie: string) => {
           document.cookie = cookie
         })
-        setTimeout(() => {
-          router.push(`/${communityData?.urlName}/community`)
-        }, 2000)
+
+        router.push(`/${communityData?.urlName}/community`)
       })
 
   const preprocess = (_data: FormData) => {
