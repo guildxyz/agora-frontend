@@ -1,4 +1,5 @@
 import {
+  Badge,
   CloseButton,
   FormControl,
   FormLabel,
@@ -106,8 +107,13 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
 
           <GridItem>
             {/* Disabled for now, until we can't upload photos */}
-            <FormControl isDisabled>
-              <FormLabel>Image</FormLabel>
+            <FormControl>
+              <FormLabel>
+                <Text as="span" mr={1.5} opacity={0.5}>
+                  Image
+                </Text>{" "}
+                <Badge>Coming soon</Badge>
+              </FormLabel>
               <Controller
                 render={({ field, fieldState }) => (
                   <PhotoUploader
