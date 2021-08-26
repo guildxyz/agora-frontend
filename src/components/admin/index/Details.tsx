@@ -45,7 +45,7 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
   return (
     <Section
       title="Details"
-      description="General information about your community"
+      description="General information about your token / community"
       cardType
     >
       <Grid templateColumns={{ base: "100%", md: "repeat(2, 1fr)" }} gap={12}>
