@@ -15,6 +15,30 @@ import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import { useRouter } from "next/router"
 import React, { useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
+import { RequirementType } from "temporaryData/types"
+
+export type Level = {
+  id: number
+  dbId: number
+  name: string
+  image: string
+  description: string
+  requirementType: RequirementType
+  requirement: number
+  stakeTimelockMs: string | number
+  telegramGroupId: string
+  tokenSymbol?: string
+}
+
+export type FormData = {
+  tokenSymbol: string
+  isTGEnabled: boolean
+  stakeToken: string
+  isDCEnabled: boolean
+  discordServerId: string
+  inviteChannel: string
+  levels: Level[]
+}
 
 const AdminCommunityPage = (): JSX.Element => {
   const router = useRouter()
