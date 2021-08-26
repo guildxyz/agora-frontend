@@ -21,7 +21,7 @@ const AdminHomePage = (): JSX.Element => {
     "chakra-colors-primary",
     colorCode || "#71717a"
   )
-  const communityData = useCommunityData()
+  const { communityData } = useCommunityData()
   const isOwner = useRedirectIfNotOwner(
     communityData?.owner?.address,
     `/${communityData?.urlName}`

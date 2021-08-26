@@ -1,5 +1,6 @@
 import { Button, Divider, HStack, Icon, Text, VStack } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
+import useCommunityData from "components/admin/hooks/useCommunityData"
 import usePersonalSign from "components/[community]/community/Platforms/components/JoinModal/hooks/usePersonalSign"
 import { AnimatePresence, motion } from "framer-motion"
 import useToast from "hooks/useToast"
@@ -18,6 +19,8 @@ const Levels = (): JSX.Element => {
     name: "levels",
     keyName: "dbId",
   })
+
+  const { mutateCommunityData } = useCommunityData()
 
   const sign = usePersonalSign()
   const toast = useToast()
@@ -66,13 +69,8 @@ const Levels = (): JSX.Element => {
               duration: 2000,
             })
 
-            // Reorder levels if needed
-            if (index < levelFields.length - 1) {
-              swapLevels(index, levelFields.length - 1)
-              removeLevel(levelFields.length - 1)
-            } else {
-              removeLevel(index)
-            }
+            // Mutate communities to display the levels correctly
+            mutateCommunityData()
           })
           .catch(() => {
             toast({

@@ -4,7 +4,7 @@ import useCommunityData from "./useCommunityData"
 import useSubmitMachine from "./useSubmitMachine"
 
 const useSubmitCommunityData = <FormDataType>(method: "POST" | "PATCH") => {
-  const communityData = useCommunityData()
+  const { communityData } = useCommunityData()
   const router = useRouter()
 
   const fetchService = (_context, { data }: SignEvent<FormDataType>) =>

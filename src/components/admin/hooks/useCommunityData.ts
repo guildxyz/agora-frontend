@@ -36,7 +36,10 @@ const fetchCommunityData = async (_: string, urlName: string, chainId: number) =
   }
 }
 
-const useCommunityData = (): ProvidedCommunity => {
+const useCommunityData = (): {
+  communityData: ProvidedCommunity
+  mutateCommunityData: any
+} => {
   const router = useRouter()
   const { chainId } = useWeb3React()
 
@@ -45,7 +48,7 @@ const useCommunityData = (): ProvidedCommunity => {
     router.query.community.toString().length > 0 &&
     typeof chainId === "number"
 
-  const { data: community } = useSWR(
+  const { data: communityData, mutate: mutateCommunityData } = useSWR(
     shouldFetch ? ["community", router.query.community.toString(), chainId] : null,
     fetchCommunityData,
     {
@@ -54,7 +57,7 @@ const useCommunityData = (): ProvidedCommunity => {
     }
   )
 
-  return community
+  return { communityData, mutateCommunityData }
 }
 
 export default useCommunityData

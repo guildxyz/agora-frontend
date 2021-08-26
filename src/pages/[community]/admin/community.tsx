@@ -12,7 +12,6 @@ import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import { AnimatePresence, motion } from "framer-motion"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
-import { useRouter } from "next/router"
 import React, { useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { RequirementType } from "temporaryData/types"
@@ -41,9 +40,8 @@ export type FormData = {
 }
 
 const AdminCommunityPage = (): JSX.Element => {
-  const router = useRouter()
   const { chainId, account } = useWeb3React()
-  const communityData = useCommunityData()
+  const { communityData } = useCommunityData()
   const generatedColors = useColorPalette(
     "chakra-colors-primary",
     communityData?.themeColor || "#71717a"

@@ -21,7 +21,7 @@ const useSubmitLevelsData = (
   method: "POST" | "PATCH" // | "DELETE",
 ) => {
   const router = useRouter()
-  const communityData = useCommunityData()
+  const { communityData } = useCommunityData()
 
   const fetchService = (
     _context: ContextType,
