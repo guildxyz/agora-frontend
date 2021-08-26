@@ -82,8 +82,20 @@ const Level = ({
       py={{ base: 8, md: 10 }}
       borderBottom="1px"
       borderBottomColor={colorMode === "light" ? "gray.200" : "gray.600"}
-      _last={{ borderBottom: 0 }}
       ref={hoverElRef}
+      order={(() => {
+        switch (requirementType) {
+          case "OPEN":
+            return -1
+          case "HOLD":
+            return requirement
+          case "STAKE":
+            // not a robust solution, should think of a better one
+            return 10000000 + requirement
+          default:
+            return 0
+        }
+      })()}
     >
       <Grid
         width="full"
