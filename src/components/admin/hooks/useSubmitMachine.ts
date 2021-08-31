@@ -11,6 +11,8 @@ import createSubmitMachine, {
 } from "../utils/submitMachine"
 import useShowErrorToast from "./useShowErrorToast"
 
+const MESSAGE = "You must sign the message to verify your address!"
+
 const useSubmitMachine = <FormDataType>(
   successText: string,
   fetch: (
@@ -26,7 +28,6 @@ const useSubmitMachine = <FormDataType>(
   redirect: (context: ContextType) => Promise<void>,
   preprocess: (data: FormDataType) => FormDataType = (data) => data
 ) => {
-  const MESSAGE = "You must sign the message to verify your address!"
   const toast = useToast()
   const showErrorToast = useShowErrorToast()
   const [sign, hasMessage, getSign] = usePersonalSign()

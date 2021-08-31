@@ -7,6 +7,8 @@ import { Machine } from "temporaryData/types"
 import { MetaMaskError } from "utils/processMetaMaskError"
 import { assign, createMachine, DoneInvokeEvent } from "xstate"
 
+const MESSAGE = "Please sign this message to generate your invite link"
+
 type Invite = {
   inviteLink: string
   alreadyJoined?: boolean
@@ -83,7 +85,6 @@ const useJoinModalMachine = (platform: string): Machine<Context> => {
   const [sign, , getSign] = usePersonalSign()
 
   const { account } = useWeb3React()
-  const MESSAGE = "Please sign this message to generate your invite link"
 
   const [state, send] = useMachine(joinModalMachine, {
     services: {
