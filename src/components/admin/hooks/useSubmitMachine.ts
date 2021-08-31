@@ -1,5 +1,5 @@
 import { useMachine } from "@xstate/react"
-import usePersonalSign from "components/[community]/community/Platforms/components/JoinModal/hooks/usePersonalSign"
+import { usePersonalSign } from "components/_app/PersonalSignStore"
 import useToast from "hooks/useToast"
 import type { Level } from "pages/[community]/admin/community"
 import createSubmitMachine, {
@@ -26,19 +26,18 @@ const useSubmitMachine = <FormDataType>(
   redirect: (context: ContextType) => Promise<void>,
   preprocess: (data: FormDataType) => FormDataType = (data) => data
 ) => {
+  const MESSAGE = "You must sign the message to verify your address!"
   const toast = useToast()
   const showErrorToast = useShowErrorToast()
-  const sign = usePersonalSign()
+  const [sign, hasMessage, getSign] = usePersonalSign()
   const [state, send] = useMachine(createSubmitMachine<FormDataType>(), {
     services: {
       fetch,
       sign: async (_, { data }: InitialEvent<FormDataType>) => {
-        const addressSignedMessage = await sign(
-          "Please sign this message to verify your address"
-        ).catch(() =>
-          Promise.reject(
-            new Error("You must sign the message to verify your address!")
-          )
+        if (hasMessage(MESSAGE))
+          return { ...data, addressSignedMessage: getSign(MESSAGE) }
+        const addressSignedMessage = await sign(MESSAGE).catch(() =>
+          Promise.reject(new Error())
         )
         return { ...data, addressSignedMessage }
       },
