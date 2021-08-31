@@ -1,8 +1,8 @@
 import { Box, BoxProps, useColorMode } from "@chakra-ui/react"
 import { motion } from "framer-motion"
-import { Rest } from "temporaryData/types"
+import type { Rest } from "temporaryData/types"
 import useIndicatorData from "./hooks/useIndicatorData"
-import LevelState from "./types"
+import type LevelState from "./types"
 
 const MotionBox = motion<BoxProps>(Box)
 const Indicator = ({ ...rest }: Rest) => (
