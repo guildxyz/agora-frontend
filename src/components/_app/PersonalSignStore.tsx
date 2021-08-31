@@ -1,7 +1,14 @@
 import { Web3Provider } from "@ethersproject/providers"
 import { useWeb3React } from "@web3-react/core"
-import { createContext, PropsWithChildren, useContext, useRef } from "react"
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useRef,
+} from "react"
 
+type Store = Map<string, Map<string, string>>
 type SignedMessages = Map<string, string>
 
 const SignContext = createContext<SignedMessages>(new Map<string, string>())
@@ -9,10 +16,16 @@ const SignContext = createContext<SignedMessages>(new Map<string, string>())
 const PersonalSignStore = ({
   children,
 }: PropsWithChildren<unknown>): JSX.Element => {
-  const signedMessages = useRef<SignedMessages>(new Map<string, string>())
+  const signedMessages = useRef<Store>(new Map<string, Map<string, string>>())
+  const { account } = useWeb3React()
+
+  useEffect(() => {
+    if (!signedMessages.current.has(account))
+      signedMessages.current.set(account, new Map<string, string>())
+  }, [account])
 
   return (
-    <SignContext.Provider value={signedMessages.current}>
+    <SignContext.Provider value={signedMessages.current.get(account)}>
       {children}
     </SignContext.Provider>
   )
