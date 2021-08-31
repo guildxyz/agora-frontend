@@ -3,31 +3,34 @@ import { useWeb3React } from "@web3-react/core"
 import {
   createContext,
   PropsWithChildren,
+  useCallback,
   useContext,
   useEffect,
-  useRef,
+  useState,
 } from "react"
 
-type Store = Map<string, Map<string, string>>
-type SignedMessages = Map<string, string>
+type Store = {
+  [address: string]: {
+    [message: string]: string
+  }
+}
 
-const SignContext = createContext<SignedMessages>(new Map<string, string>())
+const SignContext = createContext<Store>({})
 
 const PersonalSignStore = ({
   children,
 }: PropsWithChildren<unknown>): JSX.Element => {
-  const signedMessages = useRef<Store>(new Map<string, Map<string, string>>())
-  const { account } = useWeb3React()
+  const [signedMessages, setSignedMessages] = useState<Store>({})
 
-  useEffect(() => {
-    if (!signedMessages.current.has(account))
-      signedMessages.current.set(account, new Map<string, string>())
-  }, [account])
-
+  useEffect(
+    () =>
+      setSignedMessages(
+        JSON.parse(sessionStorage.getItem("signedMessages") ?? "{}")
+      ),
+    []
+  )
   return (
-    <SignContext.Provider value={signedMessages.current.get(account)}>
-      {children}
-    </SignContext.Provider>
+    <SignContext.Provider value={signedMessages}>{children}</SignContext.Provider>
   )
 }
 
@@ -39,17 +42,31 @@ const usePersonalSign = (): [
   const signedMessages = useContext(SignContext)
   const { library, account } = useWeb3React<Web3Provider>()
 
+  const saveSignedMessages = useCallback(
+    () => sessionStorage.setItem("signedMessages", JSON.stringify(signedMessages)),
+    [signedMessages]
+  )
+
+  useEffect(() => {
+    if (typeof account === "string" && !(account in signedMessages)) {
+      signedMessages[account] = {}
+      saveSignedMessages()
+    }
+  }, [account, signedMessages, saveSignedMessages])
+
   const sign = async (message: string): Promise<string> => {
-    if (signedMessages.has(message)) return signedMessages.get(message)
+    if (typeof signedMessages[account][message] === "string")
+      return signedMessages[account][message]
     const signed = await library.getSigner(account).signMessage(message)
-    signedMessages.set(message, signed)
+    signedMessages[account][message] = signed
+    saveSignedMessages()
     return signed
   }
 
   return [
     sign,
-    (message: string) => signedMessages.has(message),
-    (message: string) => signedMessages.get(message),
+    (message: string) => typeof signedMessages[account][message] === "string",
+    (message: string) => signedMessages[account][message],
   ]
 }
 
