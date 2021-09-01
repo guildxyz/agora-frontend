@@ -11,8 +11,8 @@ import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import { AnimatePresence, motion } from "framer-motion"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
-import React, { useEffect } from "react"
-import { FormProvider, useForm } from "react-hook-form"
+import React, { useEffect, useMemo } from "react"
+import { FormProvider, useForm, useWatch } from "react-hook-form"
 import { RequirementType } from "temporaryData/types"
 
 export type Level = {
@@ -51,6 +51,16 @@ const AdminCommunityPage = (): JSX.Element => {
   ) */
   const isOwner = true
   const methods = useForm({ mode: "all" })
+  const levels = useWatch({
+    name: "levels",
+    control: methods.control,
+    defaultValue: [],
+  })
+  const hasStakingLevel = useMemo(
+    () =>
+      levels.length > 0 && levels.some((level) => level.requirementType === "STAKE"),
+    [levels]
+  )
 
   const HTTPMethod = communityData?.levels?.length > 0 ? "PATCH" : "POST"
 
@@ -134,6 +144,7 @@ const AdminCommunityPage = (): JSX.Element => {
                     onSaveClick={
                       methods.formState.isDirty && methods.handleSubmit(onSubmit)
                     }
+                    hasStakingLevel={hasStakingLevel}
                   />
                   <VStack pb={{ base: 16, xl: 0 }} spacing={12}>
                     <Platforms

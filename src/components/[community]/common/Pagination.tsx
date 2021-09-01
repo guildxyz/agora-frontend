@@ -4,7 +4,6 @@ import useSpaceFactory from "components/admin/hooks/useSpaceFactory"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { useWatch } from "react-hook-form"
 import useFactoryMachine from "../hooks/useFactoryMachine"
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
@@ -25,6 +24,7 @@ type PaginationProps = {
   isCommunityTabDisabled?: boolean
   saveBtnLoading?: boolean
   onSaveClick?: () => void
+  hasStakingLevel?: boolean
 }
 
 const LinkButton = ({
@@ -71,6 +71,7 @@ const Pagination = ({
   isCommunityTabDisabled = false,
   saveBtnLoading = false,
   onSaveClick = null,
+  hasStakingLevel = false,
 }: PaginationProps): JSX.Element => {
   const router = useRouter()
   const paginationRef = useRef()
@@ -84,11 +85,6 @@ const Pagination = ({
   const [, , ...currentPath] = router.asPath.split("/")
   const isCommunityAdminPage =
     currentPath.includes("admin") && currentPath.includes("community")
-  const levels = useWatch({ name: "levels" })
-  const hasStakingLevel = useMemo(
-    () => levels && levels.some((level) => level.requirementType === "STAKE"),
-    [levels]
-  )
 
   useEffect(() => {
     const handleScroll = () => {
