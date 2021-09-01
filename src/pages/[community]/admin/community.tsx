@@ -4,7 +4,6 @@ import NotConnectedError from "components/admin/common/NotConnectedError"
 import Levels from "components/admin/community/Levels"
 import Platforms from "components/admin/community/Platforms"
 import useCommunityData from "components/admin/hooks/useCommunityData"
-import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
 import convertMsToMonths from "components/admin/utils/convertMsToMonths"
 import Layout from "components/common/Layout"
@@ -46,10 +45,11 @@ const AdminCommunityPage = (): JSX.Element => {
     "chakra-colors-primary",
     communityData?.themeColor || "#71717a"
   )
-  const isOwner = useRedirectIfNotOwner(
+  /* const isOwner = useRedirectIfNotOwner(
     communityData?.owner?.address,
     `/${communityData?.urlName}`
-  )
+  ) */
+  const isOwner = true
   const methods = useForm({ mode: "all" })
 
   const HTTPMethod = communityData?.levels?.length > 0 ? "PATCH" : "POST"

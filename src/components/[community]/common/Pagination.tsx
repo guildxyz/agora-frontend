@@ -1,7 +1,13 @@
 import { Box, Button, HStack, Tooltip, useColorMode } from "@chakra-ui/react"
+import useCommunityData from "components/admin/hooks/useCommunityData"
+import useSpaceFactory from "components/admin/hooks/useSpaceFactory"
 import Link from "next/link"
 import { useRouter } from "next/router"
 import { useEffect, useMemo, useRef, useState } from "react"
+import { useWatch } from "react-hook-form"
+import useFactoryMachine from "../hooks/useFactoryMachine"
+
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 type LinkButtonProps = {
   variant?: string
@@ -66,9 +72,23 @@ const Pagination = ({
   saveBtnLoading = false,
   onSaveClick = null,
 }: PaginationProps): JSX.Element => {
+  const router = useRouter()
   const paginationRef = useRef()
   const [isSticky, setIsSticky] = useState(false)
   const { colorMode } = useColorMode()
+  const [state, send] = useFactoryMachine()
+  const { communityData } = useCommunityData()
+  const { contractAddress } = useSpaceFactory(communityData?.chainData.token.address)
+  const hasContract =
+    typeof contractAddress === "string" && contractAddress !== ZERO_ADDRESS
+  const [, , ...currentPath] = router.asPath.split("/")
+  const isCommunityAdminPage =
+    currentPath.includes("admin") && currentPath.includes("community")
+  const levels = useWatch({ name: "levels" })
+  const hasStakingLevel = useMemo(
+    () => levels && levels.some((level) => level.requirementType === "STAKE"),
+    [levels]
+  )
 
   useEffect(() => {
     const handleScroll = () => {
@@ -128,9 +148,54 @@ const Pagination = ({
         </Box>
       </Tooltip>
 
-      {isAdminPage && onSaveClick && (
-        <Box marginInlineStart="auto!important">
+      <HStack spacing={3} marginInlineStart="auto!important">
+        {
+          // !hasContract &&
+          isCommunityAdminPage &&
+            hasStakingLevel &&
+            (() => {
+              switch (state.value) {
+                case "idle":
+                case "error":
+                  return (
+                    <Button
+                      variant="solid"
+                      colorScheme="primary"
+                      size="md"
+                      onClick={() => send("DEPLOY")}
+                    >
+                      Deploy contract
+                    </Button>
+                  )
+                case "success":
+                  return (
+                    <Button
+                      isDisabled
+                      variant="solid"
+                      colorScheme="primary"
+                      size="md"
+                    >
+                      Deployed
+                    </Button>
+                  )
+                default:
+                  return (
+                    <Button
+                      isLoading
+                      variant="solid"
+                      colorScheme="primary"
+                      size="md"
+                    >
+                      Deploying
+                    </Button>
+                  )
+              }
+            })()
+        }
+
+        {isAdminPage && onSaveClick && (
           <Button
+            isDisabled={!hasContract}
             isLoading={saveBtnLoading}
             variant="solid"
             colorScheme="primary"
@@ -139,24 +204,25 @@ const Pagination = ({
           >
             Save
           </Button>
-        </Box>
-      )}
+        )}
 
-      {isAdminPage && !onSaveClick && (
-        <Box marginInlineStart="auto!important">
-          <LinkButton doneBtn variant="solid" href={doneBtnUrl}>
+        {isAdminPage && !onSaveClick && (
+          <LinkButton
+            disabled={!hasContract}
+            doneBtn
+            variant="solid"
+            href={doneBtnUrl}
+          >
             Done
           </LinkButton>
-        </Box>
-      )}
+        )}
 
-      {editBtnUrl && (
-        <Box marginInlineStart="auto!important">
+        {editBtnUrl && (
           <LinkButton variant="solid" href={editBtnUrl}>
             Edit
           </LinkButton>
-        </Box>
-      )}
+        )}
+      </HStack>
 
       {/* <LinkButton href="twitter-bounty" disabled>
       Twitter bounty

@@ -11,24 +11,23 @@ const getContractAddress = (
   _: string,
   address: string,
   spaces: (address: string) => Promise<string>
-) => {
-  if (!address) return
-  return spaces(address)
-}
+) => spaces(address)
 
 const useSpaceFactory = (tokenAddress: string) => {
   const { chainId } = useWeb3React<Web3Provider>()
   const factoryAddress = SpaceFactory[Chains[chainId]]
   const contract = useContract(factoryAddress, SPACE_FACTORY_ABI, true)
-  const spaces = contract?.spaces ?? null
-  const createSpace = contract?.createSpace ?? null
+  const spaces = contract?.spaces
+  const createSpace = contract?.createSpace
+  const setApproval = contract?.setApproval
+  const approvedAddresses = contract?.approvedAddresses
 
   const shouldFetchTokenAddress =
     typeof tokenAddress === "string" &&
     tokenAddress.length > 0 &&
     typeof spaces === "function"
 
-  const { data: contractAddress, mutate } = useSWR(
+  const { data: contractAddress, mutate: mutateContractAddress } = useSWR(
     shouldFetchTokenAddress
       ? [`${tokenAddress}_staking_data`, tokenAddress, spaces]
       : null,
@@ -42,9 +41,9 @@ const useSpaceFactory = (tokenAddress: string) => {
     contractAddress.length > 0 &&
     !!spaceContract
 
-  const { data: stakeTokenAddress } = useSWR(
+  const { data: stakeTokenAddress, mutate: mutateStakeTokenAddress } = useSWR(
     shouldFetchStakeTokenAddress
-      ? [`${contractAddress}_stake_token_address`, spaceContract]
+      ? [`${contractAddress}_stake_token_address`, spaceContract, contractAddress]
       : null,
     () => (spaceContract ? spaceContract.stakeToken() : Promise.reject())
   )
@@ -54,8 +53,10 @@ const useSpaceFactory = (tokenAddress: string) => {
   const shouldFetchTokenData =
     typeof stakeTokenAddress === "string" && stakeTokenAddress.length > 0
 
-  const { data: stakeTokenData } = useSWR(
-    shouldFetchTokenData ? [`${stakeTokenAddress}_data`, stakeTokenContract] : null,
+  const { data: stakeTokenData, mutate: mutateStakeTokenData } = useSWR(
+    shouldFetchTokenData
+      ? [`${stakeTokenAddress}_data`, stakeTokenContract, stakeTokenAddress]
+      : null,
     () =>
       Promise.all([
         stakeTokenContract.name(),
@@ -68,12 +69,28 @@ const useSpaceFactory = (tokenAddress: string) => {
       }))
   )
 
+  const updateData = async () => {
+    // Do not use Promise.all, these mutations are dependent of each other in this order
+    const newContractAddress = await mutateContractAddress()
+    const newStakeTokenAddress = await mutateStakeTokenAddress()
+    const newStakeTokenData = await mutateStakeTokenData()
+    return {
+      contractAddress: newContractAddress,
+      stakeToken: {
+        address: newStakeTokenAddress,
+        ...newStakeTokenData,
+      },
+    }
+  }
+
   return {
     createSpace,
-    mutateContractAddress: mutate,
+    setApproval,
+    approvedAddresses,
+    updateData,
     contractAddress,
     stakeToken: {
-      stakeTokenAddress,
+      address: stakeTokenAddress,
       ...stakeTokenData,
     },
   }
