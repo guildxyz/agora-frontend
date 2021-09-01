@@ -1,15 +1,9 @@
-import {
-  Button,
-  Divider,
-  HStack,
-  Icon,
-  Text,
-  useToast,
-  VStack,
-} from "@chakra-ui/react"
+import { Button, Divider, HStack, Icon, Text, VStack } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
+import useCommunityData from "components/admin/hooks/useCommunityData"
 import usePersonalSign from "components/[community]/community/Platforms/components/JoinModal/hooks/usePersonalSign"
 import { AnimatePresence, motion } from "framer-motion"
+import useToast from "hooks/useToast"
 import { Plus } from "phosphor-react"
 import { useEffect } from "react"
 import { useFieldArray } from "react-hook-form"
@@ -20,9 +14,13 @@ const Levels = (): JSX.Element => {
     fields: levelFields,
     append: appendLevel,
     remove: removeLevel,
+    swap: swapLevels,
   } = useFieldArray({
     name: "levels",
+    keyName: "dbId",
   })
+
+  const { mutateCommunityData } = useCommunityData()
 
   const sign = usePersonalSign()
   const toast = useToast()
@@ -53,7 +51,6 @@ const Levels = (): JSX.Element => {
           body: JSON.stringify({ addressSignedMessage }),
         })
           .then((response) => {
-            // TODO
             if (response.status !== 200) {
               toast({
                 title: "Error",
@@ -71,7 +68,9 @@ const Levels = (): JSX.Element => {
               status: "success",
               duration: 2000,
             })
-            removeLevel(index)
+
+            // Mutate communities to display the levels correctly
+            mutateCommunityData()
           })
           .catch(() => {
             toast({
@@ -111,7 +110,8 @@ const Levels = (): JSX.Element => {
         {levelFields.length > 0 ? (
           <VStack width="full" spacing={8}>
             {levelFields.map((levelField, index) => (
-              <AnimatePresence key={levelField.id}>
+              // eslint-disable-next-line react/no-array-index-key
+              <AnimatePresence key={index}>
                 <motion.div
                   initial={{ opacity: 0, scale: 0.75, width: "100%" }}
                   animate={{ opacity: 1, scale: 1 }}

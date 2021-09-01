@@ -20,8 +20,13 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
       <Layout title={communityData.name} imageUrl={communityData.imageUrl}>
         <Stack spacing={{ base: 7, xl: 9 }}>
           <Pagination
+<<<<<<< HEAD
             isAdmin={
               account && account.toLowerCase() === communityData.owner?.address
+=======
+            editBtnUrl={
+              account?.toLowerCase() === communityData.owner?.address && `admin`
+>>>>>>> main
             }
           />
           <Stack spacing={{ base: 7 }}>
@@ -36,7 +41,11 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
                 display="flex"
                 alignItems="center"
               >
+<<<<<<< HEAD
                 <Icon as={Info} mr="2" />
+=======
+                <Icon as={Info} mr="4" />
+>>>>>>> main
                 More info coming soon
               </Text>
             </Card>

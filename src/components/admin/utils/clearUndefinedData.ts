@@ -1,10 +1,9 @@
-const clearUndefinedData = (data: Record<string, unknown>) => {
+const clearUndefinedData = <InputType>(data: Partial<InputType>) => {
   const formData = { ...data }
 
   // Deleting the "undefined" fields
   Object.keys(formData).forEach(
-    (key) =>
-      (formData[key] === undefined || formData[key] === "") && delete formData[key]
+    (key) => formData[key] === undefined && delete formData[key]
   )
 
   return formData

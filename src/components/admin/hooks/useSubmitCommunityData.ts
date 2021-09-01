@@ -1,75 +1,45 @@
-import { useToast } from "@chakra-ui/react"
-import usePersonalSign from "components/[community]/community/Platforms/components/JoinModal/hooks/usePersonalSign"
 import { useRouter } from "next/router"
-import clearUndefinedData from "../utils/clearUndefinedData"
+import { ContextType, SignEvent } from "../utils/submitMachine"
+import useCommunityData from "./useCommunityData"
+import useSubmitMachine from "./useSubmitMachine"
 
-const useSubmitCommunityData = (method: "POST" | "PATCH", id = null) => {
-  const fetchUrl =
-    method === "PATCH"
-      ? `${process.env.NEXT_PUBLIC_API}/community/${id}`
-      : `${process.env.NEXT_PUBLIC_API}/community`
+const useSubmitCommunityData = <FormDataType>(method: "POST" | "PATCH") => {
+  const { communityData } = useCommunityData()
   const router = useRouter()
-  const toast = useToast()
-  const sign = usePersonalSign()
 
-  const onSubmit = (data: any) => {
-    sign("Please sign this message to verify your address")
-      .then((addressSignedMessage) => {
-        const finalData = clearUndefinedData(data)
-        fetch(fetchUrl, {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...finalData, addressSignedMessage }),
-        })
-          .then((response) => {
-            if (response.status !== 200 && response.status !== 201) {
-              toast({
-                title: "Error",
-                description: `An error occurred while ${
-                  method === "POST" ? "creating" : "updating"
-                } your community`,
-                status: "error",
-                duration: 4000,
+  const fetchService = (_context, { data }: SignEvent<FormDataType>) =>
+    fetch(
+      method === "PATCH"
+        ? `${process.env.NEXT_PUBLIC_API}/community/${communityData?.id}`
+        : `${process.env.NEXT_PUBLIC_API}/community`,
+      {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      }
+    )
+
+  const redirectAction =
+    method === "PATCH"
+      ? ({ urlName }: ContextType) =>
+          fetch(`/api/preview?urlName=${urlName}`)
+            .then((res) => res.json())
+            .then((cookies: string[]) => {
+              cookies.forEach((cookie: string) => {
+                document.cookie = cookie
               })
-              return
-            }
-
-            toast({
-              title: "Success!",
-              description:
-                method === "POST"
-                  ? "Community added! You'll be redirected to the admin page."
-                  : "Community updated!",
-              status: "success",
-              duration: 2000,
+              router.push(`/${urlName}`)
             })
+      : ({ urlName }: ContextType) =>
+          new Promise<void>(() => router.push(`/${urlName}`))
 
-            if (method === "POST") {
-              setTimeout(() => {
-                router.push(`/${finalData.urlName}/admin/community`)
-              }, 2000)
-            }
-          })
-          .catch(() => {
-            toast({
-              title: "Error",
-              description: "Server error",
-              status: "error",
-              duration: 4000,
-            })
-          })
-      })
-      .catch(() => {
-        toast({
-          title: "Error",
-          description: "You must sign the message to verify your address!",
-          status: "error",
-          duration: 4000,
-        })
-      })
-  }
-
-  return onSubmit
+  return useSubmitMachine(
+    method === "POST"
+      ? "Community added! You're being redirected to it's page"
+      : "Community updated! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
+    fetchService,
+    redirectAction
+  )
 }
 
 export default useSubmitCommunityData

@@ -18,6 +18,7 @@ type Level = {
   membersCount: number
   requirementType: RequirementType
   requirement: number
+  requirementData: string
   stakeTimelockMs: number
   telegramGroupId: string
   discordRole: string
@@ -29,6 +30,7 @@ type Platform = {
   name: PlatformName
   active: boolean
   platformId: string
+  inviteChannel?: string
 }
 
 type ChainData = {

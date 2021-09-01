@@ -8,12 +8,20 @@ type Props = {
   buttonIcon?: IconType
   buttonText?: string
   currentImage?: string
+  isDisabled?: boolean
   onPhotoChange?: (newPhoto: File) => void
 }
 
 const PhotoUploader = forwardRef(
   (
-    { isInvalid, buttonIcon, buttonText, currentImage, onPhotoChange }: Props,
+    {
+      isInvalid,
+      buttonIcon,
+      buttonText,
+      currentImage,
+      isDisabled = false,
+      onPhotoChange,
+    }: Props,
     ref: LegacyRef<HTMLDivElement>
   ): JSX.Element => {
     const fileInputRef = useRef()
@@ -44,7 +52,7 @@ const PhotoUploader = forwardRef(
     }, [pickedPhoto])
 
     return (
-      <HStack spacing={4} ref={ref}>
+      <HStack position="relative" spacing={4} ref={ref}>
         {photoPreview ? (
           <Box
             position="relative"
@@ -88,6 +96,16 @@ const PhotoUploader = forwardRef(
           onChange={fileInputChange}
           ref={fileInputRef}
         />
+
+        {isDisabled && (
+          <Box
+            position="absolute"
+            inset={0}
+            ml="0!important"
+            bgColor={colorMode === "light" ? "white" : "gray.700"}
+            opacity={0.5}
+          />
+        )}
       </HStack>
     )
   }

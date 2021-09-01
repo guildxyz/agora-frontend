@@ -1,147 +1,157 @@
-import { Box, Button, HStack, Stack, VStack } from "@chakra-ui/react"
+import { Box, Spinner, Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
 import Levels from "components/admin/community/Levels"
 import Platforms from "components/admin/community/Platforms"
-import useSpaceFactory from "components/admin/hooks/useSpaceFactory"
+import useCommunityData from "components/admin/hooks/useCommunityData"
+import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
+import convertMsToMonths from "components/admin/utils/convertMsToMonths"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
-import { Chains } from "connectors"
-import { useRouter } from "next/router"
+import { AnimatePresence, motion } from "framer-motion"
+import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import React, { useEffect } from "react"
 import { FormProvider, useForm } from "react-hook-form"
-import { Community } from "temporaryData/types"
+import { RequirementType } from "temporaryData/types"
 
-type Props = {
-  communityData: Community
+export type Level = {
+  id: number
+  dbId: number
+  name: string
+  image: string
+  description: string
+  requirementType: RequirementType
+  requirement: number
+  stakeTimelockMs: string | number
+  telegramGroupId: string
+  tokenSymbol?: string
 }
 
-const AdminCommunityPage = ({ communityData }: Props): JSX.Element => {
-  const router = useRouter()
+export type FormData = {
+  tokenSymbol: string
+  isTGEnabled: boolean
+  stakeToken: string
+  isDCEnabled: boolean
+  discordServerId: string
+  inviteChannel: string
+  levels: Level[]
+}
+
+const AdminCommunityPage = (): JSX.Element => {
   const { chainId, account } = useWeb3React()
+  const { communityData } = useCommunityData()
   const generatedColors = useColorPalette(
     "chakra-colors-primary",
-    communityData.themeColor || "#71717a"
+    communityData?.themeColor || "#71717a"
   )
-  const methods = useForm({
-    mode: "all",
-    defaultValues: {
-      isTGEnabled: !!communityData.communityPlatforms
-        .filter((platform) => platform.active)
-        .find((platform) => platform.name === "TELEGRAM"),
-      isDCEnabled: !!communityData.communityPlatforms
-        .filter((platform) => platform.active)
-        .find((platform) => platform.name === "DISCORD"),
-      levels: communityData.levels.map((level) => ({
-        id: level.id,
-        name: level.name || undefined,
-        image: level.imageUrl || undefined,
-        description: level.description || undefined,
-        requirementType: level.requirementType,
-        requirement: level.requirement || undefined,
-        stakeTimelockMs: level.stakeTimelockMs || undefined, // TODO: convert it to months
-        telegramGroupId: level.telegramGroupId || undefined,
-      })),
-    },
-  })
-
-  const levels = methods.watch("levels")
-  const hasStakeLevel = levels.some((level) => level.requirementType === "STAKE")
-
-  const currentChainData = communityData.chainData.find(
-    (chain) => chain.name === Chains[chainId]
+  const isOwner = useRedirectIfNotOwner(
+    communityData?.owner?.address,
+    `/${communityData?.urlName}`
   )
+  const methods = useForm({ mode: "all" })
 
-  const { createSpace, contractAddress, mutateContractAddress, stakeToken } =
-    useSpaceFactory(currentChainData?.token.address)
+  const HTTPMethod = communityData?.levels?.length > 0 ? "PATCH" : "POST"
 
-  const isOnCorrectChain =
-    true || communityData.chainData.some((chain) => chain.name === Chains[chainId])
+  const { loading, onSubmit } = useSubmitLevelsData(HTTPMethod)
 
-  const onSubmit = useSubmitLevelsData(
-    communityData.levels?.length > 0 ? "PATCH" : "POST",
-    communityData.id
-  )
-
-  const isSpaceCreated =
-    contractAddress !== "0x0000000000000000000000000000000000000000"
-
-  useEffect(() => console.log(stakeToken), [stakeToken])
-
+  // Set up the default form field values if we have the necessary data
   useEffect(() => {
-    if (account && account.toLowerCase() !== communityData.owner?.address) {
-      router.push(`/${communityData.urlName}`)
-    }
-  }, [account])
+    if (communityData) {
+      const discordServer = communityData.communityPlatforms.find(
+        (platform) => platform.active && platform.name === "DISCORD"
+      )
 
+      // Reset the form state so we can watch the "isDirty" prop
+      methods.reset({
+        tokenSymbol: communityData.chainData?.token.symbol,
+        isTGEnabled: !!communityData.communityPlatforms
+          .filter((platform) => platform.active)
+          .find((platform) => platform.name === "TELEGRAM"),
+        stakeToken: communityData.chainData.stakeToken,
+        isDCEnabled: !!discordServer,
+        discordServerId: discordServer?.platformId || undefined,
+        inviteChannel: discordServer?.inviteChannel || undefined,
+        levels: communityData.levels.map((level) => ({
+          id: level.id,
+          dbId: level.id, // Needed for proper form management
+          name: level.name || undefined,
+          image: level.imageUrl || undefined,
+          description: level.description || undefined,
+          requirementType: level.requirementType,
+          requirement: level.requirement || undefined,
+          stakeTimelockMs: convertMsToMonths(level.stakeTimelockMs),
+          telegramGroupId: level.telegramGroupId || undefined,
+        })),
+      })
+    }
+  }, [communityData])
+
+  useWarnIfUnsavedChanges(
+    methods.formState?.isDirty && !methods.formState.isSubmitted
+  )
+
+  // If the user isn't logged in, display an error message
   if (!chainId) {
-    return <NotConnectedError title={`${communityData.name} - Levels`} />
+    return (
+      <NotConnectedError
+        title={communityData ? `${communityData.name} - Settings` : "Loading..."}
+      />
+    )
   }
 
-  return (
-    <FormProvider {...methods}>
+  // If we haven't fetched the community data / form data yet, display a spinner
+  if (!communityData || !methods)
+    return (
       <Box sx={generatedColors}>
-        <Layout
-          title={`${communityData.name} - Levels`}
-          imageUrl={communityData.imageUrl}
-        >
-          {account &&
-            isOnCorrectChain &&
-            account.toLowerCase() === communityData.owner?.address && (
-              <Stack spacing={{ base: 7, xl: 9 }}>
-                <Pagination
-                  isAdmin={
-                    account && account.toLowerCase() === communityData.owner?.address
-                  }
-                />
-                <VStack spacing={12}>
-                  <Platforms
-                    activePlatforms={communityData.communityPlatforms.filter(
-                      (platform) => platform.active
-                    )}
-                  />
-                  <Levels />
-
-                  <HStack>
-                    {hasStakeLevel && !isSpaceCreated && (
-                      <Button
-                        colorScheme="primary"
-                        onClick={async () => {
-                          const tx = await createSpace(
-                            currentChainData?.token.address
-                          )
-                          await tx.wait()
-                          mutateContractAddress()
-                        }}
-                      >
-                        Deploy contract
-                      </Button>
-                    )}
-
-                    <Button
-                      disabled={hasStakeLevel && !isSpaceCreated}
-                      colorScheme="primary"
-                      onClick={methods.handleSubmit(onSubmit)}
-                    >
-                      {communityData.levels?.length > 0
-                        ? "Update levels"
-                        : "Create levels"}
-                    </Button>
-                  </HStack>
-                </VStack>
-              </Stack>
-            )}
-        </Layout>
+        <VStack pt={16} justifyItems="center">
+          <Spinner size="xl" />
+        </VStack>
       </Box>
-    </FormProvider>
+    )
+
+  // Otherwise render the admin page
+  return (
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
+        <FormProvider {...methods}>
+          <Box sx={generatedColors}>
+            <Layout
+              title={`${communityData.name} - Settings`}
+              imageUrl={communityData.imageUrl}
+            >
+              {account && isOwner && (
+                <Stack spacing={{ base: 7, xl: 9 }}>
+                  <Pagination
+                    doneBtnUrl="community"
+                    isAdminPage
+                    saveBtnLoading={loading}
+                    onSaveClick={
+                      methods.formState.isDirty && methods.handleSubmit(onSubmit)
+                    }
+                  />
+                  <VStack pb={{ base: 16, xl: 0 }} spacing={12}>
+                    <Platforms
+                      comingSoon={communityData?.levels?.length > 0}
+                      activePlatforms={communityData.communityPlatforms.filter(
+                        (platform) => platform.active
+                      )}
+                    />
+                    <Levels />
+                  </VStack>
+                </Stack>
+              )}
+            </Layout>
+          </Box>
+        </FormProvider>
+      </motion.div>
+    </AnimatePresence>
   )
 }
-
-export {
-  getStaticPaths,
-  getStaticProps,
-} from "components/[community]/utils/dataFetching"
 
 export default AdminCommunityPage

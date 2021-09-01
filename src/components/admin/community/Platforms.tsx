@@ -12,20 +12,22 @@ import {
   InputLeftAddon,
   Select,
   Spinner,
+  Stack,
   Switch,
   Text,
   useColorMode,
   VStack,
 } from "@chakra-ui/react"
-// import { useWeb3React } from "@web3-react/core"
 import Section from "components/admin/common/Section"
+import Link from "components/common/Link"
 import { AnimatePresence, motion } from "framer-motion"
-import { useState } from "react"
-import { useFormContext } from "react-hook-form"
+import { useEffect, useState } from "react"
+import { useFormContext, useWatch } from "react-hook-form"
 import { Platform } from "temporaryData/types"
 
 type Props = {
   activePlatforms?: Platform[]
+  comingSoon?: boolean
 }
 
 type DiscordError = {
@@ -34,92 +36,34 @@ type DiscordError = {
   showAuthBtn?: boolean
 }
 
-/*
-type DiscordServer = {
-  id: string
-  name: string
-}
-*/
-
 type DiscordChannel = {
   id: string
   name: string
   category: string
 }
 
-const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
-  // const { account } = useWeb3React()
-
+const Platforms = ({
+  activePlatforms = [],
+  comingSoon = false,
+}: Props): JSX.Element => {
   const {
-    watch,
     register,
+    getValues,
     formState: { errors },
   } = useFormContext()
 
   const { colorMode } = useColorMode()
 
   const [discordError, setDiscordError] = useState<DiscordError | null>(null)
-
-  const [serverSelectLoading, setServerSelectLoading] = useState(false)
-  // const [discordServers, setDiscordServers] = useState<DiscordServer[] | null>(null)
   const [channelSelectLoading, setChannelSelectLoading] = useState(false)
   const [discordChannels, setDiscordChannels] = useState<DiscordChannel[] | null>(
     null
   )
 
-  /*
-    // We'll need this when we'll be able to authenticat the user with DC & fetch their administered servers
-  useEffect(() => {
-    if (!account) return
+  const isDCEnabledChange = useWatch({ name: "isDCEnabled" })
+  const discordServerIdChange = useWatch({ name: "discordServerId" })
 
-    setServerSelectLoading(true)
-    fetch(`${process.env.NEXT_PUBLIC_API}/community/administeredServers/${account}`)
-      .then((response) => {
-        // We don't know the DC id of the user
-        if (response.status === 400) {
-          setChannelSelectLoading(false)
-          setDiscordError({
-            message: "Please authenticate with Discord",
-            type: "server",
-            showAuthBtn: true,
-          })
-          setDiscordChannels(null)
-          return
-        }
-
-        if (response.status !== 200) {
-          setChannelSelectLoading(false)
-          setDiscordError({
-            message: "Couldn't fetch your discord servers",
-            type: "server",
-          })
-          setDiscordChannels(null)
-          return
-        }
-
-        return response.json()
-      })
-      .then((data) => {
-        setDiscordServers(data)
-        setServerSelectLoading(false)
-
-        if (data?.length === 0) {
-          setDiscordError({
-            message: "It seems like you don't have a Discord server yet.",
-            type: "server",
-          })
-          return
-        }
-
-        setDiscordError(null)
-      })
-      .catch(console.error) // TODO?...
-    }, [account])
-    */
-
-  const onServerIdChange = (e) => {
-    const serverId = e.target.value
-
+  const onServerIdChange = (serverId) => {
     if (errors.discordServerId || discordError?.type === "server") return
 
     setChannelSelectLoading(true)
@@ -155,6 +99,13 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
       .catch(console.error) // TODO?...
   }
 
+  // Fetch channels on server ID change. I've used a useEffect here, so it'll run on the admin page too, when we fill the form data with the data which we fetch from the API
+  useEffect(() => {
+    if (discordServerIdChange) {
+      onServerIdChange(getValues("discordServerId"))
+    }
+  }, [discordServerIdChange])
+
   return (
     <Section
       title="Platforms"
@@ -164,11 +115,22 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
       <VStack>
         <Grid
           width="full"
-          templateColumns={{ base: "100%", md: "auto 100%" }}
+          templateColumns={{ base: "100%", md: "20% auto" }}
           gap={{ base: 8, md: 12 }}
         >
+          {comingSoon && (
+            <GridItem colSpan={{ base: 1, md: 2 }} mb={-8}>
+              <Badge>Coming soon</Badge>
+            </GridItem>
+          )}
+
           <GridItem>
-            <FormControl display="flex" height="full" alignItems="center">
+            <FormControl
+              display="flex"
+              height="full"
+              alignItems="center"
+              isDisabled={comingSoon}
+            >
               <Switch
                 colorScheme="primary"
                 mr={4}
@@ -176,70 +138,28 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
                 defaultChecked={
                   !!activePlatforms.find((platform) => platform.name === "DISCORD")
                 }
+                isDisabled={comingSoon}
               />
               <FormLabel margin={0}>Discord</FormLabel>
             </FormControl>
           </GridItem>
 
           <GridItem>
-            {watch("isDCEnabled") ? (
+            {isDCEnabledChange ? (
               <VStack spacing={4} alignItems="start">
-                {false && serverSelectLoading && (
-                  <AnimatePresence>
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.75 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.75 }}
-                    >
-                      <Spinner />
-                    </motion.div>
-                  </AnimatePresence>
-                )}
-
-                {
-                  /* discordServers?.length > 0 */ true && (
-                    <AnimatePresence>
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.75 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.75 }}
-                      >
-                        <FormControl isDisabled={!watch("isDCEnabled")}>
-                          <InputGroup>
-                            <InputLeftAddon>Server ID</InputLeftAddon>
-                            <Input
-                              width={64}
-                              {...register("discordServerId", {
-                                required: watch("isDCEnabled"),
-                                minLength: 17,
-                              })}
-                              isInvalid={errors.discordServerId}
-                              onChange={onServerIdChange}
-                            />
-                          </InputGroup>
-
-                          {/*
-                        <FormLabel>Pick a server</FormLabel>
-                         <Select
-                          width={64}
-                          placeholder="Select one"
-                          {...register("discordServerId", {
-                            required: watch("isDCEnabled"),
-                          })}
-                          isInvalid={errors.discordServerId}
-                          onChange={onServerIdChange}
-                        >
-                          {discordServers.map((server) => (
-                            <option key={server.id} value={server.id}>
-                              {`${server.name}`}
-                            </option>
-                          ))}
-                        </Select> */}
-                        </FormControl>
-                      </motion.div>
-                    </AnimatePresence>
-                  )
-                }
+                <FormControl isDisabled={comingSoon}>
+                  <InputGroup>
+                    <InputLeftAddon>Server ID</InputLeftAddon>
+                    <Input
+                      width={64}
+                      {...register("discordServerId", {
+                        required: isDCEnabledChange,
+                        minLength: 17,
+                      })}
+                      isInvalid={errors.discordServerId}
+                    />
+                  </InputGroup>
+                </FormControl>
                 {discordError && discordError.type === "server" && (
                   <HStack spacing={4} justifyItems="center">
                     <Text
@@ -255,7 +175,7 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
                         ml={4}
                         size="sm"
                         colorScheme="DISCORD"
-                        isDisabled={!watch("isDCEnabled")}
+                        isDisabled={!isDCEnabledChange}
                       >
                         Authenticate
                       </Button>
@@ -275,13 +195,29 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
                   </AnimatePresence>
                 )}
                 {discordError && discordError.type === "channels" && (
-                  <Text
-                    color={colorMode === "light" ? "red.500" : "red.400"}
-                    fontSize="sm"
-                    mt={2}
+                  <Stack
+                    direction={{ base: "column", lg: "row" }}
+                    spacing={2}
+                    justifyContent="center"
                   >
-                    {discordError.message}
-                  </Text>
+                    <Text
+                      color={colorMode === "light" ? "red.500" : "red.400"}
+                      fontSize="sm"
+                      mt={2}
+                      height={{ base: "auto", lg: 4 }}
+                    >
+                      {discordError.message}
+                    </Text>
+                    <Link
+                      href="https://discord.com/api/oauth2/authorize?client_id=868172385000509460&permissions=8&scope=bot%20applications.commands"
+                      target="_blank"
+                      _hover={{ textDecoration: "none" }}
+                    >
+                      <Button size="sm" colorScheme="DISCORD" width="max-content">
+                        Invite now
+                      </Button>
+                    </Link>
+                  </Stack>
                 )}
                 {discordChannels?.length > 0 && (
                   <AnimatePresence>
@@ -290,14 +226,14 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.75 }}
                     >
-                      <FormControl isDisabled={!watch("isDCEnabled")}>
+                      <FormControl isDisabled={comingSoon}>
                         <FormLabel>Invite channel</FormLabel>
 
                         <Select
                           width={64}
                           placeholder="Select one"
                           {...register("inviteChannel", {
-                            required: watch("isDCEnabled"),
+                            required: isDCEnabledChange,
                           })}
                           isInvalid={errors.inviteChannel}
                         >
@@ -320,7 +256,12 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
           </GridItem>
 
           <GridItem>
-            <FormControl display="flex" height="full" alignItems="center">
+            <FormControl
+              display="flex"
+              height="full"
+              alignItems="center"
+              isDisabled={comingSoon}
+            >
               <Switch
                 colorScheme="primary"
                 mr={4}
@@ -328,6 +269,7 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
                 defaultChecked={
                   !!activePlatforms.find((platform) => platform.name === "TELEGRAM")
                 }
+                isDisabled={comingSoon}
               />
               <FormLabel margin={0}>Telegram</FormLabel>
             </FormControl>
@@ -335,7 +277,23 @@ const Platforms = ({ activePlatforms = [] }: Props): JSX.Element => {
 
           <GridItem>
             <Text colorScheme="gray">
-              You'll have to set the group IDs for every level
+              You'll need a group for each level, with{" "}
+              <Link
+                href="https://t.me/agoraspacebot"
+                target="_blank"
+                color="telegram.500"
+              >
+                @agoraspacebot
+              </Link>{" "}
+              being added to them (
+              <Link
+                href="https://agora-space.gitbook.io/agoraspace/tools/role-management-bot/telegram#2-invite-medousa"
+                target="_blank"
+                color="telegram.500"
+              >
+                help
+              </Link>
+              ). You'll have to set the belonging group for each level below.
             </Text>
           </GridItem>
 

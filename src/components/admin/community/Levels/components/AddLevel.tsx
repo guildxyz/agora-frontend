@@ -1,4 +1,5 @@
 import {
+  Badge,
   CloseButton,
   FormControl,
   FormLabel,
@@ -9,6 +10,7 @@ import {
   Input,
   InputGroup,
   InputRightAddon,
+  Kbd,
   Stack,
   Text,
   Textarea,
@@ -19,7 +21,7 @@ import Hint from "components/admin/common/Hint"
 import PhotoUploader from "components/admin/common/PhotoUploader"
 import Card from "components/common/Card"
 import { Lock, LockOpen, LockSimpleOpen } from "phosphor-react"
-import { Controller, useFormContext } from "react-hook-form"
+import { Controller, useFormContext, useWatch } from "react-hook-form"
 import { Icon as IconType } from "temporaryData/types"
 import RadioCard from "./RadioCard"
 
@@ -54,8 +56,8 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
   const {
     control,
     register,
-    setValue,
     getValues,
+    setValue,
     watch,
     formState: { errors },
   } = useFormContext()
@@ -63,12 +65,15 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
   const options = ["OPEN", "HOLD", "STAKE"]
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "membership",
-    defaultValue: options[0],
+    defaultValue: getValues(`levels.${index}.requirementType`) || options[0],
     onChange: (newValue: MembershipTypes) =>
-      setValue(`levels.${index}.requirementType`, newValue, {}),
+      setValue(`levels.${index}.requirementType`, newValue, { shouldDirty: true }),
   })
 
   const radioGroup = getRootProps()
+
+  const requirementTypeChange = useWatch({ name: `levels.${index}.requirementType` })
+  const isTGEnabledChange = useWatch({ name: "isTGEnabled" })
 
   return (
     <Card position="relative" width="full" padding={8}>
@@ -101,14 +106,21 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
           </GridItem>
 
           <GridItem>
+            {/* Disabled for now, until we can't upload photos */}
             <FormControl>
-              <FormLabel>Image</FormLabel>
+              <FormLabel>
+                <Text as="span" mr={1.5} opacity={0.5}>
+                  Image
+                </Text>{" "}
+                <Badge>Coming soon</Badge>
+              </FormLabel>
               <Controller
                 render={({ field, fieldState }) => (
                   <PhotoUploader
                     ref={field.ref}
                     isInvalid={fieldState.invalid}
                     buttonText="Change image..."
+                    isDisabled
                     onPhotoChange={(newPhoto: File) => field.onChange(newPhoto)}
                     {...field}
                   />
@@ -149,7 +161,11 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 {options.map((value) => {
                   const radio = getRadioProps({ value })
                   return (
-                    <RadioCard key={value} {...radio}>
+                    <RadioCard
+                      key={value}
+                      isDisabled={value === "STAKE" && !getValues("stakeToken")} // Disabling the "STAKE" radio if the community doesn't have a stakeToken
+                      {...radio}
+                    >
                       <HStack spacing={2} justify="center">
                         <Icon as={membershipsData[value].icon} />
                         <Text as="span">{membershipsData[value].name}</Text>
@@ -163,49 +179,62 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 {...register(`levels.${index}.requirementType`, {
                   required: true,
                 })}
-                defaultValue={options[0]}
+                defaultValue={
+                  getValues(`levels.${index}.requirementType`) || options[0]
+                }
               />
             </FormControl>
           </GridItem>
 
           <GridItem>
-            <FormControl>
+            <FormControl isDisabled={requirementTypeChange === "OPEN"}>
               <FormLabel>Amount</FormLabel>
               <InputGroup>
                 <Input
                   type="number"
                   {...register(`levels.${index}.requirement`, {
                     valueAsNumber: true,
-                    required: watch(`levels.${index}.requirementType`) !== "OPEN",
+                    required: requirementTypeChange !== "OPEN",
+                    max: {
+                      value: 2147483647, // Postgres Int max value
+                      message:
+                        "The maximum possible requirement amount is 2147483647",
+                    },
                   })}
-                  isDisabled={watch(`levels.${index}.requirementType`) === "OPEN"}
                   isInvalid={errors.levels && errors.levels[index]?.requirement}
                 />
-                <InputRightAddon>TKN</InputRightAddon>
+                <InputRightAddon
+                  opacity={requirementTypeChange === "OPEN" ? 0.5 : 1}
+                >
+                  {getValues("tokenSymbol")}
+                </InputRightAddon>
               </InputGroup>
             </FormControl>
           </GridItem>
 
           <GridItem>
-            <FormControl>
+            <FormControl isDisabled={requirementTypeChange !== "STAKE"}>
               <FormLabel>Timelock</FormLabel>
               <InputGroup>
                 <Input
                   type="number"
                   {...register(`levels.${index}.stakeTimelockMs`, {
                     valueAsNumber: true,
-                    required: watch(`levels.${index}.requirementType`) === "STAKE",
+                    required: requirementTypeChange === "STAKE",
                   })}
-                  isDisabled={watch(`levels.${index}.requirementType`) !== "STAKE"}
                   isInvalid={errors.levels && errors.levels[index]?.stakeTimelockMs}
                 />
-                <InputRightAddon>month(s)</InputRightAddon>
+                <InputRightAddon
+                  opacity={requirementTypeChange !== "STAKE" ? 0.5 : 1}
+                >
+                  month(s)
+                </InputRightAddon>
               </InputGroup>
             </FormControl>
           </GridItem>
         </Grid>
 
-        {watch("isTGEnabled") && (
+        {isTGEnabledChange && (
           <VStack width="full" spacing={6} alignItems="start">
             <Text as="h2" fontWeight="bold" fontSize="lg">
               Platform linking
@@ -214,18 +243,26 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
             <FormControl>
               <FormLabel>
                 <Text as="span">Telegram group</Text>
-                <Hint header="Where can I find the TG group ID?" body="TODO..." />
-              </FormLabel>
-              <InputGroup>
-                <Input
-                  width="full"
-                  placeholder="+ paste group ID"
-                  {...register(`levels.${index}.telegramGroupId`, {
-                    required: watch("isTGEnabled"),
-                  })}
-                  isInvalid={errors.levels && errors.levels[index]?.telegramGroupId}
+                <Hint
+                  body={
+                    <Text>
+                      Medousa will send you the group id when you add her to your
+                      group. If she's already in, type <Kbd>/groupId</Kbd> and she'll
+                      send it again.
+                    </Text>
+                  }
                 />
-              </InputGroup>
+              </FormLabel>
+
+              <Input
+                width="full"
+                placeholder="+ paste group ID"
+                {...register(`levels.${index}.telegramGroupId`, {
+                  required: isTGEnabledChange,
+                  shouldUnregister: true,
+                })}
+                isInvalid={errors.levels && errors.levels[index]?.telegramGroupId}
+              />
             </FormControl>
           </VStack>
         )}

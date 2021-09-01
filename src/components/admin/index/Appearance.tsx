@@ -42,7 +42,7 @@ const Appearance = ({ onColorChange }: Props): JSX.Element => {
               maxWidth={60}
               placeholder="#4F46E5"
               {...register("themeColor", {
-                required: false,
+                required: "This field is required.",
                 pattern: {
                   value: /^#[0-9a-f]{3}([0-9a-f]{3})?$/i,
                   message: "Please input a valid hexadecimal color code.",

@@ -1,4 +1,5 @@
 import {
+  Badge,
   FormControl,
   FormLabel,
   Grid,
@@ -6,14 +7,16 @@ import {
   Input,
   InputGroup,
   InputLeftAddon,
+  Text,
   Textarea,
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
 import { UploadSimple } from "phosphor-react"
 import { Controller, useFormContext, useWatch } from "react-hook-form"
-import slugify from "slugify"
 import PhotoUploader from "../common/PhotoUploader"
 import ValidationError from "../common/ValidationError"
+import slugify from "../utils/slugify"
+import UsedToken from "./UsedToken"
 
 type Props = {
   isAdminPage?: boolean
@@ -31,15 +34,11 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
   const nameInput = useWatch({ name: "name" })
   const urlNameInput = useWatch({ name: "urlName" })
 
-  const generatedUrlName = slugify(nameInput, {
-    replacement: "-",
-    lower: true,
-    strict: true,
-  })
+  const generatedUrlName = nameInput && slugify(nameInput.toString())
 
   const nameOnBlur = () => {
     trigger("name")
-    if (urlNameInput.length <= 0) {
+    if (urlNameInput?.length <= 0) {
       setValue("urlName", generatedUrlName)
       trigger("urlName")
     }
@@ -48,10 +47,14 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
   return (
     <Section
       title="Details"
-      description="General information about your community"
+      description="General information about your token / community"
       cardType
     >
       <Grid templateColumns={{ base: "100%", md: "repeat(2, 1fr)" }} gap={12}>
+        <GridItem colSpan={{ base: 1, md: 2 }}>
+          <UsedToken />
+        </GridItem>
+
         <GridItem>
           <FormControl isRequired>
             <FormLabel>Name</FormLabel>
@@ -74,6 +77,12 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
               ) : (
                 <Input
                   {...register("urlName", {
+                    required: "This field is required.",
+                    maxLength: {
+                      value: 20,
+                      message:
+                        "The maximum possible URL name length is 20 characters",
+                    },
                     validate: async (value) => {
                       try {
                         const response = await fetch(
@@ -108,7 +117,12 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
 
         <GridItem colSpan={{ base: 1, md: 2 }}>
           <FormControl>
-            <FormLabel>Image</FormLabel>
+            <FormLabel>
+              <Text as="span" mr={1.5} opacity={0.5}>
+                Image
+              </Text>{" "}
+              <Badge>Coming soon</Badge>
+            </FormLabel>
             <Controller
               render={({ field, fieldState }) => (
                 <PhotoUploader
@@ -116,6 +130,7 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
                   isInvalid={fieldState.invalid}
                   buttonIcon={UploadSimple}
                   buttonText="Change image"
+                  isDisabled
                   onPhotoChange={(newPhoto: File) => field.onChange(newPhoto)}
                   {...field}
                 />
