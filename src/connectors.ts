@@ -10,7 +10,7 @@ enum Chains {
 }
 
 enum SpaceFactory {
-  BSCTEST = "0xf7D32e49C09F88Fa779aC12a951f9C3aF2b08869",
+  BSCTEST = "0x534E253967645eDB35135E0C6cD982bd4d89efab",
 }
 
 const RPC = {
