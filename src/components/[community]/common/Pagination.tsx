@@ -185,25 +185,27 @@ const Pagination = ({
           })()}
 
         {isAdminPage && onSaveClick && (
-          <Button
-            isDisabled={!hasContract}
-            isLoading={saveBtnLoading}
-            variant="solid"
-            colorScheme="primary"
-            size="md"
-            onClick={onSaveClick}
+          <Tooltip
+            label="First you have to deploy a contract for the staking level(s)"
+            isDisabled={!hasStakingLevel || !!hasContract}
           >
-            Save
-          </Button>
+            <Box>
+              <Button
+                isDisabled={hasStakingLevel && !hasContract}
+                isLoading={saveBtnLoading}
+                variant="solid"
+                colorScheme="primary"
+                size="md"
+                onClick={onSaveClick}
+              >
+                Save
+              </Button>
+            </Box>
+          </Tooltip>
         )}
 
         {isAdminPage && !onSaveClick && (
-          <LinkButton
-            disabled={!hasContract}
-            doneBtn
-            variant="solid"
-            href={doneBtnUrl}
-          >
+          <LinkButton doneBtn variant="solid" href={doneBtnUrl}>
             Done
           </LinkButton>
         )}
