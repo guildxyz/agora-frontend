@@ -76,12 +76,12 @@ const useUnstakingModalMachine = (): Machine<Context> => {
   } = useCommunity()
   const contract = useContract(contractAddress, AGORA_SPACE_ABI, true)
   const { account, chainId } = useWeb3React()
-  const { unlockedAmount } = useStaked()
+  const { unlockedAmount, rankId } = useStaked()
   const [state, send] = useMachine(unstakingMachine, {
     services: {
       unstake: async () => {
         const weiAmount = parseEther(unlockedAmount.toString())
-        const tx = await contract.withdraw(weiAmount)
+        const tx = await contract.withdraw(weiAmount, rankId)
         return tx
       },
     },

@@ -10,6 +10,7 @@ import useSWR from "swr"
 
 type StakedType = {
   unlockedAmount: number
+  rankId: number // We only need one rankId, since we are consolidating every deposit. We can withdraw using this rankId
   locked: Array<{
     amount: number
     expires: Date
@@ -36,6 +37,7 @@ const getTimelocks = (
         const amount = +formatEther(_amount)
         const rankId = +_rankId
         const acc = _acc
+        acc.rankId = Math.max(acc.rankId, rankId)
         if (+expires < Date.now()) {
           acc.unlockedAmount += amount
           return acc
@@ -50,6 +52,7 @@ const getTimelocks = (
       },
       {
         unlockedAmount: 0,
+        rankId: -1,
         locked: [],
       }
     )
@@ -68,6 +71,7 @@ const useStaked = (): StakedType => {
     {
       initialData: {
         unlockedAmount: 0,
+        rankId: -1,
         locked: [],
       },
     }
