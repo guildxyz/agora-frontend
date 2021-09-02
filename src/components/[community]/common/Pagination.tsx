@@ -3,6 +3,7 @@ import useCommunityData from "components/admin/hooks/useCommunityData"
 import useSpaceFactory from "components/admin/hooks/useSpaceFactory"
 import Link from "next/link"
 import { useRouter } from "next/router"
+import { CheckCircle } from "phosphor-react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import useFactoryMachine from "../hooks/useFactoryMachine"
 
@@ -145,49 +146,43 @@ const Pagination = ({
       </Tooltip>
 
       <HStack spacing={3} marginInlineStart="auto!important">
-        {
-          // !hasContract &&
+        {!hasContract &&
           isCommunityAdminPage &&
-            hasStakingLevel &&
-            (() => {
-              switch (state.value) {
-                case "idle":
-                case "error":
-                  return (
-                    <Button
-                      variant="solid"
-                      colorScheme="primary"
-                      size="md"
-                      onClick={() => send("DEPLOY")}
-                    >
-                      Deploy contract
-                    </Button>
-                  )
-                case "success":
-                  return (
-                    <Button
-                      isDisabled
-                      variant="solid"
-                      colorScheme="primary"
-                      size="md"
-                    >
-                      Deployed
-                    </Button>
-                  )
-                default:
-                  return (
-                    <Button
-                      isLoading
-                      variant="solid"
-                      colorScheme="primary"
-                      size="md"
-                    >
-                      Deploying
-                    </Button>
-                  )
-              }
-            })()
-        }
+          hasStakingLevel &&
+          (() => {
+            switch (state.value) {
+              case "idle":
+              case "error":
+                return (
+                  <Button
+                    variant="solid"
+                    colorScheme="primary"
+                    size="md"
+                    onClick={() => send("DEPLOY")}
+                  >
+                    Deploy contract
+                  </Button>
+                )
+              case "success":
+                return (
+                  <Button
+                    isDisabled
+                    variant="outline"
+                    colorScheme="primary"
+                    size="md"
+                    rightIcon={<CheckCircle />}
+                  >
+                    Deployed
+                  </Button>
+                )
+              default:
+                return (
+                  <Button isLoading variant="solid" colorScheme="primary" size="md">
+                    Deploying
+                  </Button>
+                )
+            }
+          })()}
 
         {isAdminPage && onSaveClick && (
           <Button
