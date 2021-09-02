@@ -40,6 +40,7 @@ const Level = ({
     imageUrl,
     description,
     membersCount,
+    id,
   },
   setLevelsState,
 }: Props): JSX.Element => {
@@ -183,6 +184,7 @@ const Level = ({
               </Button>
               {!noAccessMessage && (
                 <StakingModal
+                  levelId={id}
                   levelName={name}
                   requirement={requirement}
                   stakeTimelockMs={stakeTimelockMs}
