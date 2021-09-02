@@ -33,6 +33,7 @@ const fetchCommunityData = async (_: string, urlName: string, chainId: number) =
     ...communityData,
     chainData,
     availableChains,
+    allChainData: communityData.chainData,
   }
 }
 

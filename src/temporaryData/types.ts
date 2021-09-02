@@ -68,6 +68,7 @@ type Community = CommunityBase & {
 type ProvidedCommunity = CommunityBase & {
   chainData: ChainData
   availableChains: string[]
+  allChainData?: ChainData[]
 }
 
 type MetaMaskError = { code: number; message: string }

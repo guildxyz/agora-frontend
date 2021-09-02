@@ -71,8 +71,6 @@ const useFactoryMachine = (): Machine<any> => {
   const { contractAddress, createSpace, approvedAddresses, updateData, stakeToken } =
     useSpaceFactory(tokenAddress)
 
-  useEffect(() => console.log(stakeToken), [stakeToken])
-
   const [state, send] = useMachine(factoryMachine, {
     services: {
       checkApprovement: async () => {
@@ -96,13 +94,17 @@ const useFactoryMachine = (): Machine<any> => {
         const tx = await createSpace(tokenAddress)
         await tx.wait()
         const updated = await updateData()
-        console.log(updated)
+        const index = communityData.allChainData.findIndex(
+          (chainData) => chainData.name === Chains[chainId]
+        )
+        communityData.allChainData[index].contractAddress = updated.contractAddress
+        communityData.allChainData[index].stakeToken = updated.stakeToken
         /* await fetch(
           `${process.env.NEXT_PUBLIC_API}/community/${communityData?.id}`,
           {
             method: "patch",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contractAddress, stakeToken }),
+            body: JSON.stringify({ chainData, communityData.allChainData }),
           }
         ) */
       },
