@@ -1,11 +1,12 @@
 import { Box, Button, HStack, Tooltip, useColorMode } from "@chakra-ui/react"
+import { useWeb3React } from "@web3-react/core"
 import useCommunityData from "components/admin/hooks/useCommunityData"
 import useSpaceFactory from "components/admin/hooks/useSpaceFactory"
+import { Chains, SpaceFactory } from "connectors"
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { CheckCircle } from "phosphor-react"
 import { useEffect, useMemo, useRef, useState } from "react"
-import useFactoryMachine from "../hooks/useFactoryMachine"
+import DeploySpace from "./components/DeploySpace"
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
@@ -76,13 +77,14 @@ const Pagination = ({
 }: PaginationProps): JSX.Element => {
   const router = useRouter()
   const paginationRef = useRef()
+  const { chainId } = useWeb3React()
   const [isSticky, setIsSticky] = useState(false)
   const { colorMode } = useColorMode()
-  const [state, send] = useFactoryMachine()
   const { communityData } = useCommunityData()
   const { contractAddress } = useSpaceFactory(communityData?.chainData.token.address)
   const hasContract =
     typeof contractAddress === "string" && contractAddress !== ZERO_ADDRESS
+  const factoryAvailable = typeof SpaceFactory[Chains[chainId]] === "string"
   const [, , ...currentPath] = router.asPath.split("/")
   const isCommunityAdminPage =
     currentPath.includes("admin") && currentPath.includes("community")
@@ -146,52 +148,29 @@ const Pagination = ({
       </Tooltip>
 
       <HStack spacing={3} marginInlineStart="auto!important">
-        {!hasContract &&
+        {factoryAvailable &&
+          // !hasContract &&
           isCommunityAdminPage &&
-          hasStakingLevel &&
-          (() => {
-            switch (state.value) {
-              case "idle":
-              case "error":
-                return (
-                  <Button
-                    variant="solid"
-                    colorScheme="primary"
-                    size="md"
-                    onClick={() => send("DEPLOY")}
-                  >
-                    Deploy contract
-                  </Button>
-                )
-              case "success":
-                return (
-                  <Button
-                    isDisabled
-                    variant="outline"
-                    colorScheme="primary"
-                    size="md"
-                    rightIcon={<CheckCircle />}
-                  >
-                    Deployed
-                  </Button>
-                )
-              default:
-                return (
-                  <Button isLoading variant="solid" colorScheme="primary" size="md">
-                    Deploying
-                  </Button>
-                )
-            }
-          })()}
+          hasStakingLevel && <DeploySpace />}
 
         {isAdminPage && onSaveClick && (
           <Tooltip
-            label="First you have to deploy a contract for the staking level(s)"
-            isDisabled={!hasStakingLevel || !!hasContract}
+            label={
+              !factoryAvailable && hasStakingLevel
+                ? "Staking levels are not supported on this network"
+                : "First you have to deploy a contract for the staking level(s)"
+            }
+            isDisabled={
+              (factoryAvailable || !hasStakingLevel) &&
+              (!factoryAvailable || !hasStakingLevel || hasContract)
+            }
           >
             <Box>
               <Button
-                isDisabled={hasStakingLevel && !hasContract}
+                isDisabled={
+                  (!factoryAvailable && hasStakingLevel) ||
+                  (factoryAvailable && hasStakingLevel && !hasContract)
+                }
                 isLoading={saveBtnLoading}
                 variant="solid"
                 colorScheme="primary"
