@@ -1,6 +1,7 @@
-import { Web3Provider } from "@ethersproject/providers"
+import { Contract } from "@ethersproject/contracts"
+import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers"
 import { useWeb3React } from "@web3-react/core"
-import { Chains, SpaceFactory } from "connectors"
+import { Chains, RPC, SpaceFactory } from "connectors"
 import AGORA_SPACE_API from "constants/agoraSpaceABI.json"
 import ERC20_ABI from "constants/erc20abi.json"
 import SPACE_FACTORY_ABI from "constants/spacefactoryABI.json"
@@ -13,23 +14,63 @@ const getContractAddress = (
   spaces: (address: string) => Promise<string>
 ) => spaces(address)
 
-const useSpaceFactory = (tokenAddress: string) => {
-  const { chainId } = useWeb3React<Web3Provider>()
+const useSpaceFactory = (inputTokenAddress: string) => {
+  const { chainId, library, account } = useWeb3React<Web3Provider>()
   const factoryAddress = SpaceFactory[Chains[chainId]]
   const contract = useContract(factoryAddress, SPACE_FACTORY_ABI, true)
-  const spaces = contract?.spaces
-  const createSpace = contract?.createSpace
-  const setApproval = contract?.setApproval
-  const approvedAddresses = contract?.approvedAddresses
+
+  const approvedAddresses = (tokenOwner: string, tokenAddress: string) =>
+    contract?.approvedAddresses(tokenOwner, tokenAddress)
+  const spaces = (tokenAddress: string) => contract?.spaces(tokenAddress)
+
+  // Wrapping these methods for custom errors
+  const createSpace = (tokenAddress: string) =>
+    callMethod("createSpace", tokenAddress)
+  const setApproval = (
+    tokenOwner: string,
+    tokenAddress: string,
+    approvalState = true
+  ) => callMethod("setApproval", tokenOwner, tokenAddress, approvalState)
+
+  // Method call wrapper to be able to use custom errors
+  // Custom errors don't seem to be decoded by the provider, it just raises an "Internal JSON-RPC error", that's why this is needed
+  const callMethod = async (
+    methodName: string,
+    ...args: Array<string | boolean> // These methods only recieve these types
+  ) => {
+    if (!contract || !contract[methodName]) return null
+    console.log(`${methodName}(${[...args].join(", ")})`)
+    try {
+      const tx = await contract[methodName](...args)
+      await tx.wait()
+      return tx
+    } catch {
+      const provider = new JsonRpcProvider(RPC[Chains[chainId]].rpcUrls[0])
+      const contractWithRPCProvider = new Contract(
+        SpaceFactory[Chains[chainId]],
+        SPACE_FACTORY_ABI,
+        provider
+      )
+      // Throws a different error with errorName property
+      await contractWithRPCProvider.callStatic[methodName](...args, {
+        from: account,
+        gasPrice: 100,
+        gasLimit: 1000000,
+      }).catch((error) => {
+        console.error(error.transaction)
+        throw error
+      })
+    }
+  }
 
   const shouldFetchTokenAddress =
-    typeof tokenAddress === "string" &&
-    tokenAddress.length > 0 &&
+    typeof inputTokenAddress === "string" &&
+    inputTokenAddress.length > 0 &&
     typeof spaces === "function"
 
   const { data: contractAddress, mutate: mutateContractAddress } = useSWR(
     shouldFetchTokenAddress
-      ? [`${tokenAddress}_staking_data`, tokenAddress, spaces]
+      ? [`${inputTokenAddress}_staking_data`, inputTokenAddress, spaces]
       : null,
     getContractAddress
   )

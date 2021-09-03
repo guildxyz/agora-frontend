@@ -1,9 +1,9 @@
 import { useWeb3React } from "@web3-react/core"
 import { useMachine } from "@xstate/react"
 import useCommunityData from "components/admin/hooks/useCommunityData"
+import useShowErrorToast from "components/admin/hooks/useShowErrorToast"
 import useSpaceFactory from "components/admin/hooks/useSpaceFactory"
 import { Chains } from "connectors"
-import { useEffect } from "react"
 import { Machine } from "temporaryData/types"
 import { createMachine } from "xstate"
 
@@ -48,7 +48,7 @@ const factoryMachine = createMachine({
     },
     error: {
       // TODO: Add error toasts
-      entry: () => console.log("Entered state: error"),
+      entry: "showErrorToast",
       on: {
         DEPLOY: "createSpace",
       },
@@ -67,8 +67,9 @@ const factoryMachine = createMachine({
 const useFactoryMachine = (): Machine<any> => {
   const { account, chainId } = useWeb3React()
   const { communityData } = useCommunityData()
-  const tokenAddress = communityData?.chainData.token.address
-  const { contractAddress, createSpace, approvedAddresses, updateData, stakeToken } =
+  const showErrorToast = useShowErrorToast()
+  const tokenAddress = communityData.chainData.token.address // No conditional chaining, DeploySpace only renders if this data is available
+  const { createSpace, approvedAddresses, updateData } =
     useSpaceFactory(tokenAddress)
 
   const [state, send] = useMachine(factoryMachine, {
@@ -91,15 +92,16 @@ const useFactoryMachine = (): Machine<any> => {
           }),
         }),
       createSpace: async () => {
-        const tx = await createSpace(tokenAddress)
-        await tx.wait()
-        const updated = await updateData()
-        const index = communityData.allChainData.findIndex(
-          (chainData) => chainData.name === Chains[chainId]
-        )
-        communityData.allChainData[index].contractAddress = updated.contractAddress
-        communityData.allChainData[index].stakeToken = updated.stakeToken
-        /* await fetch(
+        try {
+          const tx = await createSpace(tokenAddress)
+          await tx.wait()
+          const updated = await updateData()
+          const index = communityData.allChainData.findIndex(
+            (chainData) => chainData.name === Chains[chainId]
+          )
+          communityData.allChainData[index].contractAddress = updated.contractAddress
+          communityData.allChainData[index].stakeToken = updated.stakeToken
+          /* await fetch(
           `${process.env.NEXT_PUBLIC_API}/community/${communityData?.id}`,
           {
             method: "patch",
@@ -107,15 +109,35 @@ const useFactoryMachine = (): Machine<any> => {
             body: JSON.stringify({ chainData, communityData.allChainData }),
           }
         ) */
+        } catch (error) {
+          console.error(error)
+          if (typeof error.errorName !== "string")
+            throw new Error(error.message || "An unknown error occured")
+
+          switch (error.errorName) {
+            case "Unauthorized":
+              throw new Error("You are not authorized to create this space")
+            case "AlreadyExists":
+              throw new Error("A space already exists for this token")
+            default:
+              throw new Error(error.message || "An unknown error occured")
+          }
+        }
+      },
+    },
+    actions: {
+      showErrorToast: (_context, event) => {
+        console.log(event.data)
+        showErrorToast(event.data.message)
       },
     },
   })
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (typeof contractAddress === "string" && contractAddress !== ZERO_ADDRESS)
       send("HAS_CONTRACT")
     else send("RESET")
-  }, [contractAddress, send])
+  }, [contractAddress, send]) */
 
   return [state, send]
 }
