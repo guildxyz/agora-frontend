@@ -1,4 +1,5 @@
 import { Icon, Stack, Text } from "@chakra-ui/react"
+import { useWeb3React } from "@web3-react/core"
 import Card from "components/common/Card"
 import Layout from "components/common/Layout"
 import ActionCard from "components/[community]/common/ActionCard"
@@ -12,51 +13,59 @@ type Props = {
   communityData: Community
 }
 
-const CommunityPage = ({ communityData }: Props): JSX.Element => (
-  <>
-    <Head>
-      <meta
-        name="description"
-        content={communityData.description || communityData.name}
-      />
-      <meta
-        property="og:description"
-        content={communityData.description || communityData.name}
-      />
-    </Head>
-    <CommunityProvider data={communityData}>
-      <Layout
-        title={communityData.name}
-        imageUrl={`${
-          communityData.imageUrl.includes("assets.coingecko.com")
-            ? communityData.imageUrl.replace("small", "large")
-            : communityData.imageUrl
-        }`}
-      >
-        <Stack spacing={{ base: 7, xl: 9 }}>
-          <Pagination />
-          <Stack spacing={{ base: 7 }}>
-            <ActionCard
-              title="About"
-              description={communityData.description || "No description"}
+const CommunityPage = ({ communityData }: Props): JSX.Element => {
+  const { account } = useWeb3React()
+
+  return (
+    <>
+      <Head>
+        <meta
+          name="description"
+          content={communityData.description || communityData.name}
+        />
+        <meta
+          property="og:description"
+          content={communityData.description || communityData.name}
+        />
+      </Head>
+      <CommunityProvider data={communityData}>
+        <Layout
+          title={communityData.name}
+          imageUrl={`${
+            communityData.imageUrl.includes("assets.coingecko.com")
+              ? communityData.imageUrl.replace("small", "large")
+              : communityData.imageUrl
+          }`}
+        >
+          <Stack spacing={{ base: 7, xl: 9 }}>
+            <Pagination
+              editBtnUrl={
+                account?.toLowerCase() === communityData.owner?.address && `admin`
+              }
             />
-            <Card p="6" isFullWidthOnMobile>
-              <Text
-                fontWeight="medium"
-                colorScheme="gray"
-                display="flex"
-                alignItems="center"
-              >
-                <Icon as={Info} mr="2" />
-                More info coming soon
-              </Text>
-            </Card>
+            <Stack spacing={{ base: 7 }}>
+              <ActionCard
+                title="About"
+                description={communityData.description || "No description"}
+              />
+              <Card p="6" isFullWidthOnMobile>
+                <Text
+                  fontWeight="medium"
+                  colorScheme="gray"
+                  display="flex"
+                  alignItems="center"
+                >
+                  <Icon as={Info} mr="4" />
+                  More info coming soon
+                </Text>
+              </Card>
+            </Stack>
           </Stack>
-        </Stack>
-      </Layout>
-    </CommunityProvider>
-  </>
-)
+        </Layout>
+      </CommunityProvider>
+    </>
+  )
+}
 
 export {
   getStaticPaths,

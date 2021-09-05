@@ -5,9 +5,11 @@ import {
   Stack,
   useColorMode,
 } from "@chakra-ui/react"
+import { useWeb3React } from "@web3-react/core"
 import Layout from "components/common/Layout"
 import CategorySection from "components/index/CategorySection"
 import CommunityCard from "components/index/CommunityCard"
+import IntegrateCommunityCard from "components/index/IntegrateCommunityCard"
 import { GetStaticProps } from "next"
 import Head from "next/head"
 import { MagnifyingGlass } from "phosphor-react"
@@ -31,6 +33,7 @@ type Props = {
  * they belong to.
  */
 const AllCommunities = ({ communities }: Props): JSX.Element => {
+  const { account } = useWeb3React()
   const refAccess = useRef<HTMLDivElement>(null)
   const [searchInput, setSearchInput] = useState("")
   const inputTimeout = useRef(null)
@@ -85,7 +88,9 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
               titleAs="h2"
               placeholder="You don't have access to any communities"
               ref={refAccess}
-            />
+            >
+              {account && <IntegrateCommunityCard />}
+            </CategorySection>
             <CategorySection
               title="Other tokenized communities"
               titleAs="h2"
@@ -114,7 +119,10 @@ export const getStaticProps: GetStaticProps = async () => {
           response.ok ? response.json() : communitiesJSON
         )
 
-  return { props: { communities: [...communities, ...tokens] } }
+  return {
+    props: { communities: [...communities, ...tokens] },
+    revalidate: 10,
+  }
 }
 
 export default AllCommunities

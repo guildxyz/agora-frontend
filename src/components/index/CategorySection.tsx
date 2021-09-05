@@ -6,7 +6,7 @@ type Props = {
   title: string
   placeholder: string
   titleAs?: any
-  children?: JSX.Element[]
+  children?: JSX.Element[] | JSX.Element
 }
 
 const CategorySection = forwardRef(
@@ -38,7 +38,7 @@ const CategorySection = forwardRef(
           {title}
         </Heading>
 
-        {isEmpty && !children?.length && (
+        {isEmpty && Array.isArray(children) && !children?.length && (
           <Text>{!account ? "Wallet not connected" : placeholder}</Text>
         )}
 
