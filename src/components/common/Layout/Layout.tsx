@@ -36,8 +36,8 @@ const Layout = ({
   return (
     <>
       <Head>
-        <title>{title}</title>
-        <meta property="og:title" content={title} />
+        <title>{`${title} | Agora`}</title>
+        <meta property="og:title" content={`${title} | Agora`} />
         {description && (
           <>
             <meta name="description" content={description} />
