@@ -44,7 +44,7 @@ const Appearance = ({ onColorChange }: Props): JSX.Element => {
               required: "This field is required.",
               pattern: {
                 value: /^#[0-9a-f]{3}([0-9a-f]{3})?$/i,
-                message: "Please input a valid hexadecimal color code.",
+                message: "Please enter a valid hexadecimal color code.",
               },
             })}
             isInvalid={errors.themeColor}

@@ -48,7 +48,7 @@ const membershipsData: { [key: string]: MembershipData } = {
 }
 
 type Props = {
-  index: number // index is (and should be) only used for managing the form state / removing a level form the form!
+  index: number // index is (and should be) only used for managing the form state / removing a level from the form!
   onRemove: (levelId: number | null) => void
 }
 
