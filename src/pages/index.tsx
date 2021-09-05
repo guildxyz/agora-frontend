@@ -11,7 +11,6 @@ import CategorySection from "components/index/CategorySection"
 import CommunityCard from "components/index/CommunityCard"
 import IntegrateCommunityCard from "components/index/IntegrateCommunityCard"
 import { GetStaticProps } from "next"
-import Head from "next/head"
 import { MagnifyingGlass } from "phosphor-react"
 import React, { useMemo, useRef, useState } from "react"
 import type { Community } from "temporaryData/communities"
@@ -53,59 +52,50 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
   }
 
   return (
-    <>
-      <Head>
-        <meta
-          name="description"
-          content="Find all existing social tokens in the explorer from your favourite communities."
-        />
-        <meta
-          property="og:description"
-          content="Find all existing social tokens in the explorer from your favourite communities."
-        />
-      </Head>
-      <Layout title="Social token explorer">
-        <>
-          <InputGroup size="lg" mb={16} maxW="600px">
-            <InputLeftElement>
-              <MagnifyingGlass color="#858585" size={20} />
-            </InputLeftElement>
-            <Input
-              placeholder="Search for communities, DAOs or creators"
-              overflow="hidden"
-              whiteSpace="nowrap"
-              textOverflow="ellipsis"
-              colorScheme="primary"
-              borderRadius="15px"
-              bg={colorMode === "light" ? "white" : "gray.900"}
-              onChange={handleOnChange}
-            />
-          </InputGroup>
+    <Layout
+      title="Social token explorer"
+      description="Find all existing social tokens in the explorer from your favourite communities."
+    >
+      <>
+        <InputGroup size="lg" mb={16} maxW="600px">
+          <InputLeftElement>
+            <MagnifyingGlass color="#858585" size={20} />
+          </InputLeftElement>
+          <Input
+            placeholder="Search for communities, DAOs or creators"
+            overflow="hidden"
+            whiteSpace="nowrap"
+            textOverflow="ellipsis"
+            colorScheme="primary"
+            borderRadius="15px"
+            bg={colorMode === "light" ? "white" : "gray.900"}
+            onChange={handleOnChange}
+          />
+        </InputGroup>
 
-          <Stack spacing={12}>
-            <CategorySection
-              title="Your communities"
-              placeholder="You don't have access to any communities"
-              ref={refAccess}
-            >
-              {account && <IntegrateCommunityCard />}
-            </CategorySection>
-            <CategorySection
-              title="Other tokenized communities"
-              placeholder="There aren't any other communities"
-            >
-              {filteredCommunities.map((community) => (
-                <CommunityCard
-                  community={community}
-                  key={community.id}
-                  refAccess={refAccess}
-                />
-              ))}
-            </CategorySection>
-          </Stack>
-        </>
-      </Layout>
-    </>
+        <Stack spacing={12}>
+          <CategorySection
+            title="Your communities"
+            placeholder="You don't have access to any communities"
+            ref={refAccess}
+          >
+            {account && <IntegrateCommunityCard />}
+          </CategorySection>
+          <CategorySection
+            title="Other tokenized communities"
+            placeholder="There aren't any other communities"
+          >
+            {filteredCommunities.map((community) => (
+              <CommunityCard
+                community={community}
+                key={community.id}
+                refAccess={refAccess}
+              />
+            ))}
+          </CategorySection>
+        </Stack>
+      </>
+    </Layout>
   )
 }
 

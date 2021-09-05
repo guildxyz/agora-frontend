@@ -16,11 +16,13 @@ import LogoWithMenu from "./components/LogoWithMenu"
 
 type Props = {
   title: string
+  description?: string
   imageUrl?: string
 }
 
 const Layout = ({
   title,
+  description,
   imageUrl = null,
   children,
 }: PropsWithChildren<Props>): JSX.Element => {
@@ -36,6 +38,12 @@ const Layout = ({
       <Head>
         <title>{title}</title>
         <meta property="og:title" content={title} />
+        {description && (
+          <>
+            <meta name="description" content={description} />
+            <meta property="og:description" content={description} />
+          </>
+        )}
         {/* <link rel="icon" href="/favicon.ico" /> */}
       </Head>
       <Box
