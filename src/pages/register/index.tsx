@@ -42,28 +42,26 @@ const Page = (): JSX.Element => {
   }
 
   return (
-    <>
-      <FormProvider {...methods}>
-        <Box sx={generatedColors}>
-          <Layout title="Integrate token">
-            <Stack spacing={{ base: 7, xl: 9 }}>
-              <Pagination
-                isAdminPage
-                isCommunityTabDisabled
-                onSaveClick={methods.handleSubmit(onSubmit)}
-                saveBtnLoading={loading}
+    <FormProvider {...methods}>
+      <Box sx={generatedColors}>
+        <Layout title="Integrate token">
+          <Stack spacing={{ base: 7, xl: 9 }}>
+            <Pagination
+              isAdminPage
+              isCommunityTabDisabled
+              onSaveClick={methods.handleSubmit(onSubmit)}
+              saveBtnLoading={loading}
+            />
+            <VStack spacing={12}>
+              <Details />
+              <Appearance
+                onColorChange={(newColor: string) => setColorCode(newColor)}
               />
-              <VStack spacing={12}>
-                <Details />
-                <Appearance
-                  onColorChange={(newColor: string) => setColorCode(newColor)}
-                />
-              </VStack>
-            </Stack>
-          </Layout>
-        </Box>
-      </FormProvider>
-    </>
+            </VStack>
+          </Stack>
+        </Layout>
+      </Box>
+    </FormProvider>
   )
 }
 
