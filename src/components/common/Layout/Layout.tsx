@@ -44,7 +44,7 @@ const Layout = ({
             <meta property="og:description" content={description} />
           </>
         )}
-        {/* <link rel="icon" href="/favicon.ico" /> */}
+        {imageUrl && <link rel="icon" href={imageUrl} />}
       </Head>
       <Box
         bgColor={
