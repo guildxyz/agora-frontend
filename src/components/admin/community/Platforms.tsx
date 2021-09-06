@@ -65,7 +65,10 @@ const Platforms = ({
   const discordServerIdChange = useWatch({ name: "discordServerId" })
 
   const onServerIdChange = (serverId) => {
-    if (errors.discordServerId || discordError?.type === "server") return
+    if (errors.discordServerId || discordError?.type === "server") {
+      setDiscordChannels(null)
+      return
+    }
 
     setChannelSelectLoading(true)
     fetch(`${process.env.NEXT_PUBLIC_API}/community/discordChannels/${serverId}`)
