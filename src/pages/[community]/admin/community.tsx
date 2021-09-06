@@ -6,13 +6,14 @@ import Platforms from "components/admin/community/Platforms"
 import useCommunityData from "components/admin/hooks/useCommunityData"
 import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
+import useSubmitPlatformsData from "components/admin/hooks/useSubmitPlatformsData"
 import convertMsToMonths from "components/admin/utils/convertMsToMonths"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import { AnimatePresence, motion } from "framer-motion"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
-import React, { useEffect } from "react"
+import React, { useEffect, useMemo } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { RequirementType } from "temporaryData/types"
 
@@ -52,9 +53,27 @@ const AdminCommunityPage = (): JSX.Element => {
   )
   const methods = useForm({ mode: "all" })
 
+  const [discordDirty, telegramDirty, levelsDirty] = useMemo(
+    () => [
+      ["isDCEnabled", "discordServerId", "inviteChannel"].some(
+        (field) => typeof methods.formState.dirtyFields[field] !== "undefined"
+      ),
+      typeof methods.formState.dirtyFields.isTGEnabled !== "undefined",
+      typeof methods.formState.dirtyFields.levels !== "undefined",
+    ],
+    [methods.formState]
+  )
+
   const HTTPMethod = communityData?.levels?.length > 0 ? "PATCH" : "POST"
 
-  const { loading, onSubmit } = useSubmitLevelsData(HTTPMethod)
+  const { loading: levelsLoading, onSubmit: onLevelsSubmit } =
+    useSubmitLevelsData(HTTPMethod)
+  const { loading: platformsLoading, onSubmit: onPlatformsSubmit } =
+    useSubmitPlatformsData(
+      telegramDirty,
+      discordDirty,
+      levelsDirty ? methods.handleSubmit(onLevelsSubmit) : undefined
+    )
 
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
@@ -130,14 +149,19 @@ const AdminCommunityPage = (): JSX.Element => {
                   <Pagination
                     doneBtnUrl="community"
                     isAdminPage
-                    saveBtnLoading={loading}
+                    saveBtnLoading={levelsLoading || platformsLoading}
                     onSaveClick={
-                      methods.formState.isDirty && methods.handleSubmit(onSubmit)
+                      (discordDirty || telegramDirty || levelsDirty) &&
+                      methods.handleSubmit(
+                        discordDirty || telegramDirty
+                          ? onPlatformsSubmit
+                          : onLevelsSubmit
+                      )
                     }
                   />
                   <VStack pb={{ base: 16, xl: 0 }} spacing={12}>
                     <Platforms
-                      comingSoon={communityData?.levels?.length > 0}
+                      // comingSoon={communityData?.levels?.length > 0}
                       activePlatforms={communityData.communityPlatforms.filter(
                         (platform) => platform.active
                       )}
