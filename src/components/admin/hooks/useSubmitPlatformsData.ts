@@ -19,7 +19,11 @@ const useSubmitPlatformsData = (
         fetch(
           `${process.env.NEXT_PUBLIC_API}/community/${communityData?.id}/platform`,
           {
-            method: "patch",
+            method: communityData?.communityPlatforms?.some(
+              (platform) => platform.name === "TELEGRAM"
+            )
+              ? "PATCH"
+              : "POST",
             headers: {
               "Content-Type": "application/json",
             },
@@ -37,7 +41,11 @@ const useSubmitPlatformsData = (
         fetch(
           `${process.env.NEXT_PUBLIC_API}/community/${communityData?.id}/platform`,
           {
-            method: "patch",
+            method: communityData?.communityPlatforms?.some(
+              (platform) => platform.name === "DISCORD"
+            )
+              ? "PATCH"
+              : "POST",
             headers: {
               "Content-Type": "application/json",
             },
