@@ -68,8 +68,8 @@ const useSubmitPlatformsData = (
 
   return useSubmitMachine<FormData>(
     typeof callback === "undefined"
-      ? null
-      : "Platform data updated! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
+      ? "Platform data updated! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds."
+      : null,
     fetchService,
     redirectAction
   )
