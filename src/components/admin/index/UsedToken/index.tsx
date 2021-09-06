@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   HStack,
   Input,
@@ -14,7 +15,6 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import ValidationError from "components/admin/common/ValidationError"
 import slugify from "components/admin/utils/slugify"
 import NetworkChangeModal from "components/common/Layout/components/Account/components/NetworkModal/NetworkModal"
 import { Chains, RPC } from "connectors"
@@ -64,7 +64,7 @@ const UsedToken = (): JSX.Element => {
 
   return (
     <>
-      <FormControl isRequired>
+      <FormControl isRequired isInvalid={errors.tokenAddress}>
         <FormLabel>Token address</FormLabel>
         <Stack direction={{ base: "column", md: "row" }} mt={4} spacing={2}>
           <Button
@@ -118,7 +118,7 @@ const UsedToken = (): JSX.Element => {
             )}
           </InputGroup>
         </Stack>
-        <ValidationError fieldName="tokenAddress" />
+        <FormErrorMessage>{errors.tokenAddress?.message}</FormErrorMessage>
       </FormControl>
 
       <NetworkChangeModal isOpen={isOpen} onClose={onClose} />

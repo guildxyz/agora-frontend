@@ -3,6 +3,7 @@ import {
   Button,
   Divider,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Grid,
   GridItem,
@@ -147,18 +148,22 @@ const Platforms = ({
           <GridItem>
             {isDCEnabledChange ? (
               <VStack spacing={4} alignItems="start">
-                <FormControl isDisabled={comingSoon}>
+                <FormControl
+                  isDisabled={comingSoon}
+                  isInvalid={errors.discordServerId}
+                >
                   <InputGroup>
                     <InputLeftAddon>Server ID</InputLeftAddon>
                     <Input
                       width={64}
                       {...register("discordServerId", {
-                        required: isDCEnabledChange,
-                        minLength: 17,
+                        required: isDCEnabledChange && "This field is required.",
                       })}
-                      isInvalid={errors.discordServerId}
                     />
                   </InputGroup>
+                  <FormErrorMessage>
+                    {errors.discordServerId?.message}
+                  </FormErrorMessage>
                 </FormControl>
                 {discordError && discordError.type === "server" && (
                   <HStack spacing={4} justifyItems="center">

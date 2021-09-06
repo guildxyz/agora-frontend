@@ -1,8 +1,15 @@
-import { Box, HStack, Input, Text, VStack } from "@chakra-ui/react"
+import {
+  Box,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  HStack,
+  Input,
+  VStack,
+} from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
 import { useEffect } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
-import ValidationError from "../common/ValidationError"
 
 type Props = {
   onColorChange: (color: string) => void
@@ -27,30 +34,31 @@ const Appearance = ({ onColorChange }: Props): JSX.Element => {
       cardType
     >
       <VStack spacing={2} alignItems="start">
-        <Text>Main color</Text>
-        <HStack spacing={4}>
-          <Box
-            w={10}
-            h={10}
-            minW={10}
-            rounded="full"
-            transition="background 0.5s ease"
-            bgColor={!!pickedColor && !errors.themeColor ? pickedColor : "#e4e4e7"}
-          />
-          <Input
-            maxWidth={60}
-            placeholder="#4F46E5"
-            {...register("themeColor", {
-              required: "This field is required.",
-              pattern: {
-                value: /^#[0-9a-f]{3}([0-9a-f]{3})?$/i,
-                message: "Please enter a valid hexadecimal color code.",
-              },
-            })}
-            isInvalid={errors.themeColor}
-          />
-        </HStack>
-        <ValidationError fieldName="themeColor" />
+        <FormControl isInvalid={errors.themeColor}>
+          <FormLabel>Main color</FormLabel>
+          <HStack spacing={4}>
+            <Box
+              w={10}
+              h={10}
+              minW={10}
+              rounded="full"
+              transition="background 0.5s ease"
+              bgColor={!!pickedColor && !errors.themeColor ? pickedColor : "#e4e4e7"}
+            />
+            <Input
+              maxWidth={60}
+              placeholder="#4F46E5"
+              {...register("themeColor", {
+                pattern: {
+                  value: /^#[0-9a-f]{3}([0-9a-f]{3})?$/i,
+                  message: "Please enter a valid hexadecimal color code.",
+                },
+              })}
+              isInvalid={errors.themeColor}
+            />
+          </HStack>
+          <FormErrorMessage>{errors.themeColor?.message}</FormErrorMessage>
+        </FormControl>
       </VStack>
     </Section>
   )
