@@ -1,6 +1,6 @@
 import { Box, HStack, Tooltip, useColorMode } from "@chakra-ui/react"
 import { PropsWithChildren, useEffect, useRef, useState } from "react"
-import LinkButton from "./LinkButton"
+import LinkButton from "./components/LinkButton"
 
 type PaginationProps = {
   isAdminPage?: boolean
