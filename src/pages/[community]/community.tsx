@@ -5,6 +5,7 @@ import Layout from "components/common/Layout"
 import Link from "components/common/Link"
 import { CommunityProvider } from "components/[community]/common/Context"
 import Pagination from "components/[community]/common/Pagination"
+import LinkButton from "components/[community]/common/Pagination/components/LinkButton"
 import Levels from "components/[community]/community/Levels"
 import Platforms from "components/[community]/community/Platforms"
 import Staked from "components/[community]/community/Staked"
@@ -26,12 +27,17 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
         imageUrl={communityData.imageUrl}
       >
         <Stack spacing={{ base: 7, xl: 9 }}>
-          <Pagination
-            editBtnUrl={
-              account?.toLowerCase() === communityData.owner?.address &&
-              `admin/community`
-            }
-          />
+          <Pagination>
+            <LinkButton
+              href={
+                account?.toLowerCase() === communityData.owner?.address &&
+                `admin/community`
+              }
+              variant="solid"
+            >
+              Edit
+            </LinkButton>
+          </Pagination>
           {communityData.levels.length ? (
             <>
               <SimpleGrid

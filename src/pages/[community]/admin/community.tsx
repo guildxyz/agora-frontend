@@ -1,4 +1,4 @@
-import { Box, Fade, Spinner, Stack, VStack } from "@chakra-ui/react"
+import { Box, Button, Fade, Spinner, Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
 import Levels from "components/admin/community/Levels"
@@ -9,6 +9,7 @@ import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
 import convertMsToMonths from "components/admin/utils/convertMsToMonths"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
+import LinkButton from "components/[community]/common/Pagination/components/LinkButton"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import React, { useEffect } from "react"
@@ -121,14 +122,23 @@ const AdminCommunityPage = (): JSX.Element => {
           >
             {account && isOwner && (
               <Stack spacing={{ base: 7, xl: 9 }}>
-                <Pagination
-                  doneBtnUrl="community"
-                  isAdminPage
-                  saveBtnLoading={loading}
-                  onSaveClick={
-                    methods.formState.isDirty && methods.handleSubmit(onSubmit)
-                  }
-                />
+                <Pagination isAdminPage>
+                  {methods.formState.isDirty ? (
+                    <Button
+                      isLoading={loading}
+                      variant="solid"
+                      colorScheme="primary"
+                      size="md"
+                      onClick={methods.handleSubmit(onSubmit)}
+                    >
+                      Save
+                    </Button>
+                  ) : (
+                    <LinkButton variant="solid" href="community">
+                      Done
+                    </LinkButton>
+                  )}
+                </Pagination>
                 <VStack pb={{ base: 16, xl: 0 }} spacing={12}>
                   <Platforms
                     comingSoon={communityData?.levels?.length > 0}

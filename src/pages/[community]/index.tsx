@@ -5,6 +5,7 @@ import Layout from "components/common/Layout"
 import ActionCard from "components/[community]/common/ActionCard"
 import { CommunityProvider } from "components/[community]/common/Context"
 import Pagination from "components/[community]/common/Pagination"
+import LinkButton from "components/[community]/common/Pagination/components/LinkButton"
 import { Info } from "phosphor-react"
 import type { Community } from "temporaryData/communities"
 
@@ -23,11 +24,16 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
         imageUrl={communityData.imageUrl}
       >
         <Stack spacing={{ base: 7, xl: 9 }}>
-          <Pagination
-            editBtnUrl={
-              account?.toLowerCase() === communityData.owner?.address && `admin`
-            }
-          />
+          <Pagination>
+            <LinkButton
+              href={
+                account?.toLowerCase() === communityData.owner?.address && `admin`
+              }
+              variant="solid"
+            >
+              Edit
+            </LinkButton>
+          </Pagination>
           <Stack spacing={{ base: 7 }}>
             <ActionCard
               title="About"

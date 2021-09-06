@@ -1,4 +1,4 @@
-import { Box, Fade, Spinner, Stack, VStack } from "@chakra-ui/react"
+import { Box, Button, Fade, Spinner, Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
 import useCommunityData from "components/admin/hooks/useCommunityData"
@@ -8,6 +8,7 @@ import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
+import LinkButton from "components/[community]/common/Pagination/components/LinkButton"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import { useEffect, useState } from "react"
@@ -78,13 +79,24 @@ const AdminHomePage = (): JSX.Element => {
           >
             {account && isOwner && (
               <Stack spacing={{ base: 7, xl: 9 }}>
-                <Pagination
-                  isAdminPage
-                  saveBtnLoading={loading}
-                  onSaveClick={
-                    methods.formState.isDirty && methods.handleSubmit(onSubmit)
-                  }
-                />
+                <Pagination isAdminPage>
+                  {methods.formState.isDirty ? (
+                    <Button
+                      isLoading={loading}
+                      variant="solid"
+                      colorScheme="primary"
+                      size="md"
+                      onClick={methods.handleSubmit(onSubmit)}
+                    >
+                      Save
+                    </Button>
+                  ) : (
+                    <LinkButton variant="solid" href="/">
+                      Done
+                    </LinkButton>
+                  )}
+                </Pagination>
+
                 <VStack spacing={12}>
                   <Details isAdminPage />
                   <Appearance
