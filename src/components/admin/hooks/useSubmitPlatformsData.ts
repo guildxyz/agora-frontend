@@ -52,7 +52,7 @@ const useSubmitPlatformsData = (
             body: JSON.stringify({
               addressSignedMessage: data.addressSignedMessage,
               platform: "DISCORD",
-              active: data.isTGEnabled,
+              active: data.isDCEnabled,
               platformId: data.discordServerId,
               inviteChannel: data.inviteChannel,
             }),
@@ -63,9 +63,17 @@ const useSubmitPlatformsData = (
     return Promise.all(promises)
   }
 
-  const redirectAction = async () => callback()
+  const redirectAction = async () => {
+    if (typeof callback === "function") callback()
+  }
 
-  return useSubmitMachine<FormData>(null, fetchService, redirectAction)
+  return useSubmitMachine<FormData>(
+    typeof callback === "undefined"
+      ? null
+      : "Platform data updated! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
+    fetchService,
+    redirectAction
+  )
 }
 
 export default useSubmitPlatformsData
