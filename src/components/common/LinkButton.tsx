@@ -18,19 +18,24 @@ const LinkButton = ({
   variant,
   children,
   ...chakraProps
-}: Props): JSX.Element => (
-  <Link
-    href={href}
-    replace={replace}
-    scroll={scroll}
-    shallow={shallow}
-    prefetch={prefetch}
-    _hover={{ textDecoration: "none" }}
-  >
+}: Props): JSX.Element =>
+  href ? (
+    <Link
+      href={href}
+      replace={replace}
+      scroll={scroll}
+      shallow={shallow}
+      prefetch={prefetch}
+      _hover={{ textDecoration: "none" }}
+    >
+      <Button variant={variant} colorScheme="primary" {...chakraProps}>
+        {children}
+      </Button>
+    </Link>
+  ) : (
     <Button variant={variant} colorScheme="primary" {...chakraProps}>
       {children}
     </Button>
-  </Link>
-)
+  )
 
 export default LinkButton

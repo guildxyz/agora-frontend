@@ -32,7 +32,8 @@ const PageButton = ({
     <LinkButton
       key="href"
       href={
-        isAdminPage ? `/${communityUrl}/admin/${href}` : `/${communityUrl}/${href}`
+        href &&
+        (isAdminPage ? `/${communityUrl}/admin/${href}` : `/${communityUrl}/${href}`)
       }
       variant={variant}
       isActive={isActive}

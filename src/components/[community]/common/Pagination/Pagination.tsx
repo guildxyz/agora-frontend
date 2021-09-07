@@ -66,7 +66,7 @@ const Pagination = ({
         <Box>
           <PageButton
             isAdminPage={isAdminPage}
-            href={!isCommunityTabDisabled ? "community" : "#"}
+            href={!isCommunityTabDisabled && "community"}
             size="md"
             disabled={isCommunityTabDisabled}
           >
