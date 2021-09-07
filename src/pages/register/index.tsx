@@ -49,9 +49,7 @@ const Page = (): JSX.Element => {
             <Pagination isCommunityTabDisabled>
               <Button
                 isLoading={loading}
-                variant="solid"
                 colorScheme="primary"
-                size="md"
                 onClick={methods.handleSubmit(onSubmit)}
               >
                 Save

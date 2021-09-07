@@ -126,9 +126,7 @@ const AdminCommunityPage = (): JSX.Element => {
                   {methods.formState.isDirty ? (
                     <Button
                       isLoading={loading}
-                      variant="solid"
                       colorScheme="primary"
-                      size="md"
                       onClick={methods.handleSubmit(onSubmit)}
                     >
                       Save
