@@ -114,10 +114,10 @@ const Levels = (): JSX.Element => {
       description="Ordered from the most accessible to the most VIP one. Each one gives access to the lower levels too"
     >
       {levelFields.length > 0 ? (
-        <VStack width="full" spacing={8}>
+        // setting the ScaleFade div's width to full here because ScaleFade doesn't accept style props
+        <VStack width="full" spacing={8} sx={{ "> div": { w: "full" } }}>
           {levelFields.map((levelField, index) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <ScaleFade key={index} in={!!levelField}>
+            <ScaleFade key={levelField.dbId} in={!!levelField}>
               <AddLevel
                 index={index}
                 onRemove={(id) => removeLevelHandler(index, id)}
