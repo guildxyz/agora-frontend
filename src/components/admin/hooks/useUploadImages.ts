@@ -32,11 +32,8 @@ const useUploadImages = () => {
     const { id } = await fetch(
       `${process.env.NEXT_PUBLIC_API}/community/urlName/${data.urlName}`
     ).then((response) => response.json())
-    return fetch(`${process.env.NEXT_PUBLIC_API}/community/${id}`, {
+    return fetch(`${process.env.NEXT_PUBLIC_API}/community/${id}/image`, {
       method: "POST",
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
       body: formData,
     })
   }
