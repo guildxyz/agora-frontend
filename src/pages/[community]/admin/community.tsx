@@ -7,6 +7,7 @@ import useCommunityData from "components/admin/hooks/useCommunityData"
 import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
 import useSubmitPlatformsData from "components/admin/hooks/useSubmitPlatformsData"
+import useUploadImages from "components/admin/hooks/useUploadImages"
 import convertMsToMonths from "components/admin/utils/convertMsToMonths"
 import Layout from "components/common/Layout"
 import LinkButton from "components/common/LinkButton"
@@ -16,31 +17,6 @@ import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import { useRouter } from "next/router"
 import React, { useEffect, useMemo } from "react"
 import { FormProvider, useForm } from "react-hook-form"
-import { RequirementType } from "temporaryData/types"
-
-export type Level = {
-  id: number
-  dbId: number
-  name: string
-  image?: File
-  description: string
-  requirementType: RequirementType
-  requirement: number
-  stakeTimelockMs: string | number
-  telegramGroupId: string
-  tokenSymbol?: string
-}
-
-export type FormData = {
-  tokenSymbol: string
-  isTGEnabled: boolean
-  stakeToken: string
-  isDCEnabled: boolean
-  discordServerId: string
-  inviteChannel: string
-  levels: Level[]
-  image?: File
-}
 
 const AdminCommunityPage = (): JSX.Element => {
   const router = useRouter()
@@ -78,13 +54,21 @@ const AdminCommunityPage = (): JSX.Element => {
 
   const HTTPMethod = communityData?.levels?.length > 0 ? "PATCH" : "POST"
 
+  const { onSubmit: uploadImages, loading: uploadLoading } = useUploadImages()
+
   const { loading: levelsLoading, onSubmit: onLevelsSubmit } =
     useSubmitLevelsData(HTTPMethod)
   const { loading: platformsLoading, onSubmit: onPlatformsSubmit } =
     useSubmitPlatformsData(
       telegramDirty,
       discordDirty,
-      levelsDirty ? methods.handleSubmit(onLevelsSubmit) : redirectToCommunityPage
+      levelsDirty
+        ? () =>
+            Promise.all([
+              methods.handleSubmit(onLevelsSubmit)(),
+              methods.handleSubmit(uploadImages)(),
+            ])
+        : redirectToCommunityPage
     )
 
   // Set up the default form field values if we have the necessary data
@@ -156,7 +140,7 @@ const AdminCommunityPage = (): JSX.Element => {
                 <Pagination isAdminPage>
                   {discordDirty || telegramDirty || levelsDirty ? (
                     <Button
-                      isLoading={levelsLoading || platformsLoading}
+                      isLoading={levelsLoading || platformsLoading || uploadLoading}
                       colorScheme="primary"
                       onClick={methods.handleSubmit(
                         discordDirty || telegramDirty
