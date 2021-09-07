@@ -20,7 +20,6 @@ const LinkButton = ({
   ...chakraProps
 }: Props): JSX.Element => (
   <Link
-    passHref
     href={href}
     replace={replace}
     scroll={scroll}
@@ -28,7 +27,7 @@ const LinkButton = ({
     prefetch={prefetch}
     _hover={{ textDecoration: "none" }}
   >
-    <Button as="a" variant={variant} colorScheme="primary" {...chakraProps}>
+    <Button variant={variant} colorScheme="primary" {...chakraProps}>
       {children}
     </Button>
   </Link>

@@ -31,7 +31,6 @@ const PageButton = ({
   return (
     <LinkButton
       key="href"
-      passHref
       href={
         isAdminPage ? `/${communityUrl}/admin/${href}` : `/${communityUrl}/${href}`
       }
