@@ -1,6 +1,6 @@
 import { Box, HStack, Tooltip, useColorMode } from "@chakra-ui/react"
 import { PropsWithChildren, useEffect, useRef, useState } from "react"
-import LinkButton from "./components/LinkButton"
+import PageButton from "./components/PageButton"
 
 type PaginationProps = {
   isAdminPage?: boolean
@@ -54,9 +54,9 @@ const Pagination = ({
         opacity: isSticky ? 1 : 0,
       }}
     >
-      <LinkButton isAdminPage={isAdminPage} href="" size="md">
+      <PageButton isAdminPage={isAdminPage} href="" size="md">
         Info
-      </LinkButton>
+      </PageButton>
 
       <Tooltip
         label="You have to save general info of your token first"
@@ -64,14 +64,14 @@ const Pagination = ({
         isDisabled={!isCommunityTabDisabled}
       >
         <Box>
-          <LinkButton
+          <PageButton
             isAdminPage={isAdminPage}
             href={!isCommunityTabDisabled ? "community" : "#"}
             size="md"
             disabled={isCommunityTabDisabled}
           >
             Community
-          </LinkButton>
+          </PageButton>
         </Box>
       </Tooltip>
 

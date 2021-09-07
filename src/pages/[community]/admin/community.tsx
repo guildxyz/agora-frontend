@@ -8,8 +8,8 @@ import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
 import convertMsToMonths from "components/admin/utils/convertMsToMonths"
 import Layout from "components/common/Layout"
+import LinkButton from "components/common/LinkButton"
 import Pagination from "components/[community]/common/Pagination"
-import LinkButton from "components/[community]/common/Pagination/components/LinkButton"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import React, { useEffect } from "react"
@@ -132,7 +132,10 @@ const AdminCommunityPage = (): JSX.Element => {
                       Save
                     </Button>
                   ) : (
-                    <LinkButton variant="solid" href="community">
+                    <LinkButton
+                      variant="solid"
+                      href={`/${communityData.urlName}/community`}
+                    >
                       Done
                     </LinkButton>
                   )}

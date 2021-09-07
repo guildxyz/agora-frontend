@@ -7,8 +7,8 @@ import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityDat
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
 import Layout from "components/common/Layout"
+import LinkButton from "components/common/LinkButton"
 import Pagination from "components/[community]/common/Pagination"
-import LinkButton from "components/[community]/common/Pagination/components/LinkButton"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import { useEffect, useState } from "react"
@@ -89,7 +89,7 @@ const AdminHomePage = (): JSX.Element => {
                       Save
                     </Button>
                   ) : (
-                    <LinkButton variant="solid" href="/">
+                    <LinkButton variant="solid" href={`/${communityData.urlName}`}>
                       Done
                     </LinkButton>
                   )}

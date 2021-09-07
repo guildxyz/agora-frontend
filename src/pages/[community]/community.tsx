@@ -3,9 +3,9 @@ import { useWeb3React } from "@web3-react/core"
 import Card from "components/common/Card"
 import Layout from "components/common/Layout"
 import Link from "components/common/Link"
+import LinkButton from "components/common/LinkButton"
 import { CommunityProvider } from "components/[community]/common/Context"
 import Pagination from "components/[community]/common/Pagination"
-import LinkButton from "components/[community]/common/Pagination/components/LinkButton"
 import Levels from "components/[community]/community/Levels"
 import Platforms from "components/[community]/community/Platforms"
 import Staked from "components/[community]/community/Staked"
@@ -29,7 +29,10 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
         <Stack spacing={{ base: 7, xl: 9 }}>
           <Pagination>
             {account?.toLowerCase() === communityData.owner?.address && (
-              <LinkButton href="admin/community" variant="solid">
+              <LinkButton
+                href={`/${communityData.urlName}/admin/community`}
+                variant="solid"
+              >
                 Edit
               </LinkButton>
             )}

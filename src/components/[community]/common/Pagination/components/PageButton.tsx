@@ -1,5 +1,5 @@
-import { Button, useColorMode } from "@chakra-ui/react"
-import Link from "next/link"
+import { useColorMode } from "@chakra-ui/react"
+import LinkButton from "components/common/LinkButton"
 import { useRouter } from "next/router"
 import { PropsWithChildren, useMemo } from "react"
 
@@ -11,7 +11,7 @@ type Props = {
   size?: string
 }
 
-const LinkButton = ({
+const PageButton = ({
   isAdminPage = false,
   variant = "ghost",
   href,
@@ -29,26 +29,21 @@ const LinkButton = ({
   )
 
   return (
-    <Link
+    <LinkButton
       key="href"
       passHref
       href={
         isAdminPage ? `/${communityUrl}/admin/${href}` : `/${communityUrl}/${href}`
       }
+      variant={variant}
+      isActive={isActive}
+      disabled={disabled}
+      color={(!isActive && (variant === "solid" ? "white" : gray)) || undefined}
+      size={size}
     >
-      <Button
-        as="a"
-        variant={variant}
-        colorScheme="primary"
-        isActive={isActive}
-        disabled={disabled}
-        color={(!isActive && (variant === "solid" ? "white" : gray)) || undefined}
-        size={size}
-      >
-        {children}
-      </Button>
-    </Link>
+      {children}
+    </LinkButton>
   )
 }
 
-export default LinkButton
+export default PageButton
