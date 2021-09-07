@@ -3,7 +3,7 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import { PropsWithChildren, useMemo } from "react"
 
-type LinkButtonProps = {
+type Props = {
   isAdminPage?: boolean
   variant?: string
   href: string
@@ -18,7 +18,7 @@ const LinkButton = ({
   disabled = false,
   size = "md",
   children,
-}: PropsWithChildren<LinkButtonProps>): JSX.Element => {
+}: PropsWithChildren<Props>): JSX.Element => {
   const router = useRouter()
   const [, communityUrl, ...currentPath] = router.asPath.split("/")
   const isActive = currentPath.filter((str) => str !== "admin").join("/") === href

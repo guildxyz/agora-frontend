@@ -25,14 +25,11 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
       >
         <Stack spacing={{ base: 7, xl: 9 }}>
           <Pagination>
-            <LinkButton
-              href={
-                account?.toLowerCase() === communityData.owner?.address && `admin`
-              }
-              variant="solid"
-            >
-              Edit
-            </LinkButton>
+            {account?.toLowerCase() === communityData.owner?.address && (
+              <LinkButton href="admin" variant="solid">
+                Edit
+              </LinkButton>
+            )}
           </Pagination>
           <Stack spacing={{ base: 7 }}>
             <ActionCard
