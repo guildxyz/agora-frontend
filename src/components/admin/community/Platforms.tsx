@@ -23,10 +23,8 @@ import Link from "components/common/Link"
 import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
-import { Platform } from "temporaryData/types"
 
 type Props = {
-  activePlatforms?: Platform[]
   comingSoon?: boolean
 }
 
@@ -42,10 +40,7 @@ type DiscordChannel = {
   category: string
 }
 
-const Platforms = ({
-  activePlatforms = [],
-  comingSoon = false,
-}: Props): JSX.Element => {
+const Platforms = ({ comingSoon = false }: Props): JSX.Element => {
   const {
     register,
     getValues,
@@ -135,9 +130,7 @@ const Platforms = ({
                 colorScheme="primary"
                 mr={4}
                 {...register("isDCEnabled")}
-                defaultChecked={
-                  !!activePlatforms.find((platform) => platform.name === "DISCORD")
-                }
+                isChecked={getValues("isDCEnabled")}
                 isDisabled={comingSoon}
               />
               <FormLabel margin={0}>Discord</FormLabel>
@@ -266,9 +259,7 @@ const Platforms = ({
                 colorScheme="primary"
                 mr={4}
                 {...register("isTGEnabled")}
-                defaultChecked={
-                  !!activePlatforms.find((platform) => platform.name === "TELEGRAM")
-                }
+                isChecked={getValues("isTGEnabled")}
                 isDisabled={comingSoon}
               />
               <FormLabel margin={0}>Telegram</FormLabel>

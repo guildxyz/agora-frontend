@@ -174,12 +174,7 @@ const AdminCommunityPage = (): JSX.Element => {
                     }
                   />
                   <VStack pb={{ base: 16, xl: 0 }} spacing={12}>
-                    <Platforms
-                      // comingSoon={communityData?.levels?.length > 0}
-                      activePlatforms={communityData.communityPlatforms.filter(
-                        (platform) => platform.active
-                      )}
-                    />
+                    <Platforms />
                     <Levels />
                   </VStack>
                 </Stack>
