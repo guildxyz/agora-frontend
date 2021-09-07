@@ -1,5 +1,4 @@
 import {
-  Badge,
   FormControl,
   FormLabel,
   Grid,
@@ -7,7 +6,6 @@ import {
   Input,
   InputGroup,
   InputLeftAddon,
-  Text,
   Textarea,
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
@@ -117,12 +115,7 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
 
         <GridItem colSpan={{ base: 1, md: 2 }}>
           <FormControl>
-            <FormLabel>
-              <Text as="span" mr={1.5} opacity={0.5}>
-                Image
-              </Text>{" "}
-              <Badge>Coming soon</Badge>
-            </FormLabel>
+            <FormLabel>Image</FormLabel>
             <Controller
               render={({ field, fieldState }) => (
                 <PhotoUploader
@@ -130,7 +123,6 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
                   isInvalid={fieldState.invalid}
                   buttonIcon={UploadSimple}
                   buttonText="Change image"
-                  isDisabled
                   onPhotoChange={(newPhoto: File) => field.onChange(newPhoto)}
                   {...field}
                 />
