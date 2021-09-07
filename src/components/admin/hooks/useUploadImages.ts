@@ -1,6 +1,6 @@
-import { FormData as CommunityFormData } from "pages/[community]/admin/community"
+import { useRouter } from "next/router"
 import { ContextType, SignEvent } from "../utils/submitMachine"
-import useSubmitMachine from "./useSubmitMachine"
+import useSubmitMachine, { FormData as CommunityFormData } from "./useSubmitMachine"
 
 const imagesToFormData = (_data: CommunityFormData) => {
   // Creating a FormData object & populating it with the necessary data
@@ -23,7 +23,9 @@ const imagesToFormData = (_data: CommunityFormData) => {
   return formData // We'll need to submit this to the image upload endpoint!
 }
 
-const useUploadImages = () => {
+const useUploadImages = (method = "PUST") => {
+  const router = useRouter()
+
   const fetchService = async (
     _context: ContextType,
     { data }: SignEvent<CommunityFormData>
@@ -38,10 +40,24 @@ const useUploadImages = () => {
     })
   }
 
+  const redirectAction =
+    method === "PATCH"
+      ? ({ urlName }: ContextType) =>
+          fetch(`/api/preview?urlName=${urlName}`)
+            .then((res) => res.json())
+            .then((cookies: string[]) => {
+              cookies.forEach((cookie: string) => {
+                document.cookie = cookie
+              })
+              router.push(`/${urlName}`)
+            })
+      : ({ urlName }: ContextType) =>
+          new Promise<void>(() => router.push(`/${urlName}`))
+
   return useSubmitMachine<CommunityFormData>(
     "Images updated! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
     fetchService,
-    async () => {}
+    redirectAction
   )
 }
 

@@ -4,6 +4,7 @@ import NotConnectedError from "components/admin/common/NotConnectedError"
 import useCommunityData from "components/admin/hooks/useCommunityData"
 import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityData"
+import useUploadImages from "components/admin/hooks/useUploadImages"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
 import Layout from "components/common/Layout"
@@ -25,7 +26,13 @@ const AdminHomePage = (): JSX.Element => {
   const isOwner = useRedirectIfNotOwner()
   const methods = useForm({ mode: "all" })
 
-  const { onSubmit, loading } = useSubmitCommunityData("PATCH")
+  const { onSubmit: uploadImages, loading: uploadLoading } = useUploadImages("PATCH")
+
+  const {
+    onSubmit: onCommunitySubmit,
+    loading: communitySubmitLoading,
+    success: communitySubmitSuccess,
+  } = useSubmitCommunityData("PATCH", methods.handleSubmit(uploadImages))
 
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
@@ -79,9 +86,13 @@ const AdminHomePage = (): JSX.Element => {
                 <Pagination isAdminPage>
                   {methods.formState.isDirty ? (
                     <Button
-                      isLoading={loading}
+                      isLoading={communitySubmitLoading || uploadLoading}
                       colorScheme="primary"
-                      onClick={methods.handleSubmit(onSubmit)}
+                      onClick={() => {
+                        if (communitySubmitSuccess)
+                          methods.handleSubmit(uploadImages)()
+                        else methods.handleSubmit(onCommunitySubmit)()
+                      }}
                     >
                       Save
                     </Button>

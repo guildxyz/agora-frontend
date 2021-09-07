@@ -1,8 +1,8 @@
 import { useRouter } from "next/router"
-import type { FormData, Level } from "pages/[community]/admin/community"
 import convertMonthsToMs from "../utils/convertMonthsToMs"
 import { ContextType, SignEvent } from "../utils/submitMachine"
 import useCommunityData from "./useCommunityData"
+import type { FormData, Level } from "./useSubmitMachine"
 import useSubmitMachine from "./useSubmitMachine"
 
 // Replacing specific values in the JSON with undefined, so we won't send them to the API
