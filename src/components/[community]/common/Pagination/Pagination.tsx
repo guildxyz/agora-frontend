@@ -54,7 +54,7 @@ const Pagination = ({
         opacity: isSticky ? 1 : 0,
       }}
     >
-      <PageButton isAdminPage={isAdminPage} href="" size="md">
+      <PageButton isAdminPage={isAdminPage} href="">
         Info
       </PageButton>
 
@@ -66,8 +66,7 @@ const Pagination = ({
         <Box>
           <PageButton
             isAdminPage={isAdminPage}
-            href={!isCommunityTabDisabled && "community"}
-            size="md"
+            href="community"
             disabled={isCommunityTabDisabled}
           >
             Community

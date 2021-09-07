@@ -1,13 +1,9 @@
-import {
-  Button,
-  ButtonProps as ChakraButtonProps,
-  LinkProps as ChakraLinkProps,
-} from "@chakra-ui/react"
-import { LinkProps as NextLinkProps } from "next/dist/client/link"
+import { Button, ButtonProps as ChakraButtonProps } from "@chakra-ui/react"
+import type { LinkProps as NextLinkProps } from "next/dist/client/link"
+import NextLink from "next/link"
 import { PropsWithChildren } from "react"
-import Link from "./Link"
 
-type Props = PropsWithChildren<NextLinkProps & ChakraLinkProps & ChakraButtonProps>
+type Props = PropsWithChildren<NextLinkProps & ChakraButtonProps>
 
 const LinkButton = ({
   href,
@@ -18,24 +14,19 @@ const LinkButton = ({
   variant,
   children,
   ...chakraProps
-}: Props): JSX.Element =>
-  href ? (
-    <Link
-      href={href}
-      replace={replace}
-      scroll={scroll}
-      shallow={shallow}
-      prefetch={prefetch}
-      _hover={{ textDecoration: "none" }}
-    >
-      <Button variant={variant} colorScheme="primary" {...chakraProps}>
-        {children}
-      </Button>
-    </Link>
-  ) : (
-    <Button variant={variant} colorScheme="primary" {...chakraProps}>
+}: Props): JSX.Element => (
+  <NextLink
+    passHref
+    href={href}
+    replace={replace}
+    scroll={scroll}
+    shallow={shallow}
+    prefetch={prefetch}
+  >
+    <Button variant={variant} as="a" colorScheme="primary" {...chakraProps}>
       {children}
     </Button>
-  )
+  </NextLink>
+)
 
 export default LinkButton

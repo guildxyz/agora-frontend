@@ -1,22 +1,18 @@
-import { useColorMode } from "@chakra-ui/react"
+import { Button, useColorMode } from "@chakra-ui/react"
 import LinkButton from "components/common/LinkButton"
 import { useRouter } from "next/router"
 import { PropsWithChildren, useMemo } from "react"
 
 type Props = {
   isAdminPage?: boolean
-  variant?: string
   href: string
   disabled?: boolean
-  size?: string
 }
 
 const PageButton = ({
   isAdminPage = false,
-  variant = "ghost",
   href,
   disabled = false,
-  size = "md",
   children,
 }: PropsWithChildren<Props>): JSX.Element => {
   const router = useRouter()
@@ -28,21 +24,21 @@ const PageButton = ({
     [colorMode]
   )
 
-  return (
+  return !disabled ? (
     <LinkButton
-      key="href"
       href={
-        href &&
-        (isAdminPage ? `/${communityUrl}/admin/${href}` : `/${communityUrl}/${href}`)
+        isAdminPage ? `/${communityUrl}/admin/${href}` : `/${communityUrl}/${href}`
       }
-      variant={variant}
+      variant="ghost"
       isActive={isActive}
-      disabled={disabled}
-      color={(!isActive && (variant === "solid" ? "white" : gray)) || undefined}
-      size={size}
+      color={(!isActive && gray) || undefined}
     >
       {children}
     </LinkButton>
+  ) : (
+    <Button variant="ghost" disabled color={gray}>
+      {children}
+    </Button>
   )
 }
 
