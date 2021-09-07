@@ -24,7 +24,7 @@ const useSubmitMachine = <FormDataType>(
     >
   ) => Promise<Response | Response[]>,
   redirect: (context: ContextType) => Promise<void>,
-  preprocess: (data: FormDataType) => FormDataType = (data) => data
+  preprocess: (data: FormDataType) => FormDataType | FormData = (data) => data
 ) => {
   const toast = useToast()
   const showErrorToast = useShowErrorToast()
