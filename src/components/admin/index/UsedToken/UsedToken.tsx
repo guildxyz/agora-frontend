@@ -59,7 +59,7 @@ const UsedToken = (): JSX.Element => {
 
   const { colorMode } = useColorMode()
 
-  const { openNetworkChangeModal } = useContext(Web3Connection)
+  const { openNetworkModal } = useContext(Web3Connection)
 
   return (
     <>
@@ -73,7 +73,7 @@ const UsedToken = (): JSX.Element => {
             height={10}
             bgColor={colorMode === "light" ? "gray.100" : "whiteAlpha.200"}
             width={{ base: "full", md: "max-content" }}
-            onClick={openNetworkChangeModal}
+            onClick={openNetworkModal}
           >
             <HStack>
               <Box position="relative" width={4} height={4}>

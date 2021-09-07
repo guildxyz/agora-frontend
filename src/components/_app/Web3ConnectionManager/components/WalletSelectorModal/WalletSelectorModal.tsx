@@ -28,7 +28,7 @@ type Props = {
   setActivatingConnector: (connector: AbstractConnector) => void
   isModalOpen: boolean
   closeModal: () => void
-  openNetworkChangeModal: () => void
+  openNetworkModal: () => void
 }
 
 const WalletSelectorModal = ({
@@ -36,7 +36,7 @@ const WalletSelectorModal = ({
   setActivatingConnector,
   isModalOpen,
   closeModal,
-  openNetworkChangeModal, // Passing as prop to avoid dependency cycle
+  openNetworkModal, // Passing as prop to avoid dependency cycle
 }: Props): JSX.Element => {
   const { error } = useWeb3React()
   const { active, activate, connector, setError } = useWeb3React()
@@ -63,9 +63,9 @@ const WalletSelectorModal = ({
   useEffect(() => {
     if (error instanceof UnsupportedChainIdError) {
       closeModal()
-      openNetworkChangeModal()
+      openNetworkModal()
     }
-  }, [error, openNetworkChangeModal, closeModal])
+  }, [error, openNetworkModal, closeModal])
 
   return (
     <>

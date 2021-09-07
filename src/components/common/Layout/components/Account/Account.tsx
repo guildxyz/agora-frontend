@@ -24,7 +24,7 @@ import useENSName from "./hooks/useENSName"
 const Account = (): JSX.Element => {
   const communityData = useCommunity()
   const { error, account, chainId } = useWeb3React()
-  const { openWalletSelectorModal, triedEager, openNetworkChangeModal } =
+  const { openWalletSelectorModal, triedEager, openNetworkModal } =
     useContext(Web3Connection)
   const ENSName = useENSName(account)
   const {
@@ -53,7 +53,7 @@ const Account = (): JSX.Element => {
         <AccountButton
           leftIcon={<LinkBreak />}
           colorScheme="red"
-          onClick={openNetworkChangeModal}
+          onClick={openNetworkModal}
         >
           Wrong Network
         </AccountButton>
@@ -76,7 +76,7 @@ const Account = (): JSX.Element => {
   return (
     <AccountCard>
       <ButtonGroup isAttached variant="ghost" alignItems="center">
-        <AccountButton onClick={openNetworkChangeModal}>
+        <AccountButton onClick={openNetworkModal}>
           {RPC[Chains[chainId]].chainName}
         </AccountButton>
         <Divider

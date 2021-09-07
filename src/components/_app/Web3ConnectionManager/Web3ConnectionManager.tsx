@@ -2,7 +2,7 @@ import { useDisclosure } from "@chakra-ui/react"
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { useWeb3React } from "@web3-react/core"
-import NetworkChangeModal from "components/common/Layout/components/Account/components/NetworkModal/NetworkModal"
+import NetworkModal from "components/common/Layout/components/Account/components/NetworkModal/NetworkModal"
 import { createContext, PropsWithChildren, useEffect, useState } from "react"
 import WalletSelectorModal from "./components/WalletSelectorModal"
 import useEagerConnect from "./hooks/useEagerConnect"
@@ -13,9 +13,9 @@ const Web3Connection = createContext({
   openWalletSelectorModal: () => {},
   closeWalletSelectorModal: () => {},
   triedEager: false,
-  isNetworkChangeModalOpen: false,
-  openNetworkChangeModal: () => {},
-  closeNetworkChangeModal: () => {},
+  isNetworkModalOpen: false,
+  openNetworkModal: () => {},
+  closeNetworkModal: () => {},
 })
 
 const Web3ConnectionManager = ({
@@ -28,9 +28,9 @@ const Web3ConnectionManager = ({
     onClose: closeWalletSelectorModal,
   } = useDisclosure()
   const {
-    isOpen: isNetworkChangeModalOpen,
-    onOpen: openNetworkChangeModal,
-    onClose: closeNetworkChangeModal,
+    isOpen: isNetworkModalOpen,
+    onOpen: openNetworkModal,
+    onClose: closeNetworkModal,
   } = useDisclosure()
 
   // handle logic to recognize the connector currently being activated
@@ -54,9 +54,9 @@ const Web3ConnectionManager = ({
         openWalletSelectorModal,
         closeWalletSelectorModal,
         triedEager,
-        isNetworkChangeModalOpen,
-        openNetworkChangeModal,
-        closeNetworkChangeModal,
+        isNetworkModalOpen,
+        openNetworkModal,
+        closeNetworkModal,
       }}
     >
       {children}
@@ -67,11 +67,11 @@ const Web3ConnectionManager = ({
           isModalOpen: isWalletSelectorModalOpen,
           openModal: openWalletSelectorModal,
           closeModal: closeWalletSelectorModal,
-          openNetworkChangeModal,
+          openNetworkModal,
         }}
       />
-      <NetworkChangeModal
-        {...{ isOpen: isNetworkChangeModalOpen, onClose: closeNetworkChangeModal }}
+      <NetworkModal
+        {...{ isOpen: isNetworkModalOpen, onClose: closeNetworkModal }}
       />
     </Web3Connection.Provider>
   )
