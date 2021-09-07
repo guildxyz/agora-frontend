@@ -24,10 +24,6 @@ import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 
-type Props = {
-  comingSoon?: boolean
-}
-
 type DiscordError = {
   message: string
   type: "server" | "channels"
@@ -40,7 +36,7 @@ type DiscordChannel = {
   category: string
 }
 
-const Platforms = ({ comingSoon = false }: Props): JSX.Element => {
+const Platforms = (): JSX.Element => {
   const {
     register,
     getValues,
@@ -113,25 +109,13 @@ const Platforms = ({ comingSoon = false }: Props): JSX.Element => {
           templateColumns={{ base: "100%", md: "20% auto" }}
           gap={{ base: 8, md: 12 }}
         >
-          {comingSoon && (
-            <GridItem colSpan={{ base: 1, md: 2 }} mb={-8}>
-              <Badge>Coming soon</Badge>
-            </GridItem>
-          )}
-
           <GridItem>
-            <FormControl
-              display="flex"
-              height="full"
-              alignItems="center"
-              isDisabled={comingSoon}
-            >
+            <FormControl display="flex" height="full" alignItems="center">
               <Switch
                 colorScheme="primary"
                 mr={4}
                 {...register("isDCEnabled")}
                 isChecked={getValues("isDCEnabled")}
-                isDisabled={comingSoon}
               />
               <FormLabel margin={0}>Discord</FormLabel>
             </FormControl>
@@ -140,7 +124,7 @@ const Platforms = ({ comingSoon = false }: Props): JSX.Element => {
           <GridItem>
             {isDCEnabledChange ? (
               <VStack spacing={4} alignItems="start">
-                <FormControl isDisabled={comingSoon}>
+                <FormControl>
                   <InputGroup>
                     <InputLeftAddon>Server ID</InputLeftAddon>
                     <Input
@@ -219,7 +203,7 @@ const Platforms = ({ comingSoon = false }: Props): JSX.Element => {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.75 }}
                     >
-                      <FormControl isDisabled={comingSoon}>
+                      <FormControl>
                         <FormLabel>Invite channel</FormLabel>
 
                         <Select
@@ -249,18 +233,12 @@ const Platforms = ({ comingSoon = false }: Props): JSX.Element => {
           </GridItem>
 
           <GridItem>
-            <FormControl
-              display="flex"
-              height="full"
-              alignItems="center"
-              isDisabled={comingSoon}
-            >
+            <FormControl display="flex" height="full" alignItems="center">
               <Switch
                 colorScheme="primary"
                 mr={4}
                 {...register("isTGEnabled")}
                 isChecked={getValues("isTGEnabled")}
-                isDisabled={comingSoon}
               />
               <FormLabel margin={0}>Telegram</FormLabel>
             </FormControl>
