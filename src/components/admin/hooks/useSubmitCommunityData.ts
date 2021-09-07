@@ -3,7 +3,10 @@ import { ContextType, SignEvent } from "../utils/submitMachine"
 import useCommunityData from "./useCommunityData"
 import useSubmitMachine from "./useSubmitMachine"
 
-const useSubmitCommunityData = <FormDataType>(method: "POST" | "PATCH") => {
+const useSubmitCommunityData = <FormDataType>(
+  method: "POST" | "PATCH",
+  callback: () => Promise<void>
+) => {
   const { communityData } = useCommunityData()
   const router = useRouter()
 
@@ -38,7 +41,7 @@ const useSubmitCommunityData = <FormDataType>(method: "POST" | "PATCH") => {
       ? "Community added! You're being redirected to it's page"
       : "Community updated! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
     fetchService,
-    redirectAction
+    callback || redirectAction
   )
 }
 

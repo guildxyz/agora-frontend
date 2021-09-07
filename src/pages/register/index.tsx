@@ -2,6 +2,7 @@ import { Box, Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
 import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityData"
+import useUploadImages from "components/admin/hooks/useUploadImages"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
 import Layout from "components/common/Layout"
@@ -28,10 +29,17 @@ const Page = (): JSX.Element => {
       chainName: "",
       themeColor: "",
       tokenAddress: "",
+      image: null,
     },
   })
 
-  const { onSubmit, loading } = useSubmitCommunityData("POST")
+  const { onSubmit: uploadImage, loading: uploadLoading } =
+    useUploadImages(undefined)
+
+  const { onSubmit: onRegister, loading: registerLoading } = useSubmitCommunityData(
+    "POST",
+    () => new Promise<void>(() => {}) // Placeholder: we should vall the uploadImage function here!
+  )
 
   useWarnIfUnsavedChanges(
     methods.formState?.isDirty && !methods.formState.isSubmitted
@@ -50,8 +58,8 @@ const Page = (): JSX.Element => {
               <Pagination
                 isAdminPage
                 isCommunityTabDisabled
-                onSaveClick={methods.handleSubmit(onSubmit)}
-                saveBtnLoading={loading}
+                onSaveClick={methods.handleSubmit(onRegister)}
+                saveBtnLoading={registerLoading || uploadLoading}
               />
               <VStack spacing={12}>
                 <Details />
