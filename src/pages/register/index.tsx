@@ -35,10 +35,11 @@ const Page = (): JSX.Element => {
 
   const { onSubmit: uploadImages, loading: uploadLoading } = useUploadImages()
 
-  const { onSubmit: onRegister, loading: registerLoading } = useSubmitCommunityData(
-    "POST",
-    methods.handleSubmit(uploadImages)
-  )
+  const {
+    onSubmit: onRegister,
+    loading: registerLoading,
+    success: registerSuccess,
+  } = useSubmitCommunityData("POST", methods.handleSubmit(uploadImages))
 
   useWarnIfUnsavedChanges(
     methods.formState?.isDirty && !methods.formState.isSubmitted
@@ -63,7 +64,7 @@ const Page = (): JSX.Element => {
               </Button>
             </Pagination>
             <VStack spacing={12}>
-              <Details />
+              <Details registerSuccess={registerSuccess} />
               <Appearance
                 onColorChange={(newColor: string) => setColorCode(newColor)}
               />

@@ -17,10 +17,11 @@ import slugify from "../utils/slugify"
 import UsedToken from "./UsedToken"
 
 type Props = {
+  registerSuccess?: boolean
   isAdminPage?: boolean
 }
 
-const Details = ({ isAdminPage = false }: Props): JSX.Element => {
+const Details = ({ registerSuccess, isAdminPage = false }: Props): JSX.Element => {
   const {
     control,
     register,
@@ -82,6 +83,8 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
                         "The maximum possible URL name length is 20 characters",
                     },
                     validate: async (value) => {
+                      if (typeof registerSuccess === "boolean" && !!registerSuccess)
+                        return true
                       try {
                         const response = await fetch(
                           `${process.env.NEXT_PUBLIC_API}/community/urlName/${value}`
