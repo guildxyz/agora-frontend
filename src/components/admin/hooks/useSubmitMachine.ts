@@ -5,6 +5,7 @@ import type { Level } from "pages/[community]/admin/community"
 import createSubmitMachine, {
   APIError,
   ContextType,
+  FetchEvent,
   InitialEvent,
   SignError,
   SignEvent,
@@ -23,7 +24,7 @@ const useSubmitMachine = <FormDataType>(
       }
     >
   ) => Promise<Response | Response[]>,
-  redirect: (context: ContextType) => Promise<void>,
+  redirect: (context: ContextType, data: FetchEvent) => Promise<void>,
   preprocess: (data: FormDataType) => FormDataType | FormData = (data) => data
 ) => {
   const toast = useToast()

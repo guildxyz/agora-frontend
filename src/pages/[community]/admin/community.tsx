@@ -22,7 +22,7 @@ export type Level = {
   id: number
   dbId: number
   name: string
-  image?: string | File
+  image?: File
   description: string
   requirementType: RequirementType
   requirement: number
@@ -39,7 +39,7 @@ export type FormData = {
   discordServerId: string
   inviteChannel: string
   levels: Level[]
-  image?: string | File
+  image?: File
 }
 
 const AdminCommunityPage = (): JSX.Element => {

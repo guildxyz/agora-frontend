@@ -8,8 +8,8 @@ const useUploadImages = (callback: () => void) => {
     { data }: SignEvent<CommunityFormData>
   ) => {
     console.log("INPUT:", data)
-
     // TODO...
+    // We should somehow get the preprocessed data here and send it to the image upload endpoint
 
     return null
   }
@@ -24,18 +24,19 @@ const useUploadImages = (callback: () => void) => {
 
     // Renaming the community photo
     if (_data.image) {
-      formDataToSubmit.append("image", _data.image, "community")
+      const [, extension] = _data.image.name.split(".")
+      formDataToSubmit.append("image", _data.image, `community.${extension}`)
     }
 
     // Renaming the level images
     _data.levels?.forEach((level) => {
       if (level.image) {
-        formDataToSubmit.append("image", level.image, level.id.toString())
+        const [, extension] = level.image.name.split(".")
+        formDataToSubmit.append("image", level.image, `${level.id}.${extension}`)
       }
     })
 
-    console.log("PREPROCESS:", formDataToSubmit)
-    return formDataToSubmit
+    return formDataToSubmit // We'll need to submit this to the image upload endpoint!
   }
 
   return useSubmitMachine<CommunityFormData>(

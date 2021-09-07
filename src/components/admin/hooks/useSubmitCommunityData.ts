@@ -5,7 +5,7 @@ import useSubmitMachine from "./useSubmitMachine"
 
 const useSubmitCommunityData = <FormDataType>(
   method: "POST" | "PATCH",
-  callback: () => Promise<void>
+  callback: (...params: any) => Promise<void>
 ) => {
   const { communityData } = useCommunityData()
   const router = useRouter()
