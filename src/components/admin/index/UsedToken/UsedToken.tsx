@@ -12,14 +12,13 @@ import {
   Stack,
   Text,
   useColorMode,
-  useDisclosure,
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import slugify from "components/admin/utils/slugify"
-import NetworkChangeModal from "components/common/Layout/components/Account/components/NetworkModal/NetworkModal"
+import { Web3Connection } from "components/_app/Web3ConnectionManager"
 import { Chains, RPC } from "connectors"
 import Image from "next/image"
-import { useEffect } from "react"
+import { useContext, useEffect } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 import useTokenData from "./hooks/useTokenData"
 
@@ -60,7 +59,7 @@ const UsedToken = (): JSX.Element => {
 
   const { colorMode } = useColorMode()
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { openNetworkChangeModal } = useContext(Web3Connection)
 
   return (
     <>
@@ -74,7 +73,7 @@ const UsedToken = (): JSX.Element => {
             height={10}
             bgColor={colorMode === "light" ? "gray.100" : "whiteAlpha.200"}
             width={{ base: "full", md: "max-content" }}
-            onClick={onOpen}
+            onClick={openNetworkChangeModal}
           >
             <HStack>
               <Box position="relative" width={4} height={4}>
@@ -120,8 +119,6 @@ const UsedToken = (): JSX.Element => {
         </Stack>
         <FormErrorMessage>{errors.tokenAddress?.message}</FormErrorMessage>
       </FormControl>
-
-      <NetworkChangeModal isOpen={isOpen} onClose={onClose} />
     </>
   )
 }
