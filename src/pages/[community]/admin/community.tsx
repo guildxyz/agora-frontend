@@ -13,6 +13,7 @@ import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import { AnimatePresence, motion } from "framer-motion"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
+import { useRouter } from "next/router"
 import React, { useEffect, useMemo } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { RequirementType } from "temporaryData/types"
@@ -41,6 +42,7 @@ export type FormData = {
 }
 
 const AdminCommunityPage = (): JSX.Element => {
+  const router = useRouter()
   const { chainId, account } = useWeb3React()
   const { communityData } = useCommunityData()
   const generatedColors = useColorPalette(
@@ -64,6 +66,18 @@ const AdminCommunityPage = (): JSX.Element => {
     [methods.formState]
   )
 
+  const redirectToCommunityPage = () => {
+    fetch(`/api/preview?urlName=${communityData?.urlName}`)
+      .then((res) => res.json())
+      .then((cookies: string[]) => {
+        cookies.forEach((cookie: string) => {
+          document.cookie = cookie
+        })
+
+        router.push(`/${communityData?.urlName}/community`)
+      })
+  }
+
   const HTTPMethod = communityData?.levels?.length > 0 ? "PATCH" : "POST"
 
   const { loading: levelsLoading, onSubmit: onLevelsSubmit } =
@@ -72,7 +86,7 @@ const AdminCommunityPage = (): JSX.Element => {
     useSubmitPlatformsData(
       telegramDirty,
       discordDirty,
-      levelsDirty ? methods.handleSubmit(onLevelsSubmit) : undefined
+      levelsDirty ? methods.handleSubmit(onLevelsSubmit) : redirectToCommunityPage
     )
 
   // Set up the default form field values if we have the necessary data
