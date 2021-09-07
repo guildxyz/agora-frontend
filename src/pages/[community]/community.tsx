@@ -65,13 +65,19 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
                 alignItems="center"
               >
                 <Icon as={Info} mr="4" />
-                <span>
-                  This community is not using Agora Space yet.{" "}
-                  <Link href="/register" color="indigo.500">
-                    Integrate it
-                  </Link>{" "}
-                  if you're in charge, or tweet them to do so!
-                </span>
+                {communityData.owner ? (
+                  <span>
+                    This community is not using Agora's token-gated access tool yet.
+                  </span>
+                ) : (
+                  <span>
+                    This community is not using Agora Space yet.{" "}
+                    <Link href="/register" color="indigo.500">
+                      Integrate it
+                    </Link>{" "}
+                    if you're in charge, or tweet them to do so!
+                  </span>
+                )}
               </Text>
             </Card>
           )}
