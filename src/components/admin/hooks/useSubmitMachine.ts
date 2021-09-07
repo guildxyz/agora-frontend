@@ -54,7 +54,7 @@ const useSubmitMachine = <FormDataType>(
           title: "Success!",
           description: successText,
           status: "success",
-          duration: 2000,
+          duration: 4000,
         }),
     },
   })
