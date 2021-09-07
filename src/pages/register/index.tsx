@@ -1,4 +1,4 @@
-import { Box, Stack, VStack } from "@chakra-ui/react"
+import { Box, Button, Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
 import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityData"
@@ -49,28 +49,29 @@ const Page = (): JSX.Element => {
   }
 
   return (
-    <>
-      <FormProvider {...methods}>
-        <Box sx={generatedColors}>
-          <Layout title="Integrate token">
-            <Stack spacing={{ base: 7, xl: 9 }}>
-              <Pagination
-                isAdminPage
-                isCommunityTabDisabled
-                onSaveClick={methods.handleSubmit(onRegister)}
-                saveBtnLoading={registerLoading || uploadLoading}
+    <FormProvider {...methods}>
+      <Box sx={generatedColors}>
+        <Layout title="Integrate token">
+          <Stack spacing={{ base: 7, xl: 9 }}>
+            <Pagination isCommunityTabDisabled>
+              <Button
+                isLoading={registerLoading || uploadLoading}
+                colorScheme="primary"
+                onClick={methods.handleSubmit(onRegister)}
+              >
+                Save
+              </Button>
+            </Pagination>
+            <VStack spacing={12}>
+              <Details />
+              <Appearance
+                onColorChange={(newColor: string) => setColorCode(newColor)}
               />
-              <VStack spacing={12}>
-                <Details />
-                <Appearance
-                  onColorChange={(newColor: string) => setColorCode(newColor)}
-                />
-              </VStack>
-            </Stack>
-          </Layout>
-        </Box>
-      </FormProvider>
-    </>
+            </VStack>
+          </Stack>
+        </Layout>
+      </Box>
+    </FormProvider>
   )
 }
 
