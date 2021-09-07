@@ -24,12 +24,6 @@ import Section from "components/admin/common/Section"
 import Link from "components/common/Link"
 import { useEffect, useState } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
-import { Platform } from "temporaryData/types"
-
-type Props = {
-  activePlatforms?: Platform[]
-  comingSoon?: boolean
-}
 
 type DiscordError = {
   message: string
@@ -43,10 +37,7 @@ type DiscordChannel = {
   category: string
 }
 
-const Platforms = ({
-  activePlatforms = [],
-  comingSoon = false,
-}: Props): JSX.Element => {
+const Platforms = (): JSX.Element => {
   const {
     register,
     getValues,
@@ -122,27 +113,13 @@ const Platforms = ({
           templateColumns={{ base: "100%", md: "20% auto" }}
           gap={{ base: 8, md: 12 }}
         >
-          {comingSoon && (
-            <GridItem colSpan={{ base: 1, md: 2 }} mb={-8}>
-              <Badge>Coming soon</Badge>
-            </GridItem>
-          )}
-
           <GridItem>
-            <FormControl
-              display="flex"
-              height="full"
-              alignItems="center"
-              isDisabled={comingSoon}
-            >
+            <FormControl display="flex" height="full" alignItems="center">
               <Switch
                 colorScheme="primary"
                 mr={4}
                 {...register("isDCEnabled")}
-                defaultChecked={
-                  !!activePlatforms.find((platform) => platform.name === "DISCORD")
-                }
-                isDisabled={comingSoon}
+                isChecked={getValues("isDCEnabled")}
               />
               <FormLabel margin={0}>Discord</FormLabel>
             </FormControl>
@@ -151,10 +128,7 @@ const Platforms = ({
           <GridItem>
             {isDCEnabledChange ? (
               <VStack spacing={4} alignItems="start">
-                <FormControl
-                  isDisabled={comingSoon}
-                  isInvalid={errors.discordServerId}
-                >
+                <FormControl isInvalid={errors.discordServerId}>
                   <InputGroup>
                     <InputLeftAddon>Server ID</InputLeftAddon>
                     <Input
@@ -224,7 +198,7 @@ const Platforms = ({
                 )}
                 {discordChannels?.length > 0 && (
                   <ScaleFade in={discordChannels?.length > 0}>
-                    <FormControl isDisabled={comingSoon}>
+                    <FormControl>
                       <FormLabel>Invite channel</FormLabel>
 
                       <Select
@@ -253,20 +227,12 @@ const Platforms = ({
           </GridItem>
 
           <GridItem>
-            <FormControl
-              display="flex"
-              height="full"
-              alignItems="center"
-              isDisabled={comingSoon}
-            >
+            <FormControl display="flex" height="full" alignItems="center">
               <Switch
                 colorScheme="primary"
                 mr={4}
                 {...register("isTGEnabled")}
-                defaultChecked={
-                  !!activePlatforms.find((platform) => platform.name === "TELEGRAM")
-                }
-                isDisabled={comingSoon}
+                isChecked={getValues("isTGEnabled")}
               />
               <FormLabel margin={0}>Telegram</FormLabel>
             </FormControl>
