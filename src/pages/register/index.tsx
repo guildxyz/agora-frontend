@@ -33,17 +33,11 @@ const Page = (): JSX.Element => {
     },
   })
 
-  const { onSubmit: uploadImages, loading: uploadLoading } =
-    useUploadImages(undefined)
+  const { onSubmit: uploadImages, loading: uploadLoading } = useUploadImages()
 
   const { onSubmit: onRegister, loading: registerLoading } = useSubmitCommunityData(
     "POST",
-    (context, event) => {
-      event.data.json().then((createdCommunity) => {
-        uploadImages({ ...createdCommunity, image: methods.getValues("image") })
-      })
-      return new Promise<void>(() => {})
-    } // We should call the uploadImage function here, this is only a placeholder now!
+    methods.handleSubmit(uploadImages)
   )
 
   useWarnIfUnsavedChanges(

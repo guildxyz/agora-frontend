@@ -18,11 +18,13 @@ const useSubmitMachine = <FormDataType>(
     _context: ContextType,
     {
       data,
-    }: SignEvent<
-      FormDataType & {
-        levels: Level[]
-      }
-    >
+    }:
+      | SignEvent<FormDataType>
+      | SignEvent<
+          FormDataType & {
+            levels: Level[]
+          }
+        >
   ) => Promise<Response | Response[]>,
   redirect: (context: ContextType, data: FetchEvent) => Promise<void>,
   preprocess: (data: FormDataType) => FormDataType | FormData = (data) => data
