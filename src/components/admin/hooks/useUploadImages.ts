@@ -1,8 +1,9 @@
 import { useRouter } from "next/router"
+import { Level } from "temporaryData/types"
 import { ContextType, SignEvent } from "../utils/submitMachine"
 import useSubmitMachine, { FormData as CommunityFormData } from "./useSubmitMachine"
 
-const imagesToFormData = (_data: CommunityFormData) => {
+const imagesToFormData = (_data: CommunityFormData, levels: Level[]) => {
   const formData = new FormData()
 
   // Renaming the community photo
@@ -12,12 +13,18 @@ const imagesToFormData = (_data: CommunityFormData) => {
   }
 
   // Renaming the level images
-  _data.levels?.forEach((level) => {
-    if (level.image) {
-      const [, extension] = level.image.name.split(".")
-      formData.append("image", level.image, `${level.dbId}.${extension}`)
+  if (_data.levels?.length > 0 && levels.length > 0) {
+    for (let i = 0; i < levels.length; i += 1) {
+      if (_data.levels[i].image) {
+        const [, extension] = _data.levels[i].image.name.split(".")
+        formData.append(
+          "image",
+          _data.levels[i].image,
+          `${levels[i].id}.${extension}`
+        )
+      }
     }
-  })
+  }
 
   return formData
 }
@@ -29,16 +36,11 @@ const useUploadImages = (method: "POST" | "PATCH", redirectPath = "") => {
     _context: ContextType,
     { data }: SignEvent<CommunityFormData>
   ) => {
-    const formData = imagesToFormData(data)
-    const { id } = await fetch(
+    const { id, levels } = await fetch(
       `${process.env.NEXT_PUBLIC_API}/community/urlName/${data.urlName}`
     ).then((response) => response.json())
-    console.log(
-      "Sending data:",
-      formData,
-      "Endpoint:",
-      `${process.env.NEXT_PUBLIC_API}/community/${id}/image`
-    )
+
+    const formData = imagesToFormData(data, levels)
     return fetch(`${process.env.NEXT_PUBLIC_API}/community/${id}/image`, {
       method: "POST",
       body: formData,
