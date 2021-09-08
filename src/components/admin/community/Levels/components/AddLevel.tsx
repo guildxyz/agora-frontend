@@ -106,7 +106,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 })}
               />
               <FormErrorMessage>
-                {errors.levels && errors.levels[index].name?.message}
+                {errors.levels && errors.levels[index]?.name?.message}
               </FormErrorMessage>
             </FormControl>
           </GridItem>
@@ -218,7 +218,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 </InputRightAddon>
               </InputGroup>
               <FormErrorMessage>
-                {errors.levels && errors.levels[index].requirement?.message}
+                {errors.levels && errors.levels[index]?.requirement?.message}
               </FormErrorMessage>
             </FormControl>
           </GridItem>
@@ -250,7 +250,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 </InputRightAddon>
               </InputGroup>
               <FormErrorMessage>
-                {errors.levels && errors.levels[index].stakeTimelockMs?.message}
+                {errors.levels && errors.levels[index]?.stakeTimelockMs?.message}
               </FormErrorMessage>
             </FormControl>
           </GridItem>
@@ -287,7 +287,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 })}
               />
               <FormErrorMessage>
-                {errors.levels && errors.levels[index].telegramGroupId?.message}
+                {errors.levels && errors.levels[index]?.telegramGroupId?.message}
               </FormErrorMessage>
             </FormControl>
           </VStack>
