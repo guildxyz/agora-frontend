@@ -15,14 +15,14 @@ const imagesToFormData = (_data: CommunityFormData) => {
   _data.levels?.forEach((level) => {
     if (level.image) {
       const [, extension] = level.image.name.split(".")
-      formData.append("image", level.image, `${level.id}.${extension}`)
+      formData.append("image", level.image, `${level.dbId}.${extension}`)
     }
   })
 
   return formData
 }
 
-const useUploadImages = (method = "PUST") => {
+const useUploadImages = (method: "POST" | "PATCH", redirectPath = "") => {
   const router = useRouter()
 
   const fetchService = async (
@@ -33,6 +33,12 @@ const useUploadImages = (method = "PUST") => {
     const { id } = await fetch(
       `${process.env.NEXT_PUBLIC_API}/community/urlName/${data.urlName}`
     ).then((response) => response.json())
+    console.log(
+      "Sending data:",
+      formData,
+      "Endpoint:",
+      `${process.env.NEXT_PUBLIC_API}/community/${id}/image`
+    )
     return fetch(`${process.env.NEXT_PUBLIC_API}/community/${id}/image`, {
       method: "POST",
       body: formData,
@@ -48,7 +54,7 @@ const useUploadImages = (method = "PUST") => {
               cookies.forEach((cookie: string) => {
                 document.cookie = cookie
               })
-              router.push(`/${urlName}`)
+              router.push(`/${urlName}${redirectPath}`)
             })
       : ({ urlName }: ContextType) =>
           new Promise<void>(() => router.push(`/${urlName}`))

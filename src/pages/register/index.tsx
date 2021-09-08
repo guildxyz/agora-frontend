@@ -33,7 +33,7 @@ const Page = (): JSX.Element => {
     },
   })
 
-  const { onSubmit: uploadImages, loading: uploadLoading } = useUploadImages()
+  const { onSubmit: uploadImages, loading: uploadLoading } = useUploadImages("POST")
 
   const {
     onSubmit: onRegister,

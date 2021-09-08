@@ -29,13 +29,15 @@ const AdminCommunityPage = (): JSX.Element => {
   const isOwner = useRedirectIfNotOwner()
   const methods = useForm({ mode: "all" })
 
-  const [discordDirty, telegramDirty, levelsDirty] = useMemo(
+  const [discordDirty, telegramDirty, levelsDirty, imageDirty] = useMemo(
     () => [
       ["isDCEnabled", "discordServerId", "inviteChannel"].some(
         (field) => typeof methods.formState.dirtyFields[field] !== "undefined"
       ),
       typeof methods.formState.dirtyFields.isTGEnabled !== "undefined",
       typeof methods.formState.dirtyFields.levels !== "undefined",
+      methods.formState.dirtyFields.levels?.filter((level) => level.image)?.length >
+        0,
     ],
     [methods.formState]
   )
@@ -54,20 +56,22 @@ const AdminCommunityPage = (): JSX.Element => {
 
   const HTTPMethod = communityData?.levels?.length > 0 ? "PATCH" : "POST"
 
-  const { onSubmit: uploadImages, loading: uploadLoading } = useUploadImages()
+  const { onSubmit: uploadImages, loading: uploadLoading } = useUploadImages(
+    "PATCH",
+    "/community"
+  )
 
-  const { loading: levelsLoading, onSubmit: onLevelsSubmit } =
-    useSubmitLevelsData(HTTPMethod)
+  const { loading: levelsLoading, onSubmit: onLevelsSubmit } = useSubmitLevelsData(
+    HTTPMethod,
+    imageDirty ? methods.handleSubmit(uploadImages) : redirectToCommunityPage
+  )
+
   const { loading: platformsLoading, onSubmit: onPlatformsSubmit } =
     useSubmitPlatformsData(
       telegramDirty,
       discordDirty,
       levelsDirty
-        ? () =>
-            Promise.all([
-              methods.handleSubmit(onLevelsSubmit)(),
-              methods.handleSubmit(uploadImages)(),
-            ])
+        ? () => methods.handleSubmit(onLevelsSubmit)
         : redirectToCommunityPage
     )
 
@@ -80,6 +84,7 @@ const AdminCommunityPage = (): JSX.Element => {
 
       // Reset the form state so we can watch the "isDirty" prop
       methods.reset({
+        urlName: communityData.urlName, // We must define it, so the photo uploader can fetch the necessary community data
         tokenSymbol: communityData.chainData?.token.symbol,
         isTGEnabled: !!communityData.communityPlatforms
           .filter((platform) => platform.active)

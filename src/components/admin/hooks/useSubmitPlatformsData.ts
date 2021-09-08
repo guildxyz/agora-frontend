@@ -6,7 +6,7 @@ import useSubmitMachine from "./useSubmitMachine"
 const useSubmitPlatformsData = (
   telegramChanged: boolean,
   discordChanged: boolean,
-  callback: () => void
+  callback: () => any // TODO: better typing
 ) => {
   const { communityData } = useCommunityData()
 
