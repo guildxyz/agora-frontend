@@ -70,9 +70,7 @@ const AdminCommunityPage = (): JSX.Element => {
     useSubmitPlatformsData(
       telegramDirty,
       discordDirty,
-      levelsDirty
-        ? () => methods.handleSubmit(onLevelsSubmit)
-        : redirectToCommunityPage
+      levelsDirty ? methods.handleSubmit(onLevelsSubmit) : redirectToCommunityPage
     )
 
   // Set up the default form field values if we have the necessary data
