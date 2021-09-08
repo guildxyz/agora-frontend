@@ -26,6 +26,7 @@ const Details = ({ registerSuccess, isAdminPage = false }: Props): JSX.Element =
     control,
     register,
     formState: { errors },
+    getValues,
     setValue,
     trigger,
   } = useFormContext()
@@ -126,6 +127,7 @@ const Details = ({ registerSuccess, isAdminPage = false }: Props): JSX.Element =
                   isInvalid={fieldState.invalid}
                   buttonIcon={UploadSimple}
                   buttonText="Change image"
+                  currentImage={getValues("imageUrl")}
                   onPhotoChange={(newPhoto: File) => field.onChange(newPhoto)}
                   {...field}
                 />

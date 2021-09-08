@@ -43,6 +43,7 @@ const AdminHomePage = (): JSX.Element => {
         urlName: communityData.urlName,
         description: communityData.description,
         chainName: communityData.chainData.name, // Maybe we'll need to think about this one, because currently we're displaying the active chain's name inside the form!
+        imageUrl: communityData.imageUrl,
         themeColor: communityData.themeColor,
         tokenAddress: communityData.chainData.token.address,
       })

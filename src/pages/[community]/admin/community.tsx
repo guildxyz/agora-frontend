@@ -92,7 +92,7 @@ const AdminCommunityPage = (): JSX.Element => {
           id: level.id,
           dbId: level.id, // Needed for proper form management
           name: level.name || undefined,
-          image: level.imageUrl || undefined,
+          imageUrl: level.imageUrl || undefined,
           description: level.description || undefined,
           requirementType: level.requirementType,
           requirement: level.requirement || undefined,

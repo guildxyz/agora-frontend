@@ -38,7 +38,7 @@ const Levels = (): JSX.Element => {
       appendLevel(
         {
           name: "",
-          image: undefined,
+          imageUrl: undefined,
           description: "",
           requirementType: "OPEN",
           requirement: undefined,
