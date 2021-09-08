@@ -11,7 +11,7 @@ import {
   Spinner,
   Stack,
   Text,
-  useColorMode,
+  useColorMode
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import slugify from "components/admin/utils/slugify"
@@ -46,6 +46,7 @@ const UsedToken = (): JSX.Element => {
     if (tokenName !== undefined) {
       setValue("name", communityName || tokenName)
       setValue("urlName", urlName || slugify(tokenName))
+      Promise.all([trigger("name"), trigger("urlName")])
     }
   }, [tokenName])
 
