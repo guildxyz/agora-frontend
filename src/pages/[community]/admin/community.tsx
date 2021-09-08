@@ -1,6 +1,5 @@
-import { Box, Button, Fade, Spinner, Stack, VStack } from "@chakra-ui/react"
+import { Box, Button, Spinner, Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import NotConnectedError from "components/admin/common/NotConnectedError"
 import Levels from "components/admin/community/Levels"
 import Platforms from "components/admin/community/Platforms"
 import useCommunityData from "components/admin/hooks/useCommunityData"
@@ -110,17 +109,8 @@ const AdminCommunityPage = (): JSX.Element => {
     methods.formState?.isDirty && !methods.formState.isSubmitted
   )
 
-  // If the user isn't logged in, display an error message
-  if (!chainId) {
-    return (
-      <NotConnectedError
-        title={communityData ? `${communityData.name} - Settings` : "Loading..."}
-      />
-    )
-  }
-
   // If we haven't fetched the community data / form data yet, display a spinner
-  if (!communityData || !methods)
+  if (!isOwner || !methods)
     return (
       <Box sx={generatedColors}>
         <VStack pt={16} justifyItems="center">
@@ -131,47 +121,43 @@ const AdminCommunityPage = (): JSX.Element => {
 
   // Otherwise render the admin page
   return (
-    <Fade in={!!communityData}>
-      <FormProvider {...methods}>
-        <Box sx={generatedColors}>
-          <Layout
-            title={`${communityData.name} - Settings`}
-            imageUrl={communityData.imageUrl}
-          >
-            {account && isOwner && (
-              <Stack spacing={{ base: 7, xl: 9 }}>
-                <Pagination>
-                  {discordDirty || telegramDirty || levelsDirty ? (
-                    <Button
-                      isLoading={levelsLoading || platformsLoading || uploadLoading}
-                      colorScheme="primary"
-                      onClick={methods.handleSubmit(
-                        discordDirty || telegramDirty
-                          ? onPlatformsSubmit
-                          : onLevelsSubmit
-                      )}
-                    >
-                      Save
-                    </Button>
-                  ) : (
-                    <LinkButton
-                      variant="solid"
-                      href={`/${communityData.urlName}/community`}
-                    >
-                      Done
-                    </LinkButton>
+    <FormProvider {...methods}>
+      <Box sx={generatedColors}>
+        <Layout
+          title={`${communityData.name} - Settings`}
+          imageUrl={communityData.imageUrl}
+        >
+          <Stack spacing={{ base: 7, xl: 9 }}>
+            <Pagination>
+              {discordDirty || telegramDirty || levelsDirty ? (
+                <Button
+                  isLoading={levelsLoading || platformsLoading || uploadLoading}
+                  colorScheme="primary"
+                  onClick={methods.handleSubmit(
+                    discordDirty || telegramDirty
+                      ? onPlatformsSubmit
+                      : onLevelsSubmit
                   )}
-                </Pagination>
-                <VStack pb={{ base: 16, xl: 0 }} spacing={12}>
-                  <Platforms />
-                  <Levels />
-                </VStack>
-              </Stack>
-            )}
-          </Layout>
-        </Box>
-      </FormProvider>
-    </Fade>
+                >
+                  Save
+                </Button>
+              ) : (
+                <LinkButton
+                  variant="solid"
+                  href={`/${communityData.urlName}/community`}
+                >
+                  Done
+                </LinkButton>
+              )}
+            </Pagination>
+            <VStack pb={{ base: 16, xl: 0 }} spacing={12}>
+              <Platforms />
+              <Levels />
+            </VStack>
+          </Stack>
+        </Layout>
+      </Box>
+    </FormProvider>
   )
 }
 

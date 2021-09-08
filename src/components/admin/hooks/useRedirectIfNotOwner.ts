@@ -1,28 +1,36 @@
 import { useWeb3React } from "@web3-react/core"
+import { Web3Connection } from "components/_app/Web3ConnectionManager"
 import { useRouter } from "next/router"
-import { useEffect } from "react"
+import { useContext, useEffect } from "react"
+import useSWR from "swr"
 import useCommunityData from "./useCommunityData"
+
+const getIsOwner = async (_, ownerAddresses, account) =>
+  ownerAddresses.some(({ address }) => address === account?.toLowerCase())
 
 const useRedirectIfNotOwner = () => {
   const { account, active } = useWeb3React()
   const router = useRouter()
   const { communityData } = useCommunityData()
+  const { triedEager } = useContext(Web3Connection)
+
+  const shouldFetch = !!communityData && active
+
+  const { data } = useSWR(
+    shouldFetch ? ["isOwner", communityData.owner?.addresses, account] : null,
+    getIsOwner,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  )
 
   useEffect(() => {
-    if (
-      communityData &&
-      typeof account === "string" &&
-      !communityData?.owner?.addresses?.some(
-        ({ address }) => address === account?.toLowerCase()
-      )
-    )
-      router.push(`/${communityData?.urlName}/info`)
-  }, [account, communityData, router])
+    if (data === false || (triedEager && !active))
+      router.push(router.asPath.replace("admin/", ""))
+  }, [data, triedEager, active, router])
 
-  if (!active) return false
-  return communityData?.owner?.addresses?.some(
-    ({ address }) => address === account?.toLowerCase()
-  )
+  return data
 }
 
 export default useRedirectIfNotOwner

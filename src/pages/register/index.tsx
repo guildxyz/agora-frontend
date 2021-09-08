@@ -1,6 +1,13 @@
-import { Box, Button, Stack, VStack } from "@chakra-ui/react"
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  Box,
+  Button,
+  Stack,
+  VStack,
+} from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import NotConnectedError from "components/admin/common/NotConnectedError"
 import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityData"
 import useUploadImages from "components/admin/hooks/useUploadImages"
 import Appearance from "components/admin/index/Appearance"
@@ -13,7 +20,7 @@ import React, { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 const Page = (): JSX.Element => {
-  const { chainId } = useWeb3React()
+  const { active } = useWeb3React()
   const [colorCode, setColorCode] = useState<string>(null)
   const generatedColors = useColorPalette(
     "chakra-colors-primary",
@@ -48,33 +55,40 @@ const Page = (): JSX.Element => {
     methods.formState?.isDirty && !methods.formState.isSubmitted
   )
 
-  if (!chainId) {
-    return <NotConnectedError title="Integrate token" />
-  }
-
   return (
     <FormProvider {...methods}>
       <Box sx={generatedColors}>
         <Layout title="Integrate token">
-          <Stack spacing={{ base: 7, xl: 9 }}>
-            <Pagination isRegister>
-              <Button
-                isLoading={registerLoading || uploadLoading}
-                colorScheme="primary"
-                onClick={methods.handleSubmit(
-                  registerSuccess ? uploadImages : onRegister
-                )}
-              >
-                Save
-              </Button>
-            </Pagination>
-            <VStack spacing={12}>
-              <Details registerSuccess={registerSuccess} />
-              <Appearance
-                onColorChange={(newColor: string) => setColorCode(newColor)}
-              />
-            </VStack>
-          </Stack>
+          {active ? (
+            <Stack spacing={{ base: 7, xl: 9 }}>
+              <Pagination isRegister>
+                <Button
+                  isLoading={registerLoading || uploadLoading}
+                  colorScheme="primary"
+                  onClick={methods.handleSubmit(
+                    registerSuccess ? uploadImages : onRegister
+                  )}
+                >
+                  Save
+                </Button>
+              </Pagination>
+              <VStack spacing={12}>
+                <Details registerSuccess={registerSuccess} />
+                <Appearance
+                  onColorChange={(newColor: string) => setColorCode(newColor)}
+                />
+              </VStack>
+            </Stack>
+          ) : (
+            <Alert status="error" mb="6">
+              <AlertIcon />
+              <Stack>
+                <AlertDescription position="relative" top={1}>
+                  Please connect your wallet in order to continue!
+                </AlertDescription>
+              </Stack>
+            </Alert>
+          )}
         </Layout>
       </Box>
     </FormProvider>
