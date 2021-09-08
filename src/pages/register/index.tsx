@@ -39,7 +39,10 @@ const Page = (): JSX.Element => {
     onSubmit: onRegister,
     loading: registerLoading,
     success: registerSuccess,
-  } = useSubmitCommunityData("POST", methods.handleSubmit(uploadImages))
+  } = useSubmitCommunityData(
+    "POST",
+    methods.getValues().image ? methods.handleSubmit(uploadImages) : undefined
+  )
 
   useWarnIfUnsavedChanges(
     methods.formState?.isDirty && !methods.formState.isSubmitted
