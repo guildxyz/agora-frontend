@@ -7,6 +7,7 @@ import useCommunityData from "components/admin/hooks/useCommunityData"
 import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
 import useSubmitPlatformsData from "components/admin/hooks/useSubmitPlatformsData"
+import useUploadImages from "components/admin/hooks/useUploadImages"
 import convertMsToMonths from "components/admin/utils/convertMsToMonths"
 import Layout from "components/common/Layout"
 import LinkButton from "components/common/LinkButton"
@@ -16,30 +17,6 @@ import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import { useRouter } from "next/router"
 import React, { useEffect, useMemo } from "react"
 import { FormProvider, useForm } from "react-hook-form"
-import { RequirementType } from "temporaryData/types"
-
-export type Level = {
-  id: number
-  dbId: number
-  name: string
-  image: string
-  description: string
-  requirementType: RequirementType
-  requirement: number
-  stakeTimelockMs: string | number
-  telegramGroupId: string
-  tokenSymbol?: string
-}
-
-export type FormData = {
-  tokenSymbol: string
-  isTGEnabled: boolean
-  stakeToken: string
-  isDCEnabled: boolean
-  discordServerId: string
-  inviteChannel: string
-  levels: Level[]
-}
 
 const AdminCommunityPage = (): JSX.Element => {
   const router = useRouter()
@@ -52,13 +29,15 @@ const AdminCommunityPage = (): JSX.Element => {
   const isOwner = useRedirectIfNotOwner()
   const methods = useForm({ mode: "all" })
 
-  const [discordDirty, telegramDirty, levelsDirty] = useMemo(
+  const [discordDirty, telegramDirty, levelsDirty, imageDirty] = useMemo(
     () => [
       ["isDCEnabled", "discordServerId", "inviteChannel"].some(
         (field) => typeof methods.formState.dirtyFields[field] !== "undefined"
       ),
       typeof methods.formState.dirtyFields.isTGEnabled !== "undefined",
       typeof methods.formState.dirtyFields.levels !== "undefined",
+      methods.formState.dirtyFields.levels?.filter((level) => level.image)?.length >
+        0,
     ],
     [methods.formState]
   )
@@ -77,8 +56,16 @@ const AdminCommunityPage = (): JSX.Element => {
 
   const HTTPMethod = communityData?.levels?.length > 0 ? "PATCH" : "POST"
 
-  const { loading: levelsLoading, onSubmit: onLevelsSubmit } =
-    useSubmitLevelsData(HTTPMethod)
+  const { onSubmit: uploadImages, loading: uploadLoading } = useUploadImages(
+    "PATCH",
+    "/community"
+  )
+
+  const { loading: levelsLoading, onSubmit: onLevelsSubmit } = useSubmitLevelsData(
+    HTTPMethod,
+    imageDirty ? methods.handleSubmit(uploadImages) : redirectToCommunityPage
+  )
+
   const { loading: platformsLoading, onSubmit: onPlatformsSubmit } =
     useSubmitPlatformsData(
       telegramDirty,
@@ -95,6 +82,7 @@ const AdminCommunityPage = (): JSX.Element => {
 
       // Reset the form state so we can watch the "isDirty" prop
       methods.reset({
+        urlName: communityData.urlName, // We must define it, so the photo uploader can fetch the necessary community data
         tokenSymbol: communityData.chainData?.token.symbol,
         isTGEnabled: !!communityData.communityPlatforms
           .filter((platform) => platform.active)
@@ -107,7 +95,7 @@ const AdminCommunityPage = (): JSX.Element => {
           id: level.id,
           dbId: level.id, // Needed for proper form management
           name: level.name || undefined,
-          image: level.imageUrl || undefined,
+          imageUrl: level.imageUrl || undefined,
           description: level.description || undefined,
           requirementType: level.requirementType,
           requirement: level.requirement || undefined,
@@ -155,7 +143,7 @@ const AdminCommunityPage = (): JSX.Element => {
                 <Pagination isAdminPage>
                   {discordDirty || telegramDirty || levelsDirty ? (
                     <Button
-                      isLoading={levelsLoading || platformsLoading}
+                      isLoading={levelsLoading || platformsLoading || uploadLoading}
                       colorScheme="primary"
                       onClick={methods.handleSubmit(
                         discordDirty || telegramDirty

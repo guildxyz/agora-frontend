@@ -10,6 +10,7 @@ const useRedirectIfNotOwner = () => {
 
   useEffect(() => {
     if (
+      communityData &&
       typeof account === "string" &&
       !communityData?.owner?.addresses?.some(
         ({ address }) => address === account?.toLowerCase()

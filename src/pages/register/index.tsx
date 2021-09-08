@@ -2,6 +2,7 @@ import { Box, Button, Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import NotConnectedError from "components/admin/common/NotConnectedError"
 import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityData"
+import useUploadImages from "components/admin/hooks/useUploadImages"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
 import Layout from "components/common/Layout"
@@ -28,10 +29,20 @@ const Page = (): JSX.Element => {
       chainName: "",
       themeColor: "",
       tokenAddress: "",
+      image: null,
     },
   })
 
-  const { onSubmit, loading } = useSubmitCommunityData("POST")
+  const { onSubmit: uploadImages, loading: uploadLoading } = useUploadImages("POST")
+
+  const {
+    onSubmit: onRegister,
+    loading: registerLoading,
+    success: registerSuccess,
+  } = useSubmitCommunityData(
+    "POST",
+    methods.getValues().image ? methods.handleSubmit(uploadImages) : undefined
+  )
 
   useWarnIfUnsavedChanges(
     methods.formState?.isDirty && !methods.formState.isSubmitted
@@ -48,15 +59,17 @@ const Page = (): JSX.Element => {
           <Stack spacing={{ base: 7, xl: 9 }}>
             <Pagination isCommunityTabDisabled>
               <Button
-                isLoading={loading}
+                isLoading={registerLoading || uploadLoading}
                 colorScheme="primary"
-                onClick={methods.handleSubmit(onSubmit)}
+                onClick={methods.handleSubmit(
+                  registerSuccess ? uploadImages : onRegister
+                )}
               >
                 Save
               </Button>
             </Pagination>
             <VStack spacing={12}>
-              <Details />
+              <Details registerSuccess={registerSuccess} />
               <Appearance
                 onColorChange={(newColor: string) => setColorCode(newColor)}
               />

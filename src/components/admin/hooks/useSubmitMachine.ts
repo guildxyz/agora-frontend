@@ -1,10 +1,11 @@
 import { useMachine } from "@xstate/react"
 import { usePersonalSign } from "components/_app/PersonalSignStore"
 import useToast from "hooks/useToast"
-import type { Level } from "pages/[community]/admin/community"
+import { RequirementType } from "temporaryData/types"
 import createSubmitMachine, {
   APIError,
   ContextType,
+  FetchEvent,
   InitialEvent,
   SignError,
   SignEvent,
@@ -13,20 +14,46 @@ import useShowErrorToast from "./useShowErrorToast"
 
 const MESSAGE = "Please sign this message to verify your address"
 
+export type Level = {
+  id: number
+  dbId: number
+  name: string
+  image?: File
+  description: string
+  requirementType: RequirementType
+  requirement: number
+  stakeTimelockMs: string | number
+  telegramGroupId: string
+  tokenSymbol?: string
+}
+
+export type FormData = {
+  tokenSymbol: string
+  isTGEnabled: boolean
+  stakeToken: string
+  isDCEnabled: boolean
+  discordServerId: string
+  inviteChannel: string
+  levels: Level[]
+  image?: File
+}
+
 const useSubmitMachine = <FormDataType>(
   successText: string,
   fetch: (
     _context: ContextType,
     {
       data,
-    }: SignEvent<
-      FormDataType & {
-        levels: Level[]
-      }
-    >
+    }:
+      | SignEvent<FormDataType>
+      | SignEvent<
+          FormDataType & {
+            levels: Level[]
+          }
+        >
   ) => Promise<Response | Response[]>,
-  redirect: (context: ContextType) => Promise<void>,
-  preprocess: (data: FormDataType) => FormDataType = (data) => data
+  redirect: (context: ContextType, data: FetchEvent) => Promise<void>,
+  preprocess: (data: FormDataType) => FormDataType | FormData = (data) => data
 ) => {
   const toast = useToast()
   const showErrorToast = useShowErrorToast()
@@ -65,7 +92,11 @@ const useSubmitMachine = <FormDataType>(
     send("SIGN", { data })
   }
 
-  return { onSubmit, loading: ["sign", "fetch", "parseError"].some(state.matches) }
+  return {
+    onSubmit,
+    loading: ["sign", "fetch", "parseError"].some(state.matches),
+    success: state.matches("success"),
+  }
 }
 
 export default useSubmitMachine

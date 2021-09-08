@@ -1,8 +1,8 @@
 import { useRouter } from "next/router"
-import type { FormData, Level } from "pages/[community]/admin/community"
 import convertMonthsToMs from "../utils/convertMonthsToMs"
 import { ContextType, SignEvent } from "../utils/submitMachine"
 import useCommunityData from "./useCommunityData"
+import type { FormData, Level } from "./useSubmitMachine"
 import useSubmitMachine from "./useSubmitMachine"
 
 // Replacing specific values in the JSON with undefined, so we won't send them to the API
@@ -17,9 +17,7 @@ const replacer = (key, value) => {
   return value
 }
 
-const useSubmitLevelsData = (
-  method: "POST" | "PATCH" // | "DELETE",
-) => {
+const useSubmitLevelsData = (method: "POST" | "PATCH", callback: () => void) => {
   const router = useRouter()
   const { communityData } = useCommunityData()
 
@@ -94,16 +92,21 @@ const useSubmitLevelsData = (
     return Promise.all(promises)
   }
 
-  const redirectAction = () =>
-    fetch(`/api/preview?urlName=${communityData?.urlName}`)
-      .then((res) => res.json())
-      .then((cookies: string[]) => {
-        cookies.forEach((cookie: string) => {
-          document.cookie = cookie
-        })
+  const redirectAction = async () => {
+    if (typeof callback === "function") {
+      callback()
+    } else {
+      fetch(`/api/preview?urlName=${communityData?.urlName}`)
+        .then((res) => res.json())
+        .then((cookies: string[]) => {
+          cookies.forEach((cookie: string) => {
+            document.cookie = cookie
+          })
 
-        router.push(`/${communityData?.urlName}/community`)
-      })
+          router.push(`/${communityData?.urlName}/community`)
+        })
+    }
+  }
 
   const preprocess = (_data: FormData) => {
     const data = _data

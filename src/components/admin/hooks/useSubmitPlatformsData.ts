@@ -1,4 +1,4 @@
-import type { FormData } from "pages/[community]/admin/community"
+import type { FormData } from "components/admin/hooks/useSubmitMachine"
 import { ContextType, SignEvent } from "../utils/submitMachine"
 import useCommunityData from "./useCommunityData"
 import useSubmitMachine from "./useSubmitMachine"
@@ -6,7 +6,7 @@ import useSubmitMachine from "./useSubmitMachine"
 const useSubmitPlatformsData = (
   telegramChanged: boolean,
   discordChanged: boolean,
-  callback: () => void
+  callback: () => any // TODO: better typing
 ) => {
   const { communityData } = useCommunityData()
 
