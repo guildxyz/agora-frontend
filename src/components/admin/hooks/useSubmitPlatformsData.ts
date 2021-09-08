@@ -1,4 +1,4 @@
-import type { FormData } from "pages/[community]/admin/community"
+import type { FormData } from "components/admin/hooks/useSubmitMachine"
 import { ContextType, SignEvent } from "../utils/submitMachine"
 import useCommunityData from "./useCommunityData"
 import useSubmitMachine from "./useSubmitMachine"

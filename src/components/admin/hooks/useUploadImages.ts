@@ -3,7 +3,6 @@ import { ContextType, SignEvent } from "../utils/submitMachine"
 import useSubmitMachine, { FormData as CommunityFormData } from "./useSubmitMachine"
 
 const imagesToFormData = (_data: CommunityFormData) => {
-  // Creating a FormData object & populating it with the necessary data
   const formData = new FormData()
 
   // Renaming the community photo
@@ -20,7 +19,7 @@ const imagesToFormData = (_data: CommunityFormData) => {
     }
   })
 
-  return formData // We'll need to submit this to the image upload endpoint!
+  return formData
 }
 
 const useUploadImages = (method = "PUST") => {
