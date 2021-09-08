@@ -32,7 +32,12 @@ const AdminHomePage = (): JSX.Element => {
     onSubmit: onCommunitySubmit,
     loading: communitySubmitLoading,
     success: communitySubmitSuccess,
-  } = useSubmitCommunityData("PATCH", methods.handleSubmit(uploadImages))
+  } = useSubmitCommunityData(
+    "PATCH",
+    methods.getValues().image || !!methods.formState.dirtyFields.image
+      ? methods.handleSubmit(uploadImages)
+      : undefined
+  )
 
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
@@ -89,11 +94,9 @@ const AdminHomePage = (): JSX.Element => {
                     <Button
                       isLoading={communitySubmitLoading || uploadLoading}
                       colorScheme="primary"
-                      onClick={() => {
-                        if (communitySubmitSuccess)
-                          methods.handleSubmit(uploadImages)()
-                        else methods.handleSubmit(onCommunitySubmit)()
-                      }}
+                      onClick={methods.handleSubmit(
+                        communitySubmitSuccess ? uploadImages : onCommunitySubmit
+                      )}
                     >
                       Save
                     </Button>
