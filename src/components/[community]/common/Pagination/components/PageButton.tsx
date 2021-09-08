@@ -29,6 +29,7 @@ const PageButton = ({
       href={
         isAdminPage ? `/${communityUrl}/admin/${href}` : `/${communityUrl}/${href}`
       }
+      minW="max-content"
       variant="ghost"
       isActive={isActive}
       color={(!isActive && gray) || undefined}
