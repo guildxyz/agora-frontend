@@ -24,6 +24,7 @@ const useTokenData = (address: string, selectedChain: string) => {
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
+      errorRetryInterval: 100,
     }
   )
 
