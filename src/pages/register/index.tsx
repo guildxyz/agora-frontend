@@ -61,7 +61,9 @@ const Page = (): JSX.Element => {
               <Button
                 isLoading={registerLoading || uploadLoading}
                 colorScheme="primary"
-                onClick={methods.handleSubmit(onRegister)}
+                onClick={methods.handleSubmit(
+                  registerSuccess ? uploadImages : onRegister
+                )}
               >
                 Save
               </Button>
