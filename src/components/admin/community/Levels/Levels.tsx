@@ -21,8 +21,6 @@ const Levels = (): JSX.Element => {
     fields: levelFields,
     append: appendLevel,
     remove: removeLevel,
-    swap: swapLevels,
-    update: updateLevels,
   } = useFieldArray({
     name: "levels",
     keyName: "dbId",
