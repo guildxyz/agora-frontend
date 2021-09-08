@@ -140,7 +140,7 @@ const AdminCommunityPage = (): JSX.Element => {
           >
             {account && isOwner && (
               <Stack spacing={{ base: 7, xl: 9 }}>
-                <Pagination isAdminPage>
+                <Pagination>
                   {discordDirty || telegramDirty || levelsDirty ? (
                     <Button
                       isLoading={levelsLoading || platformsLoading || uploadLoading}

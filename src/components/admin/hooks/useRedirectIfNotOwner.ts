@@ -16,7 +16,7 @@ const useRedirectIfNotOwner = () => {
         ({ address }) => address === account?.toLowerCase()
       )
     )
-      router.push(`/${communityData?.urlName}`)
+      router.push(`/${communityData?.urlName}/info`)
   }, [account, communityData, router])
 
   if (!active) return false

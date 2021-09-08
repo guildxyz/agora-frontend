@@ -66,7 +66,7 @@ const CommunityCard = ({
 
   return (
     <Link
-      href={`/${urlName}`}
+      href={`/${urlName}/info`}
       _hover={{ textDecor: "none" }}
       borderRadius="2xl"
       w="full"

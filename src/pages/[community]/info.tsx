@@ -28,7 +28,10 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
             {communityData.owner?.addresses?.some(
               ({ address }) => address === account?.toLowerCase()
             ) && (
-              <LinkButton href={`${communityData.urlName}/admin`} variant="solid">
+              <LinkButton
+                href={`/${communityData.urlName}/admin/info`}
+                variant="solid"
+              >
                 Edit
               </LinkButton>
             )}

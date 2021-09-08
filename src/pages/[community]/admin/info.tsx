@@ -1,6 +1,5 @@
 import { Box, Button, Fade, Spinner, Stack, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import NotConnectedError from "components/admin/common/NotConnectedError"
 import useCommunityData from "components/admin/hooks/useCommunityData"
 import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityData"
@@ -60,13 +59,13 @@ const AdminHomePage = (): JSX.Element => {
   )
 
   // If the user isn't logged in, display an error message
-  if (!chainId) {
-    return (
-      <NotConnectedError
-        title={communityData ? `${communityData.name} - Settings` : "Loading..."}
-      />
-    )
-  }
+  // if (!chainId) {
+  //   return (
+  //     <NotConnectedError
+  //       title={communityData ? `${communityData.name} - Settings` : "Loading..."}
+  //     />
+  //   )
+  // }
 
   // If we haven't fetched the community data / form data yet, display a spinner
   if (!communityData || !methods)
@@ -89,7 +88,7 @@ const AdminHomePage = (): JSX.Element => {
           >
             {account && isOwner && (
               <Stack spacing={{ base: 7, xl: 9 }}>
-                <Pagination isAdminPage>
+                <Pagination>
                   {methods.formState.isDirty ? (
                     <Button
                       isLoading={communitySubmitLoading || uploadLoading}
@@ -101,7 +100,10 @@ const AdminHomePage = (): JSX.Element => {
                       Save
                     </Button>
                   ) : (
-                    <LinkButton variant="solid" href={`/${communityData.urlName}`}>
+                    <LinkButton
+                      variant="solid"
+                      href={`/${communityData.urlName}/info`}
+                    >
                       Done
                     </LinkButton>
                   )}

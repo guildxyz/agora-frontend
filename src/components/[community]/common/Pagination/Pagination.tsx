@@ -3,13 +3,11 @@ import { PropsWithChildren, useEffect, useRef, useState } from "react"
 import PageButton from "./components/PageButton"
 
 type PaginationProps = {
-  isAdminPage?: boolean
-  isCommunityTabDisabled?: boolean
+  isRegister?: boolean
 }
 
 const Pagination = ({
-  isAdminPage = false,
-  isCommunityTabDisabled = false,
+  isRegister = false,
   children,
 }: PropsWithChildren<PaginationProps>): JSX.Element => {
   const paginationRef = useRef()
@@ -54,21 +52,15 @@ const Pagination = ({
         opacity: isSticky ? 1 : 0,
       }}
     >
-      <PageButton isAdminPage={isAdminPage} href="">
-        Info
-      </PageButton>
+      <PageButton href={isRegister ? "register" : "info"}>Info</PageButton>
 
       <Tooltip
         label="You have to save general info of your token first"
         placement="bottom"
-        isDisabled={!isCommunityTabDisabled}
+        isDisabled={!isRegister}
       >
         <Box>
-          <PageButton
-            isAdminPage={isAdminPage}
-            href="community"
-            disabled={isCommunityTabDisabled}
-          >
+          <PageButton href="community" disabled={isRegister}>
             Community
           </PageButton>
         </Box>

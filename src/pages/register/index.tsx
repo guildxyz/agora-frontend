@@ -57,7 +57,7 @@ const Page = (): JSX.Element => {
       <Box sx={generatedColors}>
         <Layout title="Integrate token">
           <Stack spacing={{ base: 7, xl: 9 }}>
-            <Pagination isCommunityTabDisabled>
+            <Pagination isRegister>
               <Button
                 isLoading={registerLoading || uploadLoading}
                 colorScheme="primary"
