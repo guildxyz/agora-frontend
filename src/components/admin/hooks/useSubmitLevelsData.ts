@@ -96,15 +96,7 @@ const useSubmitLevelsData = (method: "POST" | "PATCH", callback: () => void) => 
     if (typeof callback === "function") {
       callback()
     } else {
-      fetch(`/api/preview?urlName=${communityData?.urlName}`)
-        .then((res) => res.json())
-        .then((cookies: string[]) => {
-          cookies.forEach((cookie: string) => {
-            document.cookie = cookie
-          })
-
-          router.push(`/${communityData?.urlName}/community`)
-        })
+      router.push(`/${communityData?.urlName}/community`)
     }
   }
 

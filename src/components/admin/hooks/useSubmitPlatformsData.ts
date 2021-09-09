@@ -1,4 +1,5 @@
 import type { FormData } from "components/admin/hooks/useSubmitMachine"
+import { useRouter } from "next/router"
 import { ContextType, SignEvent } from "../utils/submitMachine"
 import useCommunityData from "./useCommunityData"
 import useSubmitMachine from "./useSubmitMachine"
@@ -9,6 +10,7 @@ const useSubmitPlatformsData = (
   callback: () => any // TODO: better typing
 ) => {
   const { communityData } = useCommunityData()
+  const router = useRouter()
 
   const fetchService = (_context: ContextType, { data }: SignEvent<any>) => {
     const promises = []
@@ -63,7 +65,11 @@ const useSubmitPlatformsData = (
   }
 
   const redirectAction = async () => {
-    if (typeof callback === "function") callback()
+    if (typeof callback === "function") {
+      callback()
+    } else {
+      router.push(`/${communityData?.urlName}/community`)
+    }
   }
 
   return useSubmitMachine<FormData>(

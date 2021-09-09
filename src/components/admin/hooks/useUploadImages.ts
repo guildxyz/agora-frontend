@@ -47,19 +47,9 @@ const useUploadImages = (method: "POST" | "PATCH", redirectPath = "") => {
     })
   }
 
-  const redirectAction =
-    method === "PATCH"
-      ? ({ urlName }: ContextType) =>
-          fetch(`/api/preview?urlName=${urlName}`)
-            .then((res) => res.json())
-            .then((cookies: string[]) => {
-              cookies.forEach((cookie: string) => {
-                document.cookie = cookie
-              })
-              router.push(`/${urlName}${redirectPath}`)
-            })
-      : ({ urlName }: ContextType) =>
-          new Promise<void>(() => router.push(`/${urlName}`))
+  const redirectAction = async ({ urlName }: ContextType) => {
+    router.push(`/${urlName}`)
+  }
 
   return useSubmitMachine<CommunityFormData>(
     "Images updated! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",

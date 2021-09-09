@@ -22,19 +22,9 @@ const useSubmitCommunityData = <FormDataType>(
       }
     )
 
-  const redirectAction =
-    method === "PATCH"
-      ? ({ urlName }: ContextType) =>
-          fetch(`/api/preview?urlName=${urlName}`)
-            .then((res) => res.json())
-            .then((cookies: string[]) => {
-              cookies.forEach((cookie: string) => {
-                document.cookie = cookie
-              })
-              router.push(`/${urlName}`)
-            })
-      : ({ urlName }: ContextType) =>
-          new Promise<void>(() => router.push(`/${urlName}`))
+  const redirectAction = async ({ urlName }: ContextType) => {
+    router.push(`/${urlName}`)
+  }
 
   return useSubmitMachine(
     method === "POST"
