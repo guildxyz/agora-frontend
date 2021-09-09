@@ -125,6 +125,8 @@ const Level = ({
             <Img
               src={`${imageUrl}`}
               boxSize="45px"
+              htmlWidth="45px"
+              htmlHeight="45px"
               alt={`${name} image`}
               borderRadius="full"
             />

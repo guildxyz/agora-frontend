@@ -3,6 +3,7 @@ import {
   Button,
   Divider,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Grid,
   GridItem,
@@ -10,6 +11,7 @@ import {
   Input,
   InputGroup,
   InputLeftAddon,
+  ScaleFade,
   Select,
   Spinner,
   Stack,
@@ -20,15 +22,8 @@ import {
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
 import Link from "components/common/Link"
-import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
-import { Platform } from "temporaryData/types"
-
-type Props = {
-  activePlatforms?: Platform[]
-  comingSoon?: boolean
-}
 
 type DiscordError = {
   message: string
@@ -42,10 +37,7 @@ type DiscordChannel = {
   category: string
 }
 
-const Platforms = ({
-  activePlatforms = [],
-  comingSoon = false,
-}: Props): JSX.Element => {
+const Platforms = (): JSX.Element => {
   const {
     register,
     getValues,
@@ -64,7 +56,10 @@ const Platforms = ({
   const discordServerIdChange = useWatch({ name: "discordServerId" })
 
   const onServerIdChange = (serverId) => {
-    if (errors.discordServerId || discordError?.type === "server") return
+    if (errors.discordServerId || discordError?.type === "server") {
+      setDiscordChannels(null)
+      return
+    }
 
     setChannelSelectLoading(true)
     fetch(`${process.env.NEXT_PUBLIC_API}/community/discordChannels/${serverId}`)
@@ -118,27 +113,13 @@ const Platforms = ({
           templateColumns={{ base: "100%", md: "20% auto" }}
           gap={{ base: 8, md: 12 }}
         >
-          {comingSoon && (
-            <GridItem colSpan={{ base: 1, md: 2 }} mb={-8}>
-              <Badge>Coming soon</Badge>
-            </GridItem>
-          )}
-
           <GridItem>
-            <FormControl
-              display="flex"
-              height="full"
-              alignItems="center"
-              isDisabled={comingSoon}
-            >
+            <FormControl display="flex" height="full" alignItems="center">
               <Switch
                 colorScheme="primary"
                 mr={4}
                 {...register("isDCEnabled")}
-                defaultChecked={
-                  !!activePlatforms.find((platform) => platform.name === "DISCORD")
-                }
-                isDisabled={comingSoon}
+                isChecked={getValues("isDCEnabled")}
               />
               <FormLabel margin={0}>Discord</FormLabel>
             </FormControl>
@@ -147,18 +128,19 @@ const Platforms = ({
           <GridItem>
             {isDCEnabledChange ? (
               <VStack spacing={4} alignItems="start">
-                <FormControl isDisabled={comingSoon}>
+                <FormControl isInvalid={errors.discordServerId}>
                   <InputGroup>
                     <InputLeftAddon>Server ID</InputLeftAddon>
                     <Input
                       width={64}
                       {...register("discordServerId", {
-                        required: isDCEnabledChange,
-                        minLength: 17,
+                        required: isDCEnabledChange && "This field is required.",
                       })}
-                      isInvalid={errors.discordServerId}
                     />
                   </InputGroup>
+                  <FormErrorMessage>
+                    {errors.discordServerId?.message}
+                  </FormErrorMessage>
                 </FormControl>
                 {discordError && discordError.type === "server" && (
                   <HStack spacing={4} justifyItems="center">
@@ -184,16 +166,11 @@ const Platforms = ({
                 )}
 
                 {channelSelectLoading && (
-                  <AnimatePresence>
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.75 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.75 }}
-                    >
-                      <Spinner />
-                    </motion.div>
-                  </AnimatePresence>
+                  <ScaleFade in={channelSelectLoading}>
+                    <Spinner />
+                  </ScaleFade>
                 )}
+
                 {discordError && discordError.type === "channels" && (
                   <Stack
                     direction={{ base: "column", lg: "row" }}
@@ -220,32 +197,26 @@ const Platforms = ({
                   </Stack>
                 )}
                 {discordChannels?.length > 0 && (
-                  <AnimatePresence>
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.75 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.75 }}
-                    >
-                      <FormControl isDisabled={comingSoon}>
-                        <FormLabel>Invite channel</FormLabel>
+                  <ScaleFade in={discordChannels?.length > 0}>
+                    <FormControl>
+                      <FormLabel>Invite channel</FormLabel>
 
-                        <Select
-                          width={64}
-                          placeholder="Select one"
-                          {...register("inviteChannel", {
-                            required: isDCEnabledChange,
-                          })}
-                          isInvalid={errors.inviteChannel}
-                        >
-                          {discordChannels.map((channel) => (
-                            <option key={channel.id} value={channel.id}>
-                              {`#${channel.name} (${channel.category})`}
-                            </option>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </motion.div>
-                  </AnimatePresence>
+                      <Select
+                        width={64}
+                        placeholder="Select one"
+                        {...register("inviteChannel", {
+                          required: isDCEnabledChange,
+                        })}
+                        isInvalid={errors.inviteChannel}
+                      >
+                        {discordChannels.map((channel) => (
+                          <option key={channel.id} value={channel.id}>
+                            {`#${channel.name} (${channel.category})`}
+                          </option>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </ScaleFade>
                 )}
               </VStack>
             ) : (
@@ -256,20 +227,12 @@ const Platforms = ({
           </GridItem>
 
           <GridItem>
-            <FormControl
-              display="flex"
-              height="full"
-              alignItems="center"
-              isDisabled={comingSoon}
-            >
+            <FormControl display="flex" height="full" alignItems="center">
               <Switch
                 colorScheme="primary"
                 mr={4}
                 {...register("isTGEnabled")}
-                defaultChecked={
-                  !!activePlatforms.find((platform) => platform.name === "TELEGRAM")
-                }
-                isDisabled={comingSoon}
+                isChecked={getValues("isTGEnabled")}
               />
               <FormLabel margin={0}>Telegram</FormLabel>
             </FormControl>
