@@ -6,6 +6,7 @@ import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityDat
 import useUploadImages from "components/admin/hooks/useUploadImages"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
+import getServerSideProps from "components/admin/utils/setCookies"
 import Layout from "components/common/Layout"
 import LinkButton from "components/common/LinkButton"
 import Pagination from "components/[community]/common/Pagination"
@@ -108,4 +109,5 @@ const AdminHomePage = (): JSX.Element => {
   )
 }
 
+export { getServerSideProps }
 export default AdminHomePage

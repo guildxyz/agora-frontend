@@ -12,6 +12,7 @@ import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityDat
 import useUploadImages from "components/admin/hooks/useUploadImages"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
+import getServerSideProps from "components/admin/utils/setCookies"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
@@ -95,4 +96,5 @@ const Page = (): JSX.Element => {
   )
 }
 
+export { getServerSideProps }
 export default Page
