@@ -42,7 +42,7 @@ const AdminCommunityPage = (): JSX.Element => {
 
   const { onSubmit: uploadImages, loading: uploadLoading } = useUploadImages(
     "PATCH",
-    "/community"
+    "community"
   )
 
   const { loading: levelsLoading, onSubmit: onLevelsSubmit } = useSubmitLevelsData(

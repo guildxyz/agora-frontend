@@ -4,7 +4,7 @@ const getServerSideProps: GetServerSideProps = async ({ preview, resolvedUrl }) 
   if (!preview)
     return {
       redirect: {
-        destination: `/api/preview?returnUrl=${resolvedUrl}`,
+        destination: `/api/preview?returnUrl=${resolvedUrl.split("?")[0]}`,
         permanent: false,
       },
       props: {},

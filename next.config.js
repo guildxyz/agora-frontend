@@ -1,5 +1,9 @@
 module.exports = {
   async redirects() {
+    /**
+     * NOTE: this only runs at deploy, so won't work for newly created communities
+     * until another deploy happens
+     */
     const communities = await fetch(`${process.env.NEXT_PUBLIC_API}/community`).then(
       (response) => response.json()
     )

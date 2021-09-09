@@ -29,7 +29,7 @@ const imagesToFormData = (_data: CommunityFormData, levels: Level[]) => {
   return formData
 }
 
-const useUploadImages = (method: "POST" | "PATCH", redirectPath = "") => {
+const useUploadImages = (method: "POST" | "PATCH", redirectPath = "info") => {
   const router = useRouter()
 
   const fetchService = async (
@@ -48,7 +48,7 @@ const useUploadImages = (method: "POST" | "PATCH", redirectPath = "") => {
   }
 
   const redirectAction = async ({ urlName }: ContextType) => {
-    router.push(`/${urlName}/info`)
+    router.push(`/${urlName}/${redirectPath}`)
   }
 
   return useSubmitMachine<CommunityFormData>(
