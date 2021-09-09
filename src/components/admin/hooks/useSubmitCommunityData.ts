@@ -23,7 +23,7 @@ const useSubmitCommunityData = <FormDataType>(
     )
 
   const redirectAction = async ({ urlName }: ContextType) => {
-    router.push(`/${urlName}`)
+    router.push(`/${urlName}/info`)
   }
 
   return useSubmitMachine(
