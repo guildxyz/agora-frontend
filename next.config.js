@@ -1,9 +1,10 @@
 module.exports = {
   async redirects() {
-    const paths = await fetch(`${process.env.NEXT_PUBLIC_API}/community`).then(
-      (response) => response.json().then((_) => _.map(({ urlName }) => urlName))
+    const communities = await fetch(`${process.env.NEXT_PUBLIC_API}/community`).then(
+      (response) => response.json()
     )
-    const urlNames = paths.join("|")
+    const urlNames = communities.map(({ urlName }) => urlName).join("|")
+
     return [
       {
         // ^(?!register)(.(?!\/))+$
@@ -11,6 +12,11 @@ module.exports = {
         destination: "/:path/info",
         permanent: false,
       },
+      /* {
+        source: `/:path(^${urlNames}|[a-zA-Z0-9]+_token$)/admin`,
+        destination: "/:path/admin/info",
+        permanent: false,
+      }, */
     ]
   },
 }
