@@ -1,5 +1,4 @@
 import {
-  Badge,
   CloseButton,
   FormControl,
   FormErrorMessage,
@@ -107,27 +106,21 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 })}
               />
               <FormErrorMessage>
-                {errors.levels && errors.levels[index].name?.message}
+                {errors.levels && errors.levels[index]?.name?.message}
               </FormErrorMessage>
             </FormControl>
           </GridItem>
 
           <GridItem>
-            {/* Disabled for now, until we can't upload photos */}
             <FormControl>
-              <FormLabel>
-                <Text as="span" mr={1.5} opacity={0.5}>
-                  Image
-                </Text>{" "}
-                <Badge>Coming soon</Badge>
-              </FormLabel>
+              <FormLabel>Image</FormLabel>
               <Controller
                 render={({ field, fieldState }) => (
                   <PhotoUploader
                     ref={field.ref}
                     isInvalid={fieldState.invalid}
                     buttonText="Change image..."
-                    isDisabled
+                    currentImage={getValues(`levels.${index}.imageUrl`)}
                     onPhotoChange={(newPhoto: File) => field.onChange(newPhoto)}
                     {...field}
                   />
@@ -225,7 +218,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 </InputRightAddon>
               </InputGroup>
               <FormErrorMessage>
-                {errors.levels && errors.levels[index].requirement?.message}
+                {errors.levels && errors.levels[index]?.requirement?.message}
               </FormErrorMessage>
             </FormControl>
           </GridItem>
@@ -257,7 +250,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 </InputRightAddon>
               </InputGroup>
               <FormErrorMessage>
-                {errors.levels && errors.levels[index].stakeTimelockMs?.message}
+                {errors.levels && errors.levels[index]?.stakeTimelockMs?.message}
               </FormErrorMessage>
             </FormControl>
           </GridItem>
@@ -294,7 +287,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 })}
               />
               <FormErrorMessage>
-                {errors.levels && errors.levels[index].telegramGroupId?.message}
+                {errors.levels && errors.levels[index]?.telegramGroupId?.message}
               </FormErrorMessage>
             </FormControl>
           </VStack>

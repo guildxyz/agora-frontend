@@ -18,7 +18,7 @@ import slugify from "components/admin/utils/slugify"
 import { Web3Connection } from "components/_app/Web3ConnectionManager"
 import { Chains, RPC } from "connectors"
 import Image from "next/image"
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useMemo } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 import useTokenData from "./hooks/useTokenData"
 
@@ -39,15 +39,29 @@ const UsedToken = (): JSX.Element => {
   const {
     data: [tokenName, tokenSymbol],
     isValidating: isTokenSymbolValidating,
-    error,
   } = useTokenData(tokenAddress, selectedChain)
 
+  const tokenDataFetched = useMemo(
+    () =>
+      typeof tokenName === "string" &&
+      tokenName.length > 0 &&
+      typeof tokenSymbol === "string" &&
+      tokenSymbol.length > 0,
+    [tokenName, tokenSymbol]
+  )
+
+  const wrongChain = useMemo(
+    () => tokenName === null && tokenSymbol === null,
+    [tokenName, tokenSymbol]
+  )
+
   useEffect(() => {
-    if (tokenName !== undefined) {
+    if (tokenDataFetched) {
       setValue("name", communityName || tokenName)
       setValue("urlName", urlName || slugify(tokenName))
+      Promise.all([trigger("name"), trigger("urlName")])
     }
-  }, [tokenName])
+  }, [tokenDataFetched])
 
   useEffect(() => {
     setValue("chainName", Chains[chainId])
@@ -55,7 +69,7 @@ const UsedToken = (): JSX.Element => {
 
   useEffect(() => {
     if (touchedFields.tokenAddress) trigger("tokenAddress")
-  }, [isTokenSymbolValidating, error, trigger, touchedFields])
+  }, [isTokenSymbolValidating, tokenDataFetched, wrongChain, trigger, touchedFields])
 
   const { colorMode } = useColorMode()
 
@@ -99,12 +113,14 @@ const UsedToken = (): JSX.Element => {
                 },
                 validate: () =>
                   isTokenSymbolValidating ||
-                  !error ||
+                  !wrongChain ||
+                  tokenDataFetched ||
                   "Failed to fetch symbol. Please switch to the correct network.",
               })}
               isInvalid={errors.tokenAddress}
             />
-            {((!error && tokenSymbol !== undefined) || isTokenSymbolValidating) && (
+            {((tokenDataFetched && tokenSymbol !== undefined) ||
+              isTokenSymbolValidating) && (
               <InputRightAddon fontSize={{ base: "xs", sm: "md" }}>
                 {tokenSymbol === undefined && isTokenSymbolValidating ? (
                   <HStack px={4} alignContent="center">

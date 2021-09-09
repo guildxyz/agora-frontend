@@ -1,12 +1,13 @@
-import { Box, Button, Fade, Spinner, Stack, Tooltip, VStack } from "@chakra-ui/react"
+import { Box, Button, Spinner, Stack, Tooltip, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import NotConnectedError from "components/admin/common/NotConnectedError"
 import Levels from "components/admin/community/Levels"
 import Platforms from "components/admin/community/Platforms"
 import useCommunityData from "components/admin/hooks/useCommunityData"
+import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSpaceFactory from "components/admin/hooks/useSpaceFactory"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
 import useSubmitPlatformsData from "components/admin/hooks/useSubmitPlatformsData"
+import useUploadImages from "components/admin/hooks/useUploadImages"
 import convertMsToMonths from "components/admin/utils/convertMsToMonths"
 import Layout from "components/common/Layout"
 import LinkButton from "components/common/LinkButton"
@@ -53,11 +54,7 @@ const AdminCommunityPage = (): JSX.Element => {
     "chakra-colors-primary",
     communityData?.themeColor || "#71717a"
   )
-  /* const isOwner = useRedirectIfNotOwner(
-    communityData?.owner?.address,
-    `/${communityData?.urlName}`
-  ) */
-  const isOwner = true
+  const isOwner = useRedirectIfNotOwner()
   const methods = useForm({ mode: "all" })
 
   const { contractAddress } = useSpaceFactory(communityData?.chainData.token.address)
@@ -78,13 +75,15 @@ const AdminCommunityPage = (): JSX.Element => {
     [levels]
   )
 
-  const [discordDirty, telegramDirty, levelsDirty] = useMemo(
+  const [discordDirty, telegramDirty, levelsDirty, imageDirty] = useMemo(
     () => [
       ["isDCEnabled", "discordServerId", "inviteChannel"].some(
         (field) => typeof methods.formState.dirtyFields[field] !== "undefined"
       ),
       typeof methods.formState.dirtyFields.isTGEnabled !== "undefined",
       typeof methods.formState.dirtyFields.levels !== "undefined",
+      methods.formState.dirtyFields.levels?.filter((level) => level.image)?.length >
+        0,
     ],
     [methods.formState]
   )
@@ -103,8 +102,16 @@ const AdminCommunityPage = (): JSX.Element => {
 
   const HTTPMethod = communityData?.levels?.length > 0 ? "PATCH" : "POST"
 
-  const { loading: levelsLoading, onSubmit: onLevelsSubmit } =
-    useSubmitLevelsData(HTTPMethod)
+  const { onSubmit: uploadImages, loading: uploadLoading } = useUploadImages(
+    "PATCH",
+    "/community"
+  )
+
+  const { loading: levelsLoading, onSubmit: onLevelsSubmit } = useSubmitLevelsData(
+    HTTPMethod,
+    imageDirty ? methods.handleSubmit(uploadImages) : redirectToCommunityPage
+  )
+
   const { loading: platformsLoading, onSubmit: onPlatformsSubmit } =
     useSubmitPlatformsData(
       telegramDirty,
@@ -121,6 +128,7 @@ const AdminCommunityPage = (): JSX.Element => {
 
       // Reset the form state so we can watch the "isDirty" prop
       methods.reset({
+        urlName: communityData.urlName, // We must define it, so the photo uploader can fetch the necessary community data
         tokenSymbol: communityData.chainData?.token.symbol,
         isTGEnabled: !!communityData.communityPlatforms
           .filter((platform) => platform.active)
@@ -133,7 +141,7 @@ const AdminCommunityPage = (): JSX.Element => {
           id: level.id,
           dbId: level.id, // Needed for proper form management
           name: level.name || undefined,
-          image: level.imageUrl || undefined,
+          imageUrl: level.imageUrl || undefined,
           description: level.description || undefined,
           requirementType: level.requirementType,
           requirement: level.requirement || undefined,
@@ -148,17 +156,8 @@ const AdminCommunityPage = (): JSX.Element => {
     methods.formState?.isDirty && !methods.formState.isSubmitted
   )
 
-  // If the user isn't logged in, display an error message
-  if (!chainId) {
-    return (
-      <NotConnectedError
-        title={communityData ? `${communityData.name} - Settings` : "Loading..."}
-      />
-    )
-  }
-
   // If we haven't fetched the community data / form data yet, display a spinner
-  if (!communityData || !methods)
+  if (!isOwner || !methods)
     return (
       <Box sx={generatedColors}>
         <VStack pt={16} justifyItems="center">
@@ -169,67 +168,65 @@ const AdminCommunityPage = (): JSX.Element => {
 
   // Otherwise render the admin page
   return (
-    <Fade in={!!communityData}>
-      <FormProvider {...methods}>
-        <Box sx={generatedColors}>
-          <Layout
-            title={`${communityData.name} - Settings`}
-            imageUrl={communityData.imageUrl}
-          >
-            {account && isOwner && (
-              <Stack spacing={{ base: 7, xl: 9 }}>
-                <Pagination isAdminPage>
-                  {factoryAvailable &&
-                    // !hasContract &&
-                    isCommunityAdminPage &&
-                    hasStakingLevel && <DeploySpace />}
-                  <Tooltip
-                    label={
-                      !factoryAvailable && hasStakingLevel
-                        ? "Staking levels are not supported on this network"
-                        : "First you have to deploy a contract for the staking level(s)"
-                    }
-                    isDisabled={
-                      (factoryAvailable || !hasStakingLevel) &&
-                      (!factoryAvailable || !hasStakingLevel || hasContract)
-                    }
-                  >
-                    {discordDirty || telegramDirty || levelsDirty ? (
-                      <Button
-                        isLoading={levelsLoading || platformsLoading}
-                        colorScheme="primary"
-                        onClick={methods.handleSubmit(
-                          discordDirty || telegramDirty
-                            ? onPlatformsSubmit
-                            : onLevelsSubmit
-                        )}
-                        isDisabled={
-                          (!factoryAvailable && hasStakingLevel) ||
-                          (factoryAvailable && hasStakingLevel && !hasContract)
-                        }
-                      >
-                        Save
-                      </Button>
-                    ) : (
-                      <LinkButton
-                        variant="solid"
-                        href={`/${communityData.urlName}/community`}
-                      >
-                        Done
-                      </LinkButton>
-                    )}
-                  </Tooltip>
-                </Pagination>
-                <VStack pb={{ base: 16, xl: 0 }} spacing={12}>
-                  <Platforms />
-                  <Levels />
-                </VStack>
-              </Stack>
-            )}
-          </Layout>
-        </Box>
-      </FormProvider>
-    </Fade>
+    <FormProvider {...methods}>
+      <Box sx={generatedColors}>
+        <Layout
+          title={`${communityData.name} - Settings`}
+          imageUrl={communityData.imageUrl}
+        >
+          {account && isOwner && (
+            <Stack spacing={{ base: 7, xl: 9 }}>
+              <Pagination>
+                {factoryAvailable &&
+                  // !hasContract &&
+                  isCommunityAdminPage &&
+                  hasStakingLevel && <DeploySpace />}
+                <Tooltip
+                  label={
+                    !factoryAvailable && hasStakingLevel
+                      ? "Staking levels are not supported on this network"
+                      : "First you have to deploy a contract for the staking level(s)"
+                  }
+                  isDisabled={
+                    (factoryAvailable || !hasStakingLevel) &&
+                    (!factoryAvailable || !hasStakingLevel || hasContract)
+                  }
+                >
+                  {discordDirty || telegramDirty || levelsDirty ? (
+                    <Button
+                      isLoading={levelsLoading || platformsLoading || uploadLoading}
+                      colorScheme="primary"
+                      onClick={methods.handleSubmit(
+                        discordDirty || telegramDirty
+                          ? onPlatformsSubmit
+                          : onLevelsSubmit
+                      )}
+                      isDisabled={
+                        (!factoryAvailable && hasStakingLevel) ||
+                        (factoryAvailable && hasStakingLevel && !hasContract)
+                      }
+                    >
+                      Save
+                    </Button>
+                  ) : (
+                    <LinkButton
+                      variant="solid"
+                      href={`/${communityData.urlName}/community`}
+                    >
+                      Done
+                    </LinkButton>
+                  )}
+                </Tooltip>
+              </Pagination>
+              <VStack pb={{ base: 16, xl: 0 }} spacing={12}>
+                <Platforms />
+                <Levels />
+              </VStack>
+            </Stack>
+          )}
+        </Layout>
+      </Box>
+    </FormProvider>
   )
 }
 
