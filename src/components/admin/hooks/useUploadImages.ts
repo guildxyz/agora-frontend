@@ -52,7 +52,7 @@ const useUploadImages = (method: "POST" | "PATCH", redirectPath = "info") => {
   }
 
   return useSubmitMachine<CommunityFormData>(
-    "Images updated! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
+    "Images updated!",
     fetchService,
     redirectAction
   )
