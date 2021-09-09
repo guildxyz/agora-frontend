@@ -59,7 +59,7 @@ const useUploadImages = (method: "POST" | "PATCH", redirectPath = "") => {
               router.push(`/${urlName}${redirectPath}`)
             })
       : ({ urlName }: ContextType) =>
-          new Promise<void>(() => router.push(`/${urlName}`))
+          new Promise<void>(() => router.push(`/${urlName}/info`))
 
   return useSubmitMachine<CommunityFormData>(
     "Images updated! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",

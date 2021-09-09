@@ -19,7 +19,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   /* if (req.query.levelsPage) {
     res.redirect(`/${community.urlName}/community`)
   } else {
-    res.redirect(`/${community.urlName}`)
+    res.redirect(`/${community.urlName}/info`)
   } */
   res.status(200).send(cookies)
 }

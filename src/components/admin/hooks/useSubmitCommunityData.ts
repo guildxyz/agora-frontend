@@ -34,7 +34,7 @@ const useSubmitCommunityData = <FormDataType>(
               router.push(`/${urlName}`)
             })
       : ({ urlName }: ContextType) =>
-          new Promise<void>(() => router.push(`/${urlName}`))
+          new Promise<void>(() => router.push(`/${urlName}/info`))
 
   return useSubmitMachine(
     method === "POST"
