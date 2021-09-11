@@ -17,7 +17,6 @@ import DeploySpace from "components/[community]/common/Pagination/components/Dep
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import { Chains, SpaceFactory } from "connectors"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
-import { useRouter } from "next/router"
 import { useEffect, useMemo } from "react"
 import { FormProvider, useForm, useWatch } from "react-hook-form"
 
@@ -33,14 +32,10 @@ const AdminCommunityPage = (): JSX.Element => {
   const methods = useForm({ mode: "all" })
 
   const { account, chainId } = useWeb3React()
-  const router = useRouter()
   const { contractAddress } = useSpaceFactory(communityData?.chainData.token.address)
   const hasContract =
     typeof contractAddress === "string" && contractAddress !== ZERO_ADDRESS
   const factoryAvailable = typeof SpaceFactory[Chains[chainId]] === "string"
-  const [, , ...currentPath] = router.asPath.split("/")
-  const isCommunityAdminPage =
-    currentPath.includes("admin") && currentPath.includes("community")
   const levels = useWatch({
     name: "levels",
     defaultValue: [],
@@ -142,10 +137,9 @@ const AdminCommunityPage = (): JSX.Element => {
           {account && isOwner && (
             <Stack spacing={{ base: 7, xl: 9 }}>
               <Pagination>
-                {factoryAvailable &&
-                  // !hasContract &&
-                  isCommunityAdminPage &&
-                  hasStakingLevel && <DeploySpace />}
+                {factoryAvailable && !hasContract && hasStakingLevel && (
+                  <DeploySpace />
+                )}
                 <Tooltip
                   label={
                     !factoryAvailable && hasStakingLevel
