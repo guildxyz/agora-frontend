@@ -101,7 +101,12 @@ const communities: Community[] = [
     ],
     parallelLevels: false,
     communityPlatforms: [
-      { name: "DISCORD", platformId: "842030939332804679", active: true },
+      {
+        name: "DISCORD",
+        platformId: "842030939332804679",
+        active: true,
+        inviteChannel: "842030939960770592",
+      },
       { name: "TELEGRAM", platformId: null, active: true },
     ],
   },
