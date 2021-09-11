@@ -9,6 +9,7 @@ import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
 import useSubmitPlatformsData from "components/admin/hooks/useSubmitPlatformsData"
 import useUploadImages from "components/admin/hooks/useUploadImages"
 import convertMsToMonths from "components/admin/utils/convertMsToMonths"
+import getServerSideProps from "components/admin/utils/setCookies"
 import Layout from "components/common/Layout"
 import LinkButton from "components/common/LinkButton"
 import Pagination from "components/[community]/common/Pagination"
@@ -19,36 +20,10 @@ import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import { useRouter } from "next/router"
 import { useEffect, useMemo } from "react"
 import { FormProvider, useForm, useWatch } from "react-hook-form"
-import { RequirementType } from "temporaryData/types"
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
-export type Level = {
-  id: number
-  dbId: number
-  name: string
-  image: string
-  description: string
-  requirementType: RequirementType
-  requirement: number
-  stakeTimelockMs: string | number
-  telegramGroupId: string
-  tokenSymbol?: string
-}
-
-export type FormData = {
-  tokenSymbol: string
-  isTGEnabled: boolean
-  stakeToken: string
-  isDCEnabled: boolean
-  discordServerId: string
-  inviteChannel: string
-  levels: Level[]
-}
-
 const AdminCommunityPage = (): JSX.Element => {
-  const router = useRouter()
-  const { chainId, account } = useWeb3React()
   const { communityData } = useCommunityData()
   const generatedColors = useColorPalette(
     "chakra-colors-primary",
@@ -57,6 +32,8 @@ const AdminCommunityPage = (): JSX.Element => {
   const isOwner = useRedirectIfNotOwner()
   const methods = useForm({ mode: "all" })
 
+  const { account, chainId } = useWeb3React()
+  const router = useRouter()
   const { contractAddress } = useSpaceFactory(communityData?.chainData.token.address)
   const hasContract =
     typeof contractAddress === "string" && contractAddress !== ZERO_ADDRESS
@@ -88,35 +65,23 @@ const AdminCommunityPage = (): JSX.Element => {
     [methods.formState]
   )
 
-  const redirectToCommunityPage = () => {
-    fetch(`/api/preview?urlName=${communityData?.urlName}`)
-      .then((res) => res.json())
-      .then((cookies: string[]) => {
-        cookies.forEach((cookie: string) => {
-          document.cookie = cookie
-        })
-
-        router.push(`/${communityData?.urlName}/community`)
-      })
-  }
-
   const HTTPMethod = communityData?.levels?.length > 0 ? "PATCH" : "POST"
 
   const { onSubmit: uploadImages, loading: uploadLoading } = useUploadImages(
     "PATCH",
-    "/community"
+    "community"
   )
 
   const { loading: levelsLoading, onSubmit: onLevelsSubmit } = useSubmitLevelsData(
     HTTPMethod,
-    imageDirty ? methods.handleSubmit(uploadImages) : redirectToCommunityPage
+    imageDirty ? methods.handleSubmit(uploadImages) : undefined
   )
 
   const { loading: platformsLoading, onSubmit: onPlatformsSubmit } =
     useSubmitPlatformsData(
       telegramDirty,
       discordDirty,
-      levelsDirty ? methods.handleSubmit(onLevelsSubmit) : redirectToCommunityPage
+      levelsDirty ? methods.handleSubmit(onLevelsSubmit) : undefined
     )
 
   // Set up the default form field values if we have the necessary data
@@ -230,4 +195,5 @@ const AdminCommunityPage = (): JSX.Element => {
   )
 }
 
+export { getServerSideProps }
 export default AdminCommunityPage

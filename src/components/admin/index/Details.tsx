@@ -84,6 +84,8 @@ const Details = ({ registerSuccess, isAdminPage = false }: Props): JSX.Element =
                         "The maximum possible URL name length is 20 characters",
                     },
                     validate: async (value) => {
+                      if (["register", "dcauth"].includes(value))
+                        return "Invalid url name"
                       if (typeof registerSuccess === "boolean" && !!registerSuccess)
                         return true
                       try {
