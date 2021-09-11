@@ -21,6 +21,7 @@ import Hint from "components/admin/common/Hint"
 import PhotoUploader from "components/admin/common/PhotoUploader"
 import Card from "components/common/Card"
 import { Lock, LockOpen, LockSimpleOpen } from "phosphor-react"
+import { useMemo } from "react"
 import { Controller, useFormContext, useWatch } from "react-hook-form"
 import { Icon as IconType } from "temporaryData/types"
 import RadioCard from "./RadioCard"
@@ -46,6 +47,7 @@ const membershipsData: { [key: string]: MembershipData } = {
     icon: Lock,
   },
 }
+const options = ["OPEN", "HOLD", "STAKE"]
 
 type Props = {
   index: number // index is (and should be) only used for managing the form state / removing a level from the form!
@@ -60,18 +62,35 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
     setValue,
     formState: { errors },
   } = useFormContext()
+  const level = (useWatch({ name: "levels" }) ?? [])[index]
 
-  const options = ["OPEN", "HOLD", "STAKE"]
+  const requirementType = useMemo(() => {
+    if (!level) return undefined
+    if (level.requirements.length === 0) return "OPEN"
+    if (typeof level.requirements[0].stakeTimelockMs === "number") return "STAKE"
+    return "HOLD"
+  }, [level])
+
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: "membership",
-    defaultValue: getValues(`levels.${index}.requirementType`) || options[0],
+    defaultValue: requirementType || options[0],
     onChange: (newValue: MembershipTypes) =>
-      setValue(`levels.${index}.requirementType`, newValue, { shouldDirty: true }),
+      setValue(`levels.${index}.requirements[0]?.type`, newValue, {
+        shouldDirty: true,
+      }),
   })
 
   const radioGroup = getRootProps()
 
-  const requirementTypeChange = useWatch({ name: `levels.${index}.requirementType` })
+  const requirementsChange = useWatch({ name: `levels.${index}.requirements` })
+  const isOpenLevel = useMemo(
+    () => requirementsChange.length === 0,
+    [requirementsChange]
+  )
+  const isStakingLevel = useMemo(
+    () => typeof requirementsChange[0]?.stakeTimelockMs === "number",
+    [requirementsChange]
+  )
   const isTGEnabledChange = useWatch({ name: "isTGEnabled" })
 
   return (
@@ -188,22 +207,19 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
 
           <GridItem>
             <FormControl
-              isDisabled={requirementTypeChange === "OPEN"}
-              isRequired={requirementTypeChange !== "OPEN"}
+              isDisabled={isOpenLevel}
+              isRequired={!isOpenLevel}
               isInvalid={
-                requirementTypeChange !== "OPEN" &&
-                errors.levels &&
-                errors.levels[index]?.requirement
+                !isOpenLevel && errors.levels && errors.levels[index]?.requirement
               }
             >
               <FormLabel>Amount</FormLabel>
               <InputGroup>
                 <Input
                   type="number"
-                  {...register(`levels.${index}.requirement`, {
+                  {...register(`levels.${index}.requirements[0].value`, {
                     valueAsNumber: true,
-                    required:
-                      requirementTypeChange !== "OPEN" && "This field is required.",
+                    required: isOpenLevel && "This field is required.",
                     max: {
                       value: 2147483647, // Postgres Int max value
                       message:
@@ -211,9 +227,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                     },
                   })}
                 />
-                <InputRightAddon
-                  opacity={requirementTypeChange === "OPEN" ? 0.5 : 1}
-                >
+                <InputRightAddon opacity={isOpenLevel ? 0.5 : 1}>
                   {getValues("tokenSymbol")}
                 </InputRightAddon>
               </InputGroup>
@@ -225,10 +239,10 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
 
           <GridItem>
             <FormControl
-              isDisabled={requirementTypeChange !== "STAKE"}
-              isRequired={requirementTypeChange === "STAKE"}
+              isDisabled={!isStakingLevel}
+              isRequired={isStakingLevel}
               isInvalid={
-                requirementTypeChange === "STAKE" &&
+                isStakingLevel &&
                 errors.levels &&
                 errors.levels[index]?.stakeTimelockMs
               }
@@ -237,15 +251,12 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
               <InputGroup>
                 <Input
                   type="number"
-                  {...register(`levels.${index}.stakeTimelockMs`, {
+                  {...register(`levels.${index}.requirements[0].stakeTimelockMs`, {
                     valueAsNumber: true,
-                    required:
-                      requirementTypeChange === "STAKE" && "This field is required.",
+                    required: isStakingLevel && "This field is required.",
                   })}
                 />
-                <InputRightAddon
-                  opacity={requirementTypeChange !== "STAKE" ? 0.5 : 1}
-                >
+                <InputRightAddon opacity={!isStakingLevel ? 0.5 : 1}>
                   month(s)
                 </InputRightAddon>
               </InputGroup>
