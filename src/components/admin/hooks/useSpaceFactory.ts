@@ -6,6 +6,7 @@ import AGORA_SPACE_API from "constants/agoraSpaceABI.json"
 import ERC20_ABI from "constants/erc20abi.json"
 import SPACE_FACTORY_ABI from "constants/spacefactoryABI.json"
 import useContract from "hooks/useContract"
+import { useCallback } from "react"
 import useSWR from "swr"
 
 const getContractAddress = (
@@ -14,14 +15,34 @@ const getContractAddress = (
   spaces: (address: string) => Promise<string>
 ) => spaces(address)
 
+const getStakeTokenAddress = (_: string, stakeToken: () => Promise<string>) =>
+  stakeToken()
+
+const getTokenData = (
+  _: string,
+  getName: () => Promise<string>,
+  getSymbol: () => Promise<string>,
+  detDecimals: () => Promise<number>
+) =>
+  Promise.all([getName(), getSymbol(), detDecimals()]).then(
+    ([name, symbol, decimals]) => ({
+      name,
+      symbol,
+      decimals,
+    })
+  )
+
 const useSpaceFactory = (inputTokenAddress: string) => {
-  const { chainId, library, account } = useWeb3React<Web3Provider>()
+  const { chainId, account } = useWeb3React<Web3Provider>()
   const factoryAddress = SpaceFactory[Chains[chainId]]
   const contract = useContract(factoryAddress, SPACE_FACTORY_ABI, true)
 
   const approvedAddresses = (tokenOwner: string, tokenAddress: string) =>
     contract?.approvedAddresses(tokenOwner, tokenAddress)
-  const spaces = (tokenAddress: string) => contract?.spaces(tokenAddress)
+  const spaces = useCallback(
+    (tokenAddress: string) => contract?.spaces(tokenAddress),
+    [contract]
+  )
 
   // Wrapping these methods for custom errors
   const createSpace = (tokenAddress: string) =>
@@ -64,18 +85,15 @@ const useSpaceFactory = (inputTokenAddress: string) => {
   }
 
   const shouldFetchTokenAddress =
-    typeof inputTokenAddress === "string" &&
-    inputTokenAddress.length > 0 &&
-    typeof spaces === "function"
+    typeof inputTokenAddress === "string" && inputTokenAddress.length > 0
 
   const { data: contractAddress, mutate: mutateContractAddress } = useSWR(
-    shouldFetchTokenAddress
-      ? [`${inputTokenAddress}_staking_data`, inputTokenAddress, spaces]
-      : null,
+    shouldFetchTokenAddress ? ["spaces", inputTokenAddress, spaces] : null,
     getContractAddress
   )
 
   const spaceContract = useContract(contractAddress, AGORA_SPACE_API)
+  const stakeToken = useCallback(() => spaceContract?.stakeToken(), [spaceContract])
 
   const shouldFetchStakeTokenAddress =
     typeof contractAddress === "string" &&
@@ -84,30 +102,32 @@ const useSpaceFactory = (inputTokenAddress: string) => {
 
   const { data: stakeTokenAddress, mutate: mutateStakeTokenAddress } = useSWR(
     shouldFetchStakeTokenAddress
-      ? [`${contractAddress}_stake_token_address`, spaceContract, contractAddress]
+      ? ["stakeTokenAddress", stakeToken, contractAddress]
       : null,
-    () => (spaceContract ? spaceContract.stakeToken() : Promise.reject())
+    getStakeTokenAddress
   )
 
   const stakeTokenContract = useContract(stakeTokenAddress, ERC20_ABI)
+  const name = useCallback(() => stakeTokenContract?.name(), [stakeTokenContract])
+  const symbol = useCallback(
+    () => stakeTokenContract?.symbol(),
+    [stakeTokenContract]
+  )
+  const decimals = useCallback(
+    () => stakeTokenContract?.decimals(),
+    [stakeTokenContract]
+  )
 
   const shouldFetchTokenData =
-    typeof stakeTokenAddress === "string" && stakeTokenAddress.length > 0
+    typeof stakeTokenAddress === "string" &&
+    stakeTokenAddress.length > 0 &&
+    !!stakeTokenContract
 
   const { data: stakeTokenData, mutate: mutateStakeTokenData } = useSWR(
     shouldFetchTokenData
-      ? [`${stakeTokenAddress}_data`, stakeTokenContract, stakeTokenAddress]
+      ? ["tokenData", name, symbol, decimals, stakeTokenAddress]
       : null,
-    () =>
-      Promise.all([
-        stakeTokenContract.name(),
-        stakeTokenContract.symbol(),
-        stakeTokenContract.decimals(),
-      ]).then(([name, symbol, decimals]) => ({
-        name,
-        symbol,
-        decimals,
-      }))
+    getTokenData
   )
 
   const updateData = async () => {
