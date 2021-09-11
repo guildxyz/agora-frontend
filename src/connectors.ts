@@ -11,6 +11,7 @@ enum Chains {
 
 enum SpaceFactory {
   BSCTEST = "0x534E253967645eDB35135E0C6cD982bd4d89efab",
+  GOERLI = "0x576BeC17512C5072ac8f65C0F719Ed104a51FA9d",
 }
 
 const RPC = {
@@ -35,6 +36,7 @@ const RPC = {
     chainName: "Goerli",
     blockExplorerUrls: ["https://goerli.etherscan.io/"],
     iconUrls: ["/networkLogos/ethereum.svg"],
+    rpcUrls: ["https://goerli-light.eth.linkpool.io/"],
   },
   BSC: {
     chainId: "0x38",
