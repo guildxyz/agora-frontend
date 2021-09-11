@@ -106,8 +106,8 @@ const AdminCommunityPage = (): JSX.Element => {
     <FormProvider {...methods}>
       <Box sx={generatedColors}>
         <Layout
-          title={`${communityData.name} - Settings`}
-          imageUrl={communityData.imageUrl}
+          title={`${communityData?.name} - Settings`}
+          imageUrl={communityData?.imageUrl}
         >
           <Stack spacing={{ base: 7, xl: 9 }}>
             <Pagination>
@@ -126,7 +126,7 @@ const AdminCommunityPage = (): JSX.Element => {
               ) : (
                 <LinkButton
                   variant="solid"
-                  href={`/${communityData.urlName}/community`}
+                  href={`/${communityData?.urlName}/community`}
                 >
                   Done
                 </LinkButton>
