@@ -1,5 +1,6 @@
 import { Stack, Text, useColorMode, Wrap } from "@chakra-ui/react"
 import { Lock, LockOpen, LockSimpleOpen, Tag } from "phosphor-react"
+import { useMemo } from "react"
 import type { Icon as IconType, Requirement } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
 
@@ -58,12 +59,34 @@ const InfoTags = ({
   tokenSymbol,
 }: Props): JSX.Element => {
   const requirementType = requirements[0]?.type
+  const info = useMemo(() => {
+    if (requirements.length === 0)
+      return {
+        label: "open",
+        icon: LockSimpleOpen,
+      }
+    if (typeof requirements[0].stakeTimelockMs === "number")
+      return {
+        label: "stake",
+        icon: Lock,
+      }
+
+    if (requirements[0].type === "NFT")
+      return {
+        label: "hold NFT",
+        icon: LockOpen,
+      }
+    return {
+      label: "hold",
+      icon: LockOpen,
+    }
+  }, [requirements])
 
   return (
     <Wrap direction="row" spacing={{ base: 2, lg: 4 }}>
       <InfoTag
-        icon={accessRequirementInfo[requirementType].icon}
-        label={`${accessRequirementInfo[requirementType].label} ${
+        icon={info.icon}
+        label={`${info.label} ${
           requirements[0]?.stakeTimelockMs
             ? `for ${msToReadableFormat(requirements[0]?.stakeTimelockMs)}`
             : ``
