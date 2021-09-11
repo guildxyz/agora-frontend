@@ -10,25 +10,6 @@ type Props = {
   tokenSymbol: string
 }
 
-const accessRequirementInfo = {
-  OPEN: {
-    label: "open",
-    icon: LockSimpleOpen,
-  },
-  HOLD: {
-    label: "hold",
-    icon: LockOpen,
-  },
-  NFT_HOLD: {
-    label: "hold NFT",
-    icon: LockOpen,
-  },
-  STAKE: {
-    label: "stake",
-    icon: Lock,
-  },
-}
-
 type ChildProps = {
   icon: IconType
   label: string
@@ -58,7 +39,6 @@ const InfoTags = ({
   membersCount,
   tokenSymbol,
 }: Props): JSX.Element => {
-  const requirementType = requirements[0]?.type
   const info = useMemo(() => {
     if (requirements.length === 0)
       return {
