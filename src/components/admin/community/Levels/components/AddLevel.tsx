@@ -31,14 +31,14 @@ type MembershipData = {
   icon: IconType
 }
 
-type MembershipTypes = "OPEN" | "HOLD" | "STAKE"
+type MembershipTypes = "OPEN" | "TOKEN" | "STAKE"
 
 const membershipsData: { [key: string]: MembershipData } = {
   OPEN: {
     name: "Open",
     icon: LockSimpleOpen,
   },
-  HOLD: {
+  TOKEN: {
     name: "Hold",
     icon: LockOpen,
   },
@@ -47,7 +47,7 @@ const membershipsData: { [key: string]: MembershipData } = {
     icon: Lock,
   },
 }
-const options = ["OPEN", "HOLD", "STAKE"]
+const options = ["OPEN", "TOKEN", "STAKE"]
 
 type Props = {
   index: number // index is (and should be) only used for managing the form state / removing a level from the form!
@@ -78,7 +78,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
   const requirementType = useMemo(() => {
     if (isOpenLevel) return "OPEN"
     if (isStakingLevel) return "STAKE"
-    return "HOLD"
+    return "TOKEN"
   }, [isOpenLevel, isStakingLevel])
 
   const { getRootProps, getRadioProps } = useRadioGroup({

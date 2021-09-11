@@ -45,7 +45,7 @@ const InfoTags = ({
         label: "open",
         icon: LockSimpleOpen,
       }
-    if (typeof requirements?.[0].stakeTimelockMs === "number")
+    if (requirements?.[0].stakeTimelockMs)
       return {
         label: "stake",
         icon: Lock,

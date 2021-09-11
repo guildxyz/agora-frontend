@@ -38,7 +38,7 @@ const useLevelAccess = (
   // if (requirements?.[0].type === "NFT_HOLD")
   //   return ownedNfts?.includes(requirements?.[0].data) ? [true, ""] : [false, "NFT not owned"]
 
-  return [false, ""]
+  return [false, "Access info temporarily not available"]
 }
 
 export default useLevelAccess
