@@ -40,18 +40,18 @@ const InfoTags = ({
   tokenSymbol,
 }: Props): JSX.Element => {
   const info = useMemo(() => {
-    if (requirements.length === 0)
+    if (requirements?.length === 0)
       return {
         label: "open",
         icon: LockSimpleOpen,
       }
-    if (typeof requirements[0].stakeTimelockMs === "number")
+    if (typeof requirements?.[0].stakeTimelockMs === "number")
       return {
         label: "stake",
         icon: Lock,
       }
 
-    if (requirements[0].type === "NFT")
+    if (requirements?.[0].type === "NFT")
       return {
         label: "hold NFT",
         icon: LockOpen,
@@ -67,16 +67,16 @@ const InfoTags = ({
       <InfoTag
         icon={info.icon}
         label={`${info.label} ${
-          requirements[0]?.stakeTimelockMs
-            ? `for ${msToReadableFormat(requirements[0]?.stakeTimelockMs)}`
+          requirements?.[0]?.stakeTimelockMs
+            ? `for ${msToReadableFormat(requirements?.[0]?.stakeTimelockMs)}`
             : ``
         }`}
       />
-      {requirements[0] &&
-        (requirements[0].type === "NFT" ? (
-          <InfoTag icon={Tag} label={`${requirements[0].value}`} />
+      {requirements?.[0] &&
+        (requirements?.[0].type === "NFT" ? (
+          <InfoTag icon={Tag} label={`${requirements?.[0].value}`} />
         ) : (
-          <InfoTag icon={Tag} label={`${requirements[0].value} ${tokenSymbol}`} />
+          <InfoTag icon={Tag} label={`${requirements?.[0].value} ${tokenSymbol}`} />
         ))}
       {/* temporarily removing tag until membersCount is buggy  */}
       {/* <InfoTag icon={Users} label={`${membersCount} members`} /> */}

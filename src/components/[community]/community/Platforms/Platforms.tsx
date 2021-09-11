@@ -27,7 +27,7 @@ const Platforms = (): JSX.Element => {
    * parallel levels with Mutagen's NFT community, so having this custom logic here
    * is sufficient, we'll find a general solution when it's needed
    */
-  const mutagenNfts = useMutagenNfts(requirements[0]?.type, chainData.token)
+  const mutagenNfts = useMutagenNfts(requirements?.[0]?.type, chainData.token)
   const enabled = useMemo(() => {
     if (parallelLevels) return !!(Array.isArray(mutagenNfts) && mutagenNfts.length)
     return hasAccess

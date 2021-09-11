@@ -73,9 +73,9 @@ const Level = ({
       borderBottomColor={colorMode === "light" ? "gray.200" : "gray.600"}
       ref={hoverElRef}
       order={
-        requirements[0]?.stakeTimelockMs
-          ? 10000000 + (requirements[0]?.value as number)
-          : (requirements[0]?.value as number)
+        requirements?.[0]?.stakeTimelockMs
+          ? 10000000 + (requirements?.[0]?.value as number)
+          : (requirements?.[0]?.value as number)
       }
     >
       <Grid
@@ -148,7 +148,7 @@ const Level = ({
           />
         )}
         {(() =>
-          requirements[0]?.stakeTimelockMs &&
+          requirements?.[0]?.stakeTimelockMs &&
           !hasAccess && (
             <>
               <Button
@@ -164,8 +164,8 @@ const Level = ({
               {!noAccessMessage && (
                 <StakingModal
                   levelName={name}
-                  requirement={requirements[0]?.value as number}
-                  stakeTimelockMs={requirements[0]?.stakeTimelockMs}
+                  requirement={requirements?.[0]?.value as number}
+                  stakeTimelockMs={requirements?.[0]?.stakeTimelockMs}
                   isOpen={isStakingModalOpen}
                   onClose={onStakingModalClose}
                 />

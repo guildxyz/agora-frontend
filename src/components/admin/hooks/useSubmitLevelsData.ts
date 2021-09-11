@@ -104,13 +104,14 @@ const useSubmitLevelsData = (method: "POST" | "PATCH", callback: () => void) => 
   const preprocess = (_data: FormData) => {
     const data = _data
     data.levels?.forEach((level, i) => {
-      if (level.requirements[0]?.stakeTimelockMs) {
-        const timeLock = level.requirements[0].stakeTimelockMs
+      if (level.requirements?.[0]?.stakeTimelockMs) {
+        const timeLock = level.requirements?.[0].stakeTimelockMs
         data.levels[i].requirements[0].stakeTimelockMs = convertMonthsToMs(timeLock)
       }
       // By default the type is "OPEN" in the form
       if (
-        (data.levels[i].requirements[0].type as RequirementType | "OPEN") === "OPEN"
+        (data.levels[i].requirements?.[0].type as RequirementType | "OPEN") ===
+        "OPEN"
       )
         data.levels[i].requirements = []
     })
