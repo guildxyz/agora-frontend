@@ -38,9 +38,7 @@ const Levels = (): JSX.Element => {
           name: "",
           imageUrl: undefined,
           description: "",
-          requirementType: "OPEN",
-          requirement: undefined,
-          tokenTimeLock: undefined,
+          requirements: [],
           telegramGroupId: undefined,
         },
         { shouldFocus: false }
@@ -151,9 +149,7 @@ const Levels = (): JSX.Element => {
               name: "",
               image: undefined,
               description: "",
-              requirementType: "OPEN",
-              requirement: undefined,
-              tokenTimeLock: undefined,
+              requirements: [],
               telegramGroupId: undefined,
             })
           }

@@ -103,9 +103,10 @@ const useSubmitLevelsData = (method: "POST" | "PATCH", callback: () => void) => 
   const preprocess = (_data: FormData) => {
     const data = _data
     data.levels?.forEach((level, i) => {
-      if (!level.stakeTimelockMs) return
-      const timeLock = level.stakeTimelockMs as number
-      data[i].stakeTimelockMs = convertMonthsToMs(timeLock).toString()
+      if (!level.requirements[0]?.stakeTimelockMs) return
+      const timeLock = level.requirements[0].stakeTimelockMs as number
+      data[i].requirements[0].stakeTimelockMs =
+        convertMonthsToMs(timeLock).toString()
     })
     return data
   }

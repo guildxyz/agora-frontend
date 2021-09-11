@@ -6,7 +6,6 @@ import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
 import useSubmitPlatformsData from "components/admin/hooks/useSubmitPlatformsData"
 import useUploadImages from "components/admin/hooks/useUploadImages"
-import convertMsToMonths from "components/admin/utils/convertMsToMonths"
 import getServerSideProps from "components/admin/utils/setCookies"
 import Layout from "components/common/Layout"
 import LinkButton from "components/common/LinkButton"
@@ -81,9 +80,7 @@ const AdminCommunityPage = (): JSX.Element => {
           name: level.name || undefined,
           imageUrl: level.imageUrl || undefined,
           description: level.description || undefined,
-          requirementType: level.requirementType,
-          requirement: level.requirement || undefined,
-          stakeTimelockMs: convertMsToMonths(level.stakeTimelockMs),
+          requirements: level.requirements || undefined,
           telegramGroupId: level.telegramGroupId || undefined,
         })),
       })
