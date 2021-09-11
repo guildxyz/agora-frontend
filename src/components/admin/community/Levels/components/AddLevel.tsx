@@ -66,6 +66,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
   const requirementsChange = useWatch({ name: `levels.${index}.requirements` })
 
   const isOpenLevel = useMemo(
+    // By default the type is "OPEN" in the form, that's why we need the second check
     () => requirementsChange.length === 0 || requirementsChange[0]?.type === "OPEN",
     [requirementsChange]
   )
