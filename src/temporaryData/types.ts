@@ -8,7 +8,16 @@ type Token = {
   decimals: number
 }
 
-type RequirementType = "OPEN" | "STAKE" | "HOLD" | "NFT_HOLD"
+type RequirementType = "TOKEN" | "NFT" | "POAP"
+
+type Requirement = {
+  type: RequirementType
+  address?: string
+  method?: string
+  data?: string
+  value: string | number
+  stakeTimelockMs?: number
+}
 
 type Level = {
   id: number
@@ -16,10 +25,7 @@ type Level = {
   description: string
   imageUrl: string
   membersCount: number
-  requirementType: RequirementType
-  requirement: number
-  requirementData: string
-  stakeTimelockMs: number
+  requirements: Requirement[]
   telegramGroupId: string
   discordRole: string
 }
@@ -92,6 +98,7 @@ export type {
   Token,
   Level,
   RequirementType,
+  Requirement,
   ChainData,
   ProvidedCommunity,
   MetaMaskError,
