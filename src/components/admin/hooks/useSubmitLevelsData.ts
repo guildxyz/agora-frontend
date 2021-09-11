@@ -105,7 +105,7 @@ const useSubmitLevelsData = (method: "POST" | "PATCH", callback: () => void) => 
     data.levels?.forEach((level, i) => {
       if (!level.stakeTimelockMs) return
       const timeLock = level.stakeTimelockMs as number
-      data[i].stakeTimelockMs = convertMonthsToMs(timeLock).toString()
+      data.levels[i].stakeTimelockMs = convertMonthsToMs(timeLock).toString()
     })
     return data
   }
