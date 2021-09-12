@@ -16,7 +16,6 @@ import {
 import { useCommunity } from "components/[community]/common/Context"
 import ImgPlaceholder from "components/[community]/common/ImgPlaceholder"
 import InfoTags from "components/[community]/community/Levels/components/InfoTags"
-import { Chains } from "connectors"
 import { Check, CheckCircle } from "phosphor-react"
 import { useEffect } from "react"
 import type { Level as LevelType } from "temporaryData/types"
@@ -31,7 +30,7 @@ type Props = {
 }
 
 const Level = ({
-  data: { requirements, name, imageUrl, description, membersCount },
+  data: { id, requirements, name, imageUrl, description, membersCount },
   setLevelsState,
 }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
@@ -42,10 +41,10 @@ const Level = ({
     onClose: onStakingModalClose,
   } = useDisclosure()
   const [hasAccess, noAccessMessage] = useLevelAccess(
+    id,
     requirements,
     chainData.token,
-    chainData.stakeToken,
-    Chains[chainData.name]
+    chainData.stakeToken
   )
   const [hoverElRef, focusElRef, state] = useLevelIndicatorState(
     hasAccess,

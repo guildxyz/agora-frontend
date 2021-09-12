@@ -1,44 +1,30 @@
-import { useWeb3React } from "@web3-react/core"
 import useBalance from "hooks/useBalance"
-import useMutagenNfts from "hooks/useMutagenNfts"
 import { Requirement, Token } from "temporaryData/types"
+import useLevelsAccess from "../../../hooks/useLevelsAccess"
 import useNeededAmount from "../../../hooks/useNeededAmount"
 
 const useLevelAccess = (
+  id: number,
   requirements: Requirement[],
   token: Token | undefined,
-  stakeToken: Token | undefined,
-  chain: number
+  stakeToken: Token | undefined
 ): [boolean, string] => {
   const tokenBalance = useBalance(token)
-  const stakeBalance = useBalance(stakeToken)
-  const ownedNfts = useMutagenNfts(requirements?.[0]?.type, token)
   const neededAmount = useNeededAmount(
     requirements?.[0]?.value as number,
     stakeToken
   )
-  const { active, chainId } = useWeb3React()
-  const isOnRightChain = typeof chain === "number" && chainId === chain
+  const { data: hasAccess, error } = useLevelsAccess(id)
 
-  // if (!active) return [false, "Wallet not connected"]
+  if (error) return [false, error]
 
-  // if (!isOnRightChain) return [false, "Wrong network"]
+  if (hasAccess) return [true, ""]
 
-  // if (requirements?.[0].type === "HOLD" && requirements?.[0].value < 0) return [tokenBalance > 0, ""]
+  if (requirements?.[0]?.type === "NFT") return [false, "NFT not owned"]
 
-  // if (requirements?.[0].type === "OPEN") return [true, ""]
+  if (tokenBalance < neededAmount) return [false, "Insufficient balance"]
 
-  // if (stakeBalance >= requirements?.[0].value) return [true, ""]
-
-  // if (tokenBalance === undefined || tokenBalance < neededAmount)
-  //   return [false, "Insufficient balance"]
-
-  // if (requirements?.[0].type === "HOLD") return [true, ""]
-
-  // if (requirements?.[0].type === "NFT_HOLD")
-  //   return ownedNfts?.includes(requirements?.[0].data) ? [true, ""] : [false, "NFT not owned"]
-
-  return [false, "Access info temporarily not available"]
+  return [false, ""]
 }
 
 export default useLevelAccess
