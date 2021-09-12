@@ -15,6 +15,7 @@ const replacer = (key, value) => {
     Number.isNaN(value)
   )
     return undefined
+  if (key === "stakeTimelockMs" && value === 0) return undefined
   return value
 }
 
