@@ -42,7 +42,7 @@ const useMutagenNfts = (requirementType: RequirementType, token: Token) => {
   const { account } = useWeb3React()
   const amount: any = useBalance(token)
 
-  const shouldFetch = requirementType === "NFT_HOLD" && !!token && amount > 0
+  const shouldFetch = requirementType === "NFT" && !!token && amount > 0
 
   const { data } = useSWR(
     shouldFetch ? ["mutagen", parseInt(amount), token.address, account] : null,

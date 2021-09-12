@@ -1,4 +1,5 @@
 import { useRouter } from "next/router"
+import { RequirementType } from "temporaryData/types"
 import convertMonthsToMs from "../utils/convertMonthsToMs"
 import { ContextType, SignEvent } from "../utils/submitMachine"
 import useCommunityData from "./useCommunityData"
@@ -31,7 +32,7 @@ const useSubmitLevelsData = (method: "POST" | "PATCH", callback: () => void) => 
         {
           method,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data }, replacer),
+          body: JSON.stringify(data, replacer),
         }
       )
     const { addressSignedMessage } = data
@@ -103,9 +104,16 @@ const useSubmitLevelsData = (method: "POST" | "PATCH", callback: () => void) => 
   const preprocess = (_data: FormData) => {
     const data = _data
     data.levels?.forEach((level, i) => {
-      if (!level.stakeTimelockMs) return
-      const timeLock = level.stakeTimelockMs as number
-      data[i].stakeTimelockMs = convertMonthsToMs(timeLock).toString()
+      if (level.requirements?.[0]?.stakeTimelockMs) {
+        const timeLock = level.requirements?.[0].stakeTimelockMs
+        data.levels[i].requirements[0].stakeTimelockMs = convertMonthsToMs(timeLock)
+      }
+      // By default the type is "OPEN" in the form
+      if (
+        (data.levels[i].requirements?.[0].type as RequirementType | "OPEN") ===
+        "OPEN"
+      )
+        data.levels[i].requirements = []
     })
     return data
   }

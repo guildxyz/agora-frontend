@@ -10,14 +10,12 @@ import PlatformButton from "./components/PlatformButton"
 const Platforms = (): JSX.Element => {
   const {
     communityPlatforms,
-    levels: [{ requirementType, requirement, requirementData }],
+    levels: [{ requirements }],
     parallelLevels,
     chainData,
   } = useCommunity()
   const [hasAccess, noAccessMessage] = useLevelAccess(
-    requirementType,
-    requirement,
-    requirementData,
+    requirements,
     chainData.token,
     chainData.stakeToken,
     Chains[chainData.name]
@@ -29,7 +27,7 @@ const Platforms = (): JSX.Element => {
    * parallel levels with Mutagen's NFT community, so having this custom logic here
    * is sufficient, we'll find a general solution when it's needed
    */
-  const mutagenNfts = useMutagenNfts(requirementType, chainData.token)
+  const mutagenNfts = useMutagenNfts(requirements?.[0]?.type, chainData.token)
   const enabled = useMemo(() => {
     if (parallelLevels) return !!(Array.isArray(mutagenNfts) && mutagenNfts.length)
     return hasAccess

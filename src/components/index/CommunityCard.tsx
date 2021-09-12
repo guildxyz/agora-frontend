@@ -129,7 +129,7 @@ const CommunityCard = ({
                 {/* TODO: support min tag for communities with parallel levels  */}
                 {!parallelLevels && (
                   <Tag colorScheme="alpha">
-                    {`min: ${levels[0]?.requirement ?? 0} ${
+                    {`min: ${levels[0]?.requirements?.[0]?.value ?? 0} ${
                       currentChainData.token.symbol
                     }`}
                   </Tag>

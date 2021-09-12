@@ -1,7 +1,7 @@
 import { useMachine } from "@xstate/react"
 import { usePersonalSign } from "components/_app/PersonalSignStore"
 import useToast from "hooks/useToast"
-import { RequirementType } from "temporaryData/types"
+import { Requirement } from "temporaryData/types"
 import createSubmitMachine, {
   APIError,
   ContextType,
@@ -20,9 +20,7 @@ export type Level = {
   name: string
   image?: File
   description: string
-  requirementType: RequirementType
-  requirement: number
-  stakeTimelockMs: string | number
+  requirements: Requirement[]
   telegramGroupId: string
   tokenSymbol?: string
 }
