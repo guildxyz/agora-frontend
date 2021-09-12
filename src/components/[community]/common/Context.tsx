@@ -46,8 +46,6 @@ const CommunityProvider = ({
       data.levels.map((_level) => {
         const level = _level
         level.membersCount = membersCount[_level.id]
-        // intentionally breaking, it's temporary until backend fix
-        level.requirements = _level.requirement
         return level
       }),
     [data.levels, membersCount]

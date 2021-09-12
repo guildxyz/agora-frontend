@@ -71,7 +71,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
     [requirementsChange]
   )
   const isStakingLevel = useMemo(
-    () => typeof requirementsChange[0]?.stakeTimelockMs === "number",
+    () => requirementsChange[0]?.stakeTimelockMs,
     [requirementsChange]
   )
 
@@ -180,7 +180,9 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                   return (
                     <RadioCard
                       key={value}
-                      isDisabled={value === "STAKE" && !getValues("stakeToken")} // Disabling the "STAKE" radio if the community doesn't have a stakeToken
+                      isDisabled={
+                        value === "STAKE" /* && !getValues("stakeToken") */
+                      } // Disabling the "STAKE" radio if the community doesn't have a stakeToken
                       {...radio}
                     >
                       <HStack spacing={2} justify="center">
