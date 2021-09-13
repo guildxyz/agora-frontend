@@ -1,35 +1,13 @@
 import { Stack, Text, useColorMode, Wrap } from "@chakra-ui/react"
-import { useRouter } from "next/router"
 import { Lock, LockOpen, LockSimpleOpen, Tag } from "phosphor-react"
-import type { Icon as IconType, RequirementType } from "temporaryData/types"
+import { useMemo } from "react"
+import type { Icon as IconType, Requirement } from "temporaryData/types"
 import msToReadableFormat from "utils/msToReadableFormat"
 
 type Props = {
-  stakeTimelockMs: number
-  requirementType: RequirementType
-  requirement: number
-  requirementData: string
+  requirements: Requirement[]
   membersCount: number
   tokenSymbol: string
-}
-
-const accessRequirementInfo = {
-  OPEN: {
-    label: "open",
-    icon: LockSimpleOpen,
-  },
-  HOLD: {
-    label: "hold",
-    icon: LockOpen,
-  },
-  NFT_HOLD: {
-    label: "hold NFT",
-    icon: LockOpen,
-  },
-  STAKE: {
-    label: "stake",
-    icon: Lock,
-  },
 }
 
 type ChildProps = {
@@ -57,31 +35,48 @@ const InfoTag = ({ icon: Icon, label }: ChildProps): JSX.Element => {
 }
 
 const InfoTags = ({
-  stakeTimelockMs,
-  requirementType,
-  requirement,
-  requirementData,
+  requirements,
   membersCount,
   tokenSymbol,
 }: Props): JSX.Element => {
-  // Need this only in order to fetch community urlName & hide nft name & members count on Mutagen levels
-  const router = useRouter()
+  const info = useMemo(() => {
+    if (requirements?.length === 0)
+      return {
+        label: "open",
+        icon: LockSimpleOpen,
+      }
+    if (requirements?.[0].stakeTimelockMs)
+      return {
+        label: "stake",
+        icon: Lock,
+      }
+
+    if (requirements?.[0].type === "NFT")
+      return {
+        label: "hold NFT",
+        icon: LockOpen,
+      }
+    return {
+      label: "hold",
+      icon: LockOpen,
+    }
+  }, [requirements])
 
   return (
     <Wrap direction="row" spacing={{ base: 2, lg: 4 }}>
       <InfoTag
-        icon={accessRequirementInfo[requirementType].icon}
-        label={`${accessRequirementInfo[requirementType].label} ${
-          requirementType === "STAKE"
-            ? `for ${msToReadableFormat(stakeTimelockMs)}`
+        icon={info.icon}
+        label={`${info.label} ${
+          requirements?.[0]?.stakeTimelockMs
+            ? `for ${msToReadableFormat(requirements?.[0]?.stakeTimelockMs)}`
             : ``
         }`}
       />
-      {requirementType !== "OPEN" &&
-        (requirementType === "NFT_HOLD" ? (
-          <InfoTag icon={Tag} label={`${requirementData}`} />
+      {requirements?.[0] &&
+        (requirements?.[0].type === "NFT" ? (
+          <InfoTag icon={Tag} label={`${requirements?.[0].value}`} />
         ) : (
-          <InfoTag icon={Tag} label={`${requirement} ${tokenSymbol}`} />
+          <InfoTag icon={Tag} label={`${requirements?.[0].value} ${tokenSymbol}`} />
         ))}
       {/* temporarily removing tag until membersCount is buggy  */}
       {/* <InfoTag icon={Users} label={`${membersCount} members`} /> */}
