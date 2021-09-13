@@ -65,6 +65,7 @@ type CommunityBase = {
     telegramId: string
     discordId: string
   }
+  links: Array<{ name: string; url: string }>
 }
 
 type Community = CommunityBase & {
