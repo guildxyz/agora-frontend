@@ -1,55 +1,93 @@
 import {
-  Button,
   FormControl,
   FormLabel,
   Grid,
   GridItem,
-  Icon,
   Input,
+  InputGroup,
+  InputLeftAddon,
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
-import { Plus } from "phosphor-react"
+import { useFormContext } from "react-hook-form"
 
-const Links = (): JSX.Element => (
-  <Section
-    title="Links"
-    description="Links to other platforms to show on your communitiy’s page"
-    cardType
-  >
-    <Grid templateColumns="repeat(2, 1fr)" gap={12}>
-      <GridItem>
-        <FormControl id="github">
-          <FormLabel>Github</FormLabel>
-          <Input />
-        </FormControl>
-      </GridItem>
+const Links = (): JSX.Element => {
+  const {
+    control,
+    register,
+    formState: { errors },
+    getValues,
+    setValue,
+    trigger,
+  } = useFormContext()
 
-      <GridItem>
-        <FormControl id="medium">
-          <FormLabel>Medium</FormLabel>
-          <Input />
-        </FormControl>
-      </GridItem>
+  const urlChange = (e, field: string) => {
+    if (!e.target.value || e.target.value.length < 7) return
 
-      <GridItem>
-        <FormControl id="twitter">
-          <FormLabel>Twitter</FormLabel>
-          <Input />
-        </FormControl>
-      </GridItem>
+    // Remove the http/https from the string
+    setValue(field, e.target.value.replace("http://", "").replace("https://", ""))
+  }
 
-      <GridItem>
-        <FormControl id="reddit">
-          <FormLabel>Reddit</FormLabel>
-          <Input />
-        </FormControl>
-      </GridItem>
-    </Grid>
+  return (
+    <Section
+      title="Links"
+      description="Links to other platforms to show on your communitiy’s page"
+      cardType
+    >
+      <Grid templateColumns="repeat(2, 1fr)" gap={12}>
+        <GridItem>
+          <FormControl id="github">
+            <FormLabel>Github</FormLabel>
+            <InputGroup>
+              <InputLeftAddon>https://</InputLeftAddon>
+              <Input
+                {...register("links[0].url")}
+                onChange={(e) => urlChange(e, "links[0].url")}
+              />
+            </InputGroup>
+          </FormControl>
+        </GridItem>
 
-    <Button mt={8} width="max-content" variant="ghost" leftIcon={<Icon as={Plus} />}>
-      Add more
-    </Button>
-  </Section>
-)
+        <GridItem>
+          <FormControl id="medium">
+            <FormLabel>Medium</FormLabel>
+            <InputGroup>
+              <InputLeftAddon>https://</InputLeftAddon>
+              <Input
+                {...register("links[1].url")}
+                onChange={(e) => urlChange(e, "links[1].url")}
+              />
+            </InputGroup>
+          </FormControl>
+        </GridItem>
+
+        <GridItem>
+          <FormControl id="twitter">
+            <FormLabel>Twitter</FormLabel>
+            <InputGroup>
+              <InputLeftAddon>https://</InputLeftAddon>
+              <Input
+                {...register("links[2].url")}
+                onChange={(e) => urlChange(e, "links[2].url")}
+              />
+            </InputGroup>
+          </FormControl>
+        </GridItem>
+
+        <GridItem>
+          <FormControl id="reddit">
+            <FormLabel>Reddit</FormLabel>
+            <InputGroup>
+              <InputLeftAddon>https://</InputLeftAddon>
+              <Input
+                {...register("links[3].url")}
+                onChange={(e) => urlChange(e, "links[3].url")}
+              />
+            </InputGroup>
+          </FormControl>
+        </GridItem>
+      </Grid>
+    </Section>
+  )
+}
 
 export default Links

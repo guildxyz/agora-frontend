@@ -6,6 +6,7 @@ import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityDat
 import useUploadImages from "components/admin/hooks/useUploadImages"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
+import Links from "components/admin/index/Links"
 import getServerSideProps from "components/admin/utils/setCookies"
 import Layout from "components/common/Layout"
 import LinkButton from "components/common/LinkButton"
@@ -51,6 +52,7 @@ const AdminHomePage = (): JSX.Element => {
         imageUrl: communityData.imageUrl,
         themeColor: communityData.themeColor,
         tokenAddress: communityData.chainData.token.address,
+        links: communityData.links,
       })
     }
   }, [communityData])
@@ -98,6 +100,7 @@ const AdminHomePage = (): JSX.Element => {
 
             <VStack spacing={12}>
               <Details isAdminPage />
+              <Links />
               <Appearance
                 onColorChange={(newColor: string) => setColorCode(newColor)}
               />

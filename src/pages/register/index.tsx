@@ -12,6 +12,7 @@ import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityDat
 import useUploadImages from "components/admin/hooks/useUploadImages"
 import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
+import Links from "components/admin/index/Links"
 import getServerSideProps from "components/admin/utils/setCookies"
 import Layout from "components/common/Layout"
 import Pagination from "components/[community]/common/Pagination"
@@ -38,6 +39,24 @@ const Page = (): JSX.Element => {
       themeColor: "",
       tokenAddress: "",
       image: null,
+      links: [
+        {
+          name: "Github",
+          url: null,
+        },
+        {
+          name: "Medium",
+          url: null,
+        },
+        {
+          name: "Twitter",
+          url: null,
+        },
+        {
+          name: "Reddit",
+          url: null,
+        },
+      ],
     },
   })
 
@@ -75,6 +94,7 @@ const Page = (): JSX.Element => {
               </Pagination>
               <VStack spacing={12}>
                 <Details registerSuccess={registerSuccess} />
+                <Links />
                 <Appearance
                   onColorChange={(newColor: string) => setColorCode(newColor)}
                 />
