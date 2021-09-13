@@ -3,6 +3,12 @@ import { ContextType, SignEvent } from "../utils/submitMachine"
 import useCommunityData from "./useCommunityData"
 import useSubmitMachine from "./useSubmitMachine"
 
+// Converting URLs to the proper format before submitting them to the API
+const replacer = (key, value) => {
+  if (key === "url" && value?.length > 0) return `https://${value}`
+  return value
+}
+
 const useSubmitCommunityData = <FormDataType>(
   method: "POST" | "PATCH",
   callback?: () => Promise<void>
@@ -18,7 +24,7 @@ const useSubmitCommunityData = <FormDataType>(
       {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify(data, replacer),
       }
     )
 
