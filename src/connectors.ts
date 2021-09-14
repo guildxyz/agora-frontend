@@ -1,4 +1,5 @@
 import { InjectedConnector } from "@web3-react/injected-connector"
+import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 
 enum Chains {
   ETHEREUM = 1,
@@ -26,11 +27,13 @@ const RPC = {
     chainName: "Ethereum",
     blockExplorerUrls: ["https://etherscan.io/"],
     iconUrls: ["/networkLogos/ethereum.svg"],
+    rpcUrls: ["https://main-light.eth.linkpool.io/"],
   },
   GOERLI: {
     chainName: "Goerli",
     blockExplorerUrls: ["https://goerli.etherscan.io/"],
     iconUrls: ["/networkLogos/ethereum.svg"],
+    rpcUrls: ["https://goerli-light.eth.linkpool.io/"],
   },
   BSC: {
     chainId: "0x38",
@@ -51,5 +54,21 @@ const supportedChainIds = supportedChains.map((_) => Chains[_])
 
 const injected = new InjectedConnector({ supportedChainIds })
 
-export { Chains, RPC, supportedChains }
+const walletConnectConnector = new WalletConnectConnector({
+  rpc: Object.keys(RPC).reduce(
+    (_acc, chainName: "POLYGON" | "ETHEREUM" | "GOERLI" | "BSC") => {
+      const acc = _acc
+      ;({
+        [chainName]: {
+          rpcUrls: [acc[Chains[chainName]]],
+        },
+      } = RPC)
+      return acc
+    },
+    {}
+  ),
+  signingMethods: ["eth_sign"],
+})
+
+export { Chains, RPC, supportedChains, walletConnectConnector }
 export default injected

@@ -25,6 +25,11 @@ const processConnectionError = (error: Error): ErrorInfo => {
         description:
           "Please authorize this website to access your Ethereum account.",
       }
+    case Error:
+      return {
+        title: error.name,
+        description: error.message,
+      }
     default:
       console.error(error)
       return {

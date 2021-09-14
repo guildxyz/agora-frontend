@@ -18,9 +18,9 @@ import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 import { Error } from "components/common/Error"
 import Link from "components/common/Link"
 import Modal from "components/common/Modal"
-import injected from "connectors"
+import injected, { walletConnectConnector } from "connectors"
 import { ArrowSquareOut } from "phosphor-react"
-import React, { useEffect, useRef } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import NetworkChangeModal from "../../../../common/Layout/components/Account/components/NetworkModal/NetworkModal"
 import ConnectorButton from "./components/ConnectorButton"
 import processConnectionError from "./utils/processConnectionError"
@@ -41,6 +41,11 @@ const WalletSelectorModal = ({
   const { error } = useWeb3React()
   const { active, activate, connector, setError } = useWeb3React()
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const [providerName, setProviderName] = useState<string>()
+
+  useEffect(() => {
+    if (!active) setProviderName(null)
+  }, [active])
 
   // initialize metamask onboarding
   const onboarding = useRef<MetaMaskOnboarding>()
@@ -48,14 +53,33 @@ const WalletSelectorModal = ({
     onboarding.current = new MetaMaskOnboarding()
   }
 
-  const handleConnect = () => {
+  const handleConnect = (provider) => {
+    setProviderName(provider)
     setActivatingConnector(injected)
-    activate(injected, undefined, true).catch((err) => {
+    activate(
+      provider === "walletconnect" ? walletConnectConnector : injected,
+      undefined,
+      true
+    ).catch((err) => {
       setActivatingConnector(undefined)
       setError(err)
     })
   }
   const handleOnboarding = () => onboarding.current?.startOnboarding()
+
+  /* const enableWalletConnect = async () => {
+    setActivatingConnector(injected)
+    setProviderName("walletconnect")
+    const walletConnectProvider = getWalletConnectProvider()
+    await walletConnectProvider.enable().catch((err) => {
+      setActivatingConnector(undefined)
+      setError(err)
+    })
+    activate(injected, undefined, true).catch((err) => {
+      setActivatingConnector(undefined)
+      setError(err)
+    })
+  } */
 
   useEffect(() => {
     if (active) closeModal()
@@ -88,13 +112,35 @@ const WalletSelectorModal = ({
                 onClick={
                   typeof window !== "undefined" &&
                   MetaMaskOnboarding.isMetaMaskInstalled()
-                    ? handleConnect
+                    ? () => handleConnect("metamask")
                     : handleOnboarding
                 }
                 iconUrl="metamask.png"
-                disabled={!!activatingConnector || connector === injected}
-                isActive={connector === injected}
-                isLoading={activatingConnector && activatingConnector === injected}
+                disabled={
+                  (!!activatingConnector || connector === injected) &&
+                  providerName === "metamask"
+                }
+                isActive={connector === injected && providerName === "metamask"}
+                isLoading={
+                  activatingConnector &&
+                  activatingConnector === injected &&
+                  providerName === "metamask"
+                }
+              />
+              <ConnectorButton
+                name="WalletConnect"
+                onClick={() => handleConnect("walletconnect")}
+                iconUrl="walletconnect.png"
+                disabled={
+                  (!!activatingConnector || connector === injected) &&
+                  providerName === "walletconnect"
+                }
+                isActive={connector === injected && providerName === "walletconnect"}
+                isLoading={
+                  activatingConnector &&
+                  activatingConnector === injected &&
+                  providerName === "walletconnect"
+                }
               />
               <Button as="p" disabled isFullWidth size="xl">
                 More options coming soon
