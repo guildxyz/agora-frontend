@@ -6,15 +6,15 @@ import { useCommunity } from "components/[community]/common/Context"
 import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
 import useContract from "hooks/useContract"
 import { useEffect } from "react"
-import type { Machine, MetaMaskError } from "temporaryData/types"
+import type { Machine, WalletError } from "temporaryData/types"
 import { assign, createMachine, DoneInvokeEvent } from "xstate"
 
 type Context = {
-  error?: MetaMaskError
+  error?: WalletError
   transaction?: TransactionResponse
 }
 
-type ErrorEvent = DoneInvokeEvent<MetaMaskError>
+type ErrorEvent = DoneInvokeEvent<WalletError>
 type TransactionEvent = DoneInvokeEvent<TransactionResponse>
 type Event = ErrorEvent | TransactionEvent
 
