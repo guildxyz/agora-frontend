@@ -67,7 +67,6 @@ const walletConnectConnector = new WalletConnectConnector({
     },
     {}
   ),
-  signingMethods: ["eth_sign"],
 })
 
 export { Chains, RPC, supportedChains, walletConnectConnector }

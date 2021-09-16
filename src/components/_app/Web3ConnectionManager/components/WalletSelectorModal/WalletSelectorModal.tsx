@@ -67,20 +67,6 @@ const WalletSelectorModal = ({
   }
   const handleOnboarding = () => onboarding.current?.startOnboarding()
 
-  /* const enableWalletConnect = async () => {
-    setActivatingConnector(injected)
-    setProviderName("walletconnect")
-    const walletConnectProvider = getWalletConnectProvider()
-    await walletConnectProvider.enable().catch((err) => {
-      setActivatingConnector(undefined)
-      setError(err)
-    })
-    activate(injected, undefined, true).catch((err) => {
-      setActivatingConnector(undefined)
-      setError(err)
-    })
-  } */
-
   useEffect(() => {
     if (active) closeModal()
   }, [active, closeModal])
@@ -130,7 +116,7 @@ const WalletSelectorModal = ({
               <ConnectorButton
                 name="WalletConnect"
                 onClick={() => handleConnect("walletconnect")}
-                iconUrl="walletconnect.png"
+                iconUrl="walletconnect.svg"
                 disabled={
                   (!!activatingConnector || connector === injected) &&
                   providerName === "walletconnect"
