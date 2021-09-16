@@ -5,7 +5,6 @@ import {
   FormLabel,
   HStack,
   Input,
-  Text,
   VStack,
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
@@ -19,6 +18,7 @@ type Props = {
 const Appearance = ({ onColorChange }: Props): JSX.Element => {
   const {
     register,
+    setValue,
     formState: { errors },
   } = useFormContext()
 
@@ -62,7 +62,12 @@ const Appearance = ({ onColorChange }: Props): JSX.Element => {
                 onInput={(e) => colorChangeHandler(e)}
               />
             </Flex>
-            <Text>{pickedColor || "Pick a color"}</Text>
+            <Input
+              maxWidth={40}
+              value={pickedColor}
+              onChange={(e) => setValue("themeColor", e.target.value)}
+              placeholder="Pick a color"
+            />
           </HStack>
           <FormErrorMessage>{errors.themeColor?.message}</FormErrorMessage>
         </FormControl>
