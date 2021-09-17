@@ -8,7 +8,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 
 type Props = {
@@ -24,12 +24,12 @@ const Appearance = ({ onColorChange }: Props): JSX.Element => {
 
   const colorPickTimeout = useRef(null)
   const pickedColor = useWatch({ name: "themeColor" })
-  const colorChangeHandler = (e) => {
+
+  useEffect(() => {
     if (colorPickTimeout.current) window.clearTimeout(colorPickTimeout.current)
 
-    const newColor = e.target.value
-    colorPickTimeout.current = setTimeout(() => onColorChange(newColor), 300)
-  }
+    colorPickTimeout.current = setTimeout(() => onColorChange(pickedColor), 300)
+  }, [pickedColor])
 
   return (
     <Section
@@ -59,7 +59,6 @@ const Appearance = ({ onColorChange }: Props): JSX.Element => {
                 placeholder="#4F46E5"
                 {...register("themeColor")}
                 isInvalid={errors.themeColor}
-                onInput={(e) => colorChangeHandler(e)}
               />
             </Flex>
             <Input
