@@ -6,13 +6,14 @@ import {
   useColorMode,
 } from "@chakra-ui/react"
 import Layout from "components/common/Layout"
+import { BalancesProvider } from "components/index/BalancesContext"
 import CategorySection from "components/index/CategorySection"
 import CommunityCard from "components/index/CommunityCard"
 import YourCommunities from "components/index/YourCommunities"
 import { GetStaticProps } from "next"
 import Head from "next/head"
 import { MagnifyingGlass } from "phosphor-react"
-import React, { useMemo, useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import type { Community } from "temporaryData/communities"
 import { communities as communitiesJSON } from "temporaryData/communities"
 import tokens from "temporaryData/tokens"
@@ -78,20 +79,24 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
           />
         </InputGroup>
 
-        <Stack spacing={12}>
-          <CategorySection title="Your communities" ref={refAccess}>
-            <YourCommunities refAccess={refAccess} />
-          </CategorySection>
-          <CategorySection title="All communities">
-            {filteredCommunities.map((community) => (
-              <CommunityCard
-                community={community}
-                key={community.id}
-                refAccess={refAccess}
-              />
-            ))}
-          </CategorySection>
-        </Stack>
+        <BalancesProvider
+          chainDatas={communities.map((community) => community.chainData)}
+        >
+          <Stack spacing={12}>
+            <CategorySection title="Your communities" ref={refAccess}>
+              <YourCommunities refAccess={refAccess} />
+            </CategorySection>
+            <CategorySection title="All communities">
+              {filteredCommunities.map((community) => (
+                <CommunityCard
+                  community={community}
+                  key={community.id}
+                  refAccess={refAccess}
+                />
+              ))}
+            </CategorySection>
+          </Stack>
+        </BalancesProvider>
       </Layout>
     </>
   )
