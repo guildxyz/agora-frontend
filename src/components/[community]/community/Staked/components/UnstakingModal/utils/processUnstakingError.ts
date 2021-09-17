@@ -1,8 +1,8 @@
 import { ErrorInfo } from "components/common/Error"
-import type { MetaMaskError } from "utils/processMetaMaskError"
-import { processMetaMaskError } from "utils/processMetaMaskError"
+import type { WalletError } from "utils/processWalletError"
+import processWalletError from "utils/processWalletError"
 
-const processUnstakingError = (error: MetaMaskError): ErrorInfo => {
+const processUnstakingError = (error: WalletError): ErrorInfo => {
   switch (error.message) {
     case "execution reverted: Not enough unlocked tokens":
       return {
@@ -11,7 +11,7 @@ const processUnstakingError = (error: MetaMaskError): ErrorInfo => {
           "If your timelock has just expired, you have to wait until the next block to be able unstake. Try again!",
       }
     default:
-      return processMetaMaskError(error)
+      return processWalletError(error)
   }
 }
 

@@ -76,7 +76,7 @@ type ProvidedCommunity = CommunityBase & {
   availableChains: string[]
 }
 
-type MetaMaskError = { code: number; message: string }
+type WalletError = { code: number; message: string }
 
 type DiscordError = { error: string; errorDescription: string }
 
@@ -101,7 +101,7 @@ export type {
   Requirement,
   ChainData,
   ProvidedCommunity,
-  MetaMaskError,
+  WalletError,
   Machine,
   Icon,
   Rest,

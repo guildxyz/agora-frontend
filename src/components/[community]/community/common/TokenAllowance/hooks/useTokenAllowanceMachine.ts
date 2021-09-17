@@ -1,15 +1,15 @@
 import { TransactionResponse } from "@ethersproject/providers"
 import { useMachine } from "@xstate/react"
 import { useEffect } from "react"
-import type { Machine, MetaMaskError, Token } from "temporaryData/types"
+import type { Machine, Token, WalletError } from "temporaryData/types"
 import { assign, createMachine, DoneInvokeEvent } from "xstate"
 import useTokenAllowance from "./useTokenAllowance"
 
 type Context = {
-  error: MetaMaskError
+  error: WalletError
 }
 
-type ErrorEvent = DoneInvokeEvent<MetaMaskError>
+type ErrorEvent = DoneInvokeEvent<WalletError>
 type TransactionEvent = DoneInvokeEvent<TransactionResponse>
 type Event = ErrorEvent | TransactionEvent
 

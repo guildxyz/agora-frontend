@@ -2,14 +2,14 @@ import { useWeb3React } from "@web3-react/core"
 import { useMachine } from "@xstate/react"
 import { useCommunity } from "components/[community]/common/Context"
 import { Machine } from "temporaryData/types"
-import { MetaMaskError } from "utils/processMetaMaskError"
+import { WalletError } from "utils/processWalletError"
 import { assign, createMachine, DoneInvokeEvent } from "xstate"
 
 type Context = {
-  error?: MetaMaskError
+  error?: WalletError
 }
 
-type Event = DoneInvokeEvent<MetaMaskError>
+type Event = DoneInvokeEvent<WalletError>
 
 const leaveModalMachine = createMachine<Context, Event>(
   {
@@ -58,7 +58,7 @@ const useLeaveModalMachine = (platform: string): Machine<Context> => {
     services: {
       // ! This is a dummy function for the demo !
       // Depending on what the returned error will look like, we might need to add a new type to ErrorType in Error.tsx
-      leavePlatform: async (): Promise<MetaMaskError> => {
+      leavePlatform: async (): Promise<WalletError> => {
         console.log({ account, platform, communityId })
         return new Promise((resolve, reject) => {
           setTimeout(() => reject(new Error()), 100)
