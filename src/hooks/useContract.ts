@@ -1,5 +1,6 @@
-import { Contract, ContractInterface } from "@ethersproject/contracts"
-import { Web3Provider } from "@ethersproject/providers"
+import type { ContractInterface } from "@ethersproject/contracts"
+import { Contract } from "@ethersproject/contracts"
+import type { Web3Provider } from "@ethersproject/providers"
 import { useWeb3React } from "@web3-react/core"
 import useSWR from "swr"
 
@@ -37,7 +38,7 @@ const useContract = (
         a?.address === b?.address && a?.signer
           ? a?.signer?.getAddress() === b?.signer?.getAddress()
           : true,
-      initialData: library
+      fallbackData: library
         ? createContract(library, ABI)(
             "initial contract",
             address,
