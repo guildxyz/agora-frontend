@@ -54,7 +54,8 @@ const supportedChainIds = supportedChains.map((_) => Chains[_])
 
 const injected = new InjectedConnector({ supportedChainIds })
 
-const walletConnectConnector = new WalletConnectConnector({
+const walletConnect = new WalletConnectConnector({
+  supportedChainIds,
   rpc: Object.keys(RPC).reduce(
     (_acc, chainName: "POLYGON" | "ETHEREUM" | "GOERLI" | "BSC") => {
       const acc = _acc
@@ -67,7 +68,7 @@ const walletConnectConnector = new WalletConnectConnector({
     },
     {}
   ),
+  qrcode: true,
 })
 
-export { Chains, RPC, supportedChains, walletConnectConnector }
-export default injected
+export { Chains, RPC, supportedChains, injected, walletConnect }

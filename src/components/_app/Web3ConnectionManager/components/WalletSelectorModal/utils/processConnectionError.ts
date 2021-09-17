@@ -1,8 +1,9 @@
 import { UnsupportedChainIdError } from "@web3-react/core"
 import {
   NoEthereumProviderError,
-  UserRejectedRequestError,
+  UserRejectedRequestError as UserRejectedRequestErrorInjected,
 } from "@web3-react/injected-connector"
+import { UserRejectedRequestError as UserRejectedRequestErrorWalletConnect } from "@web3-react/walletconnect-connector"
 import { ErrorInfo } from "components/common/Error"
 
 const processConnectionError = (error: Error): ErrorInfo => {
@@ -19,7 +20,8 @@ const processConnectionError = (error: Error): ErrorInfo => {
         description:
           "Please switch to a supported network, or connect to another wallet.",
       }
-    case UserRejectedRequestError:
+    case UserRejectedRequestErrorInjected:
+    case UserRejectedRequestErrorWalletConnect:
       return {
         title: "Error connecting. Try again!",
         description:
