@@ -57,15 +57,10 @@ const injected = new InjectedConnector({ supportedChainIds })
 const walletConnect = new WalletConnectConnector({
   supportedChainIds,
   rpc: Object.keys(RPC).reduce(
-    (_acc, chainName: "POLYGON" | "ETHEREUM" | "GOERLI" | "BSC") => {
-      const acc = _acc
-      ;({
-        [chainName]: {
-          rpcUrls: [acc[Chains[chainName]]],
-        },
-      } = RPC)
-      return acc
-    },
+    (obj, chainName) => ({
+      ...obj,
+      [Chains[chainName]]: RPC[chainName].rpcUrls[0],
+    }),
     {}
   ),
   qrcode: true,

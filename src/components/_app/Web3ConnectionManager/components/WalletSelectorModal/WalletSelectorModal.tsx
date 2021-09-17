@@ -1,5 +1,4 @@
 import {
-  Button,
   Icon,
   ModalBody,
   ModalCloseButton,
@@ -104,9 +103,6 @@ const WalletSelectorModal = ({
                 isActive={connector === walletConnect}
                 isLoading={activatingConnector === walletConnect}
               />
-              <Button as="p" disabled isFullWidth size="xl">
-                More options coming soon
-              </Button>
             </Stack>
           </ModalBody>
           <ModalFooter>
