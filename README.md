@@ -4,7 +4,7 @@ Open source interface for Agora Space -- a social oracle and token utility toolk
 
 - Website: [agora.space](https://agora.space)
 - Interface: [app.agora.space](https://app.agora.space)
-- Docs: [agoraspace.gitbook.io](https://agoraspace.gitbook.io/agoraspace/)
+- Docs: [agora-space.gitbook.io](https://agora-space.gitbook.io/agoraspace)
 - Medium: [@AgoraSpaceDAO](https://medium.com/@AgoraSpaceDAO)
 - Twitter: [@AgoraSpaceDAO](https://twitter.com/AgoraSpaceDAO)
 - Email: [contact@agora.space](mailto:contact@agora.space)
