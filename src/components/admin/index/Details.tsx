@@ -89,16 +89,16 @@ const Details = ({ registerSuccess, isAdminPage = false }: Props): JSX.Element =
                       if (typeof registerSuccess === "boolean" && !!registerSuccess)
                         return true
                       try {
-                        const response = await fetch(
+                        const data = await fetch(
                           `${process.env.NEXT_PUBLIC_API}/community/urlName/${value}`
-                        )
-                        if (!response.ok)
-                          console.info(
-                            "%cThe logged error is expected, it's needed for validating the url name input field.",
-                            "color: gray"
-                          )
-                        return !response.ok || "This url name is already in use."
+                        ).then((response) => response.json())
+
+                        return !data || "This url name is already in use."
                       } catch {
+                        console.info(
+                          "%cThe logged error is expected, it's needed for validating the url name input field.",
+                          "color: gray"
+                        )
                         return "Failed to validate."
                       }
                     },

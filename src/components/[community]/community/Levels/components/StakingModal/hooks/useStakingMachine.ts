@@ -82,7 +82,9 @@ const useStakingMachine = (amount: number, levelId: number): Machine<Context> =>
       stake: async () => {
         const weiAmount = parseEther(amount.toString())
         const rankId = levels
-          .filter(({ requirementType }) => requirementType === "STAKE")
+          .filter(({ requirements }) =>
+            requirements.some((requirement) => !!requirement.stakeTimelockMs)
+          )
           .findIndex((level) => level.id === levelId)
         const tx: TransactionResponse = await contract.deposit(
           weiAmount,
