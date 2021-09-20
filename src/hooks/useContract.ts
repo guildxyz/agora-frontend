@@ -2,7 +2,7 @@ import type { ContractInterface } from "@ethersproject/contracts"
 import { Contract } from "@ethersproject/contracts"
 import type { Web3Provider } from "@ethersproject/providers"
 import { useWeb3React } from "@web3-react/core"
-import useSWR from "swr"
+import useSWRImmutable from "swr/immutable"
 
 const createContract = async (
   _: string,
@@ -25,23 +25,17 @@ const useContract = (
 ): Contract => {
   const { account, chainId, library } = useWeb3React<Web3Provider>()
 
-  const shouldFetch =
-    typeof address === "string" &&
-    typeof account === "string" &&
-    address.length > 0 &&
-    account.length > 0 &&
-    !!library
+  const shouldFetch = address && account && !!library
 
   /**
    * Passing library in the dependency array is fine, its basically a constant
    * reference, won't mix up the cache keys
    */
-  const { data: contract } = useSWR(
+  const { data: contract } = useSWRImmutable(
     shouldFetch
       ? ["contract", address, withSigner, account, library, ABI, chainId]
       : null,
-    createContract,
-    { revalidateOnFocus: false }
+    createContract
   )
 
   return contract

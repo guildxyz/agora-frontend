@@ -18,18 +18,14 @@ const useBalance = (token: Token): number => {
   const { chainId, account } = useWeb3React()
   const tokenContract = useContract(token?.address, ERC20_ABI)
 
-  const shouldFetch =
-    typeof account === "string" &&
-    typeof token?.address === "string" &&
-    token.address.length > 0 &&
-    !!tokenContract
+  const shouldFetch = account && !!tokenContract
 
   const { data } = useSWR(
     shouldFetch
       ? ["balance", account, token?.decimals, tokenContract, chainId]
       : null,
     getBalance,
-    { revalidateOnFocus: false, refreshInterval: 10_000 }
+    { refreshInterval: 10_000 }
   )
 
   return data

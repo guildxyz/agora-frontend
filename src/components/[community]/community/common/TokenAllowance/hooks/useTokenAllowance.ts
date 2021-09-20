@@ -19,7 +19,6 @@ const getAllowance = async (
   account: string,
   contractAddress: string
 ) => {
-  // console.log(`getAllowance called`, tokenContract, account, contractAddress)
   const allowance = await tokenContract.allowance(account, contractAddress)
   return allowance >= MAX_VALUE / BigInt(4)
 }
@@ -31,7 +30,7 @@ const useTokenAllowance = (token: Token): TokenAllowance => {
   } = useCommunity()
   const tokenContract = useContract(token.address, ERC20_ABI, true)
 
-  const shouldFetch = typeof account === "string" && !!tokenContract
+  const shouldFetch = account && !!tokenContract
 
   const { data } = useSWR(
     shouldFetch
@@ -40,7 +39,6 @@ const useTokenAllowance = (token: Token): TokenAllowance => {
     getAllowance,
     {
       refreshInterval: 10_000,
-      // onSuccess: () => console.log(`tokenAllowance fetched`, token.address),
     }
   )
 

@@ -66,7 +66,7 @@ const useStaked = (): StakedType => {
   const { account } = useWeb3React()
   const contract = useContract(contractAddress, AGORA_SPACE_ABI, true)
 
-  const shouldFetch = typeof account === "string" && !!contract
+  const shouldFetch = account && !!contract
 
   const { data } = useSWR(
     shouldFetch ? ["staked", account, contract] : null,
