@@ -16,7 +16,6 @@ import {
 import { useCommunity } from "components/[community]/common/Context"
 import ImgPlaceholder from "components/[community]/common/ImgPlaceholder"
 import InfoTags from "components/[community]/community/Levels/components/InfoTags"
-import { Chains } from "connectors"
 import { Check, CheckCircle } from "phosphor-react"
 import { useEffect } from "react"
 import type { Level as LevelType } from "temporaryData/types"
@@ -31,17 +30,7 @@ type Props = {
 }
 
 const Level = ({
-  data: {
-    requirement,
-    requirementData,
-    requirementType,
-    name,
-    stakeTimelockMs,
-    imageUrl,
-    description,
-    membersCount,
-    id,
-  },
+  data: { id, requirements, name, imageUrl, description, membersCount },
   setLevelsState,
 }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
@@ -52,12 +41,10 @@ const Level = ({
     onClose: onStakingModalClose,
   } = useDisclosure()
   const [hasAccess, noAccessMessage] = useLevelAccess(
-    requirementType,
-    requirement,
-    requirementData,
+    id,
+    requirements,
     chainData.token,
-    chainData.stakeToken,
-    Chains[chainData.name]
+    chainData.stakeToken
   )
   const [hoverElRef, focusElRef, state] = useLevelIndicatorState(
     hasAccess,
@@ -84,19 +71,11 @@ const Level = ({
       borderBottom="1px"
       borderBottomColor={colorMode === "light" ? "gray.200" : "gray.600"}
       ref={hoverElRef}
-      order={(() => {
-        switch (requirementType) {
-          case "OPEN":
-            return -1
-          case "HOLD":
-            return requirement
-          case "STAKE":
-            // not a robust solution, should think of a better one
-            return 10000000 + requirement
-          default:
-            return 0
-        }
-      })()}
+      order={
+        requirements?.[0]?.stakeTimelockMs
+          ? 10000000 + (requirements?.[0]?.value as number)
+          : (requirements?.[0]?.value as number)
+      }
     >
       <Grid
         width="full"
@@ -111,10 +90,7 @@ const Level = ({
           </Heading>
           <InfoTags
             {...{
-              requirement,
-              requirementType,
-              requirementData,
-              stakeTimelockMs,
+              requirements,
               membersCount,
             }}
             tokenSymbol={chainData.token.symbol}
@@ -171,7 +147,7 @@ const Level = ({
           />
         )}
         {(() =>
-          requirementType === "STAKE" &&
+          requirements?.[0]?.stakeTimelockMs &&
           !hasAccess && (
             <>
               <Button
@@ -188,8 +164,8 @@ const Level = ({
                 <StakingModal
                   levelId={id}
                   levelName={name}
-                  requirement={requirement}
-                  stakeTimelockMs={stakeTimelockMs}
+                  requirement={requirements?.[0]?.value as number}
+                  stakeTimelockMs={requirements?.[0]?.stakeTimelockMs}
                   isOpen={isStakingModalOpen}
                   onClose={onStakingModalClose}
                 />

@@ -16,7 +16,7 @@ import TokenAllowance from "components/[community]/community/common/TokenAllowan
 import useTokenAllowanceMachine from "components/[community]/community/common/TokenAllowance/hooks/useTokenAllowanceMachine"
 import TransactionSubmitted from "components/[community]/community/common/TransactionSubmitted"
 import msToReadableFormat from "utils/msToReadableFormat"
-import { processMetaMaskError } from "utils/processMetaMaskError"
+import processWalletError from "utils/processWalletError"
 import useNeededAmount from "../../hooks/useNeededAmount"
 import useStakingModalMachine from "./hooks/useStakingMachine"
 
@@ -79,7 +79,7 @@ const StakingModal = ({
             <>
               <Error
                 error={stakeState.context.error || allowanceState.context.error}
-                processError={processMetaMaskError}
+                processError={processWalletError}
               />
               <Text>
                 Stake {amount} {token.symbol} to gain access to {levelName}. Your

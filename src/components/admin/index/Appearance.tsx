@@ -1,5 +1,5 @@
 import {
-  Box,
+  Flex,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -8,7 +8,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { useFormContext, useWatch } from "react-hook-form"
 
 type Props = {
@@ -18,14 +18,18 @@ type Props = {
 const Appearance = ({ onColorChange }: Props): JSX.Element => {
   const {
     register,
+    setValue,
     formState: { errors },
   } = useFormContext()
 
+  const colorPickTimeout = useRef(null)
   const pickedColor = useWatch({ name: "themeColor" })
 
   useEffect(() => {
-    if (!errors.themeColor) onColorChange(pickedColor)
-  }, [pickedColor, onColorChange, errors.themeColor])
+    if (colorPickTimeout.current) window.clearTimeout(colorPickTimeout.current)
+
+    colorPickTimeout.current = setTimeout(() => onColorChange(pickedColor), 300)
+  }, [pickedColor])
 
   return (
     <Section
@@ -37,24 +41,31 @@ const Appearance = ({ onColorChange }: Props): JSX.Element => {
         <FormControl isInvalid={errors.themeColor}>
           <FormLabel>Main color</FormLabel>
           <HStack spacing={4}>
-            <Box
-              w={10}
-              h={10}
-              minW={10}
+            <Flex
+              boxSize={10}
+              alignItems="center"
+              justifyContent="center"
               rounded="full"
-              transition="background 0.5s ease"
-              bgColor={!!pickedColor && !errors.themeColor ? pickedColor : "#e4e4e7"}
-            />
+              overflow="hidden"
+            >
+              <Input
+                display="block"
+                p={0}
+                border="none"
+                type="color"
+                minW={16}
+                minH={16}
+                cursor="pointer"
+                placeholder="#4F46E5"
+                {...register("themeColor")}
+                isInvalid={errors.themeColor}
+              />
+            </Flex>
             <Input
-              maxWidth={60}
-              placeholder="#4F46E5"
-              {...register("themeColor", {
-                pattern: {
-                  value: /^#[0-9a-f]{3}([0-9a-f]{3})?$/i,
-                  message: "Please enter a valid hexadecimal color code.",
-                },
-              })}
-              isInvalid={errors.themeColor}
+              maxWidth={40}
+              value={pickedColor}
+              onChange={(e) => setValue("themeColor", e.target.value)}
+              placeholder="Pick a color"
             />
           </HStack>
           <FormErrorMessage>{errors.themeColor?.message}</FormErrorMessage>

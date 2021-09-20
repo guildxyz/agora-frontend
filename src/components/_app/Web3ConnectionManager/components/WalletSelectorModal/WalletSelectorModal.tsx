@@ -1,5 +1,4 @@
 import {
-  Button,
   Icon,
   ModalBody,
   ModalCloseButton,
@@ -9,6 +8,7 @@ import {
   ModalOverlay,
   Stack,
   Text,
+  useDisclosure,
 } from "@chakra-ui/react"
 import MetaMaskOnboarding from "@metamask/onboarding"
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -17,9 +17,10 @@ import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 import { Error } from "components/common/Error"
 import Link from "components/common/Link"
 import Modal from "components/common/Modal"
-import injected from "connectors"
+import { injected, walletConnect } from "connectors"
 import { ArrowSquareOut } from "phosphor-react"
 import React, { useEffect, useRef } from "react"
+import NetworkChangeModal from "../../../../common/Layout/components/Account/components/NetworkModal/NetworkModal"
 import ConnectorButton from "./components/ConnectorButton"
 import processConnectionError from "./utils/processConnectionError"
 
@@ -28,7 +29,6 @@ type Props = {
   setActivatingConnector: (connector: AbstractConnector) => void
   isModalOpen: boolean
   closeModal: () => void
-  openNetworkModal: () => void
 }
 
 const WalletSelectorModal = ({
@@ -36,10 +36,10 @@ const WalletSelectorModal = ({
   setActivatingConnector,
   isModalOpen,
   closeModal,
-  openNetworkModal, // Passing as prop to avoid dependency cycle
 }: Props): JSX.Element => {
   const { error } = useWeb3React()
   const { active, activate, connector, setError } = useWeb3React()
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   // initialize metamask onboarding
   const onboarding = useRef<MetaMaskOnboarding>()
@@ -47,9 +47,9 @@ const WalletSelectorModal = ({
     onboarding.current = new MetaMaskOnboarding()
   }
 
-  const handleConnect = () => {
-    setActivatingConnector(injected)
-    activate(injected, undefined, true).catch((err) => {
+  const handleConnect = (provider) => {
+    setActivatingConnector(provider)
+    activate(provider, undefined, true).catch((err) => {
       setActivatingConnector(undefined)
       setError(err)
     })
@@ -63,9 +63,9 @@ const WalletSelectorModal = ({
   useEffect(() => {
     if (error instanceof UnsupportedChainIdError) {
       closeModal()
-      openNetworkModal()
+      onOpen()
     }
-  }, [error, openNetworkModal, closeModal])
+  }, [error, onOpen, closeModal])
 
   return (
     <>
@@ -87,17 +87,22 @@ const WalletSelectorModal = ({
                 onClick={
                   typeof window !== "undefined" &&
                   MetaMaskOnboarding.isMetaMaskInstalled()
-                    ? handleConnect
+                    ? () => handleConnect(injected)
                     : handleOnboarding
                 }
                 iconUrl="metamask.png"
-                disabled={!!activatingConnector || connector === injected}
+                disabled={connector === injected || !!activatingConnector}
                 isActive={connector === injected}
-                isLoading={activatingConnector && activatingConnector === injected}
+                isLoading={activatingConnector === injected}
               />
-              <Button as="p" disabled isFullWidth size="xl">
-                More options coming soon
-              </Button>
+              <ConnectorButton
+                name="WalletConnect"
+                onClick={() => handleConnect(walletConnect)}
+                iconUrl="walletconnect.svg"
+                disabled={connector === walletConnect || !!activatingConnector}
+                isActive={connector === walletConnect}
+                isLoading={activatingConnector === walletConnect}
+              />
             </Stack>
           </ModalBody>
           <ModalFooter>
@@ -115,6 +120,7 @@ const WalletSelectorModal = ({
           </ModalFooter>
         </ModalContent>
       </Modal>
+      <NetworkChangeModal isOpen={isOpen} onClose={onClose} />
     </>
   )
 }
