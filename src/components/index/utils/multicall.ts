@@ -1,0 +1,12 @@
+enum MulticallAddresses {
+  ETHEREUM = "0xeefba1e63905ef1d7acba5a8513c70307c1ce441",
+  GOERLI = "0x77dca2c955b15e9de4dbbcf1246b4b85b651e50e",
+  // ROPSTEN = "0x53c43764255c17bd724f74c4ef150724ac50a3ed",
+  // XDAI = "0xb5b692a88bdfc81ca69dcb1d924f59f0413a602a",
+  POLYGON = "0x11ce4B23bD875D7F5C6a31084f55fDe1e9A87507",
+  // MUMBAI = "0x08411ADd0b5AA8ee47563b146743C13b3556c9Cc",
+  BSC = "0x41263cba59eb80dc200f3e2544eda4ed6a90e76c",
+  // BSCTEST = "0xae11C5B5f29A6a25e955F0CB8ddCc416f522AF5C",
+}
+
+export default MulticallAddresses
