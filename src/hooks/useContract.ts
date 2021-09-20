@@ -6,13 +6,16 @@ import useSWR from "swr"
 
 const createContract =
   (library: Web3Provider, ABI: ContractInterface) =>
-  (_: string, address: string, withSigner: boolean, account: string) =>
-    // console.log(`createContract called - `, address, account)
-    new Contract(
+  async (_: string, address: string, withSigner: boolean, account: string) => {
+    console.log(`createContract called - `, address, account)
+    const contract = new Contract(
       address,
       ABI,
       withSigner ? library.getSigner(account).connectUnchecked() : library
     )
+    const signerAddress = await contract.signer?.getAddress()
+    return { contract, signerAddress }
+  }
 
 const useContract = (
   address: string,
@@ -33,23 +36,13 @@ const useContract = (
     createContract(library, ABI),
     {
       revalidateOnFocus: false,
-      revalidateOnMount: false,
-      compare: (a, b) =>
-        a?.address === b?.address && a?.signer
-          ? a?.signer?.getAddress() === b?.signer?.getAddress()
-          : true,
-      fallbackData: library
-        ? createContract(library, ABI)(
-            "initial contract",
-            address,
-            withSigner,
-            account
-          )
-        : null,
+      compare: (left, right) =>
+        left?.contract?.address === right?.contract.address &&
+        left?.signerAddress === right?.signerAddress,
     }
   )
 
-  return data
+  return data?.contract
 }
 
 export default useContract
