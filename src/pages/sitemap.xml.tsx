@@ -21,7 +21,6 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
           (community: Community) => `
         <url>
           <loc>${baseUrl}/${community.urlName}</loc>
-          <lastmod>${new Date().toISOString()}</lastmod>
           <changefreq>weekly</changefreq>
           <priority>1.0</priority>
         </url>
@@ -33,7 +32,6 @@ export const getServerSideProps: GetServerSideProps = async ({ res }) => {
             (token: Community) => `
           <url>
             <loc>${baseUrl}/${token.urlName}</loc>
-            <lastmod>${new Date().toISOString()}</lastmod>
             <changefreq>weekly</changefreq>
             <priority>0.5</priority>
           </url>
