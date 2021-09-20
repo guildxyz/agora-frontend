@@ -18,8 +18,12 @@ const getBalance = async (
   tokenContract &&
   tokenContract.balanceOf(address).then((balance) => +formatUnits(balance, decimals))
 
+/**
+ * Only fetches the balance of the param token if the hook call is not under a
+ * BalancesProvider, otherwise it takes the value from there
+ */
 const useBalance = (token: Token): number => {
-  const fromBalances = useBalances(token?.address)
+  const fromMulticall = useBalances(token?.address)
   const { library, chainId, account } = useWeb3React<Web3Provider>()
   const tokenContract = useContract(token?.address, ERC20_ABI)
 
@@ -27,7 +31,7 @@ const useBalance = (token: Token): number => {
     typeof account === "string" &&
     !!library &&
     typeof token?.address === "string" &&
-    typeof fromBalances === "undefined"
+    typeof fromMulticall === "undefined"
 
   const { data, mutate } = useSWR(
     shouldFetch
@@ -42,7 +46,7 @@ const useBalance = (token: Token): number => {
 
   useKeepSWRDataLiveAsBlocksArrive(mutate)
 
-  return fromBalances || data
+  return fromMulticall || data
 }
 
 export default useBalance

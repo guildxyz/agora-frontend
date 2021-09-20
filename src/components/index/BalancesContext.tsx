@@ -11,6 +11,10 @@ type Props = PropsWithChildren<{ chainDatas: ChainData[][] }>
 
 const Balances = createContext<Record<string, number>>({})
 
+/**
+ * Fetches all the balances for the chain datas that support the current chain, all
+ * the other balances will be 0
+ */
 const getBalances = async (
   _: string,
   chainDatas: ChainData[][],
@@ -49,10 +53,18 @@ const getBalances = async (
   return { ...transformed, ...zeroBalances }
 }
 
+/**
+ * The useBalance calls under this provider will take the balance from this provider,
+ * if it exists.
+ */
 const BalancesProvider = ({ chainDatas, children }: Props) => {
   const { account, chainId } = useWeb3React()
   const shouldFetch = typeof account === "string"
 
+  /**
+   * FallbackData is important here, makes sure all the token addresses always appear
+   * as keys, so useBalance won't fetch them again
+   */
   const fallbackData = useMemo(() => {
     const initialBalances = chainDatas.map((chainData) => {
       const currentChainData = chainData.find(
