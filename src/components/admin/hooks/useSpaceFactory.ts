@@ -43,8 +43,8 @@ const useSpaceFactory = (inputTokenAddress: string) => {
   )
 
   // Wrapping these methods for custom errors
-  const createSpace = (tokenAddress: string) =>
-    callMethod("createSpace", tokenAddress)
+  const createSpace = (signature: string, tokenAddress: string) =>
+    callMethod("createSpace", signature, tokenAddress)
 
   // Method call wrapper to be able to use custom errors
   // Custom errors don't seem to be decoded by the provider, it just raises an "Internal JSON-RPC error", that's why this is needed

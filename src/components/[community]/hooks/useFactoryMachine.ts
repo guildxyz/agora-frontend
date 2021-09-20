@@ -1,11 +1,15 @@
+import { defaultAbiCoder } from "@ethersproject/abi"
+import { arrayify } from "@ethersproject/bytes"
+import { keccak256 } from "@ethersproject/keccak256"
 import { useWeb3React } from "@web3-react/core"
 import { useMachine } from "@xstate/react"
 import useCommunityData from "components/admin/hooks/useCommunityData"
 import useShowErrorToast from "components/admin/hooks/useShowErrorToast"
 import useSpaceFactory from "components/admin/hooks/useSpaceFactory"
-import { Chains } from "connectors"
+import { usePersonalSign } from "components/_app/PersonalSignStore"
+import { Chains, SpaceFactory } from "connectors"
 import { Machine } from "temporaryData/types"
-import { createMachine } from "xstate"
+import { createMachine, DoneInvokeEvent } from "xstate"
 
 // TODO: remove logs before merge
 const factoryMachine = createMachine({
@@ -14,7 +18,14 @@ const factoryMachine = createMachine({
     idle: {
       entry: () => console.log("Entered state: idle"),
       on: {
-        DEPLOY: "createSpace",
+        DEPLOY: "sign",
+      },
+    },
+    sign: {
+      invoke: {
+        src: "sign",
+        onDone: "createSpace",
+        onError: "error",
       },
     },
     createSpace: {
@@ -44,17 +55,26 @@ const factoryMachine = createMachine({
 })
 
 const useFactoryMachine = (): Machine<any> => {
-  const { chainId } = useWeb3React()
+  const { chainId, account } = useWeb3React()
   const { communityData } = useCommunityData()
   const showErrorToast = useShowErrorToast()
   const tokenAddress = communityData.chainData.token.address // No conditional chaining, DeploySpace only renders if this data is available
   const { createSpace, updateData } = useSpaceFactory(tokenAddress)
+  const [sign] = usePersonalSign()
 
   const [state, send] = useMachine(factoryMachine, {
     services: {
-      createSpace: async () => {
+      sign: async () => {
+        const payload = defaultAbiCoder.encode(
+          ["address", "address", "address"],
+          [account, tokenAddress, SpaceFactory[Chains[chainId]]]
+        )
+        const payloadHash = keccak256(payload)
+        return sign(arrayify(payloadHash))
+      },
+      createSpace: async (_, event: DoneInvokeEvent<string>) => {
         try {
-          const tx = await createSpace(tokenAddress)
+          const tx = await createSpace(event.data, tokenAddress)
           await tx.wait()
           const updated = await updateData()
           const index = communityData.allChainData.findIndex(

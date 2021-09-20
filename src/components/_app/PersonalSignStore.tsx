@@ -35,7 +35,7 @@ const PersonalSignStore = ({
 }
 
 const usePersonalSign = (): [
-  (message: string) => Promise<string>, // sign
+  (message: string | Uint8Array) => Promise<string>, // sign
   (message: string) => boolean, // hasMessage
   (message: string) => string // getSign
 ] => {
