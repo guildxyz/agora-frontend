@@ -9,8 +9,6 @@ const useLevelAccess = (
   token: Token | undefined,
   stakeToken: Token | undefined
 ): [boolean, string] => {
-  // The balances will be NaN if the tokens are undefined. This is fine, since this only happens,
-  // if the user is not on the correct chain, and this is handled before the balances are used
   const tokenBalance = useBalance(token)
   const neededAmount = useNeededAmount(
     requirements?.[0]?.value as number,
