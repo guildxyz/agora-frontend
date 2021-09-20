@@ -4,7 +4,6 @@ import { useWeb3React } from "@web3-react/core"
 import { useCommunity } from "components/[community]/common/Context"
 import AGORA_SPACE_ABI from "constants/agoraSpaceABI.json"
 import useContract from "hooks/useContract"
-import useKeepSWRDataLiveAsBlocksArrive from "hooks/useKeepSWRDataLiveAsBlocksArrive"
 import useSWR from "swr"
 
 type StakedType = {
@@ -18,8 +17,8 @@ type StakedType = {
 
 const getTimelocks = async (
   _: string,
-  contract: Contract,
-  account: string
+  account: string,
+  contract: Contract
 ): Promise<StakedType> => {
   const getStaked = async (
     i: number,
@@ -64,21 +63,23 @@ const useStaked = (): StakedType => {
   const {
     chainData: { contractAddress },
   } = useCommunity()
+  const { account } = useWeb3React()
   const contract = useContract(contractAddress, AGORA_SPACE_ABI, true)
-  const { account, active } = useWeb3React()
 
-  const { data, mutate } = useSWR(
-    active ? ["staked", contract, account] : null,
+  const shouldFetch = account && !!contract
+
+  const { data } = useSWR(
+    shouldFetch ? ["staked", account, contract] : null,
     getTimelocks,
     {
       fallbackData: {
         unlockedAmount: 0,
         locked: [],
       },
+      refreshInterval: 10_000,
+      revalidateOnMount: true,
     }
   )
-
-  useKeepSWRDataLiveAsBlocksArrive(mutate)
 
   return data
 }
