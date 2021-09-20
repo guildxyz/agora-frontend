@@ -53,7 +53,7 @@ const BalancesProvider = ({ chainDatas, children }: Props) => {
   const { account, chainId } = useWeb3React()
   const shouldFetch = typeof account === "string"
 
-  const initialData = useMemo(() => {
+  const fallbackData = useMemo(() => {
     const initialBalances = chainDatas.map((chainData) => {
       const currentChainData = chainData.find(
         (data) => data.name === Chains[chainId]
@@ -71,7 +71,7 @@ const BalancesProvider = ({ chainDatas, children }: Props) => {
   const { data: balances } = useSWR<Record<string, number>>(
     shouldFetch ? ["balances", chainDatas, Chains[chainId], account] : null,
     getBalances,
-    { initialData, revalidateOnMount: true }
+    { fallbackData, revalidateOnMount: true }
   )
 
   return <Balances.Provider value={balances}>{children}</Balances.Provider>
