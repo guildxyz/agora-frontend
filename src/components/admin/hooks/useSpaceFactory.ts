@@ -37,8 +37,6 @@ const useSpaceFactory = (inputTokenAddress: string) => {
   const factoryAddress = SpaceFactory[Chains[chainId]]
   const contract = useContract(factoryAddress, SPACE_FACTORY_ABI, true)
 
-  const approvedAddresses = (tokenOwner: string, tokenAddress: string) =>
-    contract?.approvedAddresses(tokenOwner, tokenAddress)
   const spaces = useCallback(
     (tokenAddress: string) => contract?.spaces(tokenAddress),
     [contract]
@@ -47,11 +45,6 @@ const useSpaceFactory = (inputTokenAddress: string) => {
   // Wrapping these methods for custom errors
   const createSpace = (tokenAddress: string) =>
     callMethod("createSpace", tokenAddress)
-  const setApproval = (
-    tokenOwner: string,
-    tokenAddress: string,
-    approvalState = true
-  ) => callMethod("setApproval", tokenOwner, tokenAddress, approvalState)
 
   // Method call wrapper to be able to use custom errors
   // Custom errors don't seem to be decoded by the provider, it just raises an "Internal JSON-RPC error", that's why this is needed
@@ -77,9 +70,6 @@ const useSpaceFactory = (inputTokenAddress: string) => {
         from: account,
         gasPrice: 100,
         gasLimit: 1000000,
-      }).catch((error) => {
-        console.error(error.transaction)
-        throw error
       })
     }
   }
@@ -146,8 +136,6 @@ const useSpaceFactory = (inputTokenAddress: string) => {
 
   return {
     createSpace,
-    setApproval,
-    approvedAddresses,
     updateData,
     contractAddress,
     stakeToken: {
