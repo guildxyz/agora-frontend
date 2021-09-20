@@ -71,12 +71,11 @@ const BalancesProvider = ({ chainDatas, children }: Props) => {
 
   const { data: balances } = useSWR<Record<string, number>>(
     shouldFetch ? ["balances", chainDatas, Chains[chainId], account] : null,
-    getBalances
+    getBalances,
+    { initialData, revalidateOnMount: true }
   )
 
-  return (
-    <Balances.Provider value={balances ?? initialData}>{children}</Balances.Provider>
-  )
+  return <Balances.Provider value={balances}>{children}</Balances.Provider>
 }
 
 const useBalances = (address: string) => {
