@@ -6,7 +6,9 @@ import useSWR from "swr"
 const fetchLevelsAccess = async (_: string, communityId: string, account: string) =>
   fetch(
     `${process.env.NEXT_PUBLIC_API}/community/levelsAccess/${communityId}/${account}`
-  ).then((response: Response) => (response.ok ? response.json() : null))
+  )
+    .then((response: Response) => (response.ok ? response.json() : null))
+    .then((data) => data.find((obj) => obj.address === account.toLowerCase()).levels)
 
 const useLevelsAccess = (levelId?: number) => {
   const { account, active, chainId } = useWeb3React()
@@ -14,7 +16,7 @@ const useLevelsAccess = (levelId?: number) => {
   const chain = Chains[chainData.name]
   const isOnRightChain = typeof chain === "number" && chainId === chain
 
-  const shouldFetch = account
+  const shouldFetch = !!account
 
   const { data } = useSWR(
     shouldFetch ? ["levelsAccess", id, account] : null,
