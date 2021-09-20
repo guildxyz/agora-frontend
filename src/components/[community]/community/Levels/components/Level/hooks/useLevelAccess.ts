@@ -1,41 +1,30 @@
-import { useWeb3React } from "@web3-react/core"
 import useBalance from "hooks/useBalance"
-import useMutagenNfts from "hooks/useMutagenNfts"
-import { RequirementType, Token } from "temporaryData/types"
+import { Requirement, Token } from "temporaryData/types"
+import useLevelsAccess from "../../../hooks/useLevelsAccess"
 import useNeededAmount from "../../../hooks/useNeededAmount"
 
 const useLevelAccess = (
-  type: RequirementType,
-  requirement: number,
+  id: number,
+  requirements: Requirement[],
   token: Token | undefined,
-  stakeToken: Token | undefined,
-  chain: number
+  stakeToken: Token | undefined
 ): [boolean, string] => {
   // The balances will be NaN if the tokens are undefined. This is fine, since this only happens,
   // if the user is not on the correct chain, and this is handled before the balances are used
   const tokenBalance = useBalance(token)
-  const stakeBalance = useBalance(stakeToken)
-  const ownedNfts = useMutagenNfts(type, token)
-  const neededAmount = useNeededAmount(requirement, stakeToken)
-  const { active, chainId } = useWeb3React()
-  const isOnRightChain = typeof chain === "number" && chainId === chain
+  const neededAmount = useNeededAmount(
+    requirements?.[0]?.value as number,
+    stakeToken
+  )
+  const { data: hasAccess, error } = useLevelsAccess(id)
 
-  if (!active) return [false, "Wallet not connected"]
+  if (error) return [false, error]
 
-  if (!isOnRightChain) return [false, "Wrong network"]
+  if (hasAccess) return [true, ""]
 
-  if (type === "HOLD" && requirement < 0) return [tokenBalance > 0, ""]
-
-  if (type === "OPEN") return [true, ""]
-
-  if (stakeBalance >= requirement) return [true, ""]
+  if (requirements?.[0]?.type === "NFT") return [false, "NFT not owned"]
 
   if (tokenBalance < neededAmount) return [false, "Insufficient balance"]
-
-  if (type === "HOLD") return [true, ""]
-
-  if (type === "NFT_HOLD")
-    return ownedNfts?.includes(requirement) ? [true, ""] : [false, "NFT not owned"]
 
   return [false, ""]
 }

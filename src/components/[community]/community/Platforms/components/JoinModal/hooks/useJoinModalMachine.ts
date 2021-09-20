@@ -1,11 +1,13 @@
 import { useWeb3React } from "@web3-react/core"
 import { useMachine } from "@xstate/react"
 import { useCommunity } from "components/[community]/common/Context"
+import { usePersonalSign } from "components/_app/PersonalSignStore"
 import { useEffect } from "react"
 import { Machine } from "temporaryData/types"
-import { MetaMaskError } from "utils/processMetaMaskError"
-import { assign, createMachine, DoneInvokeEvent } from "xstate"
-import usePersonalSign from "./usePersonalSign"
+import { WalletError } from "utils/processWalletError"
+import { assign, createMachine, DoneInvokeEvent, EventObject } from "xstate"
+
+const MESSAGE = "Please sign this message to generate your invite link"
 
 type Invite = {
   inviteLink: string
@@ -14,7 +16,7 @@ type Invite = {
 
 const initialInviteData: Invite = { inviteLink: "", alreadyJoined: false }
 
-type JoinError = MetaMaskError | Response | Error
+type JoinError = WalletError | Response | Error
 
 type Context = {
   error?: JoinError
@@ -39,6 +41,7 @@ const joinModalMachine = createMachine<Context, Event>(
         on: { SIGN: "signing" },
       },
       signing: {
+        entry: "setHashedId",
         invoke: {
           src: "sign",
           onDone: "fetching",
@@ -74,20 +77,22 @@ const joinModalMachine = createMachine<Context, Event>(
       setInvite: assign<Context, InviteEvent>({
         inviteData: (_, event) => event.data,
       }),
+      setHashedId: assign<Context>({
+        id: (_, event: EventObject & { id: string }) => event.id,
+      }),
     },
   }
 )
 
 const useJoinModalMachine = (platform: string): Machine<Context> => {
   const { id: communityId } = useCommunity()
-  const sign = usePersonalSign()
+  const [sign, , getSign] = usePersonalSign()
 
   const { account } = useWeb3React()
 
   const [state, send] = useMachine(joinModalMachine, {
     services: {
-      sign: () => sign("Please sign this message to generate your invite link"),
-
+      sign: () => sign(MESSAGE),
       getInviteLink: (context, event): Promise<Invite> =>
         fetch(`${process.env.NEXT_PUBLIC_API}/user/joinPlatform`, {
           method: "POST",
@@ -97,7 +102,7 @@ const useJoinModalMachine = (platform: string): Machine<Context> => {
           body: JSON.stringify({
             platform,
             communityId,
-            addressSignedMessage: event.data,
+            addressSignedMessage: event.data ?? getSign(MESSAGE),
             ...(context.id ? { platformUserId: context.id } : {}),
           }),
         }).then((response) =>

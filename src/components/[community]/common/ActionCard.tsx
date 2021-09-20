@@ -1,14 +1,20 @@
 import { Heading, Text, Wrap } from "@chakra-ui/react"
+import { PropsWithChildren } from "react"
+import { Rest } from "temporaryData/types"
 import Card from "../../common/Card"
 
 type Props = {
   title: string
   description: string | JSX.Element[]
-  children?: JSX.Element | JSX.Element[]
-}
+} & Rest
 
-const ActionCard = ({ title, description, children }: Props): JSX.Element => (
-  <Card isFullWidthOnMobile p={6} h="full">
+const ActionCard = ({
+  title,
+  description,
+  children,
+  ...rest
+}: PropsWithChildren<Props>): JSX.Element => (
+  <Card isFullWidthOnMobile p={6} {...rest}>
     <Heading size="sm" mb="2">
       {title}
     </Heading>

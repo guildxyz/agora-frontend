@@ -14,8 +14,8 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { useCommunity } from "components/[community]/common/Context"
+import ImgPlaceholder from "components/[community]/common/ImgPlaceholder"
 import InfoTags from "components/[community]/community/Levels/components/InfoTags"
-import { Chains } from "connectors"
 import { Check, CheckCircle } from "phosphor-react"
 import { useEffect } from "react"
 import type { Level as LevelType } from "temporaryData/types"
@@ -30,15 +30,7 @@ type Props = {
 }
 
 const Level = ({
-  data: {
-    requirement,
-    requirementType,
-    name,
-    stakeTimelockMs,
-    imageUrl,
-    description,
-    membersCount,
-  },
+  data: { id, requirements, name, imageUrl, description, membersCount },
   setLevelsState,
 }: Props): JSX.Element => {
   const { colorMode } = useColorMode()
@@ -49,11 +41,10 @@ const Level = ({
     onClose: onStakingModalClose,
   } = useDisclosure()
   const [hasAccess, noAccessMessage] = useLevelAccess(
-    requirementType,
-    requirement,
+    id,
+    requirements,
     chainData.token,
-    chainData.stakeToken,
-    Chains[chainData.name]
+    chainData.stakeToken
   )
   const [hoverElRef, focusElRef, state] = useLevelIndicatorState(
     hasAccess,
@@ -79,8 +70,12 @@ const Level = ({
       py={{ base: 8, md: 10 }}
       borderBottom="1px"
       borderBottomColor={colorMode === "light" ? "gray.200" : "gray.600"}
-      _last={{ borderBottom: 0 }}
       ref={hoverElRef}
+      order={
+        requirements?.[0]?.stakeTimelockMs
+          ? 10000000 + (requirements?.[0]?.value as number)
+          : (requirements?.[0]?.value as number)
+      }
     >
       <Grid
         width="full"
@@ -94,20 +89,26 @@ const Level = ({
             {name}
           </Heading>
           <InfoTags
-            requirement={requirement}
-            stakeTimelockMs={stakeTimelockMs}
-            requirementType={requirementType}
-            membersCount={membersCount}
+            {...{
+              requirements,
+              membersCount,
+            }}
             tokenSymbol={chainData.token.symbol}
           />
         </GridItem>
         <GridItem order={{ md: 0 }}>
-          <Img
-            src={`${imageUrl}`}
-            boxSize="45px"
-            alt={`${name} image`}
-            borderRadius="full"
-          />
+          {imageUrl ? (
+            <Img
+              src={`${imageUrl}`}
+              boxSize="45px"
+              htmlWidth="45px"
+              htmlHeight="45px"
+              alt={`${name} image`}
+              borderRadius="full"
+            />
+          ) : (
+            <ImgPlaceholder boxSize="45px" />
+          )}
         </GridItem>
         {description && (
           <GridItem colSpan={{ base: 2, md: 1 }} colStart={{ md: 2 }} order={2}>
@@ -146,7 +147,7 @@ const Level = ({
           />
         )}
         {(() =>
-          requirementType === "STAKE" &&
+          requirements?.[0]?.stakeTimelockMs &&
           !hasAccess && (
             <>
               <Button
@@ -162,8 +163,8 @@ const Level = ({
               {!noAccessMessage && (
                 <StakingModal
                   levelName={name}
-                  requirement={requirement}
-                  stakeTimelockMs={stakeTimelockMs}
+                  requirement={requirements?.[0]?.value as number}
+                  stakeTimelockMs={requirements?.[0]?.stakeTimelockMs}
                   isOpen={isStakingModalOpen}
                   onClose={onStakingModalClose}
                 />

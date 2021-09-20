@@ -8,7 +8,9 @@ import {
 import Layout from "components/common/Layout"
 import CategorySection from "components/index/CategorySection"
 import CommunityCard from "components/index/CommunityCard"
+import YourCommunities from "components/index/YourCommunities"
 import { GetStaticProps } from "next"
+import Head from "next/head"
 import { MagnifyingGlass } from "phosphor-react"
 import React, { useMemo, useRef, useState } from "react"
 import type { Community } from "temporaryData/communities"
@@ -49,8 +51,17 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
   }
 
   return (
-    <Layout title="Social token explorer">
-      <>
+    <>
+      <Head>
+        <meta
+          property="og:image"
+          content="https://app.agora.space/explorer_thumbnail.png"
+        />
+      </Head>
+      <Layout
+        title="Social token explorer"
+        description="Find all existing social tokens in the explorer from your favourite communities."
+      >
         <InputGroup size="lg" mb={16} maxW="600px">
           <InputLeftElement>
             <MagnifyingGlass color="#858585" size={20} />
@@ -68,15 +79,10 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
         </InputGroup>
 
         <Stack spacing={12}>
-          <CategorySection
-            title="Your communities"
-            placeholder="You don't have access to any communities"
-            ref={refAccess}
-          />
-          <CategorySection
-            title="Other tokenized communities"
-            placeholder="There aren't any other communities"
-          >
+          <CategorySection title="Your communities" ref={refAccess}>
+            <YourCommunities refAccess={refAccess} />
+          </CategorySection>
+          <CategorySection title="All communities">
             {filteredCommunities.map((community) => (
               <CommunityCard
                 community={community}
@@ -86,8 +92,8 @@ const AllCommunities = ({ communities }: Props): JSX.Element => {
             ))}
           </CategorySection>
         </Stack>
-      </>
-    </Layout>
+      </Layout>
+    </>
   )
 }
 
@@ -99,7 +105,10 @@ export const getStaticProps: GetStaticProps = async () => {
           response.ok ? response.json() : communitiesJSON
         )
 
-  return { props: { communities: [...communities, ...tokens] } }
+  return {
+    props: { communities: [...communities, ...tokens] },
+    revalidate: 10,
+  }
 }
 
 export default AllCommunities

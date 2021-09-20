@@ -10,10 +10,11 @@ import {
 import { useWeb3React } from "@web3-react/core"
 import Card from "components/common/Card"
 import Link from "components/common/Link"
-import useLevelAccess from "components/[community]/community/Levels/components/Level/hooks/useLevelAccess"
+import ImgPlaceholder from "components/[community]/common/ImgPlaceholder"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import useMemberCount from "components/[community]/hooks/useMemberCount"
 import { Chains } from "connectors"
+import useBalance from "hooks/useBalance"
 import React, { MutableRefObject } from "react"
 import { ChainData, Community } from "temporaryData/types"
 
@@ -24,20 +25,12 @@ type Props = {
 
 const WrappedCard = ({ community, refAccess }: Props): JSX.Element => {
   const { chainId } = useWeb3React()
-
   const currentChainData = community.chainData.find(
-    (_) => Chains[_.name] === chainId
+    (chain) => Chains[chain.name] === chainId
   )
+  const balance = useBalance(currentChainData?.token)
 
-  const [hasAccess] = useLevelAccess(
-    community.levels.length ? community.levels[0].requirementType : "HOLD",
-    community.levels.length ? community.levels[0].requirement : -1,
-    currentChainData?.token,
-    currentChainData?.stakeToken,
-    Chains[currentChainData?.name]
-  )
-
-  if (hasAccess)
+  if (balance)
     return (
       <Portal containerRef={refAccess}>
         <CommunityCard community={community} currentChainData={currentChainData} />
@@ -58,6 +51,7 @@ const CommunityCard = ({
     chainData,
     id,
     holdersCount,
+    parallelLevels,
   },
   currentChainData: _currentChainData,
 }: {
@@ -72,7 +66,7 @@ const CommunityCard = ({
 
   return (
     <Link
-      href={`/${urlName}`}
+      href={`/${urlName}/info`}
       _hover={{ textDecor: "none" }}
       borderRadius="2xl"
       w="full"
@@ -80,19 +74,31 @@ const CommunityCard = ({
     >
       <Card
         role="group"
+        position="relative"
         px={{ base: 5, sm: 7 }}
         py="7"
         w="full"
-        bgGradient={`linear(to-l, var(--chakra-colors-primary-100), ${
-          colorMode === "light" ? "white" : "var(--chakra-colors-gray-800)"
-        })`}
-        bgBlendMode={colorMode === "light" ? "normal" : "color"}
-        bgRepeat="no-repeat"
-        bgSize="400%"
-        transition="background-size 0.8s ease"
+        bg={colorMode === "light" ? "white" : "gray.700"}
+        _before={{
+          content: `""`,
+          position: "absolute",
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          bg: "primary.300",
+          opacity: 0,
+          transition: "opacity 0.2s",
+        }}
         _hover={{
-          bgSize: "100%",
-          transition: "background-size 0.24s ease",
+          _before: {
+            opacity: 0.1,
+          },
+        }}
+        _active={{
+          _before: {
+            opacity: 0.17,
+          },
         }}
       >
         <Stack
@@ -101,27 +107,37 @@ const CommunityCard = ({
           spacing={{ base: 5, sm: 10 }}
           alignItems="center"
         >
-          <Img
-            src={`${imageUrl}`}
-            boxSize="45px"
-            alt={`${name} logo`}
-            borderRadius="full"
-          />
+          {imageUrl ? (
+            <Img
+              src={imageUrl}
+              boxSize="45px"
+              htmlWidth="45px"
+              htmlHeight="45px"
+              alt={`${name} logo`}
+              borderRadius="full"
+            />
+          ) : (
+            <ImgPlaceholder boxSize="45px" />
+          )}
           <Stack spacing="3">
             <Heading size="sm">{name}</Heading>
             {levels.length ? (
               <Wrap spacing="2" shouldWrapChildren>
-                <Tag colorScheme="alpha">{`${membersCount} members`}</Tag>
+                {/* temporarily removing tag until membersCount is buggy */}
+                {/* <Tag colorScheme="alpha">{`${membersCount} members`}</Tag> */}
                 <Tag colorScheme="alpha">{`${levels.length} levels`}</Tag>
-                <Tag colorScheme="alpha">
-                  {`min: ${levels[0]?.requirement ?? 0} ${
-                    currentChainData.token.symbol
-                  }`}
-                </Tag>
+                {/* TODO: support min tag for communities with parallel levels  */}
+                {!parallelLevels && (
+                  <Tag colorScheme="alpha">
+                    {`min: ${levels[0]?.requirements?.[0]?.value ?? 0} ${
+                      currentChainData.token.symbol
+                    }`}
+                  </Tag>
+                )}
               </Wrap>
             ) : (
               <Wrap shouldWrapChildren>
-                <Tag colorScheme="alpha">{`$${marketcap.toLocaleString()} market cap`}</Tag>
+                <Tag colorScheme="alpha">{`$${marketcap?.toLocaleString()} market cap`}</Tag>
                 <Tag colorScheme="alpha">{`${holdersCount} holders`}</Tag>
               </Wrap>
             )}
