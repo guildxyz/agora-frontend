@@ -71,7 +71,7 @@ const useStaked = (): StakedType => {
     active ? ["staked", contract, account] : null,
     getTimelocks,
     {
-      initialData: {
+      fallbackData: {
         unlockedAmount: 0,
         locked: [],
       },

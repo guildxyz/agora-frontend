@@ -33,7 +33,7 @@ const useMemberCount = (communityId: number, initialLevels: Level[]) => {
     shouldFetch ? ["membercount", communityId] : null,
     getMemberCount,
     {
-      initialData: {
+      fallbackData: {
         sum: initialLevels.reduce((acc, curr) => acc + curr.membersCount, 0),
         ...Object.fromEntries(
           initialLevels.map(({ id, membersCount }) => [id, membersCount])
