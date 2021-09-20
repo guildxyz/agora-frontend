@@ -14,15 +14,9 @@ const getBalance = async (
   address: string,
   tokenContract: Contract,
   decimals: number
-): Promise<number> => {
-  console.log("getBalance called")
-  return (
-    tokenContract &&
-    tokenContract
-      .balanceOf(address)
-      .then((balance) => +formatUnits(balance, decimals))
-  )
-}
+): Promise<number> =>
+  tokenContract &&
+  tokenContract.balanceOf(address).then((balance) => +formatUnits(balance, decimals))
 
 const useBalance = (token: Token): number => {
   const fromBalances = useBalances(token?.address)

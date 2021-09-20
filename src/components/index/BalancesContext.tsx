@@ -17,7 +17,6 @@ const getBalances = async (
   currentChain: string,
   account: string
 ) => {
-  console.log("getBalances called")
   const { balancesToFetch, zeroBalances } = chainDatas.reduce(
     (_acc, chainData) => {
       const acc = _acc
