@@ -26,8 +26,8 @@ const getEthereumEstimatedTransactionTime = async (
 const getEstimatedTransactionTime = async (
   _: string,
   transaction: TransactionRequest,
-  library: Web3Provider,
-  network: "ETHEREUM" | "GOERLI" | "POLYGON" | "BSC"
+  network: "ETHEREUM" | "GOERLI" | "POLYGON" | "BSC",
+  library: Web3Provider
 ) => {
   if (network === "ETHEREUM" || network === "GOERLI") {
     const gasPrice = await library.estimateGas(transaction)
@@ -41,15 +41,17 @@ const getEstimatedTransactionTime = async (
 }
 
 const useEstimateTransactionTime = (transaction: TransactionRequest): number => {
-  const { library } = useWeb3React<Web3Provider>()
   const {
     chainData: { name },
   } = useCommunity()
+  const { library } = useWeb3React()
+
+  const shouldFetch = !!transaction && !!library
 
   const { data } = useSWR(
-    ["estimatedTransactionTime", transaction, library, name],
+    shouldFetch ? ["estimatedTransactionTime", transaction, name, library] : null,
     getEstimatedTransactionTime,
-    { revalidateOnFocus: false, dedupingInterval: 5000 }
+    { revalidateOnFocus: false }
   )
 
   return data

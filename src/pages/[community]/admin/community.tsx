@@ -16,7 +16,8 @@ import DeploySpace from "components/[community]/common/Pagination/components/Dep
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import { Chains, SpaceFactory } from "connectors"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
-import { useEffect, useMemo } from "react"
+import Head from "next/head"
+import React, { useEffect, useMemo } from "react"
 import { FormProvider, useForm, useWatch } from "react-hook-form"
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
@@ -116,11 +117,16 @@ const AdminCommunityPage = (): JSX.Element => {
   // If we haven't fetched the community data / form data yet, display a spinner
   if (!isOwner || !methods)
     return (
-      <Box sx={generatedColors}>
-        <VStack pt={16} justifyItems="center">
-          <Spinner size="xl" />
-        </VStack>
-      </Box>
+      <>
+        <Head>
+          <meta name="robots" content="noindex" />
+        </Head>
+        <Box sx={generatedColors}>
+          <VStack pt={16} justifyItems="center">
+            <Spinner size="xl" />
+          </VStack>
+        </Box>
+      </>
     )
 
   // Otherwise render the admin page

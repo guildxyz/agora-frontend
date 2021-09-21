@@ -4,7 +4,6 @@ import { useWeb3React } from "@web3-react/core"
 import { useCommunity } from "components/[community]/common/Context"
 import ERC20_ABI from "constants/erc20abi.json"
 import useContract from "hooks/useContract"
-import useKeepSWRDataLiveAsBlocksArrive from "hooks/useKeepSWRDataLiveAsBlocksArrive"
 import useSWR from "swr"
 import type { Token } from "temporaryData/types"
 
@@ -31,16 +30,17 @@ const useTokenAllowance = (token: Token): TokenAllowance => {
   } = useCommunity()
   const tokenContract = useContract(token.address, ERC20_ABI, true)
 
-  const shouldFetch = typeof account === "string" && !!tokenContract
+  const shouldFetch = account && !!tokenContract
 
-  const { data, mutate } = useSWR(
+  const { data } = useSWR(
     shouldFetch
       ? [`${token.name}_allowance`, tokenContract, account, contractAddress]
       : null,
-    getAllowance
+    getAllowance,
+    {
+      refreshInterval: 10_000,
+    }
   )
-
-  useKeepSWRDataLiveAsBlocksArrive(mutate)
 
   const allowToken = async (): Promise<TransactionResponse> => {
     const tx: TransactionResponse = await tokenContract.approve(

@@ -1,4 +1,3 @@
-import useKeepSWRDataLiveAsBlocksArrive from "hooks/useKeepSWRDataLiveAsBlocksArrive"
 import useSWR from "swr"
 import { Level } from "temporaryData/types"
 
@@ -29,7 +28,7 @@ const useMemberCount = (communityId: number, initialLevels: Level[]) => {
   // the mocked communities from tokens.json have negative ids
   const shouldFetch = communityId >= 0
 
-  const { data, mutate } = useSWR(
+  const { data } = useSWR(
     shouldFetch ? ["membercount", communityId] : null,
     getMemberCount,
     {
@@ -39,10 +38,9 @@ const useMemberCount = (communityId: number, initialLevels: Level[]) => {
           initialLevels.map(({ id, membersCount }) => [id, membersCount])
         ),
       },
+      refreshInterval: 10_000,
     }
   )
-
-  useKeepSWRDataLiveAsBlocksArrive(mutate)
 
   return data
 }
