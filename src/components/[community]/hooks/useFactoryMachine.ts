@@ -44,7 +44,7 @@ const useFactoryMachine = (): Machine<any> => {
   const { communityData } = useCommunityData()
   const showErrorToast = useShowErrorToast()
   const tokenAddress = communityData.chainData.token.address // No conditional chaining, DeploySpace only renders if this data is available
-  const { updateData } = useSpaceFactory(tokenAddress)
+  const { getStakeToken } = useSpaceFactory(tokenAddress)
   const toast = useToast()
 
   const [state, send] = useMachine(factoryMachine, {
@@ -67,7 +67,7 @@ const useFactoryMachine = (): Machine<any> => {
             if (response.ok) return body
             throw body
           })
-          const updated = await updateData()
+          const updated = await getStakeToken()
           const index = communityData.allChainData.findIndex(
             (chainData) => chainData.name === Chains[chainId]
           )

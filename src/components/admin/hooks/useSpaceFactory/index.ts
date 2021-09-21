@@ -59,7 +59,7 @@ const useSpaceFactory = (inputTokenAddress: string) => {
     getStakeTokenData
   )
 
-  const updateData = async () => {
+  const getStakeToken = async () => {
     // Do not use Promise.all, these mutations are dependent of each other in this order
     const newSpaceAddress = await mutateSpaceAddress()
     const newStakeTokenAddress = await mutateStakeTokenAddress()
@@ -75,6 +75,7 @@ const useSpaceFactory = (inputTokenAddress: string) => {
 
   return {
     createSpace,
+    getStakeToken,
     contractAddress: spaceAddress,
   }
 }
