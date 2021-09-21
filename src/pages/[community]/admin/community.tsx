@@ -17,7 +17,7 @@ import useColorPalette from "components/[community]/hooks/useColorPalette"
 import { Chains, SpaceFactory } from "connectors"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import Head from "next/head"
-import React, { useEffect, useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { FormProvider, useForm, useWatch } from "react-hook-form"
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
@@ -43,7 +43,10 @@ const AdminCommunityPage = (): JSX.Element => {
   })
   const hasStakingLevel = useMemo(
     () =>
-      levels.length > 0 && levels.some((level) => level.requirementType === "STAKE"),
+      levels.length > 0 &&
+      levels.some((level) =>
+        level.requirements.some((requirement) => requirement.type === "STAKE")
+      ),
     [levels]
   )
 

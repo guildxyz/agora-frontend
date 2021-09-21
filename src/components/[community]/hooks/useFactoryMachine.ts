@@ -1,13 +1,9 @@
-import { defaultAbiCoder } from "@ethersproject/abi"
-import { arrayify } from "@ethersproject/bytes"
-import { keccak256 } from "@ethersproject/keccak256"
 import { useWeb3React } from "@web3-react/core"
 import { useMachine } from "@xstate/react"
 import useCommunityData from "components/admin/hooks/useCommunityData"
 import useShowErrorToast from "components/admin/hooks/useShowErrorToast"
 import useSpaceFactory from "components/admin/hooks/useSpaceFactory"
-import { usePersonalSign } from "components/_app/PersonalSignStore"
-import { Chains, SpaceFactory } from "connectors"
+import { Chains } from "connectors"
 import { Machine } from "temporaryData/types"
 import { createMachine, DoneInvokeEvent } from "xstate"
 
@@ -18,14 +14,7 @@ const factoryMachine = createMachine({
     idle: {
       entry: () => console.log("Entered state: idle"),
       on: {
-        DEPLOY: "sign",
-      },
-    },
-    sign: {
-      invoke: {
-        src: "sign",
-        onDone: "createSpace",
-        onError: "error",
+        DEPLOY: "createSpace",
       },
     },
     createSpace: {
@@ -59,23 +48,28 @@ const useFactoryMachine = (): Machine<any> => {
   const { communityData } = useCommunityData()
   const showErrorToast = useShowErrorToast()
   const tokenAddress = communityData.chainData.token.address // No conditional chaining, DeploySpace only renders if this data is available
-  const { createSpace, updateData } = useSpaceFactory(tokenAddress)
-  const [sign] = usePersonalSign()
+  const { updateData } = useSpaceFactory(tokenAddress)
 
   const [state, send] = useMachine(factoryMachine, {
     services: {
-      sign: async () => {
-        const payload = defaultAbiCoder.encode(
-          ["address", "address", "address"],
-          [account, tokenAddress, SpaceFactory[Chains[chainId]]]
-        )
-        const payloadHash = keccak256(payload)
-        return sign(arrayify(payloadHash))
-      },
       createSpace: async (_, event: DoneInvokeEvent<string>) => {
         try {
-          const tx = await createSpace(event.data, tokenAddress)
-          await tx.wait()
+          await fetch("/api/createSpace", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              tokenAddress,
+              dataToSign: event.data,
+              networkName: Chains[chainId],
+              account,
+            }),
+          }).then(async (response) => {
+            const body = await response.json()
+            if (response.ok) return body
+            throw body
+          })
           const updated = await updateData()
           const index = communityData.allChainData.findIndex(
             (chainData) => chainData.name === Chains[chainId]
@@ -92,17 +86,11 @@ const useFactoryMachine = (): Machine<any> => {
           }
         ) */
         } catch (error) {
-          if (typeof error.errorName !== "string")
-            throw new Error(error.message || "An unknown error occured")
-
-          switch (error.errorName) {
-            case "Unauthorized":
-              throw new Error("You are not authorized to create this space")
-            case "AlreadyExists":
-              throw new Error("A space already exists for this token")
-            default:
-              throw new Error(error.message || "An unknown error occured")
-          }
+          if (error.errorName === "Unauthorized")
+            throw new Error("You are not authorized to create this space")
+          if (error.errorName === "AlreadyExists")
+            throw new Error("A space already exists for this token")
+          throw new Error(error.message || "An unknown error occured")
         }
       },
     },
