@@ -1,20 +1,21 @@
-import { Contract } from "@ethersproject/contracts"
+import type { Contract } from "@ethersproject/contracts"
 import type { Web3Provider } from "@ethersproject/providers"
 import { useWeb3React } from "@web3-react/core"
 import { Chains, SpaceFactory } from "connectors"
 import ERC20_ABI from "constants/erc20abi.json"
 import SPACE_FACTORY_ABI from "constants/spacefactoryABI.json"
 import useContract from "hooks/useContract"
-import useSWR from "swr"
+import useSWRImmutable from "swr/immutable"
 import throwsCustomError from "./utils/throwsCustomError"
 
 const getContractAddress = (_: string, address: string, contract: Contract) =>
   contract.spaces(address)
 
-const getStakeToken = async (_: string, spaceContract: Contract) => {
-  const address: string = await spaceContract.stakeToken()
-  const stakeTokenContract = new Contract(address, ERC20_ABI)
-  const data = await Promise.all([
+const getStakeTokenAddress = (_: string, spaceContract: Contract) =>
+  spaceContract.stakeToken()
+
+const getStakeTokenData = async (_: string, stakeTokenContract: Contract) =>
+  Promise.all([
     stakeTokenContract.name(),
     stakeTokenContract.symbol(),
     stakeTokenContract.decimals(),
@@ -23,8 +24,6 @@ const getStakeToken = async (_: string, spaceContract: Contract) => {
     symbol,
     decimals,
   }))
-  return { ...data, address }
-}
 
 const useSpaceFactory = (inputTokenAddress: string) => {
   const { chainId } = useWeb3React<Web3Provider>()
@@ -40,33 +39,43 @@ const useSpaceFactory = (inputTokenAddress: string) => {
     typeof inputTokenAddress === "string" &&
     inputTokenAddress.length > 0 &&
     !!contract
-  const { data: contractAddress, mutate: mutateContractAddress } = useSWR(
+  const { data: spaceAddress, mutate: mutateSpaceAddress } = useSWRImmutable(
     shouldFetch ? ["spaces", inputTokenAddress, contract] : null,
     getContractAddress
   )
 
-  // Fetch stake token data once space address is available
-  const stakeTokenContract = useContract(contractAddress, ERC20_ABI)
-  const { data: stakeToken, mutate: mutateStakeToken } = useSWR(
+  // Fetch stake token address once space address is available
+  const spaceContract = useContract(spaceAddress, ERC20_ABI)
+  const { data: stakeTokenAddress, mutate: mutateStakeTokenAddress } =
+    useSWRImmutable(
+      spaceContract ? ["stakeTokenAddress", spaceContract] : null,
+      getStakeTokenAddress
+    )
+
+  // Fetch stake token data (name, symbol, decimals) once the address is available
+  const stakeTokenContract = useContract(stakeTokenAddress, ERC20_ABI)
+  const { mutate: mutateStakeTokenData } = useSWRImmutable(
     stakeTokenContract ? ["tokenData", stakeTokenContract] : null,
-    getStakeToken
+    getStakeTokenData
   )
 
   const updateData = async () => {
     // Do not use Promise.all, these mutations are dependent of each other in this order
-    const newContractAddress = await mutateContractAddress()
-    const newStakeToken = await mutateStakeToken()
+    const newSpaceAddress = await mutateSpaceAddress()
+    const newStakeTokenAddress = await mutateStakeTokenAddress()
+    const newStakeTokenData = await mutateStakeTokenData()
     return {
-      contractAddress: newContractAddress,
-      stakeToken: newStakeToken,
+      contractAddress: newSpaceAddress,
+      stakeToken: {
+        address: newStakeTokenAddress,
+        ...newStakeTokenData,
+      },
     }
   }
 
   return {
     createSpace,
-    updateData,
-    contractAddress,
-    stakeToken,
+    contractAddress: spaceAddress,
   }
 }
 
