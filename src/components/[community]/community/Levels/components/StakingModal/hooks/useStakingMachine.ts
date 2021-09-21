@@ -69,9 +69,10 @@ const stakingMachine = createMachine<Context, Event>(
   }
 )
 
-const useStakingMachine = (amount: number): Machine<Context> => {
+const useStakingMachine = (amount: number, levelId: number): Machine<Context> => {
   const {
     chainData: { contractAddress },
+    levels,
   } = useCommunity()
   const { account, chainId } = useWeb3React()
   const contract = useContract(contractAddress, AGORA_SPACE_ABI, true)
@@ -80,7 +81,16 @@ const useStakingMachine = (amount: number): Machine<Context> => {
     services: {
       stake: async () => {
         const weiAmount = parseEther(amount.toString())
-        const tx: TransactionResponse = await contract.deposit(weiAmount)
+        const rankId = levels
+          .filter(({ requirements }) =>
+            requirements.some((requirement) => !!requirement.stakeTimelockMs)
+          )
+          .findIndex((level) => level.id === levelId)
+        const tx: TransactionResponse = await contract.deposit(
+          weiAmount,
+          rankId,
+          true
+        )
         return tx
       },
     },

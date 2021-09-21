@@ -70,7 +70,9 @@ const Pagination = ({
         Twitter bounty
       </LinkButton> */}
 
-      <Box marginInlineStart="auto!important">{children}</Box>
+      <HStack spacing={3} marginInlineStart="auto!important">
+        {children}
+      </HStack>
     </HStack>
   )
 }

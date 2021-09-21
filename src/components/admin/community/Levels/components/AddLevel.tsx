@@ -178,13 +178,7 @@ const AddLevel = ({ index, onRemove }: Props): JSX.Element => {
                 {options.map((value) => {
                   const radio = getRadioProps({ value })
                   return (
-                    <RadioCard
-                      key={value}
-                      isDisabled={
-                        value === "STAKE" /* && !getValues("stakeToken") */
-                      } // Disabling the "STAKE" radio if the community doesn't have a stakeToken
-                      {...radio}
-                    >
+                    <RadioCard key={value} {...radio}>
                       <HStack spacing={2} justify="center">
                         <Icon as={membershipsData[value].icon} />
                         <Text as="span">{membershipsData[value].name}</Text>

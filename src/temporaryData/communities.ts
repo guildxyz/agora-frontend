@@ -37,6 +37,22 @@ const communities: Community[] = [
           address: "0x0e4e6daab4532f6d71ffa3a8a3a5e014f60c524b",
         },
       },
+      {
+        name: "BSCTEST",
+        contractAddress: "0x08Dd099e0783d775a61a75F47BCb72e62e393d8d",
+        token: {
+          name: "BEP20Test",
+          symbol: "OWO",
+          decimals: 18,
+          address: "0x28d4f491053f2d13145082418b93adce0a29023f",
+        },
+        stakeToken: {
+          name: "Agora.space OWO Token",
+          symbol: "AGT",
+          decimals: 18,
+          address: "0xC0c998fa02b644759B69920667E16136BB834a64",
+        },
+      },
     ],
     levels: [
       {

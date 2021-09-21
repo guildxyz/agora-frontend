@@ -162,6 +162,7 @@ const Level = ({
               </Button>
               {!noAccessMessage && (
                 <StakingModal
+                  levelId={id}
                   levelName={name}
                   requirement={requirements?.[0]?.value as number}
                   stakeTimelockMs={requirements?.[0]?.stakeTimelockMs}

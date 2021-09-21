@@ -26,6 +26,7 @@ type Props = {
   stakeTimelockMs: number
   isOpen: boolean
   onClose: () => void
+  levelId: number
 }
 const StakingModal = ({
   levelName,
@@ -33,13 +34,14 @@ const StakingModal = ({
   stakeTimelockMs,
   isOpen,
   onClose,
+  levelId,
 }: Props): JSX.Element => {
   const {
     chainData: { token, stakeToken },
   } = useCommunity()
   const amount = useNeededAmount(requirement, stakeToken)
   const [allowanceState, allowanceSend] = useTokenAllowanceMachine(token)
-  const [stakeState, stakeSend] = useStakingModalMachine(amount)
+  const [stakeState, stakeSend] = useStakingModalMachine(amount, levelId)
 
   const closeModal = () => {
     allowanceSend("CLOSE_MODAL")

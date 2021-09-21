@@ -1,8 +1,10 @@
-import { Box, Button, Spinner, Stack, VStack } from "@chakra-ui/react"
+import { Box, Button, Spinner, Stack, Tooltip, VStack } from "@chakra-ui/react"
+import { useWeb3React } from "@web3-react/core"
 import Levels from "components/admin/community/Levels"
 import Platforms from "components/admin/community/Platforms"
 import useCommunityData from "components/admin/hooks/useCommunityData"
 import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
+import useSpaceFactory from "components/admin/hooks/useSpaceFactory"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
 import useSubmitPlatformsData from "components/admin/hooks/useSubmitPlatformsData"
 import useUploadImages from "components/admin/hooks/useUploadImages"
@@ -10,11 +12,15 @@ import getServerSideProps from "components/admin/utils/setCookies"
 import Layout from "components/common/Layout"
 import LinkButton from "components/common/LinkButton"
 import Pagination from "components/[community]/common/Pagination"
+import DeploySpace from "components/[community]/common/Pagination/components/DeploySpace"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
+import { Chains, SpaceFactory } from "connectors"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
 import Head from "next/head"
-import React, { useEffect, useMemo } from "react"
-import { FormProvider, useForm } from "react-hook-form"
+import { useEffect, useMemo } from "react"
+import { FormProvider, useForm, useWatch } from "react-hook-form"
+
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 const AdminCommunityPage = (): JSX.Element => {
   const { communityData } = useCommunityData()
@@ -24,6 +30,25 @@ const AdminCommunityPage = (): JSX.Element => {
   )
   const isOwner = useRedirectIfNotOwner()
   const methods = useForm({ mode: "all" })
+
+  const { account, chainId } = useWeb3React()
+  const { contractAddress } = useSpaceFactory(communityData?.chainData.token.address)
+  const hasContract =
+    typeof contractAddress === "string" && contractAddress !== ZERO_ADDRESS
+  const factoryAvailable = typeof SpaceFactory[Chains[chainId]] === "string"
+  const levels = useWatch({
+    name: "levels",
+    defaultValue: [],
+    control: methods.control,
+  })
+  const hasStakingLevel = useMemo(
+    () =>
+      levels.length > 0 &&
+      levels.some((level) =>
+        level.requirements.some((requirement) => requirement.type === "STAKE")
+      ),
+    [levels]
+  )
 
   const [discordDirty, telegramDirty, levelsDirty, imageDirty] = useMemo(
     () => [
@@ -115,34 +140,55 @@ const AdminCommunityPage = (): JSX.Element => {
           title={`${communityData?.name} - Settings`}
           imageUrl={communityData?.imageUrl}
         >
-          <Stack spacing={{ base: 7, xl: 9 }}>
-            <Pagination>
-              {discordDirty || telegramDirty || levelsDirty ? (
-                <Button
-                  isLoading={levelsLoading || platformsLoading || uploadLoading}
-                  colorScheme="primary"
-                  onClick={methods.handleSubmit(
-                    discordDirty || telegramDirty
-                      ? onPlatformsSubmit
-                      : onLevelsSubmit
+          {account && isOwner && (
+            <Stack spacing={{ base: 7, xl: 9 }}>
+              <Pagination>
+                {factoryAvailable && !hasContract && hasStakingLevel && (
+                  <DeploySpace />
+                )}
+                <Tooltip
+                  label={
+                    !factoryAvailable && hasStakingLevel
+                      ? "Staking levels are not supported on this network"
+                      : "First you have to deploy a contract for the staking level(s)"
+                  }
+                  isDisabled={
+                    (factoryAvailable || !hasStakingLevel) &&
+                    (!factoryAvailable || !hasStakingLevel || hasContract)
+                  }
+                >
+                  {discordDirty || telegramDirty || levelsDirty ? (
+                    <Button
+                      isLoading={levelsLoading || platformsLoading || uploadLoading}
+                      colorScheme="primary"
+                      onClick={methods.handleSubmit(
+                        discordDirty || telegramDirty
+                          ? onPlatformsSubmit
+                          : onLevelsSubmit
+                      )}
+                      isDisabled={
+                        (!factoryAvailable && hasStakingLevel) ||
+                        (factoryAvailable && hasStakingLevel && !hasContract)
+                      }
+                    >
+                      Save
+                    </Button>
+                  ) : (
+                    <LinkButton
+                      variant="solid"
+                      href={`/${communityData.urlName}/community`}
+                    >
+                      Done
+                    </LinkButton>
                   )}
-                >
-                  Save
-                </Button>
-              ) : (
-                <LinkButton
-                  variant="solid"
-                  href={`/${communityData?.urlName}/community`}
-                >
-                  Done
-                </LinkButton>
-              )}
-            </Pagination>
-            <VStack pb={{ base: 16, xl: 0 }} spacing={12}>
-              <Platforms />
-              <Levels />
-            </VStack>
-          </Stack>
+                </Tooltip>
+              </Pagination>
+              <VStack pb={{ base: 16, xl: 0 }} spacing={12}>
+                <Platforms />
+                <Levels />
+              </VStack>
+            </Stack>
+          )}
         </Layout>
       </Box>
     </FormProvider>
