@@ -1,3 +1,4 @@
+import { useToast } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { useMachine } from "@xstate/react"
 import useCommunityData from "components/admin/hooks/useCommunityData"
@@ -7,18 +8,15 @@ import { Chains } from "connectors"
 import { Machine } from "temporaryData/types"
 import { createMachine, DoneInvokeEvent } from "xstate"
 
-// TODO: remove logs before merge
 const factoryMachine = createMachine({
   initial: "idle",
   states: {
     idle: {
-      entry: () => console.log("Entered state: idle"),
       on: {
         DEPLOY: "createSpace",
       },
     },
     createSpace: {
-      entry: () => console.log("Entered state: createSpace"),
       invoke: {
         src: "createSpace",
         onDone: "success",
@@ -26,15 +24,13 @@ const factoryMachine = createMachine({
       },
     },
     error: {
-      // TODO: Add error toasts
       entry: "showErrorToast",
       on: {
         DEPLOY: "createSpace",
       },
     },
     success: {
-      // TODO: Add success toasts
-      entry: () => console.log("Entered state: success"),
+      entry: "showSuccessToast",
     },
   },
   on: {
@@ -49,6 +45,7 @@ const useFactoryMachine = (): Machine<any> => {
   const showErrorToast = useShowErrorToast()
   const tokenAddress = communityData.chainData.token.address // No conditional chaining, DeploySpace only renders if this data is available
   const { updateData } = useSpaceFactory(tokenAddress)
+  const toast = useToast()
 
   const [state, send] = useMachine(factoryMachine, {
     services: {
@@ -96,6 +93,14 @@ const useFactoryMachine = (): Machine<any> => {
     },
     actions: {
       showErrorToast: (_context, event) => showErrorToast(event.data.message),
+      showSuccessToast: () => {
+        toast({
+          title: "Success!",
+          description: "Space created",
+          status: "success",
+          duration: 4000,
+        })
+      },
     },
   })
 
