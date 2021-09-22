@@ -1,13 +1,16 @@
 import { Box, Button, Spinner, Stack, VStack } from "@chakra-ui/react"
 import Levels from "components/admin/community/Levels"
 import Platforms from "components/admin/community/Platforms"
-import useCommunityData from "components/admin/hooks/useCommunityData"
 import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
 import useSubmitPlatformsData from "components/admin/hooks/useSubmitPlatformsData"
 import useUploadImages from "components/admin/hooks/useUploadImages"
 import Layout from "components/common/Layout"
 import LinkButton from "components/common/LinkButton"
+import {
+  CommunityProvider,
+  useCommunity,
+} from "components/[community]/common/Context"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
@@ -16,7 +19,7 @@ import React, { useEffect, useMemo } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 const AdminCommunityPage = (): JSX.Element => {
-  const { communityData } = useCommunityData()
+  const communityData = useCommunity()
   const generatedColors = useColorPalette(
     "chakra-colors-primary",
     communityData?.themeColor || "#71717a"
@@ -59,22 +62,22 @@ const AdminCommunityPage = (): JSX.Element => {
   // Set up the default form field values if we have the necessary data
   useEffect(() => {
     if (communityData) {
-      const discordServer = communityData.communityPlatforms.find(
+      const discordServer = communityData.communityPlatforms?.find(
         (platform) => platform.active && platform.name === "DISCORD"
       )
 
       // Reset the form state so we can watch the "isDirty" prop
       methods.reset({
         urlName: communityData.urlName, // We must define it, so the photo uploader can fetch the necessary community data
-        tokenSymbol: communityData.chainData?.token.symbol,
+        tokenSymbol: communityData.chainData?.token?.symbol,
         isTGEnabled: !!communityData.communityPlatforms
-          .filter((platform) => platform.active)
+          ?.filter((platform) => platform.active)
           .find((platform) => platform.name === "TELEGRAM"),
-        stakeToken: communityData.chainData.stakeToken,
+        stakeToken: communityData.chainData?.stakeToken,
         isDCEnabled: !!discordServer,
         discordServerId: discordServer?.platformId || undefined,
         inviteChannel: discordServer?.inviteChannel || undefined,
-        levels: communityData.levels.map((level) => ({
+        levels: communityData.levels?.map((level) => ({
           id: level.id,
           dbId: level.id, // Needed for proper form management
           name: level.name || undefined,
@@ -148,4 +151,10 @@ const AdminCommunityPage = (): JSX.Element => {
   )
 }
 
-export default AdminCommunityPage
+const WrappedAdminCommunityPage = () => (
+  <CommunityProvider>
+    <AdminCommunityPage />
+  </CommunityProvider>
+)
+
+export default WrappedAdminCommunityPage

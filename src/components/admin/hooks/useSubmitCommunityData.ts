@@ -1,13 +1,18 @@
+import { useCommunity } from "components/[community]/common/Context"
 import { useRouter } from "next/router"
 import { ContextType, SignEvent } from "../utils/submitMachine"
-import useCommunityData from "./useCommunityData"
 import useSubmitMachine from "./useSubmitMachine"
 
 const useSubmitCommunityData = <FormDataType>(
   method: "POST" | "PATCH",
   callback?: () => Promise<void>
 ) => {
-  const { communityData } = useCommunityData()
+  /**
+   * The communityData is only available on the [community]/admin pages and not on
+   * the register page (there is no community), but we only use this value if the
+   * method is POST, and that means that the hook was called from the admin page
+   */
+  const communityData = useCommunity()
   const router = useRouter()
 
   const fetchService = (_context, { data }: SignEvent<FormDataType>) =>

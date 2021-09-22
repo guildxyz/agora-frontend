@@ -1,4 +1,5 @@
 import { useMachine } from "@xstate/react"
+import { useMutateCommunity } from "components/[community]/common/Context"
 import { usePersonalSign } from "components/_app/PersonalSignStore"
 import useToast from "hooks/useToast"
 import { Requirement } from "temporaryData/types"
@@ -50,9 +51,10 @@ const useSubmitMachine = <FormDataType>(
           }
         >
   ) => Promise<Response | Response[]>,
-  redirect: (context: ContextType, data: FetchEvent) => Promise<void>,
+  redirect: (context: ContextType, event: FetchEvent) => Promise<void>,
   preprocess: (data: FormDataType) => FormDataType | FormData = (data) => data
 ) => {
+  const mutateCommunityData = useMutateCommunity()
   const toast = useToast()
   const showErrorToast = useShowErrorToast()
   const [sign, hasMessage, getSign] = usePersonalSign()
@@ -69,7 +71,10 @@ const useSubmitMachine = <FormDataType>(
       },
     },
     actions: {
-      redirect,
+      redirect: async (context: ContextType, event: FetchEvent) => {
+        await mutateCommunityData()
+        redirect(context, event)
+      },
       showErrorToast: (_context, { data: error }: SignError | APIError) => {
         if (error instanceof Error) showErrorToast(error.message)
         else showErrorToast(error.errors)

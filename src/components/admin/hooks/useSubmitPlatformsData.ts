@@ -1,7 +1,7 @@
 import type { FormData } from "components/admin/hooks/useSubmitMachine"
+import { useCommunity } from "components/[community]/common/Context"
 import { useRouter } from "next/router"
 import { ContextType, SignEvent } from "../utils/submitMachine"
-import useCommunityData from "./useCommunityData"
 import useSubmitMachine from "./useSubmitMachine"
 
 const useSubmitPlatformsData = (
@@ -9,7 +9,7 @@ const useSubmitPlatformsData = (
   discordChanged: boolean,
   callback: () => any // TODO: better typing
 ) => {
-  const { communityData } = useCommunityData()
+  const communityData = useCommunity()
   const router = useRouter()
 
   const fetchService = (_context: ContextType, { data }: SignEvent<any>) => {

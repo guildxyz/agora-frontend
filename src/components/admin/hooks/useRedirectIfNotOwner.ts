@@ -1,9 +1,9 @@
 import { useWeb3React } from "@web3-react/core"
+import { useCommunity } from "components/[community]/common/Context"
 import { Web3Connection } from "components/_app/Web3ConnectionManager"
 import { useRouter } from "next/router"
 import { useContext, useEffect } from "react"
 import useSWR from "swr"
-import useCommunityData from "./useCommunityData"
 
 const getIsOwner = async (_, ownerAddresses, account) =>
   ownerAddresses.some(({ address }) => address === account?.toLowerCase())
@@ -11,7 +11,7 @@ const getIsOwner = async (_, ownerAddresses, account) =>
 const useRedirectIfNotOwner = () => {
   const { account, active } = useWeb3React()
   const router = useRouter()
-  const { communityData } = useCommunityData()
+  const communityData = useCommunity()
   const { triedEager } = useContext(Web3Connection)
 
   const shouldFetch = !!communityData && active

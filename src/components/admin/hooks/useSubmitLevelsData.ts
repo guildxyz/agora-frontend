@@ -1,8 +1,8 @@
+import { useCommunity } from "components/[community]/common/Context"
 import { useRouter } from "next/router"
 import { RequirementType } from "temporaryData/types"
 import convertMonthsToMs from "../utils/convertMonthsToMs"
 import { ContextType, SignEvent } from "../utils/submitMachine"
-import useCommunityData from "./useCommunityData"
 import type { FormData, Level } from "./useSubmitMachine"
 import useSubmitMachine from "./useSubmitMachine"
 
@@ -21,7 +21,7 @@ const replacer = (key, value) => {
 
 const useSubmitLevelsData = (method: "POST" | "PATCH", callback: () => void) => {
   const router = useRouter()
-  const { communityData } = useCommunityData()
+  const communityData = useCommunity()
 
   const fetchService = (
     _context: ContextType,

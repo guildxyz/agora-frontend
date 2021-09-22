@@ -1,6 +1,7 @@
 import { Box, Portal } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { Chains } from "connectors"
+import { useRouter } from "next/router"
 import React, {
   createContext,
   PropsWithChildren,
@@ -8,12 +9,20 @@ import React, {
   useMemo,
   useRef,
 } from "react"
+import useSWR, { KeyedMutator } from "swr"
+import { communities } from "temporaryData/communities"
+import tokens from "temporaryData/tokens"
 import { Community, ProvidedCommunity } from "temporaryData/types"
 import useColorPalette from "../hooks/useColorPalette"
 import useMemberCount from "../hooks/useMemberCount"
 
+type CommunityContextType = {
+  community: ProvidedCommunity
+  mutate: KeyedMutator<Community>
+}
+
 type Props = {
-  data: Community
+  initialData?: Community
   /**
    * This is needed because we're using it for the CommunityCard components too and
    * don't want to render there unnecessary. It's an ugly abstraction this way, in
@@ -23,46 +32,78 @@ type Props = {
   shouldRenderWrapper?: boolean
 }
 
-const CommunityContext = createContext<ProvidedCommunity | null>(null)
+const fetchCommunityData = async (_: string, urlName: string) => {
+  const DEBUG = false
+
+  const localData =
+    communities.find((i) => i.urlName === urlName) ??
+    tokens.find((i) => i.urlName === urlName)
+
+  const communityData: Community =
+    DEBUG && process.env.NODE_ENV !== "production"
+      ? localData
+      : await fetch(
+          `${process.env.NEXT_PUBLIC_API}/community/urlName/${urlName}`
+        ).then((response: Response) => (response.ok ? response.json() : localData))
+
+  return communityData
+}
+
+const CommunityContext = createContext<CommunityContextType>({
+  community: null,
+  mutate: null,
+})
 
 const CommunityProvider = ({
-  data,
+  initialData,
   shouldRenderWrapper = true,
   children,
 }: PropsWithChildren<Props>): JSX.Element => {
   const { chainId } = useWeb3React()
+  const router = useRouter()
 
-  const membersCount = useMemberCount(data.id, data.levels)
+  const shouldFetch = router.query.community?.toString()?.length > 0
+
+  const { data, mutate } = useSWR(
+    shouldFetch ? ["community", router.query.community.toString()] : null,
+    fetchCommunityData,
+    {
+      revalidateOnMount: !initialData,
+      revalidateOnFocus: false,
+      fallbackData: initialData,
+    }
+  )
+
+  const membersCount = useMemberCount(data?.id, data?.levels)
 
   const chainData = useMemo(
     () =>
-      data.chainData.find((chain) => chain.name === Chains[chainId]) ??
-      data.chainData[0],
+      data &&
+      (data.chainData.find((chain) => chain.name === Chains[chainId]) ??
+        data.chainData[0]),
     [chainId, data]
   )
 
   const levels = useMemo(
     () =>
-      data.levels.map((_level) => {
+      data?.levels.map((_level) => {
         const level = _level
         level.membersCount = membersCount[_level.id]
         return level
       }),
-    [data.levels, membersCount]
+    [data?.levels, membersCount]
   )
 
-  const availableChains = data.chainData.map((chain) => chain.name)
+  const availableChains = data?.chainData.map((chain) => chain.name)
 
-  const generatedColors = useColorPalette("chakra-colors-primary", data.themeColor)
+  const generatedColors = useColorPalette("chakra-colors-primary", data?.themeColor)
   const colorPaletteProviderElementRef = useRef(null)
 
   return (
     <CommunityContext.Provider
       value={{
-        ...data,
-        chainData,
-        availableChains,
-        levels,
+        community: { ...data, chainData, availableChains, levels },
+        mutate,
       }}
     >
       {shouldRenderWrapper ? (
@@ -83,6 +124,8 @@ const CommunityProvider = ({
   )
 }
 
-const useCommunity = (): ProvidedCommunity => useContext(CommunityContext)
+const useCommunity = (): ProvidedCommunity => useContext(CommunityContext).community
+const useMutateCommunity = (): KeyedMutator<Community> =>
+  useContext(CommunityContext).mutate
 
-export { useCommunity, CommunityProvider }
+export { useCommunity, useMutateCommunity, CommunityProvider }

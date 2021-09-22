@@ -24,7 +24,7 @@ const getMemberCount = (_: string, id: number): Promise<MemberCount> =>
       return levelsData
     })
 
-const useMemberCount = (communityId: number, initialLevels: Level[]) => {
+const useMemberCount = (communityId: number, initialLevels: Level[] = []) => {
   // the mocked communities from tokens.json have negative ids
   const shouldFetch = communityId >= 0
 

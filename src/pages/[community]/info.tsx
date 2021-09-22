@@ -17,7 +17,7 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
   const { account } = useWeb3React()
 
   return (
-    <CommunityProvider data={communityData}>
+    <CommunityProvider initialData={communityData}>
       <Layout
         title={communityData.name}
         description={communityData.description || communityData.name}

@@ -1,6 +1,4 @@
 import { Box, Button, Spinner, Stack, VStack } from "@chakra-ui/react"
-import { useWeb3React } from "@web3-react/core"
-import useCommunityData from "components/admin/hooks/useCommunityData"
 import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSubmitCommunityData from "components/admin/hooks/useSubmitCommunityData"
 import useUploadImages from "components/admin/hooks/useUploadImages"
@@ -8,6 +6,10 @@ import Appearance from "components/admin/index/Appearance"
 import Details from "components/admin/index/Details"
 import Layout from "components/common/Layout"
 import LinkButton from "components/common/LinkButton"
+import {
+  CommunityProvider,
+  useCommunity,
+} from "components/[community]/common/Context"
 import Pagination from "components/[community]/common/Pagination"
 import useColorPalette from "components/[community]/hooks/useColorPalette"
 import useWarnIfUnsavedChanges from "hooks/useWarnIfUnsavedChanges"
@@ -16,13 +18,12 @@ import { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 
 const AdminHomePage = (): JSX.Element => {
-  const { chainId, account } = useWeb3React()
   const [colorCode, setColorCode] = useState<string>(null)
   const generatedColors = useColorPalette(
     "chakra-colors-primary",
     colorCode || "#71717a"
   )
-  const { communityData } = useCommunityData()
+  const communityData = useCommunity()
   const isOwner = useRedirectIfNotOwner()
   const methods = useForm({ mode: "all" })
 
@@ -47,10 +48,10 @@ const AdminHomePage = (): JSX.Element => {
         name: communityData.name,
         urlName: communityData.urlName,
         description: communityData.description,
-        chainName: communityData.chainData.name, // Maybe we'll need to think about this one, because currently we're displaying the active chain's name inside the form!
+        chainName: communityData.chainData?.name, // Maybe we'll need to think about this one, because currently we're displaying the active chain's name inside the form!
         imageUrl: communityData.imageUrl,
         themeColor: communityData.themeColor,
-        tokenAddress: communityData.chainData.token.address,
+        tokenAddress: communityData.chainData?.token?.address,
       })
     }
   }, [communityData])
@@ -114,4 +115,10 @@ const AdminHomePage = (): JSX.Element => {
   )
 }
 
-export default AdminHomePage
+const WrappedAdminHomePage = () => (
+  <CommunityProvider>
+    <AdminHomePage />
+  </CommunityProvider>
+)
+
+export default WrappedAdminHomePage

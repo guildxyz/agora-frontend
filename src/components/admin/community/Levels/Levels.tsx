@@ -8,7 +8,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
-import useCommunityData from "components/admin/hooks/useCommunityData"
+import { useMutateCommunity } from "components/[community]/common/Context"
 import { usePersonalSign } from "components/_app/PersonalSignStore"
 import useToast from "hooks/useToast"
 import { Plus } from "phosphor-react"
@@ -26,7 +26,7 @@ const Levels = (): JSX.Element => {
     keyName: "dbId",
   })
 
-  const { mutateCommunityData } = useCommunityData()
+  const mutateCommunityData = useMutateCommunity()
 
   const [sign] = usePersonalSign()
   const toast = useToast()
