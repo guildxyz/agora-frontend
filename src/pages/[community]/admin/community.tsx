@@ -6,7 +6,6 @@ import useRedirectIfNotOwner from "components/admin/hooks/useRedirectIfNotOwner"
 import useSubmitLevelsData from "components/admin/hooks/useSubmitLevelsData"
 import useSubmitPlatformsData from "components/admin/hooks/useSubmitPlatformsData"
 import useUploadImages from "components/admin/hooks/useUploadImages"
-import getServerSideProps from "components/admin/utils/setCookies"
 import Layout from "components/common/Layout"
 import LinkButton from "components/common/LinkButton"
 import Pagination from "components/[community]/common/Pagination"
@@ -149,5 +148,4 @@ const AdminCommunityPage = (): JSX.Element => {
   )
 }
 
-export { getServerSideProps }
 export default AdminCommunityPage

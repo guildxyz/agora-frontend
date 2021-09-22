@@ -6,7 +6,7 @@ import { Community } from "temporaryData/types"
 // Set this to true if you don't want the data to be fetched from backend
 const DEBUG = false
 
-const getStaticProps: GetStaticProps = async ({ params, preview }) => {
+const getStaticProps: GetStaticProps = async ({ params }) => {
   const localData =
     communities.find((i) => i.urlName === params.community) ??
     tokens.find((i) => i.urlName === params.community)
@@ -25,7 +25,7 @@ const getStaticProps: GetStaticProps = async ({ params, preview }) => {
   }
 
   return {
-    props: { communityData, preview: !!preview },
+    props: { communityData },
     revalidate: 10,
   }
 }
