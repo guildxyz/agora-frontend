@@ -1,5 +1,4 @@
 import {
-  Badge,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -8,7 +7,6 @@ import {
   Input,
   InputGroup,
   InputLeftAddon,
-  Text,
   Textarea,
 } from "@chakra-ui/react"
 import Section from "components/admin/common/Section"
@@ -19,14 +17,16 @@ import slugify from "../utils/slugify"
 import UsedToken from "./UsedToken"
 
 type Props = {
+  registerSuccess?: boolean
   isAdminPage?: boolean
 }
 
-const Details = ({ isAdminPage = false }: Props): JSX.Element => {
+const Details = ({ registerSuccess, isAdminPage = false }: Props): JSX.Element => {
   const {
     control,
     register,
     formState: { errors },
+    getValues,
     setValue,
     trigger,
   } = useFormContext()
@@ -84,6 +84,10 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
                         "The maximum possible URL name length is 20 characters",
                     },
                     validate: async (value) => {
+                      if (["register", "dcauth"].includes(value))
+                        return "Invalid url name"
+                      if (typeof registerSuccess === "boolean" && !!registerSuccess)
+                        return true
                       try {
                         const response = await fetch(
                           `${process.env.NEXT_PUBLIC_API}/community/urlName/${value}`
@@ -117,12 +121,7 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
 
         <GridItem colSpan={{ base: 1, md: 2 }}>
           <FormControl>
-            <FormLabel>
-              <Text as="span" mr={1.5} opacity={0.5}>
-                Image
-              </Text>{" "}
-              <Badge>Coming soon</Badge>
-            </FormLabel>
+            <FormLabel>Image</FormLabel>
             <Controller
               render={({ field, fieldState }) => (
                 <PhotoUploader
@@ -130,7 +129,7 @@ const Details = ({ isAdminPage = false }: Props): JSX.Element => {
                   isInvalid={fieldState.invalid}
                   buttonIcon={UploadSimple}
                   buttonText="Change image"
-                  isDisabled
+                  currentImage={getValues("imageUrl")}
                   onPhotoChange={(newPhoto: File) => field.onChange(newPhoto)}
                   {...field}
                 />

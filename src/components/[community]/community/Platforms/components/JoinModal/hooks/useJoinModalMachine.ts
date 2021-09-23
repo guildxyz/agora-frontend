@@ -4,8 +4,8 @@ import { useCommunity } from "components/[community]/common/Context"
 import { usePersonalSign } from "components/_app/PersonalSignStore"
 import { useEffect } from "react"
 import { Machine } from "temporaryData/types"
-import { MetaMaskError } from "utils/processMetaMaskError"
-import { assign, createMachine, DoneInvokeEvent } from "xstate"
+import { WalletError } from "utils/processWalletError"
+import { assign, createMachine, DoneInvokeEvent, EventObject } from "xstate"
 
 const MESSAGE = "Please sign this message to generate your invite link"
 
@@ -16,7 +16,7 @@ type Invite = {
 
 const initialInviteData: Invite = { inviteLink: "", alreadyJoined: false }
 
-type JoinError = MetaMaskError | Response | Error
+type JoinError = WalletError | Response | Error
 
 type Context = {
   error?: JoinError
@@ -41,6 +41,7 @@ const joinModalMachine = createMachine<Context, Event>(
         on: { SIGN: "signing" },
       },
       signing: {
+        entry: "setHashedId",
         invoke: {
           src: "sign",
           onDone: "fetching",
@@ -75,6 +76,9 @@ const joinModalMachine = createMachine<Context, Event>(
       }),
       setInvite: assign<Context, InviteEvent>({
         inviteData: (_, event) => event.data,
+      }),
+      setHashedId: assign<Context>({
+        id: (_, event: EventObject & { id: string }) => event.id,
       }),
     },
   }

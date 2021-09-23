@@ -4,20 +4,19 @@ import { useRouter } from "next/router"
 import { PropsWithChildren, useMemo } from "react"
 
 type Props = {
-  isAdminPage?: boolean
   href: string
   disabled?: boolean
 }
 
 const PageButton = ({
-  isAdminPage = false,
   href,
   disabled = false,
   children,
 }: PropsWithChildren<Props>): JSX.Element => {
   const router = useRouter()
-  const [, communityUrl, ...currentPath] = router.asPath.split("/")
-  const isActive = currentPath.filter((str) => str !== "admin").join("/") === href
+  const path = router.asPath.split("/")
+  const currentPath = path.pop()
+  const isActive = currentPath === href
   const { colorMode } = useColorMode()
   const gray = useMemo(
     () => (colorMode === "light" ? "gray.600" : "gray.400"),
@@ -26,13 +25,11 @@ const PageButton = ({
 
   return !disabled ? (
     <LinkButton
-      href={
-        isAdminPage ? `/${communityUrl}/admin/${href}` : `/${communityUrl}/${href}`
-      }
-      minW="max-content"
+      href={`${path.join("/")}/${href}`}
       variant="ghost"
       isActive={isActive}
       color={(!isActive && gray) || undefined}
+      minW="max-content"
     >
       {children}
     </LinkButton>

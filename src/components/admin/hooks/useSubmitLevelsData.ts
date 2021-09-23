@@ -1,8 +1,9 @@
 import { useRouter } from "next/router"
-import type { FormData, Level } from "pages/[community]/admin/community"
+import { RequirementType } from "temporaryData/types"
 import convertMonthsToMs from "../utils/convertMonthsToMs"
 import { ContextType, SignEvent } from "../utils/submitMachine"
 import useCommunityData from "./useCommunityData"
+import type { FormData, Level } from "./useSubmitMachine"
 import useSubmitMachine from "./useSubmitMachine"
 
 // Replacing specific values in the JSON with undefined, so we won't send them to the API
@@ -14,12 +15,11 @@ const replacer = (key, value) => {
     Number.isNaN(value)
   )
     return undefined
+  if (key === "stakeTimelockMs" && value === 0) return undefined
   return value
 }
 
-const useSubmitLevelsData = (
-  method: "POST" | "PATCH" // | "DELETE",
-) => {
+const useSubmitLevelsData = (method: "POST" | "PATCH", callback: () => void) => {
   const router = useRouter()
   const { communityData } = useCommunityData()
 
@@ -33,7 +33,7 @@ const useSubmitLevelsData = (
         {
           method,
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data }, replacer),
+          body: JSON.stringify(data, replacer),
         }
       )
     const { addressSignedMessage } = data
@@ -94,29 +94,33 @@ const useSubmitLevelsData = (
     return Promise.all(promises)
   }
 
-  const redirectAction = () =>
-    fetch(`/api/preview?urlName=${communityData?.urlName}`)
-      .then((res) => res.json())
-      .then((cookies: string[]) => {
-        cookies.forEach((cookie: string) => {
-          document.cookie = cookie
-        })
-
-        router.push(`/${communityData?.urlName}/community`)
-      })
+  const redirectAction = async () => {
+    if (typeof callback === "function") {
+      callback()
+    } else {
+      router.push(`/${communityData?.urlName}/community`)
+    }
+  }
 
   const preprocess = (_data: FormData) => {
     const data = _data
     data.levels?.forEach((level, i) => {
-      if (!level.stakeTimelockMs) return
-      const timeLock = level.stakeTimelockMs as number
-      data[i].stakeTimelockMs = convertMonthsToMs(timeLock).toString()
+      if (level.requirements?.[0]?.stakeTimelockMs) {
+        const timeLock = level.requirements?.[0].stakeTimelockMs
+        data.levels[i].requirements[0].stakeTimelockMs = convertMonthsToMs(timeLock)
+      }
+      // By default the type is "OPEN" in the form
+      if (
+        (data.levels[i].requirements?.[0].type as RequirementType | "OPEN") ===
+        "OPEN"
+      )
+        data.levels[i].requirements = []
     })
     return data
   }
 
   return useSubmitMachine<FormData>(
-    "Level(s) added! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
+    method === "POST" ? "Level(s) added!" : "Level(s) updated!",
     fetchService,
     redirectAction,
     preprocess

@@ -21,8 +21,6 @@ const Levels = (): JSX.Element => {
     fields: levelFields,
     append: appendLevel,
     remove: removeLevel,
-    swap: swapLevels,
-    update: updateLevels,
   } = useFieldArray({
     name: "levels",
     keyName: "dbId",
@@ -38,11 +36,9 @@ const Levels = (): JSX.Element => {
       appendLevel(
         {
           name: "",
-          image: undefined,
+          imageUrl: undefined,
           description: "",
-          requirementType: "OPEN",
-          requirement: undefined,
-          tokenTimeLock: undefined,
+          requirements: [],
           telegramGroupId: undefined,
         },
         { shouldFocus: false }
@@ -153,9 +149,7 @@ const Levels = (): JSX.Element => {
               name: "",
               image: undefined,
               description: "",
-              requirementType: "OPEN",
-              requirement: undefined,
-              tokenTimeLock: undefined,
+              requirements: [],
               telegramGroupId: undefined,
             })
           }

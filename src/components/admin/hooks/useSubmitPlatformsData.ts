@@ -1,4 +1,5 @@
-import type { FormData } from "pages/[community]/admin/community"
+import type { FormData } from "components/admin/hooks/useSubmitMachine"
+import { useRouter } from "next/router"
 import { ContextType, SignEvent } from "../utils/submitMachine"
 import useCommunityData from "./useCommunityData"
 import useSubmitMachine from "./useSubmitMachine"
@@ -6,9 +7,10 @@ import useSubmitMachine from "./useSubmitMachine"
 const useSubmitPlatformsData = (
   telegramChanged: boolean,
   discordChanged: boolean,
-  callback: () => void
+  callback: () => any // TODO: better typing
 ) => {
   const { communityData } = useCommunityData()
+  const router = useRouter()
 
   const fetchService = (_context: ContextType, { data }: SignEvent<any>) => {
     const promises = []
@@ -63,11 +65,15 @@ const useSubmitPlatformsData = (
   }
 
   const redirectAction = async () => {
-    if (typeof callback === "function") callback()
+    if (typeof callback === "function") {
+      callback()
+    } else {
+      router.push(`/${communityData?.urlName}/community`)
+    }
   }
 
   return useSubmitMachine<FormData>(
-    "Platform data updated! It might take up to 10 sec for the page to update. If it's showing old data, try to refresh it in a few seconds.",
+    "Platform data updated!",
     fetchService,
     redirectAction
   )

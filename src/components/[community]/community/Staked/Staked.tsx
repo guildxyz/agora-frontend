@@ -48,6 +48,7 @@ const Staked = (): JSX.Element => {
             </chakra.span>
           )),
         ]}
+        h="full"
       >
         <Tooltip
           isDisabled={!!unlockedAmount}
