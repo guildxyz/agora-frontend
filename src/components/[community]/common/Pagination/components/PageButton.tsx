@@ -1,4 +1,4 @@
-import { Button, useColorMode } from "@chakra-ui/react"
+import { Box, Button, Tooltip, useColorMode } from "@chakra-ui/react"
 import LinkButton from "components/common/LinkButton"
 import { useRouter } from "next/router"
 import { PropsWithChildren, useMemo } from "react"
@@ -6,11 +6,13 @@ import { PropsWithChildren, useMemo } from "react"
 type Props = {
   href: string
   disabled?: boolean
+  tooltipText?: string
 }
 
 const PageButton = ({
   href,
   disabled = false,
+  tooltipText = "Coming soon",
   children,
 }: PropsWithChildren<Props>): JSX.Element => {
   const router = useRouter()
@@ -29,13 +31,18 @@ const PageButton = ({
       variant="ghost"
       isActive={isActive}
       color={(!isActive && gray) || undefined}
+      minW="max-content"
     >
       {children}
     </LinkButton>
   ) : (
-    <Button variant="ghost" disabled color={gray}>
-      {children}
-    </Button>
+    <Tooltip label={tooltipText} placement="bottom">
+      <Box>
+        <Button variant="ghost" disabled color={gray}>
+          {children}
+        </Button>
+      </Box>
+    </Tooltip>
   )
 }
 

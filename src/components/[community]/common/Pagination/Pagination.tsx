@@ -1,4 +1,4 @@
-import { Box, HStack, Tooltip, useColorMode } from "@chakra-ui/react"
+import { Box, HStack, Stack, useColorMode } from "@chakra-ui/react"
 import { PropsWithChildren, useEffect, useRef, useState } from "react"
 import PageButton from "./components/PageButton"
 
@@ -19,7 +19,6 @@ const Pagination = ({
       const current = paginationRef.current || null
       const rect = current?.getBoundingClientRect()
 
-      // When the Pagination component becomes "sticky"...
       setIsSticky(rect?.top === 0)
     }
 
@@ -31,12 +30,16 @@ const Pagination = ({
   }, [])
 
   return (
-    <HStack
+    <Stack
       ref={paginationRef}
+      direction="row"
+      spacing="14"
+      justifyContent="space-between"
       position="sticky"
       top={0}
-      py={isSticky ? 2 : 0}
-      height={isSticky ? 16 : 12}
+      py="3"
+      my="-3"
+      width="full"
       zIndex={isSticky ? "banner" : "auto"}
       _before={{
         content: `""`,
@@ -44,34 +47,56 @@ const Pagination = ({
         top: 0,
         left: 0,
         width: "full",
-        height: 16,
+        // button height + padding
+        height: "calc(var(--chakra-space-11) + (2 * var(--chakra-space-3)))",
         bgColor: colorMode === "light" ? "white" : "gray.800",
         boxShadow: "md",
-        transition: "0.2s ease",
+        transition: "opacity 0.2s ease, visibility 0.1s ease",
         visibility: isSticky ? "visible" : "hidden",
         opacity: isSticky ? 1 : 0,
       }}
     >
-      <PageButton href={isRegister ? "register" : "info"}>Info</PageButton>
-
-      <Tooltip
-        label="You have to save general info of your token first"
-        placement="bottom"
-        isDisabled={!isRegister}
+      <Box
+        position="relative"
+        mx={-4}
+        minW="0"
+        sx={{
+          "-webkit-mask-image":
+            "linear-gradient(to right, transparent 0px, black 20px, black calc(100% - 20px), transparent)",
+        }}
       >
-        <Box>
-          <PageButton href="community" disabled={isRegister}>
+        <HStack
+          overflowX="auto"
+          px={4}
+          sx={{
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+            scrollbarWidth: "none",
+          }}
+        >
+          <PageButton href={isRegister ? "register" : "info"}>Info</PageButton>
+          <PageButton
+            href="community"
+            disabled={isRegister}
+            tooltipText="You have to save general info of your token first"
+          >
             Community
           </PageButton>
-        </Box>
-      </Tooltip>
+          <PageButton href="#" disabled>
+            Gamification
+          </PageButton>
+          <PageButton href="#" disabled>
+            Trustless Payment
+          </PageButton>
+          <PageButton href="#" disabled>
+            Feeless Voting
+          </PageButton>
+        </HStack>
+      </Box>
 
-      {/* <LinkButton href="twitter-bounty" disabled>
-        Twitter bounty
-      </LinkButton> */}
-
-      <Box marginInlineStart="auto!important">{children}</Box>
-    </HStack>
+      {children && <Box>{children}</Box>}
+    </Stack>
   )
 }
 
