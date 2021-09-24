@@ -1,11 +1,11 @@
 import { Icon, Stack, Text } from "@chakra-ui/react"
-import { useWeb3React } from "@web3-react/core"
 import Card from "components/common/Card"
 import Layout from "components/common/Layout"
 import LinkButton from "components/common/LinkButton"
 import ActionCard from "components/[community]/common/ActionCard"
 import { CommunityProvider } from "components/[community]/common/Context"
 import Pagination from "components/[community]/common/Pagination"
+import useIsOwner from "components/[community]/hooks/useIsOwner"
 import { Info } from "phosphor-react"
 import type { Community } from "temporaryData/communities"
 
@@ -14,7 +14,7 @@ type Props = {
 }
 
 const CommunityPage = ({ communityData }: Props): JSX.Element => {
-  const { account } = useWeb3React()
+  const isOwner = useIsOwner()
 
   return (
     <CommunityProvider data={communityData}>
@@ -25,9 +25,7 @@ const CommunityPage = ({ communityData }: Props): JSX.Element => {
       >
         <Stack spacing={{ base: 7, xl: 9 }}>
           <Pagination>
-            {communityData.owner?.addresses?.some(
-              ({ address }) => address === account?.toLowerCase()
-            ) && (
+            {isOwner && (
               <LinkButton
                 href={`/${communityData.urlName}/admin/info`}
                 variant="solid"
