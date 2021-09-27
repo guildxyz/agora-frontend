@@ -19,7 +19,7 @@ const useColorPalette = (
   useMemo(
     () => ({
       [`--${prefix}-50`]: Color(colorCode)
-        .lightness(55 + LIGHTNESS_STEP * 5)
+        .lightness(55 + LIGHTNESS_STEP * 4.5)
         .saturate(LIGHT_SATURATE_STEP * 5)
         .hex(),
       [`--${prefix}-100`]: Color(colorCode)
@@ -38,22 +38,22 @@ const useColorPalette = (
         .lightness(50 + LIGHTNESS_STEP)
         .saturate(LIGHT_SATURATE_STEP * 1)
         .hex(),
-      [`--${prefix}-500`]: Color(colorCode).lightness(50).hex(),
+      [`--${prefix}-500`]: Color(colorCode).lightness(55).hex(),
       [`--${prefix}-600`]: Color(colorCode)
         .lightness(50 - DARKNESS_STEP * 1)
-        .saturate(DARK_SATURATE_STEP * 0.5)
+        .saturate(DARK_SATURATE_STEP * 0.25)
         .hex(),
       [`--${prefix}-700`]: Color(colorCode)
         .lightness(45 - DARKNESS_STEP * 2)
-        .saturate(DARK_SATURATE_STEP * 1)
+        .saturate(DARK_SATURATE_STEP * 0.5)
         .hex(),
       [`--${prefix}-800`]: Color(colorCode)
         .lightness(45 - DARKNESS_STEP * 2.5)
-        .saturate(DARK_SATURATE_STEP * 1.25)
+        .saturate(DARK_SATURATE_STEP * 0.625)
         .hex(),
       [`--${prefix}-900`]: Color(colorCode)
         .lightness(45 - DARKNESS_STEP * 3)
-        .saturate(DARK_SATURATE_STEP * 1.5)
+        .saturate(DARK_SATURATE_STEP * 0.75)
         .hex(),
     }),
     [prefix, colorCode]
